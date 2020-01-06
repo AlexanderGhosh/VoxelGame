@@ -37,8 +37,7 @@ Shader::Shader(std::string shaderName) {
 	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		std::cout << "Unable to load a shader: " << std::string(infoLog) << std::endl;
-		//std::cout << "Vertex compilation failed: " << infoLog;
+		std::cout << "Vertex compilation failed: " << std::string(infoLog) << std::endl;
 	}
 
 	//fragment
@@ -48,8 +47,7 @@ Shader::Shader(std::string shaderName) {
 	glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-		std::cout << "Unable to load a shader: " << std::string(infoLog) << std::endl;
-		//std::cout << "Vertex compilation failed: " << infoLog;
+		std::cout << "Fragment compilation failed: " << std::string(infoLog) << std::endl;
 	}
 	program = glCreateProgram();
 	glAttachShader(program, vertex);
@@ -68,10 +66,8 @@ Shader::Shader(std::string shaderName) {
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 }
-void Shader::use() {
-	glUseProgram(program);
-}
 void Shader::bind() {
+	glUseProgram(program);
 }
 GLuint Shader::getLocation(std::string name) {
 	return glGetUniformLocation(program, name.c_str());

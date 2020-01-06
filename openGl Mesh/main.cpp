@@ -9,69 +9,96 @@
 
 #include "meshRender.h"
 #include "Entity.h"
+#include "Camera.h"
 
 player p1;
 glm::vec3 m_pos(1);
 glm::ivec2 DIM(1600, 900);
 glm::vec3 BACKGROUND(0.5);
 GLfloat prev_t;
+
+bool keys[1024];
+bool firstMouse = true;
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
+GLfloat lastX = DIM.x / 2, lastY = DIM.y / 2;
+
 std::array<MeshFace, 6> FACES = {
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, 0, -1) },
+	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
+			 { glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1) },
 			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
 			 glm::vec3(0, 0, 0), 5),
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, 0, -1) },
+
+
+	MeshFace({ glm::vec3(-0.5, -0.5, 0.5), glm::vec3(0.5, 0, 0.5), glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5) },
+			 { glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1) },
 			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
 			 glm::vec3(0, 0, 0), 5),
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, 0, -1) },
+
+	MeshFace({ glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5, 0.5, 0.5) },
+			 { glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0) },
 			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
 			 glm::vec3(0, 0, 0), 5),
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, 0, -1) },
+
+	MeshFace({ glm::vec3(0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5) },
+			 { glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0) },
 			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
 			 glm::vec3(0, 0, 0), 5),
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, 0, -1) },
+
+	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5) },
+			 { glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0) },
 			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
 			 glm::vec3(0, 0, 0), 5),
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, 0, -1) },
+
+	MeshFace({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5) },
+			 { glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0) },
 			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
 			 glm::vec3(0, 0, 0), 5)
 };
 
-/*		-0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f,  0.0f,
-		0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,     1.0f,  0.0f,
-		0.5f,  0.5f, -0.5f,     0.0f,  0.0f, -1.0f,     1.0f,  1.0f,
-		0.5f,  0.5f, -0.5f,     0.0f,  0.0f, -1.0f,     1.0f,  1.0f,
-		-0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f,  0.0f,
-		*/
+
 void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mode);
 void handleMouse(GLFWwindow* window, double xPos, double yPos);
+
+void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
+void MouseCallBack(GLFWwindow* window, double xPos, double yPos);
+void DoMovement();
+
 GLuint getFrameRate();
 
 GLFWwindow* createWindow();
-
+Camera c(glm::vec3(0, 2, 0));
 int main() {
 	GLFWwindow* window = createWindow();
-	MeshRender mr({ 0, 0, 0 });
+
+	BlockMesh bm;
+	for (auto& face : FACES) {
+		bm.addFace(face);
+	}
+
+	MeshRender mr({ 0, 2, -3 });
+	mr.loadMesh(bm);
 	mr.create();
+	glm::mat4 projection = glm::perspective(c.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	while (!glfwWindowShouldClose(window))
 	{
+		GLfloat frame = glfwGetTime();
+		deltaTime = frame - lastFrame;
+		lastFrame = frame;
+
 		//std::cout << "Frame Rate: " << getFrameRate() << std::endl;
 		glfwPollEvents();
+		DoMovement();
 
 		glClearColor(BACKGROUND.r, BACKGROUND.g, BACKGROUND.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		p1.move();
-		mr.render(p1, glm::perspective(5, DIM.x * DIM.y, 0, 100));
+		//p1.move();
+		mr.render(c, projection);
 
 		glfwSwapBuffers(window);
 	}
+	mr.destroy();
 	glfwTerminate();
 	return EXIT_SUCCESS;
 }
@@ -99,8 +126,8 @@ GLFWwindow* createWindow() {
 		std::cout << "Falid to initialise GLEW" << std::endl;
 		exit(EXIT_FAILURE);
 	}// setup events
-	glfwSetKeyCallback(window, handleKeyboard);
-	glfwSetCursorPosCallback(window, handleMouse);
+	glfwSetKeyCallback(window, KeyCallBack);
+	glfwSetCursorPosCallback(window, MouseCallBack);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disabel cursor visabilaty
 
@@ -169,4 +196,49 @@ void handleMouse(GLFWwindow* window, double xPos, double yPos) {
 		m_pos.z = 0;
 	}
 	p1.rotation += glm::vec3(xPos - m_pos.x, m_pos.y - yPos, p1.rotation.z);
+}
+
+void DoMovement() {
+	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]) {
+		c.ProcessKeyBoard(FORWARD, deltaTime);
+	}
+	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]) {
+		c.ProcessKeyBoard(BACKWARD, deltaTime);
+	}
+	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
+		c.ProcessKeyBoard(RIGHT, deltaTime);
+	}
+	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
+		c.ProcessKeyBoard(LEFT, deltaTime);
+	}
+}
+void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+		glfwSetWindowShouldClose(window, true);
+	}
+	if (key >= 0 && key < 1024) {
+		if (action == GLFW_PRESS || action == GLFW_RELEASE) {
+			keys[key] ^= true;
+		}
+	}
+	glm::vec3 pos = c.GetPostion();
+	std::cout << pos.x << "," << pos.y << "," << pos.z << std::endl;
+}
+void MouseCallBack(GLFWwindow* window, double xPos, double yPos) {
+
+	if (firstMouse) {
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+
+	GLfloat xOffset = xPos - lastX;
+	GLfloat yOffset = lastY - yPos;
+
+	lastX = xPos;
+	lastY = yPos;
+
+	c.ProcessMouseMovement(xOffset, yOffset);
+
+	
 }

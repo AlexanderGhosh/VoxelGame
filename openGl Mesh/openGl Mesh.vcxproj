@@ -162,6 +162,7 @@
     <None Include="Shaders\block_v.gls" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="meshRender.h" />
     <ClInclude Include="Shader.h" />
