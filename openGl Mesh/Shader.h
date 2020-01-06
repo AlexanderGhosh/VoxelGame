@@ -15,13 +15,10 @@
 
 class Shader {
 public:
-	Shader();
 	Shader(std::string shaderName);
 	void bind();
 	GLuint getLocation(std::string name);
 	void setLocation(GLuint& location, glm::mat4& value);
 private:
-	void use();
-	std::array<GLuint, 3> locations;
 	GLuint program;
 };

@@ -7,7 +7,7 @@ void MeshRender::create() {
 	std::vector<GLfloat> vertices = mesh.getVertices();
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()), vertices.data() , GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data() , GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -24,12 +24,14 @@ void MeshRender::create() {
 	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
+
+	//loadTexture(std::string("Textures/grass.png").c_str(), std::string("Textures/grass_specular.png").c_str());
 }
-void MeshRender::render(player p1, glm::mat4 projection) {
+void MeshRender::render(Camera p1, glm::mat4 projection) {
 	shader.bind();
 
 	glm::mat4 view(1);
-    view = p1.getView();
+	view = p1.GetViewMatrix();
 
 	GLuint modelLoc = shader.getLocation("model");
 	GLuint viewLoc = shader.getLocation("view");
@@ -39,15 +41,15 @@ void MeshRender::render(player p1, glm::mat4 projection) {
 	shader.setLocation(projLoc, projection);
 
 	// texture binding
+	/*
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
+	glBindTexture(GL_TEXTURE_2D, texMaps[0]);*/
 
 
 	glBindVertexArray(VAO);
 
-	//loadTexture(std::string("Textures/grass.png").c_str(), std::string("Textures/grass_specular.png").c_str());
 	glm::mat4 model(1);
 	model = glm::translate(model, position);
 
@@ -92,4 +94,12 @@ void MeshRender::loadTexture(std::string diffuse, std::string specular) {
 	glUniform1i(glGetUniformLocation(this->shader.Program, "material.diffuse"), 0);
 	glUniform1i(glGetUniformLocation(this->shader.Program, "material.specular"), 1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
+}
+
+void MeshRender::loadMesh(BlockMesh& m) {
+	mesh = m;
+}
+void MeshRender::destroy() {
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
