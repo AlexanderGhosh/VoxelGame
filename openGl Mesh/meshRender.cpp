@@ -33,20 +33,24 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	glm::mat4 view(1);
 	view = p1.GetViewMatrix();
 
-	GLuint modelLoc = shader.getLocation("model");
-	GLuint viewLoc = shader.getLocation("view");
-	GLuint projLoc = shader.getLocation("projection");
+	GLint modelLoc = shader.getLocation("model");
+	GLint viewLoc = shader.getLocation("view");
+	GLint projLoc = shader.getLocation("projection");
 
 	shader.setLocation(viewLoc, view);
 	shader.setLocation(projLoc, projection);
 
+	glm::vec3 objCol(1, 0.5, 0.31), lightCol(1);
+	shader.setValue("objCol", objCol);
+	shader.setValue("lightCol", lightCol);
+
+
 	// texture binding
-	/*
-	glActiveTexture(GL_TEXTURE0);
+	/*glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texMaps[0]);*/
-
+	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
+	loadTexture("grass");*/
 
 	glBindVertexArray(VAO);
 
@@ -59,18 +63,18 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	glBindVertexArray(0);//unbind VAO
 }
 
-void MeshRender::loadTexture(std::string diffuse, std::string specular) {
+void MeshRender::loadTexture(std::string name) {
 	return;
-	diffuse = "Shaders/" + diffuse + ".png";
-	specular = "Shaders/" + specular + ".png";
-	int textureWidth, textureHeight;
+	std::string diffuse = "Textures/" + name + "_diff.png";
+	std::string specular = "Textures/" + name + "_spec.png";
+	glm::ivec2 dim;
 	glGenTextures(1, &texMaps[0]);
 	glGenTextures(1, &texMaps[1]);
 	//glGenTextures(1, &this->emissionMap);
 	// diffuse
-	unsigned char* image = SOIL_load_image(diffuse.c_str(), &textureWidth, &textureHeight, 0, SOIL_LOAD_RGBA);
+	unsigned char* image = SOIL_load_image(diffuse.c_str(), &dim.x, &dim.y, 0, SOIL_LOAD_RGBA);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dim.x, dim.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -78,9 +82,9 @@ void MeshRender::loadTexture(std::string diffuse, std::string specular) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	// specular
-	image = SOIL_load_image(specular.c_str(), &textureWidth, &textureHeight, 0, SOIL_LOAD_RGBA);
+	image = SOIL_load_image(specular.c_str(), &dim.x, &dim.y, 0, SOIL_LOAD_RGBA);
 	glBindTexture(GL_TEXTURE_2D, texMaps[1]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dim.x, dim.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -89,11 +93,6 @@ void MeshRender::loadTexture(std::string diffuse, std::string specular) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	/*this->shader.Bind();
-	glUniform1i(glGetUniformLocation(this->shader.Program, "material.diffuse"), 0);
-	glUniform1i(glGetUniformLocation(this->shader.Program, "material.specular"), 1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 }
 
 void MeshRender::loadMesh(BlockMesh& m) {

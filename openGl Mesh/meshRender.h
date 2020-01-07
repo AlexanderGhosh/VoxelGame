@@ -19,5 +19,5 @@ public:
 private:
 	std::array<GLuint, 2> texMaps;
 	Shader shader;
-	void loadTexture(std::string diffuse, std::string specular);
+	void loadTexture(std::string name);
 };

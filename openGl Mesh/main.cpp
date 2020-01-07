@@ -23,39 +23,37 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 GLfloat lastX = DIM.x / 2, lastY = DIM.y / 2;
 
-std::array<MeshFace, 6> FACES = {
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1) },
-			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
-			 glm::vec3(0, 0, 0), 5),
+#pragma region FACES
+MeshFace BACK_F({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) }, // BACK
+	{ glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1) },
+	{ glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
+	glm::vec3(0, 0, 0), 5);
 
+MeshFace FRONT_F({ glm::vec3(-0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5) }, // FRONT
+	{ glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1) },
+	{ glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
+	glm::vec3(0, 0, 0), 5);
 
-	MeshFace({ glm::vec3(-0.5, -0.5, 0.5), glm::vec3(0.5, 0, 0.5), glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5) },
-			 { glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1) },
-			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
-			 glm::vec3(0, 0, 0), 5),
+MeshFace LEFT_F({ glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5), glm::vec3(-0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5, 0.5, 0.5) }, // LEFT
+	{ glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0) },
+	{ glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
+	glm::vec3(0, 0, 0), 5);
 
-	MeshFace({ glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5, 0.5, 0.5) },
-			 { glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0) },
-			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
-			 glm::vec3(0, 0, 0), 5),
+MeshFace RIGHT_F({ glm::vec3(0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5) }, // RIGHT
+	{ glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0) },
+	{ glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
+	glm::vec3(0, 0, 0), 5);
 
-	MeshFace({ glm::vec3(0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5) },
-			 { glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0) },
-			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
-			 glm::vec3(0, 0, 0), 5),
+MeshFace BOTTOM_F({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5) }, // BOTTOM
+	{ glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0) },
+	{ glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
+	glm::vec3(0, 0, 0), 5);
 
-	MeshFace({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5) },
-			 { glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0) },
-			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
-			 glm::vec3(0, 0, 0), 5),
-
-	MeshFace({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5, 0.5, 0.5), glm::vec3(0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5) },
-			 { glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0) },
-			 { glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
-			 glm::vec3(0, 0, 0), 5)
-};
-
+MeshFace TOP_F({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5) }, //TOP
+	{ glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0) },
+	{ glm::ivec2(0), glm::ivec2(1, 0), glm::ivec2(1), glm::ivec2(1), glm::ivec2(0, 1), glm::ivec2(0) },
+	glm::vec3(0, 0, 0), 5);
+#pragma endregion
 
 void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mode);
 void handleMouse(GLFWwindow* window, double xPos, double yPos);
@@ -72,10 +70,15 @@ int main() {
 	GLFWwindow* window = createWindow();
 
 	BlockMesh bm;
-	for (auto& face : FACES) {
-		bm.addFace(face);
-	}
+	
+	bm.addFace(TOP_F);
+	bm.addFace(BOTTOM_F);
+	bm.addFace(FRONT_F);
+	bm.addFace(BACK_F);
+	bm.addFace(LEFT_F);
+	bm.addFace(RIGHT_F);
 
+	//MeshRender mr({ 0, 2, -3 });
 	MeshRender mr({ 0, 2, -3 });
 	mr.loadMesh(bm);
 	mr.create();
@@ -176,6 +179,7 @@ void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int m
 			p1.velocity -= norm;
 		case GLFW_KEY_D:
 		case GLFW_KEY_RIGHT:
+			i = glm::mat4(1);
 			i = glm::rotate(i, 90.0f, p1.rotation);
 			norm = glm::vec3(i * glm::vec4(p1.rotation, 1.0f));
 			norm *= 3;
@@ -221,8 +225,8 @@ void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode
 			keys[key] ^= true;
 		}
 	}
-	glm::vec3 pos = c.GetPostion();
-	std::cout << pos.x << "," << pos.y << "," << pos.z << std::endl;
+	//glm::vec3 pos = c.GetPostion();
+	//std::cout << pos.x << "," << pos.y << "," << pos.z << std::endl;
 }
 void MouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 
