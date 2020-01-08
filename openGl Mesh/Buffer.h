@@ -40,6 +40,7 @@ public:
 	void loadData(Structure& struc);
 	GLuint getVBO();
 	GLuint getVAO();
+	void destroy();
 private:
 	std::array<GLuint, 2> vertex_objs;
 	Structure data_s;

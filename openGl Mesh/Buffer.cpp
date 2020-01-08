@@ -55,3 +55,7 @@ GLuint Buffer::getVAO() {
 GLuint Buffer::getTriangleCnt() {
 	return data_s.data.size() / data_s.data_l;
 }
+void Buffer::destroy() {
+	glDeleteVertexArrays(1, &vertex_objs[1]);
+	glDeleteBuffers(1, &vertex_objs[0]);
+}

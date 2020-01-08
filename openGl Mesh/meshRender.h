@@ -10,7 +10,7 @@ class MeshRender {
 public:
 	glm::vec3 position;
 	BlockMesh mesh;
-	GLuint VBO, VAO;
+	//GLuint VBO, VAO;
 	Buffer buffers;
 	MeshRender();
 	MeshRender(glm::vec3 pos);

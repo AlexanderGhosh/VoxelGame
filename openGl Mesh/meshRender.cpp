@@ -37,6 +37,8 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	model = glm::translate(model, position);
 
 	shader.setValue("model", model);
+	glm::vec3 viewPos = p1.GetPostion();
+	shader.setValue("viewPos", viewPos);
 
 	glDrawArrays(GL_TRIANGLES, 0, buffers.getTriangleCnt());
 	glBindVertexArray(0);//unbind VAO
@@ -82,8 +84,7 @@ void MeshRender::loadMesh(BlockMesh& m) {
 	mesh = m;
 }
 void MeshRender::destroy() {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	buffers.destroy();
 }
 
 void MeshRender::loadTexmap(std::string name) {
