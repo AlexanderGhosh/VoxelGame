@@ -28,7 +28,6 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
-	//loadTexture("cobblestone");
 
 	glBindVertexArray(buffers.getVAO());
 
