@@ -1,10 +1,9 @@
 #include "Mesh.h"
 
-MeshFace::MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::ivec2, 6 > texC, glm::vec3 rot, GLuint lightLv) {
+MeshFace::MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::ivec2, 6 > texC, GLuint lightLv) {
 	vertices = vert;
 	normals = norm;
 	texCoords = texC;
-	rotation = rot;
 	lightLevel = lightLv;
 }
 

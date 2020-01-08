@@ -12,7 +12,7 @@ struct MeshFace {
 	
 	GLuint lightLevel;
 
-	MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::ivec2, 6 > texC, glm::vec3 rot, GLuint lightLv);
+	MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::ivec2, 6 > texC, GLuint lightLv);
 };
 struct BlockMesh {
 	std::vector<MeshFace> faces;

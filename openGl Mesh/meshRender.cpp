@@ -41,12 +41,12 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	shader.setLocation(projLoc, projection);
 
 	// texture binding
-	/*
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texMaps[0]);*/
-
+	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
+	loadTexture("grass", "grass");
 
 	glBindVertexArray(VAO);
 
@@ -61,8 +61,8 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 
 void MeshRender::loadTexture(std::string diffuse, std::string specular) {
 	return;
-	diffuse = "Shaders/" + diffuse + ".png";
-	specular = "Shaders/" + specular + ".png";
+	diffuse = "Textures/" + diffuse + ".png";
+	specular = "Textures/" + specular + ".png";
 	int textureWidth, textureHeight;
 	glGenTextures(1, &texMaps[0]);
 	glGenTextures(1, &texMaps[1]);
