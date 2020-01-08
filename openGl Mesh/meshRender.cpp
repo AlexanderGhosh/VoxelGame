@@ -1,13 +1,14 @@
 #pragma warning (disable : 4996)
 #include "meshRender.h"
-MeshRender::MeshRender(glm::vec3 pos) :position(pos), shader("block") {
+MeshRender::MeshRender(glm::vec3 pos) :position(pos), shader("block2") {
 
 }
 void MeshRender::create() {
-	mesh.getVertices();
+	mesh.getVertices(GL_TRUE);
 	buffers.loadData(mesh.data_s);
 	buffers.loadBuffers();
-	loadTexture("cobblestone");
+	//loadTexture("cobblestone");
+	loadTexmap("grass");
 }
 void MeshRender::render(Camera p1, glm::mat4 projection) {
 	shader.bind();
@@ -25,9 +26,10 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 
 	// texture binding
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
+	//glBindTexture(GL_TEXTURE_2D, texMaps[0]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texMaps[0]);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
+	glBindTexture(GL_TEXTURE_2D, texMaps[1]);
 
 	glBindVertexArray(buffers.getVAO());
 
@@ -82,4 +84,50 @@ void MeshRender::loadMesh(BlockMesh& m) {
 void MeshRender::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+}
+
+void MeshRender::loadTexmap(std::string name) {
+	std::vector<std::string> faces = {
+		"Textures/" + name + "/left.png",	// left
+		"Textures/" + name + "/front.png",	// front
+		"Textures/" + name + "/bottom.png", // bottom
+		"Textures/" + name + "/top.png",	// top
+		"Textures/" + name + "/right.png",	// right
+		"Textures/" + name + "/back.png"	// back
+	};
+	glGenTextures(1, &texMaps[0]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texMaps[0]);
+
+	glm::ivec2 dim;
+	unsigned char* data;
+
+	for (GLuint i = 0; i < faces.size(); i++)
+	{
+		data = SOIL_load_image(faces[i].c_str(), &dim.x, &dim.y, 0, SOIL_LOAD_RGBA);
+		if (data)
+		{
+
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, dim.x, dim.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			SOIL_free_image_data(data);
+		}
+		else
+		{
+			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+			SOIL_free_image_data(data);
+		}
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	shader.bind();
+	glm::vec2 mat(0, 1);
+	shader.setValue("mat_diff", mat.x);
+	int t = 0;
+	shader.setValue("skybox", t);
 }

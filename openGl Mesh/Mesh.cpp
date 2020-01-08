@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-MeshFace::MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::ivec2, 6 > texC, GLuint lightLv, Structure structure) {
+MeshFace::MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC, GLuint lightLv, Structure structure) {
 	vertices = vert;
 	normals = norm;
 	texCoords = texC;
@@ -8,7 +8,7 @@ MeshFace::MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm,
     data_s = structure;
 }
 
-void BlockMesh::getVertices() {
+void BlockMesh::getVertices(GLboolean vec3) {
     /*GLfloat vertices[] =
     {
         // Positions            // Normals              // Texture Coords
@@ -71,6 +71,9 @@ void BlockMesh::getVertices() {
 
 			vertices.push_back(face.texCoords[i].x);
 			vertices.push_back(face.texCoords[i].y);
+            if (vec3) {
+                vertices.push_back(face.texCoords[i].z);
+            }
 		}
 	}
     data_s.data = vertices;

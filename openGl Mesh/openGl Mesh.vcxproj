@@ -159,6 +159,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
+    <None Include="Shaders\block2_f.gls" />
+    <None Include="Shaders\block2_v.gls" />
     <None Include="Shaders\block_f.gls" />
     <None Include="Shaders\block_v.gls" />
   </ItemGroup>
@@ -190,6 +192,12 @@
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />
     <Image Include="Textures\cobblestone_spec.png" />
+    <Image Include="Textures\grass\back.png" />
+    <Image Include="Textures\grass\bottom.png" />
+    <Image Include="Textures\grass\front.png" />
+    <Image Include="Textures\grass\left.png" />
+    <Image Include="Textures\grass\right.png" />
+    <Image Include="Textures\grass\top.png" />
     <Image Include="Textures\grass_diff.png" />
     <Image Include="Textures\grass_spec.png" />
     <Image Include="Textures\stone_diff.png" />

@@ -22,4 +22,5 @@ private:
 	std::array<GLuint, 2> texMaps;
 	Shader shader;
 	void loadTexture(std::string name);
+	void loadTexmap(std::string name);
 };

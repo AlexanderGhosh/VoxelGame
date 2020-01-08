@@ -50,6 +50,8 @@
     <None Include="glew32.dll" />
     <None Include="Shaders\block_v.gls" />
     <None Include="Shaders\block_f.gls" />
+    <None Include="Shaders\block2_f.gls" />
+    <None Include="Shaders\block2_v.gls" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h">
@@ -139,6 +141,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Textures\stone_spec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\grass\back.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\grass\bottom.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\grass\front.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\grass\left.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\grass\right.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\grass\top.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
