@@ -16,7 +16,12 @@ struct Structure {
 	GLuint data_l;
 	std::vector<GLuint> data_ls;
 
-	Structure();
+	Structure() {
+		data = std::vector<GLfloat>();
+		layout_c = 0;
+		data_l = 0;
+		data_ls = std::vector<GLuint>();
+	}
 	Structure(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens, std::vector<GLfloat> data_);
 };
 bool operator==(const Structure& s1, const Structure& s2);
@@ -25,12 +30,18 @@ bool operator!=(const Structure& s1, const Structure& s2);
 class Buffer
 {
 public:
-	Buffer();
+	Buffer() {
+		vertex_objs = std::array<GLuint, 2>();
+		data_s = Structure();
+	}
 	GLuint getTriangleCnt();
 	GLboolean loadBuffers();
 	void loadData(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens, std::vector<GLfloat> data);
+	void loadData(Structure& struc);
+	GLuint getVBO();
+	GLuint getVAO();
 private:
 	std::array<GLuint, 2> vertex_objs;
-	Structure data_struct;
+	Structure data_s;
 };
 

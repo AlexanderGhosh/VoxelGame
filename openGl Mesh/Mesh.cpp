@@ -76,17 +76,20 @@ void BlockMesh::getVertices() {
     data_s.data = vertices;
 }
 
-GLboolean BlockMesh::addFace(MeshFace& face) {
+GLboolean BlockMesh::addFace(MeshFace& face, GLboolean force) {
+    if (faces.size() < 1) force = GL_TRUE;
 	if (faces.size() >= 6) return GL_FALSE;
     try {
         if (data_s != face.data_s) {
-            return GL_FALSE;
+            data_s = face.data_s;
+            if (!force) {
+                return GL_FALSE;
+            }
         }
     }
     catch (std::exception e) {
-
+        std::cout << e.what() << std::endl;
     }
-    data_s = face.data_s;
 
 	try {
 		faces.push_back(face);

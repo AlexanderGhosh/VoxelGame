@@ -11,6 +11,7 @@ public:
 	glm::vec3 position;
 	BlockMesh mesh;
 	GLuint VBO, VAO;
+	Buffer buffers;
 	MeshRender();
 	MeshRender(glm::vec3 pos);
 	void loadMesh(BlockMesh& m);
@@ -20,6 +21,5 @@ public:
 private:
 	std::array<GLuint, 2> texMaps;
 	Shader shader;
-	Buffer buffers;
 	void loadTexture(std::string name);
 };

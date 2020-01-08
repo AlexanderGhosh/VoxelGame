@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include "GL/glew.h"
 #include "Buffer.h"
 #include <glm.hpp>
@@ -19,7 +20,7 @@ struct BlockMesh {
 	std::vector<MeshFace> faces;
 	glm::vec3 position;
 	Structure data_s;
-	GLboolean addFace(MeshFace& face);
+	GLboolean addFace(MeshFace& face, GLboolean force = GL_TRUE);
 	void getVertices();
 };
 struct ChunkMesh {

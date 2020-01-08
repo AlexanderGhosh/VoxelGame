@@ -5,29 +5,9 @@ MeshRender::MeshRender(glm::vec3 pos) :position(pos), shader("block") {
 }
 void MeshRender::create() {
 	mesh.getVertices();
+	buffers.loadData(mesh.data_s);
 	buffers.loadBuffers();
-
-	/*glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data() , GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
-	// normal atributes
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-
-	// texture attributes
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-
-	glBindVertexArray(0);*/
-
-	//loadTexture(std::string("Textures/grass.png").c_str(), std::string("Textures/grass_specular.png").c_str());
+	loadTexture("cobblestone");
 }
 void MeshRender::render(Camera p1, glm::mat4 projection) {
 	shader.bind();
@@ -48,16 +28,16 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
-	loadTexture("cobblestone");
+	//loadTexture("cobblestone");
 
-	glBindVertexArray(VAO);
+	glBindVertexArray(buffers.getVAO());
 
 	glm::mat4 model(1);
 	model = glm::translate(model, position);
 
 	shader.setValue("model", model);
 
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArrays(GL_TRIANGLES, 0, buffers.getTriangleCnt());
 	glBindVertexArray(0);//unbind VAO
 }
 
