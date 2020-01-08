@@ -4,12 +4,14 @@
 #include "Shader.h"
 #include "Entity.h"
 #include "Camera.h"
+#include "Buffer.h"
 #include <gtc/matrix_transform.hpp>
 class MeshRender {
 public:
 	glm::vec3 position;
 	BlockMesh mesh;
 	GLuint VBO, VAO;
+	Buffer buffers;
 	MeshRender();
 	MeshRender(glm::vec3 pos);
 	void loadMesh(BlockMesh& m);
@@ -19,5 +21,5 @@ public:
 private:
 	std::array<GLuint, 2> texMaps;
 	Shader shader;
-	void loadTexture(std::string diffuse, std::string specular);
+	void loadTexture(std::string name);
 };
