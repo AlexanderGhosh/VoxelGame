@@ -4,8 +4,10 @@ MeshRender::MeshRender(glm::vec3 pos) :position(pos), shader("block") {
 
 }
 void MeshRender::create() {
-	std::vector<GLfloat> vertices = mesh.getVertices();
-	glGenBuffers(1, &VBO);
+	mesh.getVertices();
+	buffers.loadBuffers();
+
+	/*glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data() , GL_STATIC_DRAW);
 
@@ -23,7 +25,7 @@ void MeshRender::create() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(2);
 
-	glBindVertexArray(0);
+	glBindVertexArray(0);*/
 
 	//loadTexture(std::string("Textures/grass.png").c_str(), std::string("Textures/grass_specular.png").c_str());
 }
@@ -33,12 +35,8 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	glm::mat4 view(1);
 	view = p1.GetViewMatrix();
 
-	GLint modelLoc = shader.getLocation("model");
-	GLint viewLoc = shader.getLocation("view");
-	GLint projLoc = shader.getLocation("projection");
-
-	shader.setLocation(viewLoc, view);
-	shader.setLocation(projLoc, projection);
+	shader.setValue("view", view);
+	shader.setValue("projection", projection);
 
 	glm::vec3 objCol(1, 0.5, 0.31), lightCol(1);
 	shader.setValue("objCol", objCol);
@@ -46,31 +44,29 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 
 
 	// texture binding
-	/*glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
-	loadTexture("grass");*/
+	loadTexture("cobblestone");
 
 	glBindVertexArray(VAO);
 
 	glm::mat4 model(1);
 	model = glm::translate(model, position);
 
-	shader.setLocation(modelLoc, model);
+	shader.setValue("model", model);
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);//unbind VAO
 }
 
 void MeshRender::loadTexture(std::string name) {
-	return;
 	std::string diffuse = "Textures/" + name + "_diff.png";
 	std::string specular = "Textures/" + name + "_spec.png";
 	glm::ivec2 dim;
 	glGenTextures(1, &texMaps[0]);
 	glGenTextures(1, &texMaps[1]);
-	//glGenTextures(1, &this->emissionMap);
 	// diffuse
 	unsigned char* image = SOIL_load_image(diffuse.c_str(), &dim.x, &dim.y, 0, SOIL_LOAD_RGBA);
 	glBindTexture(GL_TEXTURE_2D, texMaps[0]);
@@ -93,6 +89,12 @@ void MeshRender::loadTexture(std::string name) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	shader.bind();
+	glm::vec2 mat(0, 1);
+	shader.setValue("mat_diff", mat.x);
+	// shader.setValue("mat_spec", mat.y);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void MeshRender::loadMesh(BlockMesh& m) {

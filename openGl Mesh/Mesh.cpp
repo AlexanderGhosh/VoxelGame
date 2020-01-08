@@ -1,14 +1,14 @@
 #include "Mesh.h"
 
-MeshFace::MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::ivec2, 6 > texC, glm::vec3 rot, GLuint lightLv) {
+MeshFace::MeshFace(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::ivec2, 6 > texC, GLuint lightLv, Structure structure) {
 	vertices = vert;
 	normals = norm;
 	texCoords = texC;
-	rotation = rot;
 	lightLevel = lightLv;
+    data_s = structure;
 }
 
-std::vector<GLfloat> BlockMesh::getVertices() {
+void BlockMesh::getVertices() {
     /*GLfloat vertices[] =
     {
         // Positions            // Normals              // Texture Coords
@@ -56,8 +56,6 @@ std::vector<GLfloat> BlockMesh::getVertices() {
     };
     std::vector<GLfloat> res(std::begin(vertices), std::end(vertices));
     return res;*/
-
-
 	
 	std::vector<GLfloat> vertices;
 	for (auto& face : faces) {
@@ -75,11 +73,21 @@ std::vector<GLfloat> BlockMesh::getVertices() {
 			vertices.push_back(face.texCoords[i].y);
 		}
 	}
-	return vertices;
+    data_s.data = vertices;
 }
 
 GLboolean BlockMesh::addFace(MeshFace& face) {
 	if (faces.size() >= 6) return GL_FALSE;
+    try {
+        if (data_s != face.data_s) {
+            return GL_FALSE;
+        }
+    }
+    catch (std::exception e) {
+
+    }
+    data_s = face.data_s;
+
 	try {
 		faces.push_back(face);
 		return GL_TRUE;

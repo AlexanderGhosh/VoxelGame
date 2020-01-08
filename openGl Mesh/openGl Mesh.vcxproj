@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -162,6 +163,7 @@
     <None Include="Shaders\block_v.gls" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="meshRender.h" />
@@ -184,6 +186,14 @@
     <ClInclude Include="SOIL2\stbi_pvr_c.h" />
     <ClInclude Include="SOIL2\stb_image.h" />
     <ClInclude Include="SOIL2\stb_image_write.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\cobblestone_diff.png" />
+    <Image Include="Textures\cobblestone_spec.png" />
+    <Image Include="Textures\grass_diff.png" />
+    <Image Include="Textures\grass_spec.png" />
+    <Image Include="Textures\stone_diff.png" />
+    <Image Include="Textures\stone_spec.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

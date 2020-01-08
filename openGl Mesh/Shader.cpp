@@ -79,7 +79,31 @@ void Shader::setLocation(GLint& location, glm::mat4& value) {
 void Shader::setLocation(GLint& location, glm::vec3& value) {
 	glUniform3f(location, value.x, value.y, value.z);
 }
+void Shader::setLocation(GLint& location, GLfloat& value) {
+	glUniform1f(location, value);
+}
+void Shader::setLocation(GLint& location, GLint& value) {
+	glUniform1f(location, value);
+}
+GLboolean Shader::setValue(std::string name, GLint& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
 GLboolean Shader::setValue(std::string name, glm::vec3& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
+GLboolean Shader::setValue(std::string name, GLfloat& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
+GLboolean Shader::setValue(std::string name, glm::mat4& value) {
 	GLint loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);

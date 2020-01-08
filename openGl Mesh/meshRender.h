@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Entity.h"
 #include "Camera.h"
+#include "Buffer.h"
 #include <gtc/matrix_transform.hpp>
 class MeshRender {
 public:
@@ -19,5 +20,6 @@ public:
 private:
 	std::array<GLuint, 2> texMaps;
 	Shader shader;
+	Buffer buffers;
 	void loadTexture(std::string name);
 };
