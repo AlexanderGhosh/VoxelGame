@@ -9,8 +9,10 @@
 
 #include "meshRender.h"
 #include "Entity.h"
-#include "Camera.h"
-#include "Mesh.h"
+//#include "Camera.h"
+//#include "Mesh.h"
+#include "constants.h"
+#include "Chunk.h"
 
 player p1;
 glm::vec3 m_pos(1);
@@ -24,40 +26,7 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 GLfloat lastX = DIM.x / 2, lastY = DIM.y / 2;
 
-#pragma region FACES
-// 3D texture
 
-Structure data_s(9, 3, { 3, 3, 3 }, std::vector<GLfloat>(0));
-FaceMesh BACK_F({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },	// vertices	// BACK
-	{ glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1) }, // normals
-	{ glm::vec3(-1, 1, -1), glm::vec3(-1), glm::vec3(1, -1, -1), glm::vec3(1, -1, -1), glm::vec3(1, 1, -1), glm::vec3(-1, 1, -1) }, // texture uvr
-	5, data_s); // light lv // data structure
-
-FaceMesh FRONT_F({ glm::vec3(-0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5) }, // FRONT
-	{ glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1) },
-	{ glm::vec3(-1, -1, 1), glm::vec3(-1), glm::vec3(-1, 1, -1), glm::vec3(-1, 1, -1), glm::vec3(-1, 1, 1), glm::vec3(-1, -1, 1) },
-	5, data_s);
-
-FaceMesh LEFT_F({ glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5), glm::vec3(-0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5, 0.5, 0.5) }, // LEFT
-	{ glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0) },
-	{ glm::vec3(1, -1, -1), glm::vec3(1, -1, 1), glm::vec3(1), glm::vec3(1), glm::vec3(1, 1, -1), glm::vec3(1, -1, -1) },
-	5, data_s);
-
-FaceMesh RIGHT_F({ glm::vec3(0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5) }, // RIGHT
-	{ glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0) },
-	{ glm::vec3(-1, -1, 1), glm::vec3(-1, 1, 1), glm::vec3(1), glm::vec3(1), glm::vec3(1, -1, 1), glm::vec3(-1, -1, 1) },
-	5, data_s);
-
-FaceMesh BOTTOM_F({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5) }, // BOTTOM
-	{ glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0) },
-	{ glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1), glm::vec3(1), glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1) },
-	5, data_s);
-
-FaceMesh TOP_F({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5) }, //TOP
-	{ glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0) },
-	{ glm::vec3(-1), glm::vec3(-1, -1, 1), glm::vec3(1, -1, -1), glm::vec3(1, -1, -1), glm::vec3(-1, -1, 1), glm::vec3(1, -1, 1) },
-	5, data_s);
-#pragma endregion
 
 void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mode);
 void handleMouse(GLFWwindow* window, double xPos, double yPos);
@@ -75,12 +44,12 @@ int main() {
 
 	BlockMesh bm;
 	
-	bm.addFace(TOP_F);
-	bm.addFace(BOTTOM_F);
-	bm.addFace(FRONT_F);
-	bm.addFace(BACK_F);
-	bm.addFace(LEFT_F);
-	bm.addFace(RIGHT_F);
+	bm.addFace(FACES::TOP);
+	bm.addFace(FACES::BOTTOM);
+	bm.addFace(FACES::FRONT);
+	bm.addFace(FACES::BACK);
+	bm.addFace(FACES::LEFT);
+	bm.addFace(FACES::RIGHT);
 
 	//MeshRender mr({ 0, 2, -3 });
 	MeshRender mr({ 0, 2, -3 });

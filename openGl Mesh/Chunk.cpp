@@ -19,7 +19,7 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(LEFT_F);
+						blockMesh.addFace(FACES::LEFT);
 					}
 				}
 				if (x < CHUNK_SIZE - 1) {
@@ -28,7 +28,7 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(RIGHT_F);
+						blockMesh.addFace(FACES::RIGHT);
 					}
 				}
 
@@ -38,7 +38,7 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(BOTTOM_F);
+						blockMesh.addFace(FACES::BOTTOM);
 					}
 				}
 				if (y < CHUNK_SIZE - 1) {
@@ -47,7 +47,7 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(TOP_F);
+						blockMesh.addFace(FACES::TOP);
 					}
 				}
 
@@ -57,7 +57,7 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(BACK_F);
+						blockMesh.addFace(FACES::BACK);
 					}
 				}
 				if (z < CHUNK_SIZE - 1) {
@@ -66,7 +66,7 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(FRONT_F);
+						blockMesh.addFace(FACES::FRONT);
 					}
 				}
 

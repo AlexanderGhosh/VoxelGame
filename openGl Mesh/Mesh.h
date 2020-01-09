@@ -6,8 +6,6 @@
 #include <array>
 #include <vector>
 
-
-
 struct FaceMesh {
 	std::array<glm::vec3, 6> vertices;
 	std::array<glm::vec3, 6> normals;

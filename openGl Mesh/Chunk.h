@@ -1,8 +1,6 @@
 #pragma once
-#define CHUNK_SIZE 32
-#define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
-#include "Mesh.h"
 #include "Camera.h"
+#include "constants.h"
 #include <sstream>
 class Chunk
 {
