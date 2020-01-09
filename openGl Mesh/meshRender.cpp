@@ -80,7 +80,7 @@ void MeshRender::loadTexture(std::string name) {
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void MeshRender::loadMesh(BlockMesh& m) {
+void MeshRender::loadMesh(Mesh& m) {
 	mesh = m;
 }
 void MeshRender::destroy() {

@@ -9,12 +9,12 @@
 class MeshRender {
 public:
 	glm::vec3 position;
-	BlockMesh mesh;
+	Mesh mesh;
 	//GLuint VBO, VAO;
 	Buffer buffers;
 	MeshRender();
 	MeshRender(glm::vec3 pos);
-	void loadMesh(BlockMesh& m);
+	void loadMesh(Mesh& m);
 	void create();
 	void render(Camera p1, glm::mat4 projection);
 	void destroy();
