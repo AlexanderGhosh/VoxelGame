@@ -14,14 +14,16 @@ struct FaceMesh {
 	Structure data_s;
 	GLuint lightLevel;
 	glm::vec3 position;
+	Texture texture;
 	FaceMesh() {
 		vertices = std::array<glm::vec3, 6>();
 		normals = std::array<glm::vec3, 6>();
 		texCoords = std::array<glm::vec3, 6>();
 		data_s = Structure();
 		position = glm::vec3();
+		texture = Texture();
 	}
-	FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC, GLuint lightLv, Structure structure);
+	FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC, GLuint lightLv, Structure structure, Texture textur = Texture());
 };
 
 struct Mesh {

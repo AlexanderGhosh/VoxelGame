@@ -31,6 +31,7 @@ void MeshRender::render(Camera p1, glm::mat4 projection) {
 	/*
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texMaps[1]);*/
+	
 
 	glBindVertexArray(buffers.getVAO());
 

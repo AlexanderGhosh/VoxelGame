@@ -1,11 +1,12 @@
 #include "Mesh.h"
 
-FaceMesh::FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC, GLuint lightLv, Structure structure) {
+FaceMesh::FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC, GLuint lightLv, Structure structure, Texture textur) {
 	vertices = vert;
 	normals = norm;
 	texCoords = texC;
 	lightLevel = lightLv;
     data_s = structure;
+	texture = textur;
 }
 
 void Mesh::getVertices(GLboolean vec3) {
