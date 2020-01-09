@@ -59,11 +59,7 @@ int main() {
 
 	/*
 	Chunk ch(glm::vec3(0));
-	std::cout << "started" << std::endl;
-	std::time_t start = std::time(nullptr);
 	ch.create();
-	std::time_t end = std::time(&start);
-	std::cout << "time ellapsed: " << end << std::endl;
 	MeshRender cmr({ 0, -32, 0 });
 	Mesh m = ch.getMesh();
 	cmr.loadMesh(m);
