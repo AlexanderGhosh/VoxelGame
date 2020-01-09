@@ -13,6 +13,8 @@
 //#include "Mesh.h"
 #include "constants.h"
 #include "Chunk.h"
+#include <chrono>
+#include <ctime>
 
 player p1;
 glm::vec3 m_pos(1);
@@ -51,13 +53,24 @@ int main() {
 	bm.addFace(FACES::LEFT);
 	bm.addFace(FACES::RIGHT);
 
-	//MeshRender mr({ 0, 2, -3 });
 	MeshRender mr({ 0, 2, -3 });
-	//MeshRender mr1({ 0, 1, -3 });
 	mr.loadMesh(bm);
 	mr.create();
-	//mr1.loadMesh(bm);
-	//mr1.create();
+
+	/*
+	Chunk ch(glm::vec3(0));
+	std::cout << "started" << std::endl;
+	std::time_t start = std::time(nullptr);
+	ch.create();
+	std::time_t end = std::time(&start);
+	std::cout << "time ellapsed: " << end << std::endl;
+	MeshRender cmr({ 0, -32, 0 });
+	Mesh m = ch.getMesh();
+	cmr.loadMesh(m);
+	Structure data(9, 3, { 3, 3, 3 }, std::vector<GLfloat>());
+	cmr.loadStruct(data);
+	cmr.create();*/
+	
 	glm::mat4 projection = glm::perspective(c.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -74,7 +87,7 @@ int main() {
 
 		//p1.move();
 		mr.render(c, projection);
-		//mr1.render(c, projection);
+		//cmr.render(c, projection);
 
 		glfwSwapBuffers(window);
 	}

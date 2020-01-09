@@ -1,10 +1,11 @@
 #pragma once
 #include <iostream>
 #include "GL/glew.h"
-#include "Buffer.h"
 #include <glm.hpp>
 #include <array>
 #include <vector>
+#include "Buffer.h"
+#include "Textures/Texture.h"
 
 struct FaceMesh {
 	std::array<glm::vec3, 6> vertices;
@@ -12,11 +13,13 @@ struct FaceMesh {
 	std::array<glm::vec3, 6> texCoords;
 	Structure data_s;
 	GLuint lightLevel;
+	glm::vec3 position;
 	FaceMesh() {
 		vertices = std::array<glm::vec3, 6>();
 		normals = std::array<glm::vec3, 6>();
 		texCoords = std::array<glm::vec3, 6>();
 		data_s = Structure();
+		position = glm::vec3();
 	}
 	FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC, GLuint lightLv, Structure structure);
 };
@@ -29,8 +32,7 @@ struct Mesh {
 };
 
 struct BlockMesh : Mesh {
-
-	GLboolean addFace(FaceMesh& face, GLboolean force = GL_TRUE);
+	GLboolean addFace(FaceMesh& face, GLboolean force = GL_TRUE, glm::vec3 pos = glm::vec3());
 };
 struct ChunkMesh : Mesh {
 

@@ -158,6 +158,7 @@
     <ClCompile Include="SOIL2\image_DXT.c" />
     <ClCompile Include="SOIL2\image_helper.c" />
     <ClCompile Include="SOIL2\SOIL2.c" />
+    <ClCompile Include="Textures\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -192,6 +193,7 @@
     <ClInclude Include="SOIL2\stbi_pvr_c.h" />
     <ClInclude Include="SOIL2\stb_image.h" />
     <ClInclude Include="SOIL2\stb_image_write.h" />
+    <ClInclude Include="Textures\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />

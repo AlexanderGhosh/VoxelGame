@@ -18,6 +18,7 @@ public:
 	void create();
 	void render(Camera p1, glm::mat4 projection);
 	void destroy();
+	void loadStruct(Structure& data);
 private:
 	std::array<GLuint, 2> texMaps;
 	Shader shader;

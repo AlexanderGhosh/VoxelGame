@@ -13,25 +13,25 @@ void Mesh::getVertices(GLboolean vec3) {
 	for (auto& face : faces) {
 		for (int i = 0; i < 6; i++)
 		{
-			vertices.push_back(face.vertices[i].x);
-			vertices.push_back(face.vertices[i].y);
-			vertices.push_back(face.vertices[i].z);
+			vertices.push_back(face.vertices[i].x + face.position.x);
+			vertices.push_back(face.vertices[i].y + face.position.y);
+			vertices.push_back(face.vertices[i].z + face.position.z);
 
-			vertices.push_back(face.normals[i].x);
-			vertices.push_back(face.normals[i].y);
-			vertices.push_back(face.normals[i].z);
+			vertices.push_back(face.normals[i].x + face.position.x);
+			vertices.push_back(face.normals[i].y + face.position.y);
+			vertices.push_back(face.normals[i].z + face.position.z);
 
-			vertices.push_back(face.texCoords[i].x);
-			vertices.push_back(face.texCoords[i].y);
+			vertices.push_back(face.texCoords[i].x + face.position.x);
+			vertices.push_back(face.texCoords[i].y + face.position.y);
             if (vec3) {
-                vertices.push_back(face.texCoords[i].z);
+                vertices.push_back(face.texCoords[i].z + face.position.z);
             }
 		}
 	}
     data_s.data = vertices;
 }
 
-GLboolean BlockMesh::addFace(FaceMesh& face, GLboolean force) {
+GLboolean BlockMesh::addFace(FaceMesh& face, GLboolean force, glm::vec3 pos) {
     if (faces.size() < 1) force = GL_TRUE;
 	if (faces.size() >= 6) return GL_FALSE;
     try {
@@ -47,6 +47,7 @@ GLboolean BlockMesh::addFace(FaceMesh& face, GLboolean force) {
     }
 
 	try {
+		face.position = pos;
 		faces.push_back(face);
 		return GL_TRUE;
 	}
