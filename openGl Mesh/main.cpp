@@ -13,8 +13,7 @@
 #include "Game/World/constants.h"
 #include "Game/World/Chunk.h"
 #include "Game/Player/Camera.h"
-#include <chrono>
-#include <ctime>
+#include "Game/World/World.h"
 
 player p1;
 glm::vec3 m_pos(1);
@@ -44,10 +43,33 @@ Camera c(glm::vec3(0, 2, 0));
 int main() {
 	GLFWwindow* window = createWindow();
 
-	Chunk chunk({ 0, -32, 0 });
-	chunk.create();
-	Render::ChunkMeshRender cmr("block2");
-	cmr.loadMeshes(chunk.getMeshes());
+	Render::FaceMeshRender fmr("block2");
+	Mesh::FaceMesh front = FACES::FRONT;
+	front.setPosition({ 0, 2, -3 });
+	front.setTexture("grass");
+	fmr.loadMesh(front);
+
+	/*Chunk chunk1({ 0, -16, 0 });
+	chunk1.create();
+	Render::ChunkMeshRender cmr1("block2");
+	cmr1.loadMeshes(chunk1.getMeshes());
+
+	Chunk chunk2({ 16, -16, 0 });
+	chunk2.create();
+	Render::ChunkMeshRender cmr2("block2");
+	cmr2.loadMeshes(chunk2.getMeshes());
+
+	Chunk chunk3({ 16, -16, 16 });
+	chunk3.create();
+	Render::ChunkMeshRender cmr3("block2");
+	cmr3.loadMeshes(chunk3.getMeshes());
+
+	Chunk chunk4({ 0, -16, 16 });
+	chunk4.create();
+	Render::ChunkMeshRender cmr4("block2");
+	cmr4.loadMeshes(chunk4.getMeshes());*/
+
+	World world;
 
 	glm::mat4 projection = glm::perspective(c.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	while (!glfwWindowShouldClose(window))
@@ -61,15 +83,18 @@ int main() {
 
 		glClearColor(BACKGROUND.r, BACKGROUND.g, BACKGROUND.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// fmr.render(c, projection);
-		cmr.render(c, projection);
+		// cmr.render(c, projection);
+		fmr.render(c, projection);
+		world.renderChunksStatic(c, projection);
+		/*cmr1.render(c, projection);
+		cmr2.render(c, projection);
+		cmr3.render(c, projection);
+		cmr4.render(c, projection);*/
 
 		glfwSwapBuffers(window);
 	}
 	glfwTerminate();
-	// fmr.destroy();
-	cmr.destroy();
+	//cmr.destroy();
 	return EXIT_SUCCESS;
 }
 

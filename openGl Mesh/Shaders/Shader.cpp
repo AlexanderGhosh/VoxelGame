@@ -1,7 +1,6 @@
 #include "Shader.h"
 
 Shader::Shader(std::string shaderName) {
-
 	std::string vertexCode, fragmentCode;
 	std::ifstream vShaderFile, fShaderFile;
 	vShaderFile.exceptions(std::ifstream::badbit);
@@ -68,6 +67,9 @@ Shader::Shader(std::string shaderName) {
 }
 void Shader::bind() {
 	glUseProgram(program);
+}
+void Shader::unBind() {
+	glUseProgram(0);
 }
 GLint Shader::getLocation(std::string name) {
 	return glGetUniformLocation(program, name.c_str());

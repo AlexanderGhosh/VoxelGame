@@ -1,7 +1,8 @@
 #include "chunkRender.h"
 namespace Render {
-	ChunkMeshRender::ChunkMeshRender(std::string shaderName) : shader(shaderName) {
-
+	ChunkMeshRender::ChunkMeshRender(std::string shaderName) : shader("block2") {
+		shader = Shader(shaderName);
+		canRender = GL_FALSE;
 	}
 	void ChunkMeshRender::render(Camera p1, glm::mat4 projection) {
 		if (!canRender) {
@@ -13,7 +14,13 @@ namespace Render {
 		glm::mat4 view(1);
 		view = p1.GetViewMatrix();
 
-		shader.setValue("view", view);
+		if (!shader.setValue("view", view)) {
+			std::cout << "shader not working" << std::endl;
+			shader = Shader("block2");
+			for (auto& mesh : meshes) {
+				mesh.setTexture("grass");
+			}
+		}
 		shader.setValue("projection", projection);
 
 		glm::vec3 objCol(1, 0.5, 0.31), lightCol(1);
@@ -35,12 +42,10 @@ namespace Render {
 
 	void ChunkMeshRender::loadMeshes(std::vector<Mesh::FaceMesh>& m) {
 		meshes = m;
-		for (auto& mesh : meshes) {
-			buffer.merge(mesh.buffer);
-		}
 		canRender = GL_TRUE;
 	}
 	void ChunkMeshRender::destroy() {
-		buffer.destroy();
+
+		//buffer.destroy();
 	}
 };

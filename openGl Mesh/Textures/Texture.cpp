@@ -1,4 +1,5 @@
 #include "Texture.h"
+//std::map<std::string, unsigned char>Texture::texData = std::map<std::string, unsigned char>();
 Texture::Texture(std::string name, GLboolean is2D) {
 	this->name = name;
 	this->is2D = is2D;
@@ -15,7 +16,7 @@ GLboolean Texture::load2D(std::string& name) {
 	glGenTextures(1, &texMap);
 	// diffuse
 	unsigned char* image = SOIL_load_image(name.c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
-	if (!image) std::cout << "tex error";
+	if (!image) std::cout << "tex error" << std::endl;
 	glBindTexture(GL_TEXTURE_2D, texMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dimentions.x, dimentions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -42,16 +43,23 @@ GLboolean Texture::load3D(std::string& name) {
 
 	for (GLuint i = 0; i < faces.size(); i++)
 	{
+		/*try {
+			data = &texData.at(name);
+		}
+		catch (std::exception e) {
+			data = SOIL_load_image(faces[i].c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
+			Texture::texData.insert(std::pair<std::string, unsigned char>(name, *data));
+		}*/
 		data = SOIL_load_image(faces[i].c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
 		if (data)
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, dimentions.x, dimentions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			SOIL_free_image_data(data);
+			//SOIL_free_image_data(data);
 		}
 		else
 		{
 			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-			SOIL_free_image_data(data);
+			//SOIL_free_image_data(data);
 		}
 	}
 
@@ -71,6 +79,14 @@ void Texture::bind() {
 	}
 	else {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, texMap);
+	}
+}
+void Texture::unBind() {
+	if (is2D) {
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	else {
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 }
 std::string& Texture::getName() {

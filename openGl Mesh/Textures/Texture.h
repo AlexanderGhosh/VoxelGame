@@ -4,6 +4,7 @@
 #include <glm.hpp>
 #include <string>
 #include <vector>
+#include <map>
 #include "../SOIL2/SOIL2.h"
 class Texture
 {
@@ -19,11 +20,13 @@ public:
 	std::string& getName();
 	GLboolean& get2D();
 	glm::ivec2& getDimentions();
+	void unBind();
 private:
 	GLboolean created;
 	glm::ivec2 dimentions;
 	GLuint texMap;
 	GLboolean is2D;
 	std::string name;
+	//static std::map<std::string, unsigned char> texData;
 };
 

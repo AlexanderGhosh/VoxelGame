@@ -20,7 +20,6 @@ namespace Render {
 	private:
 		Shader shader;
 		std::vector<Mesh::FaceMesh> meshes;
-		Buffer buffer;
 		GLboolean canRender;
 	};
 };

@@ -79,6 +79,9 @@ void Buffer::merge(Buffer& b) {
 	bufferData.insert(bufferData.end(), b.bufferData.begin(), b.bufferData.end());
 }
 void Buffer::destroy() {
+	structure = Structure();
+	bufferData = std::vector<GLfloat>();
+	canRender = GL_FALSE;
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 }

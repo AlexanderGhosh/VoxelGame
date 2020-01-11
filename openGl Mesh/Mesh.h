@@ -27,6 +27,7 @@ namespace Mesh {
 
 		void setTexture(std::string name);
 		void bindTexture();
+		void unBindTexture();
 	};
 
 	struct BlockMesh {

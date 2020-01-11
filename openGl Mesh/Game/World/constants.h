@@ -2,10 +2,13 @@
 #include "../../Mesh.h"
 #include "../../Buffer.h"
 
-#define CHUNK_SIZE 32
+#define RENDER_DISTANCE 2
+#define CHUNK_SIZE 16
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
-#pragma region FACES
-// 3D texture
+
+#define GRAVITY 9.81
+#define AIR_RESISTANCE 
+
 using namespace Mesh;
 struct FACES {
 	static FaceMesh BACK;
@@ -15,4 +18,3 @@ struct FACES {
 	static FaceMesh BOTTOM;
 	static FaceMesh TOP;
 };
-#pragma endregion

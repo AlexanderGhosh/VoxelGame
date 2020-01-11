@@ -37,7 +37,9 @@ namespace Mesh {
 	void FaceMesh::setTexture(std::string name) {
 		texture = Texture(name, GL_FALSE);
 	}
-
+	void FaceMesh::unBindTexture() {
+		texture.unBind();
+	}
 
 	void BlockMesh::addFace(FaceMesh& face, glm::vec3 pos) {
 		if (faces.size() > 6) return;

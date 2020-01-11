@@ -29,6 +29,9 @@ namespace Render {
 
 		mesh.bindTexture();
 		mesh.buffer.render();
+
+		mesh.unBindTexture();
+		shader.unBind();
 	}
 
 	void FaceMeshRender::loadMesh(Mesh::FaceMesh& m) {

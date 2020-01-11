@@ -17,6 +17,7 @@ class Shader {
 public:
 	Shader(std::string shaderName);
 	void bind();
+	void unBind();
 	GLint getLocation(std::string name);
 	void setLocation(GLint& location, glm::mat4& value);
 	void setLocation(GLint& location, glm::vec3& value);
