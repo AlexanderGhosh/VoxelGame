@@ -7,10 +7,9 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
-#include "meshRender.h"
+#include "Renders/meshRender.h"
 #include "Entity.h"
-//#include "Camera.h"
-//#include "Mesh.h"
+#include "Renders/chunkRender.h"
 #include "constants.h"
 #include "Chunk.h"
 #include <chrono>
@@ -44,29 +43,16 @@ Camera c(glm::vec3(0, 2, 0));
 int main() {
 	GLFWwindow* window = createWindow();
 
-	BlockMesh bm;
-	
-	bm.addFace(FACES::TOP);
-	bm.addFace(FACES::BOTTOM);
-	bm.addFace(FACES::FRONT);
-	bm.addFace(FACES::BACK);
-	bm.addFace(FACES::LEFT);
-	bm.addFace(FACES::RIGHT);
+	/*Render::FaceMeshRender fmr("block2");
+	fmr.loadMesh(FACES::RIGHT);
+	fmr.setPosition({ 0, 2, -3 });
+	fmr.setTexture("grass");*/
 
-	MeshRender mr({ 0, 2, -3 });
-	mr.loadMesh(bm);
-	mr.create();
+	Chunk chunk({ 0, 0, 0 });
+	chunk.create();
+	Render::ChunkMeshRender cmr("block2");
+	cmr.loadMeshes(chunk.getMeshes());
 
-	/*
-	Chunk ch(glm::vec3(0));
-	ch.create();
-	MeshRender cmr({ 0, -32, 0 });
-	Mesh m = ch.getMesh();
-	cmr.loadMesh(m);
-	Structure data(9, 3, { 3, 3, 3 }, std::vector<GLfloat>());
-	cmr.loadStruct(data);
-	cmr.create();*/
-	
 	glm::mat4 projection = glm::perspective(c.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -74,21 +60,20 @@ int main() {
 		deltaTime = frame - lastFrame;
 		lastFrame = frame;
 
-		//std::cout << "Frame Rate: " << getFrameRate() << std::endl;
 		glfwPollEvents();
 		DoMovement();
 
 		glClearColor(BACKGROUND.r, BACKGROUND.g, BACKGROUND.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//p1.move();
-		mr.render(c, projection);
-		//cmr.render(c, projection);
+		// fmr.render(c, projection);
+		cmr.render(c, projection);
 
 		glfwSwapBuffers(window);
 	}
-	mr.destroy();
 	glfwTerminate();
+	// fmr.destroy();
+	cmr.destroy();
 	return EXIT_SUCCESS;
 }
 

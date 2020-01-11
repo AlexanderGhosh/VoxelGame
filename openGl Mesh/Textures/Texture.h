@@ -12,16 +12,18 @@ public:
 		created = GL_FALSE;
 	}
 	Texture(std::string name, GLboolean is2D = GL_FALSE);
-	GLboolean created;
 	void bind();
 	GLboolean load3D(std::string& name);
 	GLboolean load2D(std::string& name);
-	GLuint getTexMap() {
-		return texMap;
-	}
+	GLuint& getTexMap();
+	std::string& getName();
+	GLboolean& get2D();
+	glm::ivec2& getDimentions();
 private:
+	GLboolean created;
 	glm::ivec2 dimentions;
 	GLuint texMap;
 	GLboolean is2D;
+	std::string name;
 };
 

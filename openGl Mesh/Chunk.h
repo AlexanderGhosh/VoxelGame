@@ -9,10 +9,10 @@ public:
 	std::array<GLuint, CHUNK_VOLUME> blocks; // 0 - air, 1 - grass
 	Chunk(glm::vec3 pos);
 	void create();
-	ChunkMesh getMesh() {
-		return mesh;
+	std::vector<Mesh::FaceMesh>& getMeshes() {
+		return meshes;
 	}
 private:
-	ChunkMesh mesh;
+	std::vector<Mesh::FaceMesh> meshes;
 };
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <array>
 #include <vector>
 #include <string>
@@ -11,18 +12,18 @@
 #include <gtc/type_ptr.hpp>
 
 struct Structure {
-	std::vector<GLfloat> data;
-	GLuint layout_c;
-	GLuint data_l;
-	std::vector<GLuint> data_ls;
+	GLuint total_data_len;
+	GLuint layout_count;
+	std::vector<GLuint> individual_lens;
 
 	Structure() {
-		data = std::vector<GLfloat>();
-		layout_c = 0;
-		data_l = 0;
-		data_ls = std::vector<GLuint>();
+		total_data_len = 9;
+		layout_count = 3;
+		individual_lens = { 3, 3, 3 };
 	}
-	Structure(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens, std::vector<GLfloat> data_);
+	Structure(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens);
+	void merge(Structure& struc);
+	
 };
 bool operator==(const Structure& s1, const Structure& s2);
 bool operator!=(const Structure& s1, const Structure& s2);
@@ -31,18 +32,26 @@ class Buffer
 {
 public:
 	Buffer() {
-		vertex_objs = std::array<GLuint, 2>();
-		data_s = Structure();
+		VBO = 0;
+		VAO = 0;
+		canRender = GL_FALSE;
+		structure = Structure();
 	}
-	GLuint getTriangleCnt();
-	GLboolean loadBuffers();
-	void loadData(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens, std::vector<GLfloat> data);
-	void loadData(Structure& struc);
+	GLuint getTriangleCount();
+	void render();
+	void createBuffers();
 	GLuint getVBO();
-	GLuint getVAO();
+	GLuint getVAO(); 
+	std::vector<GLfloat>& getBufferData();
+	void setStructure(Structure structure);
+	void setBufferData(std::vector<GLfloat> bufferData);
+	void merge(Buffer& b);
 	void destroy();
 private:
-	std::array<GLuint, 2> vertex_objs;
-	Structure data_s;
+	GLuint VBO;
+	GLuint VAO;
+	std::vector<GLfloat> bufferData;
+	Structure structure;
+	GLboolean canRender;
 };
 

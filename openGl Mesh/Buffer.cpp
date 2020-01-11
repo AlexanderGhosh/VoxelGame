@@ -1,15 +1,18 @@
 #include "Buffer.h"
-Structure::Structure(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens, std::vector<GLfloat> data_) {
-	data_l = dataLength;
-	layout_c = layoutsCount;
-	data_ls = dataLens;
-	data = data_;
+Structure::Structure(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens) {
+	total_data_len = dataLength;
+	layout_count = layoutsCount;
+	individual_lens = dataLens;
 }
-
+void Structure::merge(Structure& structure) {
+	total_data_len = structure.total_data_len;
+	layout_count = structure.layout_count;
+	individual_lens = structure.individual_lens;
+}
 bool operator==(const Structure& s1, const Structure& s2) {
-	if (s1.data_l == s2.data_l && s1.layout_c == s2.layout_c) {
-		for (GLuint i = 0; i < s1.data_ls.size(); i++) {
-			if (s1.data_ls[i] != s2.data_ls[i]) {
+	if (s1.total_data_len == s2.total_data_len && s1.layout_count == s2.layout_count) {
+		for (GLuint i = 0; i < s1.layout_count; i++) {
+			if (s1.individual_lens[i] != s2.individual_lens[i]) {
 				return false;
 			}
 		}
@@ -21,41 +24,62 @@ bool operator!=(const Structure& s1, const Structure& s2) {
 	return !(s1 == s2);
 }
 
-void Buffer::loadData(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens, std::vector<GLfloat> data) {
-	data_s = Structure(dataLength, layoutsCount, dataLens, data);
+
+GLuint Buffer::getVBO() {
+	return VBO;
 }
-void Buffer::loadData(Structure& struc) {
-	data_s = struc;
+GLuint Buffer::getVAO() {
+	return VAO;
 }
-GLboolean Buffer::loadBuffers() {
-	std::vector<GLfloat> vertices = data_s.data;
-	glGenBuffers(1, &vertex_objs[0]); // VBO
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_objs[0]);
+std::vector<GLfloat>& Buffer::getBufferData() {
+	return bufferData;
+}
+GLuint Buffer::getTriangleCount() {
+	return bufferData.size() / structure.total_data_len;
+}
+void Buffer::createBuffers() {
+	std::vector<GLfloat>& vertices = bufferData;
+	if (vertices.size() < 1) {
+		std::cout << "No data found in buffer" << std::endl;
+		return;
+	}
+	glGenBuffers(1, &VBO); // VBO
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
 
-	glGenVertexArrays(1, &vertex_objs[1]); // VAO
-	glBindVertexArray(vertex_objs[1]);
+	glGenVertexArrays(1, &VAO); // VAO
+	glBindVertexArray(VAO);
 
 	GLint pointerMul = 0;
-	for (GLuint i = 0; i < data_s.data_ls.size(); i++)
+	for (GLuint i = 0; i < structure.layout_count; i++)
 	{
-		pointerMul += (i == 0) ? 0 : data_s.data_ls[i - 1];
-		glVertexAttribPointer(i, data_s.data_ls[i], GL_FLOAT, GL_FALSE, data_s.data_l * sizeof(GLfloat), (GLvoid*)(pointerMul * sizeof(GLfloat)));
+		pointerMul += (i == 0) ? 0 : structure.individual_lens[i - 1];
+		glVertexAttribPointer(i, structure.individual_lens[i], GL_FLOAT, GL_FALSE, structure.total_data_len * sizeof(GLfloat), (GLvoid*)(pointerMul * sizeof(GLfloat)));
 		glEnableVertexAttribArray(i);
 	}
 	glBindVertexArray(0);
-	return GL_TRUE;
+	canRender = GL_TRUE;
 }
-GLuint Buffer::getVBO() {
-	return vertex_objs[0];
+void Buffer::render() {
+	if (!canRender) {
+		std::cout << "Buffers not created : creating buffers" << std::endl;
+		createBuffers();
+	}
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, getTriangleCount());
+	glBindVertexArray(0);
 }
-GLuint Buffer::getVAO() {
-	return vertex_objs[1];
+void Buffer::setStructure(Structure structure) {
+	this->structure;
 }
-GLuint Buffer::getTriangleCnt() {
-	return data_s.data.size() / data_s.data_l;
+void Buffer::setBufferData(std::vector<GLfloat> bufferData) {
+	this->bufferData = bufferData;
+}
+void Buffer::merge(Buffer& b) {
+	structure.merge(b.structure);
+	bufferData.insert(bufferData.end(), b.bufferData.begin(), b.bufferData.end());
 }
 void Buffer::destroy() {
-	glDeleteVertexArrays(1, &vertex_objs[1]);
-	glDeleteBuffers(1, &vertex_objs[0]);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }

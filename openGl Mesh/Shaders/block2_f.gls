@@ -14,7 +14,7 @@ vec3 lightPos = vec3( 5, 3, -2);
 void main()
 {    
     vec3 result = vec3(0);
-    float amb_k = 0.1f;
+    float amb_k = 0.75f;
     vec3 ambient = amb_k * vec3(texture(skybox, TexCoords));
 
     vec3 norm = normalize(Normal);
