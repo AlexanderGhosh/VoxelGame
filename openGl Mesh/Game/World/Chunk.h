@@ -1,5 +1,5 @@
 #pragma once
-#include "Camera.h"
+#include "../Player/Camera.h"
 #include "constants.h"
 #include <sstream>
 class Chunk

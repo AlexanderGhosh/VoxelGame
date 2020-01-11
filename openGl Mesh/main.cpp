@@ -8,10 +8,11 @@
 #include <gtc/type_ptr.hpp>
 
 #include "Renders/meshRender.h"
-#include "Entity.h"
+#include "Game/Player/Entity.h"
 #include "Renders/chunkRender.h"
-#include "constants.h"
-#include "Chunk.h"
+#include "Game/World/constants.h"
+#include "Game/World/Chunk.h"
+#include "Game/Player/Camera.h"
 #include <chrono>
 #include <ctime>
 
@@ -43,12 +44,7 @@ Camera c(glm::vec3(0, 2, 0));
 int main() {
 	GLFWwindow* window = createWindow();
 
-	/*Render::FaceMeshRender fmr("block2");
-	fmr.loadMesh(FACES::RIGHT);
-	fmr.setPosition({ 0, 2, -3 });
-	fmr.setTexture("grass");*/
-
-	Chunk chunk({ 0, 0, 0 });
+	Chunk chunk({ 0, -32, 0 });
 	chunk.create();
 	Render::ChunkMeshRender cmr("block2");
 	cmr.loadMeshes(chunk.getMeshes());

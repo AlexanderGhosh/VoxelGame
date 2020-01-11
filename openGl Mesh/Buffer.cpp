@@ -62,7 +62,6 @@ void Buffer::createBuffers() {
 }
 void Buffer::render() {
 	if (!canRender) {
-		std::cout << "Buffers not created : creating buffers" << std::endl;
 		createBuffers();
 	}
 	glBindVertexArray(VAO);

@@ -3,8 +3,8 @@
 #include "../SOIL2/SOIL2.h"
 #include "../Mesh.h"
 #include "../Shaders/Shader.h"
-#include "../Entity.h"
-#include "../Camera.h"
+#include "../Renders/chunkRender.h"
+#include "../Game/Player/Camera.h"
 #include "../Buffer.h"
 #include <gtc/matrix_transform.hpp>
 namespace Render {

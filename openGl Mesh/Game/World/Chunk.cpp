@@ -19,11 +19,11 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::LEFT, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+						blockMesh.addFace(FACES::LEFT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::LEFT, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+					blockMesh.addFace(FACES::LEFT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 				}
 				if (x < CHUNK_SIZE - 1) {
 					pos = { x + 1, y, z };
@@ -31,11 +31,11 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::RIGHT, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+						blockMesh.addFace(FACES::RIGHT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::RIGHT, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+					blockMesh.addFace(FACES::RIGHT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 				}
 
 				if (y > 0) {
@@ -44,11 +44,11 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::BOTTOM, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+						blockMesh.addFace(FACES::BOTTOM, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::BOTTOM, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+					blockMesh.addFace(FACES::BOTTOM, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 				}
 				if (y < CHUNK_SIZE - 1) {
 					pos = { x, y + 1, z };
@@ -56,11 +56,11 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::TOP, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+						blockMesh.addFace(FACES::TOP, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::TOP, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+					blockMesh.addFace(FACES::TOP, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 				}
 
 				if (z > 0) {
@@ -69,11 +69,11 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::BACK, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+						blockMesh.addFace(FACES::BACK, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::BACK, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+					blockMesh.addFace(FACES::BACK, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 				}
 				if (z < CHUNK_SIZE - 1) {
 					pos = { x, y, z - 1 };
@@ -81,12 +81,12 @@ void Chunk::create() {
 					temp = std::stringstream(num);
 					temp >> numb;
 					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::FRONT, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+						blockMesh.addFace(FACES::FRONT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 					}
 				}
 				else {
 
-					blockMesh.addFace(FACES::FRONT, { x + position.x * CHUNK_SIZE, y + position.y * CHUNK_SIZE, z + position.z * CHUNK_SIZE });
+					blockMesh.addFace(FACES::FRONT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
 				}
 
 				if (blockMesh.faces.size() < 1) continue;

@@ -1,6 +1,6 @@
 #pragma once
-#include "Mesh.h"
-#include "Buffer.h"
+#include "../../Mesh.h"
+#include "../../Buffer.h"
 
 #define CHUNK_SIZE 32
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
