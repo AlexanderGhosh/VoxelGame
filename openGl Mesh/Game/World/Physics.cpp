@@ -1,30 +1,44 @@
 #include "Physics.h"
 namespace Physics {
 	Object::Object() {
-		mass = 100;
+		setMass(100);
+		setAcceleration({ 0, 0, 0 });
+		//Physics::addObject(*this);
 	}
 	Object::Object(GLfloat mass, Material& material) {
 		setMass(mass);
 		setMaterial(material);
+		setAcceleration({ 0, 0, 0 });
+	}
+	Object::Object(GLfloat mass, BoxCollider collider) {
+		setMass(mass);
+		this->collider = collider;
+		setAcceleration({ 0, 0, 0 });
 	}
 	void Object::addForce(GLfloat force, glm::vec3 direction) {
-		glm::vec3 force = direction * force;
+		if (!isKinematic) return;
+		glm::vec3 f = direction * force;
 		acceleration += force / mass;
 	}
 	void Object::addForce(glm::vec3 force) {
+		if (!isKinematic) return;
 		acceleration += force / mass;
 	}
 	void Object::addForce(GLfloat force) {
+		if (!isKinematic) return;
 		acceleration += force / mass;
 	}
 	void Object::addAngularForce(GLfloat force, glm::vec3 rotaion) {
-		glm::vec3 force = rotaion * force;
+		if (!isKinematic) return;
+		glm::vec3 f = rotaion * force;
 		angularAcceleration += force / mass;
 	}
 	void Object::addAngularForce(glm::vec3 force) {
+		if (!isKinematic) return;
 		angularAcceleration += force / mass;
 	}
 	void Object::addAngularForce(GLfloat force) {
+		if (!isKinematic) return;
 		angularAcceleration += force / mass;
 	}
 
@@ -82,6 +96,9 @@ namespace Physics {
 	Material& Object::getMaterial() {
 		return material;
 	}
+	BoxCollider& Object::getCollider() {
+		return collider;
+	}
 
 	//setters
 	void Object::setKinematic(const GLboolean& value) {
@@ -111,13 +128,13 @@ namespace Physics {
 	void Object::setAngularAcceleration(const glm::vec3& value) {
 		angularAcceleration = value;
 	}
-	void Object::setMaterial(const Material& value) {
+	void Object::setMaterial(Material& value) {
 		material = value;
 	}
 
 	void Object::clamp() {
 		if (doVelocityClamp) {
-			glm::vec3 vel = getVelocity();
+			glm::vec3 vel = velocity;
 			glm::vec3 min = velocityClamps.Min;
 			if (vel.x < min.x) {
 				vel.x = min.x;
@@ -142,19 +159,19 @@ namespace Physics {
 		if (doSpeedClamp) {
 			GLfloat speed = getSpeed();
 			if (speed < speedClamps.Min) {
-				glm::vec3 unit = glm::normalize(getVelocity());
+				glm::vec3 unit = glm::normalize(velocity);
 				unit *= speedClamps.Min;
 				setPosition(unit);
 			}
 			if (speed > speedClamps.Max) {
-				glm::vec3 unit = glm::normalize(getVelocity());
+				glm::vec3 unit = glm::normalize(velocity);
 				unit *= speedClamps.Max;
 				setPosition(unit);
 			}
 		}
 
 		if (doAngularVelocityClamp) {
-			glm::vec3 vel = getAngluarVelocity();
+			glm::vec3 vel = angularVelocity;
 			glm::vec3 min = angularVelocityClamps.Min;
 			if (vel.x < min.x) {
 				vel.x = min.x;
@@ -179,43 +196,88 @@ namespace Physics {
 		if (doAngularSpeedClamp) {
 			GLfloat speed = getAngularSpeed();
 			if (speed < angularSpeedClamps.Min) {
-				glm::vec3 unit = glm::normalize(getVelocity());
-				unit *= speedClamps.Min;
+				glm::vec3 unit = glm::normalize(angularVelocity);
+				unit *= angularSpeedClamps.Min;
 				setPosition(unit);
 			}
 			if (speed > angularSpeedClamps.Max) {
-				glm::vec3 unit = glm::normalize(getVelocity());
-				unit *= speedClamps.Max;
+				glm::vec3 unit = glm::normalize(angularVelocity);
+				unit *= angularSpeedClamps.Max;
 				setPosition(unit);
 			}
 		}
 	}
-
-
-
-	GLboolean BoxCollider::checkCollision(Object& object) {
-		glm::vec3 pos = object.getPosition();
-		glm::vec3 upper = posiotion + size;
-		glm::vec3 lower = posiotion - size;
-		if (pos.x < upper.x && pos.y < upper.y && pos.z < upper.z) {
-			if (pos.x > lower.x&& pos.y > lower.y&& pos.z > lower.z) {
-				return GL_FALSE;
-			}
+	Update Object::getUpdate() {
+		Update update_;
+		update_.Sender = this;
+		update_.Positon = position;
+		if (!isKinematic) {
+			position += velocity;
+			velocity += acceleration;
 		}
-		return GL_FALSE;
+		update_.Data = position;
+		update_.Tag = TAG::COLLISION;
+		return update_;
+	}
+	void Object::doUpdate(Update update) {
+		setPosition(update.Data);
 	}
 
-	template<typename T>
-	void Engine<T>::doUpdates() {
-		for (auto& update : updateBuffer) {
-			if (update.Tag == TAG::COLLISION) {
-				// get the closest chunk
-				// check its collison mesh
-				// if collied dont do update
-				// else do update
-			}
+	BoxCollider::BoxCollider() {
+		position = { 0, 0, 0 };
+		size = 0;
+	}
+	BoxCollider::BoxCollider(glm::vec3& pos, GLfloat size) {
+		position = pos;
+		this->size = size;
+	}
+	GLboolean BoxCollider::checkCollision(Object* object) {
+		GLfloat distance = glm::distance(position, object->getPosition());
+		distance = std::abs(distance);
+		if (distance > object->getCollider().size + size) {
+			return GL_FALSE;
 		}
+		return GL_TRUE;
+
+		//glm::vec3& pos = object->getPosition();
+		//glm::vec3 upper = position + size;
+		//glm::vec3 lower = position - size;
+		//if (pos.x < upper.x && pos.y < upper.y && pos.z < upper.z) {
+		//	if (pos.x > lower.x&& pos.y > lower.y&& pos.z > lower.z) {
+		//		return GL_FALSE;
+		//	}
+		//}
+		//return GL_FALSE;
 	}
 
+	Material::Material() {
+		null = GL_TRUE;
+		bouncines = 0;
+		frictionConstant = 1;
+		position = { 0, 0, 0 };
+	}
+	GLboolean Material::isNull() {
+		return null;
+	}
 
+	template <typename T>
+	Clamp<T>::Clamp(T min, T max) {
+		Min = min;
+		Max = max;
+	}
+	template <typename T>
+	Clamp<T>::Clamp() {
+
+	}
+	template <typename T>
+	void Clamp<T>::clapValue(T& value) {
+		if (value < Min) value = Min;
+		else if (value > Max) value = Max;
+	}
+	Update::Update() {
+		Sender = nullptr;
+		Tag = TAG::Null;
+		Data = { 0, 0, 0 };
+		Positon = { 0, 0, 0 };
+	}
 };

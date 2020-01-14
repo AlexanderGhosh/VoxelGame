@@ -24,7 +24,7 @@ namespace Render {
 		model = glm::translate(model, mesh.position);
 
 		shader.setValue("model", model);
-		glm::vec3 viewPos = p1.GetPostion();
+		glm::vec3 viewPos = p1.GetPosition();
 		shader.setValue("viewPos", viewPos);
 
 		mesh.bindTexture();

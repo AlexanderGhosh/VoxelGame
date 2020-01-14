@@ -27,7 +27,6 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 
 		chunks.push_back({ chunk, GL_TRUE });
 
-
 		std::cout << "Chunk created" << std::endl;
 	}
 }
@@ -37,4 +36,16 @@ void World::renderChunksStatic(Camera c, glm::mat4 projection) {
 			rs[i].render(c, projection);
 		}
 	}
+}
+
+Chunk* World::getChunkOccupied(glm::vec3 position) {
+	for (auto& chunkP : chunks) {
+		Chunk& chunk = std::get<0>(chunkP);
+		if (position.x < chunk.position.x + CHUNK_SIZE && position.x > chunk.position.x) {
+			if (position.z < chunk.position.z + CHUNK_SIZE && position.z > chunk.position.z) {
+				return &chunk;
+			}
+		}
+	}
+	return nullptr;
 }

@@ -1,18 +1,21 @@
 #pragma once
-#include "GL/glew.h"
+#include <GL/glew.h>
 #include <glm.hpp>
 #include <array>
 #include <vector>
 #include "Buffer.h"
 #include "Textures/Texture.h"
+// #include "Game/World/Physics.h"
 namespace Mesh {
 	struct FaceMesh {
 		std::array<glm::vec3, 6> vertices;
 		std::array<glm::vec3, 6> normals;
 		std::array<glm::vec3, 6> texCoords;
 		glm::vec3 position;
+		glm::vec3 rotation;
 		Buffer buffer;
 		Texture texture;
+		// Physics::BoxCollider collider;
 		FaceMesh() {
 			vertices = std::array<glm::vec3, 6>();
 			normals = std::array<glm::vec3, 6>();
@@ -20,14 +23,16 @@ namespace Mesh {
 			position = glm::vec3(3, 2, 0);
 			buffer = Buffer();
 			texture = Texture("grass", GL_TRUE);
+			// collider = Physics::BoxCollider(position, 1);
 		}
 		FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC);
 		void setupBufferStructure(GLboolean is3D = GL_TRUE);
 		void setPosition(glm::vec3 position);
-
+		void setRotation(glm::vec3 rotation);
 		void setTexture(std::string name);
 		void bindTexture();
 		void unBindTexture();
+		// Physics::BoxCollider& getCollider();
 	};
 
 	struct BlockMesh {
@@ -48,6 +53,7 @@ namespace Mesh {
 		void bindTexture();
 	};
 };
+
 
 
 

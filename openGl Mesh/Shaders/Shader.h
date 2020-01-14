@@ -15,6 +15,9 @@
 
 class Shader {
 public:
+	Shader() {
+
+	}
 	Shader(std::string shaderName);
 	void bind();
 	void unBind();

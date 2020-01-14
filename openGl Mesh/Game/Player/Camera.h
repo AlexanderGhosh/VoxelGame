@@ -42,8 +42,11 @@ public:
 	glm::mat4 GetViewMatrix() {
 		return glm::lookAt(this->position, this->position + this->front, this->up);
 	}
+	glm::vec3 GetRight() {
+		return right;
+	}
 
-	void ProcessKeyBoard(Camera_Movement direction, GLfloat deltaTime) {
+	void ProcessMovement(Camera_Movement direction, GLfloat deltaTime) {
 		GLfloat velocity = this->movementSpeed * deltaTime;
 		if (direction == FORWARD) {
 			this->position += this->front * velocity;
@@ -79,11 +82,14 @@ public:
 	GLfloat GetZoom() {
 		return this->zoom;
 	}
-	glm::vec3 GetPostion() {
+	glm::vec3 GetPosition() {
 		return this->position;
 	}
 	glm::vec3 GetFront() {
 		return this->front;
+	}
+	void setPosition(glm::vec3 position) {
+		this->position = position;
 	}
 private:
 	glm::vec3 position;
@@ -96,7 +102,7 @@ private:
 	GLfloat yaw;
 	GLfloat movementSpeed;
 	GLfloat zoom;
-
+	
 	void updateCameraVectors() {
 		glm::vec3 front;
 		front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));

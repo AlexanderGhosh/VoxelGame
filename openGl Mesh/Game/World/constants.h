@@ -7,9 +7,10 @@
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 
 #define GRAVITY 9.81
-#define AIR_RESISTANCE 
+#define AIR_RESISTANCE 2
 
 using namespace Mesh;
+
 struct FACES {
 	static FaceMesh BACK;
 	static FaceMesh FRONT;

@@ -1,6 +1,14 @@
 #include "Chunk.h"
-Chunk::Chunk(glm::vec3 pos) {
+Chunk::Chunk() {
+	isNull = GL_TRUE;
+}
+Chunk::Chunk(glm::vec3 pos) : object((GLfloat)100.0f, { position, (GLfloat)1 }) {
 	position = pos;
+	object.setKinematic(GL_TRUE);
+	object.setPhysical(GL_TRUE);
+	object.setPosition(position);
+	Physics::BoxCollider collider(position, 1);
+	isNull = GL_FALSE;
 }
 void Chunk::create() {
 	blocks.fill(1);
@@ -97,4 +105,22 @@ void Chunk::create() {
 			}
 		}
 	}
+}
+GLboolean Chunk::checkCollision(Physics::Object& object) {
+	/*if (!object.getPhysical()) return GL_FALSE;
+	for (auto& mesh : meshes) {
+		Physics::BoxCollider collider = mesh.getCollider();
+		if (collider.checkCollision(&object)) {
+			return GL_TRUE;
+		}
+	}*/
+	return GL_FALSE;
+	/*try {
+		Physics::BoxCollider collider = this->object.getCollider();
+		return collider.checkCollision(&object);
+	}
+	catch ( std::exception e)
+	{
+
+	}*/
 }

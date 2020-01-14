@@ -151,6 +151,7 @@
     <ClCompile Include="Game\World\Chunk.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
     <ClCompile Include="Game\World\Physics.cpp" />
+    <ClCompile Include="Game\World\PhysicsEngine.cpp" />
     <ClCompile Include="Renders\chunkRender.cpp" />
     <ClCompile Include="Game\World\constants.cpp" />
     <ClCompile Include="Game\Player\Entity.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Game\World\Chunk.h" />
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="Game\World\Physics.h" />
+    <ClInclude Include="Game\World\PhysicsEngine.h" />
     <ClInclude Include="Renders\chunkRender.h" />
     <ClInclude Include="Game\World\constants.h" />
     <ClInclude Include="Mesh.h" />

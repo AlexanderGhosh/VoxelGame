@@ -8,14 +8,15 @@
 #include <gtc/type_ptr.hpp>
 
 #include "Renders/meshRender.h"
-#include "Game/Player/Entity.h"
+#include "Game/Player/Player.h"
 #include "Renders/chunkRender.h"
-#include "Game/World/constants.h"
-#include "Game/World/Chunk.h"
-#include "Game/Player/Camera.h"
-#include "Game/World/World.h"
+//#include "Game/World/constants.h"
+//#include "Game/World/Chunk.h"
+//#include "Game/Player/Camera.h"
+#include "Game/World/PhysicsEngine.h"
+// #include "Game/World/World.h"
 
-player p1;
+Player p1;
 glm::vec3 m_pos(1);
 glm::ivec2 DIM(1600, 900);
 glm::vec3 BACKGROUND(0.5);
@@ -27,11 +28,6 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 GLfloat lastX = DIM.x / 2, lastY = DIM.y / 2;
 
-
-
-void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mode);
-void handleMouse(GLFWwindow* window, double xPos, double yPos);
-
 void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 void MouseCallBack(GLFWwindow* window, double xPos, double yPos);
 void DoMovement();
@@ -39,7 +35,8 @@ void DoMovement();
 GLuint getFrameRate();
 
 GLFWwindow* createWindow();
-Camera c(glm::vec3(0, 2, 0));
+//Camera c(glm::vec3(0, 2, 0));
+Player p;
 int main() {
 	GLFWwindow* window = createWindow();
 
@@ -49,29 +46,10 @@ int main() {
 	front.setTexture("grass");
 	fmr.loadMesh(front);
 
-	/*Chunk chunk1({ 0, -16, 0 });
-	chunk1.create();
-	Render::ChunkMeshRender cmr1("block2");
-	cmr1.loadMeshes(chunk1.getMeshes());
-
-	Chunk chunk2({ 16, -16, 0 });
-	chunk2.create();
-	Render::ChunkMeshRender cmr2("block2");
-	cmr2.loadMeshes(chunk2.getMeshes());
-
-	Chunk chunk3({ 16, -16, 16 });
-	chunk3.create();
-	Render::ChunkMeshRender cmr3("block2");
-	cmr3.loadMeshes(chunk3.getMeshes());
-
-	Chunk chunk4({ 0, -16, 16 });
-	chunk4.create();
-	Render::ChunkMeshRender cmr4("block2");
-	cmr4.loadMeshes(chunk4.getMeshes());*/
-
 	World world;
+	p.create();
 
-	glm::mat4 projection = glm::perspective(c.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(p.cam.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	while (!glfwWindowShouldClose(window))
 	{
 		GLfloat frame = glfwGetTime();
@@ -83,13 +61,14 @@ int main() {
 
 		glClearColor(BACKGROUND.r, BACKGROUND.g, BACKGROUND.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// cmr.render(c, projection);
-		fmr.render(c, projection);
-		world.renderChunksStatic(c, projection);
-		/*cmr1.render(c, projection);
-		cmr2.render(c, projection);
-		cmr3.render(c, projection);
-		cmr4.render(c, projection);*/
+
+		fmr.render(p.cam, projection);
+		world.renderChunksStatic(p.cam, projection);
+		p.render(projection);
+		
+
+
+		Physics::Engine::doUpdates(world);
 
 		glfwSwapBuffers(window);
 	}
@@ -143,69 +122,23 @@ GLuint getFrameRate() {
 	prev_t = curr_t;
 	return (GLuint)(1 / delta_t);
 }
-void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mode){
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-		glfwSetWindowShouldClose(window, true);
-	}
-	if (action == GLFW_PRESS) {
-		glm::vec3 norm;
-		glm::mat4 i(1);
-		switch (key)
-		{
-		case GLFW_KEY_W:
-		case GLFW_KEY_UP:
-			norm = glm::normalize(p1.rotation);
-			norm *= 3;
-			p1.velocity += norm;
-			break;
-		case GLFW_KEY_S:
-		case GLFW_KEY_DOWN:
-			norm = glm::normalize(p1.rotation);
-			norm *= 3;
-			p1.velocity -= norm;
-		case GLFW_KEY_A:
-		case GLFW_KEY_LEFT:
-			i = glm::rotate(i, 90.0f, p1.rotation);
-			norm = glm::vec3(i * glm::vec4(p1.rotation, 1.0f));
-			norm *= 3;
-			p1.velocity -= norm;
-		case GLFW_KEY_D:
-		case GLFW_KEY_RIGHT:
-			i = glm::mat4(1);
-			i = glm::rotate(i, 90.0f, p1.rotation);
-			norm = glm::vec3(i * glm::vec4(p1.rotation, 1.0f));
-			norm *= 3;
-			p1.velocity += norm;
-		case GLFW_KEY_SPACE:
-			p1.velocity.y += 3;
-		default:
-			p1.velocity = glm::vec3(0);
-			break;
-		}
-	}
-	std::cout << p1.position.x << "," << p1.position.y << "," << p1.position.z << std::endl;
-}
-void handleMouse(GLFWwindow* window, double xPos, double yPos) {
-	if (m_pos.z == 1) {
-		m_pos.x = xPos;
-		m_pos.y = yPos;
-		m_pos.z = 0;
-	}
-	p1.rotation += glm::vec3(xPos - m_pos.x, m_pos.y - yPos, p1.rotation.z);
-}
 
 void DoMovement() {
 	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]) {
-		c.ProcessKeyBoard(FORWARD, deltaTime);
+		Physics::Update up = p.processMovement(FORWARD, deltaTime);
+		Physics::Engine::addUpdate(up); 
 	}
 	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]) {
-		c.ProcessKeyBoard(BACKWARD, deltaTime);
+		Physics::Update up = p.processMovement(BACKWARD, deltaTime);
+		Physics::Engine::addUpdate(up);
 	}
 	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
-		c.ProcessKeyBoard(RIGHT, deltaTime);
+		Physics::Update up = p.processMovement(RIGHT, deltaTime);
+		Physics::Engine::addUpdate(up);
 	}
 	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
-		c.ProcessKeyBoard(LEFT, deltaTime);
+		Physics::Update up = p.processMovement(LEFT, deltaTime);
+		Physics::Engine::addUpdate(up);
 	}
 }
 void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -221,7 +154,6 @@ void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode
 	//std::cout << pos.x << "," << pos.y << "," << pos.z << std::endl;
 }
 void MouseCallBack(GLFWwindow* window, double xPos, double yPos) {
-
 	if (firstMouse) {
 		lastX = xPos;
 		lastY = yPos;
@@ -234,7 +166,5 @@ void MouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	lastX = xPos;
 	lastY = yPos;
 
-	c.ProcessMouseMovement(xOffset, yOffset);
-
-	
+	p.processMouse(xOffset, yOffset);
 }

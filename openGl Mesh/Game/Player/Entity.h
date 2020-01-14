@@ -3,6 +3,7 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
+/*
 struct player {
 	glm::vec3 position;
 	glm::vec3 rotation;
@@ -14,4 +15,4 @@ struct player {
 	}
 
 	glm::mat4 getView();
-};
+};*/

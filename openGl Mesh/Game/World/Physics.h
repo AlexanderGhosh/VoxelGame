@@ -1,38 +1,64 @@
 #pragma once
-#include <GL/glew.h>
-#include <glm.hpp>
-#include <vector>
-#include <array>
+#include "constants.h"
 
-#include "World.h"
 namespace Physics {
-	class Material; 
-	template<typename T>
-	class Engine;
-	class Colider;
+	template <typename T>
+	struct Clamp;
+	class Material;
+	class BoxCollider;
+	class Object;
+	struct Update;
+	class Material {
+	public:
+		Material();
+		GLboolean isNull();
+	private:
+		GLboolean null;
+		GLfloat frictionConstant;
+		GLfloat bouncines;
+		glm::vec3 position;
+	};
+
+	class BoxCollider {
+	public:
+		BoxCollider();
+		BoxCollider(glm::vec3& pos, GLfloat size);
+		GLboolean checkCollision(Object* object);
+	private:
+		glm::vec3 position;
+		GLfloat size;
+	};
+
+
 	enum TAG {
+		Null,
 		COLLISION
 	};
-	template<typename T>
+
 	struct Update {
+		Object* Sender;
 		TAG Tag;
-		T Data;
+		glm::vec3 Data;
 		glm::vec3 Positon;
+		GLboolean null;
+		Update();
 	};
-	template<typename T>
+	template <typename T>
 	struct Clamp {
 		T Min;
 		T Max;
-		Clamp(T min, T max) {
-			Min = min;
-			Max = max;
-		}
+		Clamp();
+		Clamp(T min, T max);
+		void clapValue(T& value);
 	};
+
+
 	class Object
 	{
 	public:
 		Object();
 		Object(GLfloat mass, Material& material);
+		Object(GLfloat mass, BoxCollider collider);
 		void addForce(GLfloat force, glm::vec3 direction);
 		void addForce(glm::vec3 force);
 		void addForce(GLfloat force);
@@ -44,7 +70,8 @@ namespace Physics {
 		void clampAngularVelocity(const glm::vec3& max, const glm::vec3& min);
 		void clampAngularSpeed(const GLfloat& max, const GLfloat& min);
 
-		void update();
+		Update getUpdate();
+		void doUpdate(Update update);
 
 		// getters
 		GLboolean& getKinematic();
@@ -70,8 +97,7 @@ namespace Physics {
 		void setMass(const GLfloat& value);
 		void setAngularVelocity(const glm::vec3& value);
 		void setAngularAcceleration(const glm::vec3& value);
-		void setMaterial(const Material& value);
-		void setCollider(const BoxCollider& value);
+		void setMaterial(Material& value);
 	private:
 		GLfloat mass;
 		GLboolean isKinematic;
@@ -96,37 +122,6 @@ namespace Physics {
 
 		void clamp();
 	};
-	class Material {
-	public:
-		Material();
-		GLboolean isNull();
-	private:
-		GLboolean null;
-		GLfloat frictionConstant;
-		GLfloat bouncines;
-		glm::vec3 position;
-	};
-	class BoxCollider {
-	public:
-		BoxCollider();
-		
-	private:
-		glm::vec3& posiotion;
-		GLfloat size;
-		GLboolean checkCollision(Object& object);
-	};
-	template<typename T>
-	class Engine {
-	public:
-		static World world;
-		static void addObject(const Object& object);
-		static void doUpdates();
-	private:
-		static std::vector<Update<T>> updateBuffer; // needs a type
-		static std::vector<Object> objects;
-		static std::vector<Material> materials;
-		static std::vector<BoxCollider> colliders;
-		static void doCollision();
-	};
 };
+
 

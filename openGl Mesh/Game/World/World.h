@@ -1,11 +1,11 @@
 #pragma once
 #include <tuple>
 #include <thread>
-#include <future>
 #include "Chunk.h"
 #include "constants.h"
 #include "../Player/Player.h"
 #include "../../Renders/chunkRender.h"
+
 class World
 {
 public:
@@ -15,6 +15,7 @@ public:
 	void renderChunksDynamic();
 	void processBlockUpdates();
 	void setPlayerPosition(Player& player);
+	Chunk* getChunkOccupied(glm::vec3 position);
 private:
 	std::vector<std::tuple<Chunk, GLboolean>> chunks;
 	glm::vec3 playerPosition;
@@ -23,4 +24,3 @@ private:
 	void generateFlatChunks(std::vector<glm::vec3> chunkPositions);
 	void getNewChunkPositions();
 };
-

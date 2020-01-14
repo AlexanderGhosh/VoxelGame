@@ -40,6 +40,12 @@ namespace Mesh {
 	void FaceMesh::unBindTexture() {
 		texture.unBind();
 	}
+	void FaceMesh::setRotation(glm::vec3 rotation) {
+		this->rotation = rotation;
+	}
+	/*Physics::BoxCollider& FaceMesh::getCollider() {
+		return collider;
+	}*/
 
 	void BlockMesh::addFace(FaceMesh& face, glm::vec3 pos) {
 		if (faces.size() > 6) return;
