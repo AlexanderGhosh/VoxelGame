@@ -35,8 +35,8 @@ void DoMovement();
 GLuint getFrameRate();
 
 GLFWwindow* createWindow();
-//Camera c(glm::vec3(0, 2, 0));
-Player p;
+Camera cam(glm::vec3(0, 2, 0));
+// Player p;
 int main() {
 	GLFWwindow* window = createWindow();
 
@@ -47,11 +47,13 @@ int main() {
 	fmr.loadMesh(front);
 
 	World world;
-	p.create();
+	// p.create();
 
-	glm::mat4 projection = glm::perspective(p.cam.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(cam.GetZoom(), (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	while (!glfwWindowShouldClose(window))
 	{
+		std::cout << getFrameRate() << std::endl;
+
 		GLfloat frame = glfwGetTime();
 		deltaTime = frame - lastFrame;
 		lastFrame = frame;
@@ -62,13 +64,13 @@ int main() {
 		glClearColor(BACKGROUND.r, BACKGROUND.g, BACKGROUND.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		fmr.render(p.cam, projection);
-		world.renderChunksStatic(p.cam, projection);
-		p.render(projection);
+		fmr.render(cam, projection);
+		world.renderChunksStatic(cam, projection);
+		// p.render(projection);
 		
 
 
-		Physics::Engine::doUpdates(world);
+		// Physics::Engine::doUpdates(world);
 
 		glfwSwapBuffers(window);
 	}
@@ -125,20 +127,24 @@ GLuint getFrameRate() {
 
 void DoMovement() {
 	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]) {
-		Physics::Update up = p.processMovement(FORWARD, deltaTime);
-		Physics::Engine::addUpdate(up); 
+		cam.ProcessMovement(FORWARD, deltaTime);
+		/*Physics::Update up = p.processMovement(FORWARD, deltaTime);
+		Physics::Engine::addUpdate(up); */
 	}
 	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]) {
-		Physics::Update up = p.processMovement(BACKWARD, deltaTime);
-		Physics::Engine::addUpdate(up);
+		cam.ProcessMovement(BACKWARD, deltaTime);
+		/*Physics::Update up = p.processMovement(BACKWARD, deltaTime);
+		Physics::Engine::addUpdate(up);*/
 	}
 	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
-		Physics::Update up = p.processMovement(RIGHT, deltaTime);
-		Physics::Engine::addUpdate(up);
+		cam.ProcessMovement(RIGHT, deltaTime);
+		/*Physics::Update up = p.processMovement(RIGHT, deltaTime);
+		Physics::Engine::addUpdate(up);*/
 	}
 	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
-		Physics::Update up = p.processMovement(LEFT, deltaTime);
-		Physics::Engine::addUpdate(up);
+		cam.ProcessMovement(LEFT , deltaTime);
+		/*Physics::Update up = p.processMovement(LEFT, deltaTime);
+		Physics::Engine::addUpdate(up);*/
 	}
 }
 void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -166,5 +172,6 @@ void MouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	lastX = xPos;
 	lastY = yPos;
 
-	p.processMouse(xOffset, yOffset);
+	cam.ProcessMouseMovement(xOffset, yOffset);
+	//p.processMouse(xOffset, yOffset);
 }
