@@ -2,13 +2,16 @@
 Chunk::Chunk() {
 	isNull = GL_TRUE;
 }
-Chunk::Chunk(glm::vec3 pos) : object((GLfloat)100.0f, { position, (GLfloat)1 }) {
+Chunk::Chunk(glm::vec3 pos, GLboolean create) : object((GLfloat)100.0f, { position, (GLfloat)1 }) {
 	position = pos;
 	object.setKinematic(GL_TRUE);
 	object.setPhysical(GL_TRUE);
 	object.setPosition(position);
 	Physics::BoxCollider collider(position, 1);
 	isNull = GL_FALSE;
+	if (create) {
+		this->create();
+	}
 }
 void Chunk::create() {
 	blocks.fill(1);

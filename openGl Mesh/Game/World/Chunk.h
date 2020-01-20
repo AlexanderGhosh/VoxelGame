@@ -11,7 +11,7 @@ public:
 	glm::vec3 position;
 	std::array<GLuint, CHUNK_VOLUME> blocks; // 0 - air, 1 - grass
 	Chunk();
-	Chunk(glm::vec3 pos);
+	Chunk(glm::vec3 pos, GLboolean create = false);
 	void create();
 	GLboolean checkCollision(Physics::Object& object);
 	std::vector<Mesh::FaceMesh>& getMeshes() {

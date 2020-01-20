@@ -1,10 +1,17 @@
 #include "World.h"
 World::World() {
 	playerPosition = { 0, 0, 0 };
+	chunks = std::vector<std::tuple<Chunk, GLboolean>>();
+	// getNewChunkPositions();
+}
+World::World(GLboolean gen) {
+	playerPosition = { 0, 0, 0 };
+	chunks = std::vector<std::tuple<Chunk, GLboolean>>();
 	getNewChunkPositions();
 }
 World::World(Player& player) {
 	playerPosition = player.getPosition();
+	chunks = std::vector<std::tuple<Chunk, GLboolean>>();
 }
 void World::getNewChunkPositions() {
 	std::vector<glm::vec3> chunkPositions;
@@ -14,19 +21,22 @@ void World::getNewChunkPositions() {
 		}
 	}
 	
+	generateFlatChunks(chunkPositions);
+	/*
 	std::thread obj(&World::generateFlatChunks, this, chunkPositions);
-	obj.detach();
+	obj.detach();*/
 }
 void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 	for (auto& pos : chunkPositions) {
-		Chunk chunk(pos);
+		Chunk chunk(pos, true);
+
 		Render::ChunkMeshRender cmr("block2");
-		chunk.create();
 		cmr.loadMeshes(chunk.getMeshes());
 		rs.push_back(cmr);
 
 		chunks.push_back({ chunk, GL_TRUE });
 
+		
 		std::cout << "Chunk created" << std::endl;
 	}
 }
@@ -38,9 +48,9 @@ void World::renderChunksStatic(Camera c, glm::mat4 projection) {
 	}
 }
 
-Chunk* World::getChunkOccupied(glm::vec3 position) {
-	for (auto& chunkP : chunks) {
-		Chunk& chunk = std::get<0>(chunkP);
+/*Chunk* World::getChunkOccupied(glm::vec3 position) {
+	/*for (auto& chunkP : chunks) {
+		Chunk chunk  = std::get<0>(chunkP);
 		if (position.x < chunk.position.x + CHUNK_SIZE && position.x > chunk.position.x) {
 			if (position.z < chunk.position.z + CHUNK_SIZE && position.z > chunk.position.z) {
 				return &chunk;
@@ -48,4 +58,5 @@ Chunk* World::getChunkOccupied(glm::vec3 position) {
 		}
 	}
 	return nullptr;
-}
+	return nullptr;
+}*/

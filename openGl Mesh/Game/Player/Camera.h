@@ -6,6 +6,7 @@
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <iostream>
 
 enum Camera_Movement {
 FORWARD,
@@ -61,7 +62,9 @@ public:
 			this->position += this->right * velocity;
 		}
 	}
-
+	void t() {
+		std::cout << this->position.x << std::endl;
+	}
 	void ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch = true) {
 		xOffset *= this->mouseSensitivaty;
 		yOffset *= this->mouseSensitivaty;
@@ -103,13 +106,16 @@ private:
 	GLfloat movementSpeed;
 	GLfloat zoom;
 	
+	glm::vec3 tr;
+
 	void updateCameraVectors() {
 		glm::vec3 front;
 		front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 		front.y = sin(glm::radians(this->pitch));
 		front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+
 		this->front = glm::normalize(front);
-		this->right = glm::normalize(glm::cross(this->front, this->worldUp));
+	    //this->right = glm::normalize(glm::cross(this->front, this->worldUp));
 		this->up = glm::normalize(glm::cross(this->right, this->front));
 	}
 };

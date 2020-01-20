@@ -1,6 +1,7 @@
 #pragma once
 #include <tuple>
 #include <thread>
+#include <vector>
 #include "Chunk.h"
 #include "constants.h"
 #include "../Player/Player.h"
@@ -11,6 +12,7 @@ class World
 public:
 	World();
 	World(Player& player);
+	World(GLboolean gen);
 	void renderChunksStatic(Camera c, glm::mat4 projection);
 	void renderChunksDynamic();
 	void processBlockUpdates();
