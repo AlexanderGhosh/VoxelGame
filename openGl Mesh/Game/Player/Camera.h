@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#define GLEW_STATIC
 #include <GL/glew.h>
 
 #include <glm.hpp>
@@ -80,7 +79,19 @@ public:
 				this->pitch = -89.0f;
 			}
 		}
+		// this->position = glm::vec3(0);
+
 		this->updateCameraVectors();
+	}
+	void updateCameraVectors() {
+		glm::vec3 front;
+		front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+		front.y = sin(glm::radians(this->pitch));
+		front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+
+		this->front = glm::normalize(front);
+		this->right = glm::normalize(glm::cross(this->front, this->worldUp));
+		this->up = glm::normalize(glm::cross(this->right, this->front));
 	}
 	GLfloat GetZoom() {
 		return this->zoom;
@@ -107,15 +118,4 @@ private:
 	GLfloat zoom;
 	
 	glm::vec3 tr;
-
-	void updateCameraVectors() {
-		glm::vec3 front;
-		front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
-		front.y = sin(glm::radians(this->pitch));
-		front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
-
-		this->front = glm::normalize(front);
-	    //this->right = glm::normalize(glm::cross(this->front, this->worldUp));
-		this->up = glm::normalize(glm::cross(this->right, this->front));
-	}
 };

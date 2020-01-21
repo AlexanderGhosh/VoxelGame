@@ -7,14 +7,14 @@ GLuint GameConfig::FPSlock = 0;
 #pragma endregion
 
 #pragma region Static Members
-Camera* Game::mainCamera = nullptr;
+Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
 glm::vec3 Game::mouseData(0);
 std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
 #pragma endregion
 Game::Game() {
 	hasPlayer = false;
 	gameRunning = false;
-	Game::mainCamera = &Camera({ 0, 2, 0 });
+	Game::mainCamera = new Camera({ 0, 2, 0 });
 	GameConfig::setup();
 }
 Game::Game(GLboolean hasPlayer) {
@@ -24,7 +24,7 @@ Game::Game(GLboolean hasPlayer) {
 	GameConfig::setup();
 }
 void Game::generateWorld() {
-	// world = World(true);
+	world = World(true);
 }
 void Game::update() {
 
@@ -42,7 +42,7 @@ void Game::doLoop(glm::mat4 projection) {
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//showStuff();
+		showStuff();
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
 		glfwSwapBuffers(window);
@@ -76,7 +76,7 @@ void Game::showStuff(GLboolean showStatic) {
 		// player.render(projection);
 	}
 	if (showStatic) {
-		// world.renderChunksStatic(*mainCamera, projection);
+		world.renderChunksStatic(*mainCamera, projection);
 	}
 	else {
 		// world.renderChunksDynamic();

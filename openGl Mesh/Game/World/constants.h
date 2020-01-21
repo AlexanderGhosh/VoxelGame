@@ -1,6 +1,6 @@
 #pragma once
 #include "../../Mesh.h"
-#include "../../Buffer.h"
+// #include "../../Buffer.h"
 
 #define RENDER_DISTANCE 2
 #define CHUNK_SIZE 16

@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
+#include <gtx/string_cast.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <vector>
 #include <array>
@@ -12,7 +13,7 @@
 
 #include "Player/Camera.h"
 // #include "Player/Player.h"
-// #include "World/World.h"
+#include "World/World.h"
 struct GameConfig {
 	static GLboolean showFPS;
 	static glm::vec3 backgroundCol;
@@ -43,7 +44,7 @@ private:
 	GLfloat deltaTime;
 	GLuint frameRate;
 	GLboolean gameRunning;
-	// World world;
+	World world;
 	GLboolean hasPlayer;
 	// Player player;
 	GLfloat lastFrameTime;

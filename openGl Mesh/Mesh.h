@@ -4,7 +4,7 @@
 #include <array>
 #include <vector>
 #include "Buffer.h"
-#include "Textures/Texture.h"
+// #include "Textures/Texture.h"
 // #include "Game/World/Physics.h"
 namespace Mesh {
 	struct FaceMesh {
@@ -14,7 +14,7 @@ namespace Mesh {
 		glm::vec3 position;
 		glm::vec3 rotation;
 		Buffer buffer;
-		Texture texture;
+		// Texture texture;
 		// Physics::BoxCollider collider;
 		FaceMesh() {
 			vertices = std::array<glm::vec3, 6>();
@@ -22,7 +22,7 @@ namespace Mesh {
 			texCoords = std::array<glm::vec3, 6>();
 			position = glm::vec3(3, 2, 0);
 			buffer = Buffer();
-			texture = Texture("grass", GL_TRUE);
+			// texture = Texture("grass", GL_TRUE);
 			// collider = Physics::BoxCollider(position, 1);
 		}
 		FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC);
@@ -39,12 +39,12 @@ namespace Mesh {
 		std::vector<FaceMesh> faces;
 		glm::vec3 position;
 		Buffer buffer;
-		Texture texture;
+		// Texture texture;
 		BlockMesh() {
 			faces = std::vector<FaceMesh>();
 			position = { 0, 0, 0 };
 			buffer = Buffer();
-			texture = Texture("grass", GL_FALSE);
+			// texture = Texture("grass", GL_FALSE);
 		}
 		void addFace(FaceMesh& face, glm::vec3 pos = glm::vec3());
 		void setPosition(glm::vec3 position);

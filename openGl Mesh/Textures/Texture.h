@@ -27,6 +27,5 @@ private:
 	GLuint texMap;
 	GLboolean is2D;
 	std::string name;
-	//static std::map<std::string, unsigned char> texData;
 };
 
