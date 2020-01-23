@@ -22,4 +22,5 @@ private:
 	std::vector<Mesh::FaceMesh> meshes;
 	Physics::Object object;
 };
+GLuint getBlockIndex(glm::vec3 position);
 

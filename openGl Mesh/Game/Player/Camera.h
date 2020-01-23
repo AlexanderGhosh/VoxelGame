@@ -10,8 +10,8 @@
 enum Camera_Movement {
 FORWARD,
 BACKWARD,
-LEFT,
-RIGHT
+LEFT_C,
+RIGHT_C
 };
 
 const GLfloat YAW = -90.0f;
@@ -54,10 +54,10 @@ public:
 		if (direction == BACKWARD) {
 			this->position -= this->front * velocity;
 		}
-		if (direction == LEFT) {
+		if (direction == LEFT_C) {
 			this->position -= this->right * velocity;
 		}
-		if (direction == RIGHT) {
+		if (direction == RIGHT_C) {
 			this->position += this->right * velocity;
 		}
 	}

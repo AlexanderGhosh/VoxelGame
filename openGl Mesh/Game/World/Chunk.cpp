@@ -19,85 +19,56 @@ void Chunk::create() {
 		for (GLuint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLuint z = 0; z < CHUNK_SIZE; z++) {
 				BlockMesh blockMesh;
-				glm::vec3 pos;
 
-				std::string num;
-				std::stringstream temp;
-				int numb = 0;
 				if (x > 0) {
-					pos = { x - 1, y, z };
-					num = std::to_string(pos.x) + std::to_string(pos.y) + std::to_string(pos.z);
-					temp = std::stringstream(num);
-					temp >> numb;
-					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::LEFT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					if (blocks[getBlockIndex({ x - 1, y, z })] == 0) {
+						blockMesh.addFace(FaceMesh(FACES[LEFT]), glm::vec3(x, y, z) + position);
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::LEFT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					blockMesh.addFace(FaceMesh(FACES[LEFT]), glm::vec3(x, y, z) + position);
 				}
 				if (x < CHUNK_SIZE - 1) {
-					pos = { x + 1, y, z };
-					num = std::to_string(pos.x) + std::to_string(pos.y) + std::to_string(pos.z);
-					temp = std::stringstream(num);
-					temp >> numb;
-					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::RIGHT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					if (blocks[getBlockIndex({ x + 1, y, z })] == 0) {
+						blockMesh.addFace(FaceMesh(FACES[RIGHT]), glm::vec3(x, y, z) + position);
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::RIGHT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					blockMesh.addFace(FaceMesh(FACES[RIGHT]), glm::vec3(x, y, z) + position);
 				}
 
 				if (y > 0) {
-					pos = { x, y - 1, z };
-					num = std::to_string(pos.x) + std::to_string(pos.y) + std::to_string(pos.z);
-					temp = std::stringstream(num);
-					temp >> numb;
-					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::BOTTOM, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					if (blocks[getBlockIndex({ x, y - 1, z })] == 0) {
+						blockMesh.addFace(FaceMesh(FACES[BOTTOM]), glm::vec3(x, y, z) + position);
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::BOTTOM, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					blockMesh.addFace(FaceMesh(FACES[BOTTOM]), glm::vec3(x, y, z) + position);
 				}
 				if (y < CHUNK_SIZE - 1) {
-					pos = { x, y + 1, z };
-					num = std::to_string(pos.x) + std::to_string(pos.y) + std::to_string(pos.z);
-					temp = std::stringstream(num);
-					temp >> numb;
-					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::TOP, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					if (blocks[getBlockIndex({ x, y + 1, z })] == 0) {
+						blockMesh.addFace(FaceMesh(FACES[TOP]), glm::vec3(x, y, z) + position);
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::TOP, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					blockMesh.addFace(FaceMesh(FACES[TOP]), glm::vec3(x, y, z) + position);
 				}
 
 				if (z > 0) {
-					pos = { x, y, z - 1 };
-					num = std::to_string(pos.x) + std::to_string(pos.y) + std::to_string(pos.z);
-					temp = std::stringstream(num);
-					temp >> numb;
-					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::BACK, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					if (blocks[getBlockIndex({ x, y, z - 1 })] == 0) {
+						blockMesh.addFace(FaceMesh(FACES[BACK]), glm::vec3(x, y, z) + position);
 					}
 				}
 				else {
-					blockMesh.addFace(FACES::BACK, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					blockMesh.addFace(FaceMesh(FACES[BACK]), glm::vec3(x, y, z) + position);
 				}
 				if (z < CHUNK_SIZE - 1) {
-					pos = { x, y, z - 1 };
-					num = std::to_string(pos.x) + std::to_string(pos.y) + std::to_string(pos.z);
-					temp = std::stringstream(num);
-					temp >> numb;
-					if (blocks[numb] == 0) {
-						blockMesh.addFace(FACES::FRONT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					if (blocks[getBlockIndex({ x, y, z - 1 })] == 0) {
+						blockMesh.addFace(FaceMesh(FACES[FRONT]), glm::vec3(x, y, z) + position);
 					}
 				}
 				else {
-
-					blockMesh.addFace(FACES::FRONT, { x + position.x * 1, y + position.y * 1, z + position.z * 1 });
+					blockMesh.addFace(FaceMesh(FACES[FRONT]), glm::vec3(x, y, z) + position);
 				}
 
 				if (blockMesh.faces.size() < 1) continue;
@@ -126,4 +97,9 @@ GLboolean Chunk::checkCollision(Physics::Object& object) {
 	{
 
 	}*/
+}
+GLuint getBlockIndex(glm::vec3 position) {
+	GLuint index;
+	std::stringstream(std::to_string(position.x) + std::to_string(position.y) + std::to_string(position.z)) >> index;
+	return index;
 }

@@ -7,7 +7,7 @@ Texture::Texture(std::string name, GLboolean is2D) {
 		created = load2D(name);
 	}
 	else {
-		// created = load3D(name);
+		created = load3D(name);
 	}
 }
 GLboolean Texture::load2D(std::string& name) {

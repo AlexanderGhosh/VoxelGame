@@ -38,6 +38,7 @@ void Game::doLoop(glm::mat4 projection) {
 		lockFPS();
 		showFPS();
 		proccesEvents();
+		doMovement();
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -118,3 +119,27 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
+void Game::doMovement() {
+	if (Game::keys[GLFW_KEY_W] || Game::keys[GLFW_KEY_UP]) {
+		Game::mainCamera->ProcessMovement(FORWARD, deltaTime);
+		/*Physics::Update up = p.processMovement(FORWARD, deltaTime);
+		Physics::Engine::addUpdate(up); */
+	}
+	if (Game::keys[GLFW_KEY_S] || Game::keys[GLFW_KEY_DOWN]) {
+		Game::mainCamera->ProcessMovement(BACKWARD, deltaTime);
+		/*Physics::Update up = p.processMovement(BACKWARD, deltaTime);
+		Physics::Engine::addUpdate(up);*/
+	}
+	if (Game::keys[GLFW_KEY_D] || Game::keys[GLFW_KEY_RIGHT]) {
+		Game::mainCamera->ProcessMovement(RIGHT_C, deltaTime);
+		/*Physics::Update up = p.processMovement(RIGHT, deltaTime);
+		Physics::Engine::addUpdate(up);*/
+	}
+	if (Game::keys[GLFW_KEY_A] || Game::keys[GLFW_KEY_LEFT]) {
+		Game::mainCamera->ProcessMovement(LEFT_C, deltaTime);
+		/*Physics::Update up = p.processMovement(LEFT, deltaTime);
+		Physics::Engine::addUpdate(up);*/
+	}
+}
+
+

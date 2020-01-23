@@ -28,7 +28,7 @@ namespace Render {
 		shader.setValue("viewPos", viewPos);
 
 		mesh.bindTexture();
-		mesh.buffer.render();
+		mesh.buffer->render();
 
 		mesh.unBindTexture();
 		shader.unBind();
@@ -36,7 +36,7 @@ namespace Render {
 
 	void FaceMeshRender::loadMesh(Mesh::FaceMesh& m) {
 		mesh = m;
-		buffer.merge(m.buffer);
+		buffer.merge(*m.buffer);
 		canRender = GL_TRUE;
 	}
 	void FaceMeshRender::destroy() {

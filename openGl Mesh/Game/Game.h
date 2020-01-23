@@ -59,5 +59,5 @@ private:
 	void cleanUp();
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
+	void doMovement();
 };
-

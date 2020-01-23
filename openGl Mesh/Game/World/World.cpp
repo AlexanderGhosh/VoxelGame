@@ -35,7 +35,6 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 		rs.push_back(cmr);
 
 		chunks.push_back({ chunk, GL_TRUE });
-
 		
 		std::cout << "Chunk created" << std::endl;
 	}

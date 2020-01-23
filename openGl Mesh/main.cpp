@@ -40,7 +40,8 @@ GLFWwindow* createWindow();
 int main() {
 	GLFWwindow* window = createWindow();
 	Game game;
-
+	auto t = FACES[TOP];
+	GameConfig::showFPS = true;
 	game.setWindow(window);
 	game.generateWorld();
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);

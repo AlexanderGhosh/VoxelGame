@@ -21,7 +21,6 @@ namespace Render {
 		shader.bind();
 
 		glm::mat4 view(1);
-		//view = p1.GetViewMatrix();
 		view = p1.GetViewMatrix();
 		if (!shader.setValue("view", view)) {
 			std::cout << "shader not working" << std::endl;
@@ -47,7 +46,7 @@ namespace Render {
 
 			shader.setValue("model", model);
 			mesh.bindTexture();
-			mesh.buffer.render();
+			mesh.buffer->render();
 		}
 	}
 
