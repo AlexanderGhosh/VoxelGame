@@ -43,23 +43,14 @@ GLboolean Texture::load3D(std::string& name) {
 
 	for (GLuint i = 0; i < faces.size(); i++)
 	{
-		/*try {
-			data = &texData.at(name);
-		}
-		catch (std::exception e) {
-			data = SOIL_load_image(faces[i].c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
-			Texture::texData.insert(std::pair<std::string, unsigned char>(name, *data));
-		}*/
 		data = SOIL_load_image(faces[i].c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
 		if (data)
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, dimentions.x, dimentions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			//SOIL_free_image_data(data);
 		}
 		else
 		{
 			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-			//SOIL_free_image_data(data);
 		}
 	}
 

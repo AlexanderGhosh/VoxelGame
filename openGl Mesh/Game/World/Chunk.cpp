@@ -73,7 +73,7 @@ void Chunk::create() {
 
 				if (blockMesh.faces.size() < 1) continue;
 				for (auto& face : blockMesh.faces) {
-					face.setTexture("grass");
+					// face.setTexture("grass");
 					meshes.push_back(face);
 				}
 			}

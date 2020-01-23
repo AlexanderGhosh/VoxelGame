@@ -39,8 +39,8 @@ GLFWwindow* createWindow();
 // Player p;
 int main() {
 	GLFWwindow* window = createWindow();
+	// TEXTURES = { new Texture("grass", GL_FALSE) };
 	Game game;
-	auto t = FACES[TOP];
 	GameConfig::showFPS = true;
 	game.setWindow(window);
 	game.generateWorld();

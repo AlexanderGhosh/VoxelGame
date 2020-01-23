@@ -55,7 +55,6 @@ namespace Render {
 		canRender = GL_TRUE;
 	}
 	void ChunkMeshRender::destroy() {
-
 		//buffer.destroy();
 	}
 	void ChunkMeshRender::setPosition(glm::vec3 position) {
