@@ -8,6 +8,20 @@ namespace Mesh {
 		position = { 0, 0, 0 };
 		setupBufferStructure();
 	}
+	FaceMesh::FaceMesh(GLboolean loadTex) {
+		vertices = std::array<glm::vec3, 6>();
+		normals = std::array<glm::vec3, 6>();
+		texCoords = std::array<glm::vec3, 6>();
+		position = glm::vec3(3, 2, 0);
+		buffer = new Buffer();
+		rotation = { 0, 0, 0 };
+		if (loadTex) {
+			texture = new Texture(false);
+		}
+		else {
+			texture = new Texture("grass", false);
+		}
+	}
 	void FaceMesh::setupBufferStructure(GLboolean is3D) {
 		std::vector<GLfloat> vertices_;
 		for (int i = 0; i < 6; i++)
@@ -50,13 +64,29 @@ namespace Mesh {
 	Buffer* FaceMesh::getBuffer() {
 		return buffer;
 	}
+	void FaceMesh::cleanUp() {
+		vertices = std::array<glm::vec3, 6>();
+		normals = std::array<glm::vec3, 6>();
+		texCoords = std::array<glm::vec3, 6>();
+		position = { 0, 0, 0 };
+		rotation = { 0, 0, 0 };
+		buffer->destroy();
+		texture->unBind();
+	}
+	FaceMesh& operator+= (FaceMesh& mesh1, const FaceMesh& mesh2) {
+		mesh1.buffer->merge(*mesh2.buffer);
+		mesh1.setTexture(mesh2.texture);
+		mesh1.setPosition(mesh2.position);
+		mesh1.setRotation(mesh2.rotation);
+		return mesh1;
+	}
 
-	void BlockMesh::addFace(const FaceMesh& face, glm::vec3 pos) {
+	void BlockMesh::addFace(FaceMesh* face, glm::vec3 pos) {
 		if (faces.size() > 6) return;
 		// face.setPosition(pos);
 		faces.push_back(face);
-		faces.back().setPosition(pos);
-		buffer->merge(*face.buffer);
+		faces.back()->setPosition(pos);
+		// buffer->merge(*face.buffer);
 	}
 	void BlockMesh::setPosition(glm::vec3 position) {
 		this->position = position;

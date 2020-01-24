@@ -33,6 +33,10 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
+	Mesh::FaceMesh top(FACES[TOP]);
+	top.setPosition({ 0, 2, 0 });
+	Render::ChunkMeshRender rend;
+	// rend.loadMeshes({ top });
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -44,6 +48,9 @@ void Game::doLoop(glm::mat4 projection) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();
+		// rend.render(*Game::mainCamera, projection);
+
+
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
 		glfwSwapBuffers(window);
@@ -82,9 +89,6 @@ void Game::showStuff(GLboolean showStatic) {
 	else {
 		// world.renderChunksDynamic();
 	}
-}
-void Game::cleanUp() {
-
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
@@ -140,6 +144,9 @@ void Game::doMovement() {
 		/*Physics::Update up = p.processMovement(LEFT, deltaTime);
 		Physics::Engine::addUpdate(up);*/
 	}
+}
+void Game::cleanUp() {
+	world.cleanUp();
 }
 
 

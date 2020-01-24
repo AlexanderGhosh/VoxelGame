@@ -14,13 +14,19 @@ public:
 	Chunk(glm::vec3 pos, GLboolean create = false);
 	void create();
 	GLboolean checkCollision(Physics::Object& object);
-	std::vector<Mesh::FaceMesh>& getMeshes() {
-		return meshes;
-	}
+	std::vector<Mesh::FaceMesh>& getMeshes();
+	void cleanUp();
+	std::vector<std::pair<GLuint, GLuint>>& getCompressBlocks();
+	std::vector<std::pair<Mesh::FaceMesh, GLuint>>& getCompressMesh();
 private:
 	GLboolean isNull;
 	std::vector<Mesh::FaceMesh> meshes;
 	Physics::Object object;
+	std::vector<std::pair<GLuint, GLuint>> compressedBlocks;
+	std::vector<std::pair<Mesh::FaceMesh, GLuint>> compressedMesh;
+
+	std::vector<std::pair<GLuint, GLuint>>& compressBlocks();
+	std::vector<std::pair<Mesh::FaceMesh, GLuint>>& compressMesh();
+	void sortMesh();
 };
-GLuint getBlockIndex(glm::vec3 position);
 

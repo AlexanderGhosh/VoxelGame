@@ -1,8 +1,10 @@
 #pragma once
+#include <sstream>
 #include "../../Mesh.h"
 
 #define RENDER_DISTANCE 2
 #define CHUNK_SIZE 4
+#define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 
 #define GRAVITY 9.81
@@ -49,3 +51,5 @@ static std::array<Buffer*, 6> FACES = {
 static std::vector<Texture*> TEXTURES = {
 	new Texture("grass")
 };
+
+GLuint getBlockIndex(glm::vec3 position);

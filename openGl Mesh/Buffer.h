@@ -47,6 +47,7 @@ public:
 	void setBufferData(std::vector<GLfloat> bufferData);
 	void merge(Buffer& b);
 	void destroy();
+	void endRender();
 private:
 	GLuint VBO;
 	GLuint VAO;

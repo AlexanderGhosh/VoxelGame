@@ -4,6 +4,7 @@
 #include "../Mesh.h"
 #include "../Shaders/Shader.h"
 #include "../Game/Player/Camera.h"
+#include "../Game/World/constants.h"
 #include <gtc/matrix_transform.hpp>
 namespace Render {
 	class ChunkMeshRender {
@@ -13,13 +14,14 @@ namespace Render {
 		}
 		ChunkMeshRender(GLboolean init);
 		ChunkMeshRender(std::string shaderName);
-		void loadMeshes(std::vector<Mesh::FaceMesh>& m);
+		void loadMeshes(const std::vector<Mesh::FaceMesh>& m);
 		void render(Camera p1, glm::mat4 projection);
 		void destroy();
 		void setPosition(glm::vec3 position);
 		void setShader(std::string name);
 		void addPosition(glm::vec3 positon);
 		void setRotaion(const glm::vec3& rotation);
+		void cleanUp();
 	private:
 		Shader shader;
 		std::vector<Mesh::FaceMesh> meshes;

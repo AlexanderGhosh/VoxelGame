@@ -46,7 +46,15 @@ void World::renderChunksStatic(Camera c, glm::mat4 projection) {
 		}
 	}
 }
-
+void World::cleanUp() {
+	for (auto& chunk : chunks) {
+		std::get<0>(chunk).cleanUp();
+	}
+	for (auto& renderer : rs) {
+		renderer.cleanUp();
+	}
+	render.cleanUp();
+}
 /*Chunk* World::getChunkOccupied(glm::vec3 position) {
 	/*for (auto& chunkP : chunks) {
 		Chunk chunk  = std::get<0>(chunkP);
@@ -56,6 +64,5 @@ void World::renderChunksStatic(Camera c, glm::mat4 projection) {
 			}
 		}
 	}
-	return nullptr;
 	return nullptr;
 }*/

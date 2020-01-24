@@ -33,6 +33,7 @@ namespace Mesh {
 			texture = new Texture("grass", GL_FALSE);
 			rotation = { 0, 0, 0 };
 		}
+		FaceMesh(GLboolean loadTex);
 		FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC);
 		void setupBufferStructure(GLboolean is3D = GL_TRUE);
 		void setPosition(glm::vec3 position);
@@ -42,21 +43,23 @@ namespace Mesh {
 		void bindTexture();
 		void unBindTexture();
 		Buffer* getBuffer();
+		void cleanUp();
 		// Physics::BoxCollider& getCollider();
 	};
+	FaceMesh& operator+=(FaceMesh& mesh1, const FaceMesh& mesh2);
 
 	struct BlockMesh {
-		std::vector<FaceMesh> faces;
+		std::vector<FaceMesh*> faces;
 		glm::vec3 position;
 		Buffer* buffer;
 		Texture* texture;
 		BlockMesh() {
-			faces = std::vector<FaceMesh>();
+			faces = std::vector<FaceMesh*>();
 			position = { 0, 0, 0 };
 			buffer = new Buffer();
 			texture = new Texture("grass", GL_FALSE);
 		}
-		void addFace(const FaceMesh& face, glm::vec3 pos = glm::vec3());
+		void addFace(FaceMesh* face, glm::vec3 pos = glm::vec3());
 		void setPosition(glm::vec3 position);
 
 		void setTexture(std::string name);

@@ -53,7 +53,7 @@ void Player::create() {
 		face.setTexture(tex);
 		faces.push_back(face);
 	}
-	renderer.loadMeshes(faces);
+	// renderer.loadMeshes(&faces);
 	renderer.setShader("block2");
 	prevPos = object.getPosition();
 }

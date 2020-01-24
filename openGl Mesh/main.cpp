@@ -41,47 +41,12 @@ int main() {
 	GLFWwindow* window = createWindow();
 	// TEXTURES = { new Texture("grass", GL_FALSE) };
 	Game game;
-	GameConfig::showFPS = true;
+	//GameConfig::showFPS = true;
 	game.setWindow(window);
 	game.generateWorld();
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	game.doLoop(projection);
 
-	/*
-	Render::FaceMeshRender fmr("block2");
-	Mesh::FaceMesh front = FACES::FRONT;
-	front.setPosition({ 0, 2, -3 });
-	front.setTexture("grass");
-	fmr.loadMesh(front);
-
-	World world;
-	// p.create();
-
-	
-	while (!glfwWindowShouldClose(window))
-	{
-		std::cout << getFrameRate() << std::endl;
-
-		GLfloat frame = glfwGetTime();
-		deltaTime = frame - lastFrame;
-		lastFrame = frame;
-
-		glfwPollEvents();
-		DoMovement();
-
-		glClearColor(BACKGROUND.r, BACKGROUND.g, BACKGROUND.b, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		fmr.render(cam, projection);
-		world.renderChunksStatic(cam, projection);
-		// p.render(projection);
-		
-
-
-		// Physics::Engine::doUpdates(world);
-
-		glfwSwapBuffers(window);
-	}*/
 	glfwTerminate();
 	return EXIT_SUCCESS;
 }

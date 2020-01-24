@@ -66,7 +66,6 @@ void Buffer::render() {
 	}
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, getTriangleCount());
-	glBindVertexArray(0);
 }
 void Buffer::setStructure(Structure structure) {
 	this->structure;
@@ -84,4 +83,7 @@ void Buffer::destroy() {
 	canRender = GL_FALSE;
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+}
+void Buffer::endRender() {
+	glBindVertexArray(0);
 }

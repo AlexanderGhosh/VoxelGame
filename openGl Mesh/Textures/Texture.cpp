@@ -10,13 +10,21 @@ Texture::Texture(std::string name, GLboolean is2D) {
 		created = load3D(name);
 	}
 }
+Texture::Texture(GLboolean loadTex) {
+	name = "";
+	is2D = false;
+	created = false;
+	if (loadTex) {
+		created = load3D("grass");
+	}
+}
 GLboolean Texture::load2D(std::string& name) {
 	name = name + ".png";
 
 	glGenTextures(1, &texMap);
 	// diffuse
 	unsigned char* image = SOIL_load_image(name.c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
-	if (!image) std::cout << "tex error" << std::endl;
+	if (!image) std::cout << "texture error" << std::endl;
 	glBindTexture(GL_TEXTURE_2D, texMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dimentions.x, dimentions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -27,7 +35,7 @@ GLboolean Texture::load2D(std::string& name) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	return GL_TRUE;
 }
-GLboolean Texture::load3D(std::string& name) {
+GLboolean Texture::load3D(const std::string& name) {
 	std::vector<std::string> faces = {
 		"Textures/" + name + "/left.png",	// left
 		"Textures/" + name + "/front.png",	// front

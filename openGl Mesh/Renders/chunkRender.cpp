@@ -38,19 +38,42 @@ namespace Render {
 		glm::vec3 viewPos = p1.GetPosition();
 		shader.setValue("viewPos", viewPos);
 
-		
+		Texture* prevTex = nullptr;
+		Buffer* prevBuffer = nullptr;
+
 		for (auto& mesh : meshes) {
 			glm::mat4 model(1);
 			model = glm::translate(model, mesh.position);
 			model = glm::rotate(model, mesh.rotation.x, { 0, p1.GetPosition().y, 0 });
 
+			
 			shader.setValue("model", model);
+
 			mesh.bindTexture();
-			mesh.buffer->render();
+			mesh.getBuffer()->render();
+			mesh.getBuffer()->endRender();
+			/*
+			if (mesh.texture != prevTex) {
+				// mesh.unBindTexture();
+				mesh.bindTexture();
+				prevTex = mesh.texture;
+				
+				
+				// std::cout << "binded new tex: " << prevTex << std::endl;
+			}
+			if (mesh.getBuffer() != prevBuffer) {
+				// mesh.getBuffer()->endRender();
+				prevBuffer = mesh.getBuffer();
+				mesh.getBuffer()->render();
+				
+				
+				// std::cout << "rendered new buffer: " << prevBuffer << std::endl;
+			}*/
 		}
+		// std::cout << "chunk rendered" << std::endl;
 	}
 
-	void ChunkMeshRender::loadMeshes(std::vector<Mesh::FaceMesh>& m) {
+	void ChunkMeshRender::loadMeshes(const std::vector<Mesh::FaceMesh>& m) {
 		meshes = m;
 		canRender = GL_TRUE;
 	}
@@ -74,5 +97,10 @@ namespace Render {
 		for (auto& face : meshes) {
 			face.setRotation(rotation);
 		}
+	}
+	void ChunkMeshRender::cleanUp() {
+		shader.unBind();
+		canRender = false;
+		meshes = std::vector<Mesh::FaceMesh>();
 	}
 };
