@@ -2,46 +2,23 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-/*
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>*/
+
 #include <gtc/type_ptr.hpp>
 
-// #include "Renders/meshRender.h"
-// #include "Game/Player/Player.h"
-// #include "Renders/chunkRender.h"
-//#include "Game/World/constants.h"
-//#include "Game/World/Chunk.h"
-//#include "Game/Player/Camera.h"
-// #include "Game/World/PhysicsEngine.h"
-// #include "Game/World/World.h"
 #include "Game/Game.h"
 
-// Player p1;
-glm::vec3 m_pos(1);
 glm::ivec2 DIM(1600, 900);
-glm::vec3 BACKGROUND(0.5);
-GLfloat prev_t;
-
-bool keys[1024];
-bool firstMouse = true;
-GLfloat deltaTime = 0.0f;
-GLfloat lastFrame = 0.0f;
-GLfloat lastX = DIM.x / 2, lastY = DIM.y / 2;
-
-void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
-void MouseCallBack(GLFWwindow* window, double xPos, double yPos);
-void DoMovement();
 
 GLFWwindow* createWindow();
-// Camera cam(glm::vec3(0, 2, 0));
 
 // Player p;
 int main() {
 	GLFWwindow* window = createWindow();
-	// TEXTURES = { new Texture("grass", GL_FALSE) };
+	for (auto& tex : TEXTURES) {
+		tex->load3D(tex->getName());
+	}
 	Game game;
-	//GameConfig::showFPS = true;
+	// GameConfig::showFPS = true;
 	game.setWindow(window);
 	game.generateWorld();
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
@@ -91,54 +68,3 @@ GLFWwindow* createWindow() {
 
 	return window;
 }
-
-//void DoMovement() {
-//	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]) {
-//		cam.ProcessMovement(FORWARD, deltaTime);
-//		/*Physics::Update up = p.processMovement(FORWARD, deltaTime);
-//		Physics::Engine::addUpdate(up); */
-//	}
-//	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]) {
-//		cam.ProcessMovement(BACKWARD, deltaTime);
-//		/*Physics::Update up = p.processMovement(BACKWARD, deltaTime);
-//		Physics::Engine::addUpdate(up);*/
-//	}
-//	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
-//		cam.ProcessMovement(RIGHT, deltaTime);
-//		/*Physics::Update up = p.processMovement(RIGHT, deltaTime);
-//		Physics::Engine::addUpdate(up);*/
-//	}
-//	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
-//		cam.ProcessMovement(LEFT , deltaTime);
-//		/*Physics::Update up = p.processMovement(LEFT, deltaTime);
-//		Physics::Engine::addUpdate(up);*/
-//	}
-//}
-//void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
-//	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-//		glfwSetWindowShouldClose(window, true);
-//	}
-//	if (key >= 0 && key < 1024) {
-//		if (action == GLFW_PRESS || action == GLFW_RELEASE) {
-//			keys[key] ^= true;
-//		}
-//	}
-//	//glm::vec3 pos = c.GetPostion();
-//	//std::cout << pos.x << "," << pos.y << "," << pos.z << std::endl;
-//}
-//void MouseCallBack(GLFWwindow* window, double xPos, double yPos) {
-//	if (firstMouse) {
-//		lastX = xPos;
-//		lastY = yPos;
-//		firstMouse = false;
-//	}
-//
-//	GLfloat xOffset = xPos - lastX;
-//	GLfloat yOffset = lastY - yPos;
-//
-//	lastX = xPos;
-//	lastY = yPos;
-//
-//	// cam.ProcessMouseMovement(xOffset, yOffset);
-//	//p.processMouse(xOffset, yOffset);
-//}

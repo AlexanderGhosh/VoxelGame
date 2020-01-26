@@ -23,59 +23,58 @@ void Chunk::create() {
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
 				if (x > 0) {
 					if (blocks[getBlockIndex({ x - 1, y, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[LEFT]), pos);
+						blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
 					}
 				}
 				else {
-					blockMesh.addFace(new FaceMesh(FACES[LEFT]), pos);
+					blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
 				}
 				if (x < CHUNK_SIZE - 1) {
 					if (blocks[getBlockIndex({ x + 1, y, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[RIGHT]), pos);
+						blockMesh.addFace(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
 					}
 				}
 				else {
-					blockMesh.addFace(new FaceMesh(FACES[RIGHT]), pos);
+					blockMesh.addFace(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
 				}
 
 				if (y > 0) {
 					if (blocks[getBlockIndex({ x, y - 1, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[BOTTOM]), pos);
+						blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
 					}
 				}
 				else {
-					blockMesh.addFace(new FaceMesh(FACES[BOTTOM]), pos);
+					blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
 				}
 				if (y < CHUNK_SIZE - 1) {
 					if (blocks[getBlockIndex({ x, y + 1, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[TOP]), pos);
+						blockMesh.addFace(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
 					}
 				}
 				else {
-					blockMesh.addFace(new FaceMesh(FACES[TOP]), pos);
+					blockMesh.addFace(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
 				}
 
 				if (z > 0) {
 					if (blocks[getBlockIndex({ x, y, z + 1 })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[BACK]), pos);
+						blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
 					}
 				}
 				else {
-					blockMesh.addFace(new FaceMesh(FACES[BACK]), pos);
+					blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
 				}
 				if (z < CHUNK_SIZE - 1) {
 					if (blocks[getBlockIndex({ x, y, z - 1 })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[FRONT]), pos);
+						blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
 					}
 				}
 				else {
-					blockMesh.addFace(new FaceMesh(FACES[FRONT]), pos);
+					blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
 				}
 
 				if (blockMesh.faces.size() < 1) continue;
 				Mesh::FaceMesh mesh((GLboolean)false);
 				if (blockMesh.faces.size() > 1) {
-					// std::cout << "hi\n";
 					for (auto& m : blockMesh.faces) {
 						mesh += *m;
 					}
@@ -88,7 +87,7 @@ void Chunk::create() {
 		}
 	}
 	compressBlocks();
-	// compressMesh();
+	compressMesh();
 }
 GLboolean Chunk::checkCollision(Physics::Object& object) {
 	/*if (!object.getPhysical()) return GL_FALSE;
@@ -151,19 +150,29 @@ std::vector<std::pair<Mesh::FaceMesh, GLuint>>& Chunk::getCompressMesh() {
 	return compressedMesh;
 }
 void Chunk::sortMesh() {
-	std::vector<std::vector<Mesh::FaceMesh>> sorted; 
-	sorted.resize(CHUNK_SIZE);
-	for (int i = 0; i < meshes.size(); i++) {
-		auto& mesh = meshes[i];
-		int index = (int)std::abs(mesh.position.y) - 1;
-		sorted[index].push_back(mesh);
+	std::map<int, std::vector<FaceMesh>> seperated;
+	for (auto& mesh : meshes) {
+		int location = 0;
+		for (auto& buffer : mesh.comboOf) {
+			location += (int)buffer;
+		}
+		if (!location) {
+			location = (int)mesh.getBuffer();
+		}
+		try {
+			seperated[location].push_back(mesh);
+		}
+		catch (std::exception e) {
+			seperated.insert({ location, { mesh } });
+		}
 	}
-	std::vector<Mesh::FaceMesh> res;
-	for (auto& sort : sorted) {
-		res.insert(res.end(), sort.begin(), sort.end());
+	std::vector<FaceMesh> res;
+	for (auto& sep : seperated) {
+		res.insert(res.end(), sep.second.begin(), sep.second.end());
 	}
 	meshes = res;
 }
+
 std::vector<Mesh::FaceMesh>& Chunk::getMeshes() {
 	/*std::vector<Mesh::FaceMesh*> res;
 	for (auto& face : meshes) {

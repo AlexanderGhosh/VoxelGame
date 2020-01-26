@@ -48,6 +48,7 @@ public:
 	void merge(Buffer& b);
 	void destroy();
 	void endRender();
+	void draw();
 private:
 	GLuint VBO;
 	GLuint VAO;

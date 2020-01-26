@@ -9,6 +9,7 @@
 class Texture
 {
 public:
+	Texture(std::string name, std::string overload);
 	Texture() {
 		created = GL_FALSE;
 	}
@@ -20,9 +21,9 @@ public:
 	GLboolean& get2D();
 	glm::ivec2& getDimentions();
 	void unBind();
-private:
 	GLboolean load3D(const std::string& name);
 	GLboolean load2D(std::string& name);
+private:
 	GLboolean created;
 	glm::ivec2 dimentions;
 	GLuint texMap;

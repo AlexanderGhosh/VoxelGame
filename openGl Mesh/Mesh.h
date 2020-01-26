@@ -16,6 +16,7 @@ namespace Mesh {
 		glm::vec3 rotation;
 		Buffer* buffer;
 		Texture* texture;
+		std::vector<Buffer*> comboOf;
 		// Physics::BoxCollider collider;
 		FaceMesh() {
 			vertices = std::array<glm::vec3, 6>();
@@ -27,10 +28,11 @@ namespace Mesh {
 			rotation = { 0, 0, 0 };
 			// collider = Physics::BoxCollider(position, 1);
 		}
-		FaceMesh(Buffer* buffer) {
+		FaceMesh(Buffer* buffer, Texture* texture) {
 			position = glm::vec3(3, 2, 0);
 			this->buffer = buffer;
-			texture = new Texture("grass", GL_FALSE);
+			this->texture = texture;
+			// texture = new Texture("grass", GL_FALSE);
 			rotation = { 0, 0, 0 };
 		}
 		FaceMesh(GLboolean loadTex);
@@ -44,6 +46,9 @@ namespace Mesh {
 		void unBindTexture();
 		Buffer* getBuffer();
 		void cleanUp();
+		bool operator <= (const FaceMesh& mesh);
+		bool isCombo();
+		Buffer* getCombo(int index);
 		// Physics::BoxCollider& getCollider();
 	};
 	FaceMesh& operator+=(FaceMesh& mesh1, const FaceMesh& mesh2);

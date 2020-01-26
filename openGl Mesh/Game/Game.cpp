@@ -33,7 +33,7 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
-	Mesh::FaceMesh top(FACES[TOP]);
+	Mesh::FaceMesh top(FACES[TOP], TEXTURES[GRASS]);
 	top.setPosition({ 0, 2, 0 });
 	Render::ChunkMeshRender rend;
 	// rend.loadMeshes({ top });

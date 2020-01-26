@@ -75,10 +75,26 @@ namespace Mesh {
 	}
 	FaceMesh& operator+= (FaceMesh& mesh1, const FaceMesh& mesh2) {
 		mesh1.buffer->merge(*mesh2.buffer);
+		mesh1.comboOf.push_back(mesh2.buffer);
 		mesh1.setTexture(mesh2.texture);
 		mesh1.setPosition(mesh2.position);
 		mesh1.setRotation(mesh2.rotation);
 		return mesh1;
+	}
+	bool FaceMesh::operator <= (const FaceMesh& mesh) {
+		return buffer <= mesh.buffer;
+	}
+	bool FaceMesh::isCombo() {
+		if (comboOf.size() > 1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	Buffer* FaceMesh::getCombo(int index) {
+		if (index < 0 || index + 1 > comboOf.size()) return nullptr;
+		return comboOf[index];
 	}
 
 	void BlockMesh::addFace(FaceMesh* face, glm::vec3 pos) {

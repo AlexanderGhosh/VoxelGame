@@ -21,34 +21,34 @@ void Player::create() {
 		std::string tex = "player/";
 		tex += i == 0 ? "bottom" : "top";
 
-		FaceMesh face(FACES[FRONT]);
+		FaceMesh face(FACES[FRONT], TEXTURES[GRASS]);
 		face.setPosition(pos);
 		face.setTexture(tex);
 		faces.push_back(face);
 
-		face = FaceMesh(FACES[BACK]);
+		face = FaceMesh(FACES[BACK], TEXTURES[GRASS]);
 		face.setPosition(pos);
 		face.setTexture(tex);
 		faces.push_back(face);
 
 		if (i != 0) {
-			face = FaceMesh(FACES[TOP]);
+			face = FaceMesh(FACES[TOP], TEXTURES[GRASS]);
 			face.setPosition(pos);
 			face.setTexture(tex);
 			faces.push_back(face);
 		}
 		if (i == 0) {
-			face = FaceMesh(FACES[BOTTOM]);
+			face = FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]);
 			face.setPosition(pos);
 			face.setTexture(tex);
 			faces.push_back(face);
 		}
-		face = FaceMesh(FACES[RIGHT]);
+		face = FaceMesh(FACES[RIGHT], TEXTURES[GRASS]);
 		face.setPosition(pos);
 		face.setTexture(tex);
 		faces.push_back(face);
 
-		face = FaceMesh(FACES[LEFT]);
+		face = FaceMesh(FACES[LEFT], TEXTURES[GRASS]);
 		face.setPosition(pos);
 		face.setTexture(tex);
 		faces.push_back(face);

@@ -1,6 +1,9 @@
 #include "constants.h"
 
-
+const std::vector<Texture*>TEXTURES = {
+	new Texture("grass", ""),
+	// new Texture("player", "")
+};
 GLuint getBlockIndex(glm::vec3 position) {
 	/*
 	GLuint index;

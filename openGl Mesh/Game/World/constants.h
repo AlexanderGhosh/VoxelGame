@@ -1,9 +1,10 @@
 #pragma once
+#include <string>
 #include <sstream>
 #include "../../Mesh.h"
 
 #define RENDER_DISTANCE 2
-#define CHUNK_SIZE 4
+#define CHUNK_SIZE 16
 #define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 
@@ -20,7 +21,8 @@ enum FACES_NAMES {
 	BOTTOM
 };
 enum TEXTURE_NAMES {
-	GRASS
+	GRASS,
+	PLAYER
 };
 
 static std::array<Buffer*, 6> FACES = {
@@ -48,8 +50,6 @@ static std::array<Buffer*, 6> FACES = {
 	{ glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0) },
 	{ glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1), glm::vec3(1), glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1) }).getBuffer()
 };
-static std::vector<Texture*> TEXTURES = {
-	new Texture("grass")
-};
+extern const std::vector<Texture*> TEXTURES;
 
 GLuint getBlockIndex(glm::vec3 position);

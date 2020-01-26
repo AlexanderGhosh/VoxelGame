@@ -1,5 +1,9 @@
 #include "Texture.h"
 
+Texture::Texture(std::string name, std::string overload) {
+	this->name = name;
+	created = 0;
+}
 Texture::Texture(std::string name, GLboolean is2D) {
 	this->name = name;
 	this->is2D = is2D;
@@ -36,6 +40,8 @@ GLboolean Texture::load2D(std::string& name) {
 	return GL_TRUE;
 }
 GLboolean Texture::load3D(const std::string& name) {
+	this->name = name;
+	is2D = GL_FALSE;
 	std::vector<std::string> faces = {
 		"Textures/" + name + "/left.png",	// left
 		"Textures/" + name + "/front.png",	// front
@@ -46,7 +52,7 @@ GLboolean Texture::load3D(const std::string& name) {
 	};
 	glGenTextures(1, &texMap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texMap);
-
+	// texMap = texMap;
 	unsigned char* data;
 
 	for (GLuint i = 0; i < faces.size(); i++)
@@ -69,9 +75,11 @@ GLboolean Texture::load3D(const std::string& name) {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	created = true;
 	return GL_TRUE;
 }
 void Texture::bind() {
+	if (!created) return;
 	if (is2D) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texMap);

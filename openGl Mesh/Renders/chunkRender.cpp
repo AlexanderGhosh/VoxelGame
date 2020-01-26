@@ -13,6 +13,14 @@ namespace Render {
 			canRender = GL_FALSE;
 		}
 	}
+	int quadraticFormula(int meshCount) {
+		//6x^2 - 12x + 8 = meshCount
+		int c = 8 - meshCount;
+		float t = std::powf((144 - 24 * c), 0.5f);
+		t /= 12;
+		if (1 + t > 0) return 1 + t;
+		return 1 - t;
+	}
 	void ChunkMeshRender::render(Camera p1, glm::mat4 projection) {
 		if (!canRender) {
 			std::cout << "Unable to render please call 'loadMesh()'" << std::endl;
@@ -40,39 +48,44 @@ namespace Render {
 
 		Texture* prevTex = nullptr;
 		Buffer* prevBuffer = nullptr;
+		std::vector<Buffer*> prevCombo = std::vector<Buffer*>();
+
+		auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader& shader) {
+			glm::mat4 model(1);
+			model = glm::translate(model, position);
+			if (rotation.x != 0) {
+				model = glm::rotate(model, rotation.x, { 0, p1.GetPosition().y, 0 });
+			}
+			shader.setValue("model", model);
+		};
 
 		for (auto& mesh : meshes) {
-			glm::mat4 model(1);
-			model = glm::translate(model, mesh.position);
-			model = glm::rotate(model, mesh.rotation.x, { 0, p1.GetPosition().y, 0 });
-
 			
-			shader.setValue("model", model);
+			createModel(mesh.position, mesh.rotation, p1, shader);
 
-			mesh.bindTexture();
-			mesh.getBuffer()->render();
-			mesh.getBuffer()->endRender();
-			/*
 			if (mesh.texture != prevTex) {
-				// mesh.unBindTexture();
-				mesh.bindTexture();
+				mesh.texture->bind();
 				prevTex = mesh.texture;
-				
-				
-				// std::cout << "binded new tex: " << prevTex << std::endl;
 			}
-			if (mesh.getBuffer() != prevBuffer) {
-				// mesh.getBuffer()->endRender();
-				prevBuffer = mesh.getBuffer();
-				mesh.getBuffer()->render();
-				
-				
-				// std::cout << "rendered new buffer: " << prevBuffer << std::endl;
-			}*/
-		}
-		// std::cout << "chunk rendered" << std::endl;
-	}
 
+			// 26
+			if (mesh.getBuffer() != prevBuffer) {
+				if (mesh.isCombo() && mesh.comboOf == prevCombo) {
+					mesh.getBuffer()->draw();
+				}
+				else {
+					mesh.getBuffer()->render();
+					prevBuffer = mesh.getBuffer();
+					prevCombo = mesh.comboOf;
+					std::cout << "renderd\n";
+				}
+			}
+			else {
+				mesh.getBuffer()->draw();
+			}
+		}
+		glBindVertexArray(0);
+	}
 	void ChunkMeshRender::loadMeshes(const std::vector<Mesh::FaceMesh>& m) {
 		meshes = m;
 		canRender = GL_TRUE;

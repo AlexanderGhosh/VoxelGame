@@ -65,6 +65,9 @@ void Buffer::render() {
 		createBuffers();
 	}
 	glBindVertexArray(VAO);
+	draw();
+}
+void Buffer::draw() {
 	glDrawArrays(GL_TRIANGLES, 0, getTriangleCount());
 }
 void Buffer::setStructure(Structure structure) {
