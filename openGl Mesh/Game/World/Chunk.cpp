@@ -49,57 +49,6 @@ void Chunk::createMesh(std::vector<Chunk> chunks) {
 					blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
 				}
 
-				/*if (x > 0) {
-					if (getBlockIndex({ x - 1, y, z }) >= 0 && blocks[getBlockIndex({ x - 1, y, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
-					}
-				}
-				else {
-					blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
-				}
-				if (x < CHUNK_SIZE - 1) {
-					if (getBlockIndex({ x + 1, y, z }) >= 0 && blocks[getBlockIndex({ x + 1, y, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
-					}
-				}
-				else {
-					blockMesh.addFace(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
-				}
-
-				if (y > 0) {
-					if (getBlockIndex({ x - 1, y, z }) >= 0 && blocks[getBlockIndex({ x, y - 1, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
-					}
-				}
-				else {
-					blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
-				}
-				if (y < CHUNK_SIZE - 1) {
-					if (getBlockIndex({ x, y + 1, z }) >= 0 && blocks[getBlockIndex({ x, y + 1, z })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
-					}
-				}
-				else {
-					blockMesh.addFace(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
-				}
-
-				if (z > 0) {
-					if (getBlockIndex({ x, y, z + 1 }) >= 0 && blocks[getBlockIndex({ x, y, z + 1 })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
-					}
-				}
-				else {
-					blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
-				}
-				if (z < CHUNK_SIZE - 1) {
-					if (getBlockIndex({ x, y, z - 1 }) >= 0 && blocks[getBlockIndex({ x, y, z - 1 })] == 0) {
-						blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
-					}
-				}
-				else {
-					blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
-				}*/
-
 				if (blockMesh.faces.size() < 1) continue;
 				Mesh::FaceMesh mesh((GLboolean)false);
 				if (blockMesh.faces.size() > 1) {
@@ -107,16 +56,16 @@ void Chunk::createMesh(std::vector<Chunk> chunks) {
 						mesh += *m;
 					}
 					meshes.push_back(mesh);
-				}
+					}
 				else {
 					meshes.push_back(*blockMesh.faces[0]);
 				}
 			}
 		}
 	}
+	sortMesh();
 	compressBlocks();
 	compressMesh();
-	sortMesh();
 }
 GLboolean Chunk::checkCollision(Physics::Object& object) {
 	/*if (!object.getPhysical()) return GL_FALSE;
