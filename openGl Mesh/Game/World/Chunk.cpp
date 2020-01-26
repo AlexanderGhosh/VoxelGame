@@ -15,14 +15,42 @@ Chunk::Chunk(glm::vec3 pos, GLboolean create) : object((GLfloat)100.0f, { positi
 	}
 }
 void Chunk::create() {
+	createBlocks();
+	createMesh();
+}
+void Chunk::createBlocks() {
 	blocks.fill(1);
-	for (GLuint x = 0; x < CHUNK_SIZE; x++) {
-		for (GLuint y = 0; y < CHUNK_SIZE; y++) {
-			for (GLuint z = 0; z < CHUNK_SIZE; z++) {
+}
+void Chunk::createMesh(std::vector<Chunk> chunks) {
+	for (GLint x = 0; x < CHUNK_SIZE; x++) {
+		for (GLint y = 0; y < CHUNK_SIZE; y++) {
+			for (GLint z = 0; z < CHUNK_SIZE; z++) {
 				BlockMesh blockMesh;
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
-				if (x > 0) {
-					if (blocks[getBlockIndex({ x - 1, y, z })] == 0) {
+
+				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
+					blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
+				}
+				if (getBlock_safe({ x + 1, y, z }, chunks) == 0) {
+					blockMesh.addFace(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
+				}
+
+				if (getBlock_safe({ x, y - 1, z }, chunks) == 0) {
+					blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
+				}
+				if (getBlock_safe({ x, y + 1, z }, chunks) == 0) {
+					blockMesh.addFace(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
+				}
+
+				if (getBlock_safe({ x, y, z + 1}, chunks) == 0) {
+					blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
+				}
+				if (getBlock_safe({ x, y, z - 1}, chunks) == 0) {
+					blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
+				}
+
+				/*if (x > 0) {
+					if (getBlockIndex({ x - 1, y, z }) >= 0 && blocks[getBlockIndex({ x - 1, y, z })] == 0) {
 						blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
 					}
 				}
@@ -30,7 +58,7 @@ void Chunk::create() {
 					blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
 				}
 				if (x < CHUNK_SIZE - 1) {
-					if (blocks[getBlockIndex({ x + 1, y, z })] == 0) {
+					if (getBlockIndex({ x + 1, y, z }) >= 0 && blocks[getBlockIndex({ x + 1, y, z })] == 0) {
 						blockMesh.addFace(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
 					}
 				}
@@ -39,7 +67,7 @@ void Chunk::create() {
 				}
 
 				if (y > 0) {
-					if (blocks[getBlockIndex({ x, y - 1, z })] == 0) {
+					if (getBlockIndex({ x - 1, y, z }) >= 0 && blocks[getBlockIndex({ x, y - 1, z })] == 0) {
 						blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
 					}
 				}
@@ -47,7 +75,7 @@ void Chunk::create() {
 					blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
 				}
 				if (y < CHUNK_SIZE - 1) {
-					if (blocks[getBlockIndex({ x, y + 1, z })] == 0) {
+					if (getBlockIndex({ x, y + 1, z }) >= 0 && blocks[getBlockIndex({ x, y + 1, z })] == 0) {
 						blockMesh.addFace(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
 					}
 				}
@@ -56,7 +84,7 @@ void Chunk::create() {
 				}
 
 				if (z > 0) {
-					if (blocks[getBlockIndex({ x, y, z + 1 })] == 0) {
+					if (getBlockIndex({ x, y, z + 1 }) >= 0 && blocks[getBlockIndex({ x, y, z + 1 })] == 0) {
 						blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
 					}
 				}
@@ -64,13 +92,13 @@ void Chunk::create() {
 					blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
 				}
 				if (z < CHUNK_SIZE - 1) {
-					if (blocks[getBlockIndex({ x, y, z - 1 })] == 0) {
+					if (getBlockIndex({ x, y, z - 1 }) >= 0 && blocks[getBlockIndex({ x, y, z - 1 })] == 0) {
 						blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
 					}
 				}
 				else {
 					blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
-				}
+				}*/
 
 				if (blockMesh.faces.size() < 1) continue;
 				Mesh::FaceMesh mesh((GLboolean)false);
@@ -88,6 +116,7 @@ void Chunk::create() {
 	}
 	compressBlocks();
 	compressMesh();
+	sortMesh();
 }
 GLboolean Chunk::checkCollision(Physics::Object& object) {
 	/*if (!object.getPhysical()) return GL_FALSE;
@@ -174,9 +203,48 @@ void Chunk::sortMesh() {
 }
 
 std::vector<Mesh::FaceMesh>& Chunk::getMeshes() {
-	/*std::vector<Mesh::FaceMesh*> res;
-	for (auto& face : meshes) {
-		res.push_back(&face);
-	}*/
 	return meshes;
+}
+GLuint Chunk::getBlock_unsafe(const glm::vec3 pos) {
+	return blocks[getBlockIndex(pos)];
+}
+GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk> chunks) {
+	glm::vec3 toLookAt = inChunkPosition;
+	glm::vec3 chunkPositionToLookAt = position;
+	if (inChunkPosition.x < 0) {
+		toLookAt.x = CHUNK_SIZE + inChunkPosition.x;
+		chunkPositionToLookAt.x -= CHUNK_SIZE;
+	}
+	else if (inChunkPosition.x > CHUNK_SIZE - 1) {
+		toLookAt.x -= CHUNK_SIZE;
+		chunkPositionToLookAt.x += CHUNK_SIZE;
+	}
+
+	if (inChunkPosition.y < 0) {
+		toLookAt.y = CHUNK_SIZE + inChunkPosition.y;
+		chunkPositionToLookAt.y -= CHUNK_SIZE;
+	}
+	else if (inChunkPosition.y > CHUNK_SIZE - 1) {
+		toLookAt.y -= CHUNK_SIZE;
+		chunkPositionToLookAt.y += CHUNK_SIZE;
+	}
+
+	if (inChunkPosition.z < 0) {
+		toLookAt.z = CHUNK_SIZE + inChunkPosition.z;
+		chunkPositionToLookAt.z -= CHUNK_SIZE;
+	}
+	else if (inChunkPosition.z > CHUNK_SIZE - 1) {
+		toLookAt.z -= CHUNK_SIZE;
+		chunkPositionToLookAt.z += CHUNK_SIZE;
+	}
+	
+	int index = getBlockIndex(toLookAt); 
+
+	if (index < 0) return 0;
+	for (auto& chunk : chunks) {
+		if (chunk.position == chunkPositionToLookAt) {
+			return chunk.blocks[index];
+		}
+	}
+	return 0;
 }

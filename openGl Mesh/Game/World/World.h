@@ -19,6 +19,7 @@ public:
 	void setPlayerPosition(Player& player);
 	Chunk* getChunkOccupied(glm::vec3 position);
 	void cleanUp();
+	std::vector<Chunk> getChunks(); 
 private:
 	std::vector<std::tuple<Chunk, GLboolean>> chunks;
 	glm::vec3 playerPosition;

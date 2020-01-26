@@ -15,6 +15,7 @@ Game::Game() {
 	hasPlayer = false;
 	gameRunning = false;
 	Game::mainCamera = new Camera({ 0, 2, 0 });
+	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 }
 Game::Game(GLboolean hasPlayer) {

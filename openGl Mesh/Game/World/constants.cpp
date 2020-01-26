@@ -2,14 +2,12 @@
 
 const std::vector<Texture*>TEXTURES = {
 	new Texture("grass", ""),
-	// new Texture("player", "")
+	new Texture("player/bottom", ""),
+	new Texture("player/top", "")
 };
-GLuint getBlockIndex(glm::vec3 position) {
-	/*
-	GLuint index;
-	std::stringstream(std::to_string(position.x) + std::to_string(position.y) + std::to_string(position.z)) >> index;
-	return index;*/
-	int index = position.x + position.z * CHUNK_SIZE + position.y * position.y;
-	if (index < 0) return 0;
+GLint getBlockIndex(glm::vec3 position) {
+	position.y = std::abs(position.y);
+	int index = position.x + position.z * CHUNK_SIZE + position.y * CHUNK_AREA;
+	if (index >= CHUNK_VOLUME) index *= -1;
 	return index;
 }

@@ -77,7 +77,6 @@ namespace Render {
 					mesh.getBuffer()->render();
 					prevBuffer = mesh.getBuffer();
 					prevCombo = mesh.comboOf;
-					std::cout << "renderd\n";
 				}
 			}
 			else {

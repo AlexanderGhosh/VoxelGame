@@ -28,14 +28,19 @@ void World::getNewChunkPositions() {
 }
 void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 	for (auto& pos : chunkPositions) {
-		Chunk chunk(pos, true);
+		Chunk chunk(pos, false);
+		chunk.createBlocks();
 
+		chunks.push_back({ chunk, GL_TRUE });
+	}
+
+	for (auto& tup : chunks) {
+		Chunk& chunk = std::get<0>(tup);
+		chunk.createMesh(getChunks());
 		Render::ChunkMeshRender cmr("block2");
 		cmr.loadMeshes(chunk.getMeshes());
 		rs.push_back(cmr);
 
-		chunks.push_back({ chunk, GL_TRUE });
-		
 		std::cout << "Chunk created" << std::endl;
 	}
 }
@@ -54,6 +59,13 @@ void World::cleanUp() {
 		renderer.cleanUp();
 	}
 	render.cleanUp();
+}
+std::vector<Chunk> World::getChunks() {
+	std::vector<Chunk> res;
+	for (auto& chunk : chunks) {
+		res.push_back(std::get<0>(chunk));
+	}
+	return res;
 }
 /*Chunk* World::getChunkOccupied(glm::vec3 position) {
 	/*for (auto& chunkP : chunks) {

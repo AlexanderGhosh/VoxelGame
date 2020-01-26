@@ -1,9 +1,8 @@
 #pragma once
-#include <sstream>
 #include "../Player/Camera.h"
 #include "constants.h"
 #include "Physics.h"
-#include "../../Mesh.h"
+
 #include <map>
 using namespace Mesh;
 class Chunk
@@ -19,6 +18,10 @@ public:
 	void cleanUp();
 	std::vector<std::pair<GLuint, GLuint>>& getCompressBlocks();
 	std::vector<std::pair<Mesh::FaceMesh, GLuint>>& getCompressMesh();
+	void createMesh(std::vector<Chunk> chunks = std::vector<Chunk>());
+	void createBlocks();
+	GLuint getBlock_unsafe(const glm::vec3 pos);
+	GLuint getBlock_safe(const glm::vec3 pos, std::vector<Chunk> chunks);
 private:
 	GLboolean isNull;
 	std::vector<Mesh::FaceMesh> meshes;

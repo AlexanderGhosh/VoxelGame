@@ -22,7 +22,8 @@ enum FACES_NAMES {
 };
 enum TEXTURE_NAMES {
 	GRASS,
-	PLAYER
+	PLAYER_BOTTOM,
+	PLAYER_TOP
 };
 
 static std::array<Buffer*, 6> FACES = {
@@ -52,4 +53,4 @@ static std::array<Buffer*, 6> FACES = {
 };
 extern const std::vector<Texture*> TEXTURES;
 
-GLuint getBlockIndex(glm::vec3 position);
+GLint getBlockIndex(glm::vec3 position);
