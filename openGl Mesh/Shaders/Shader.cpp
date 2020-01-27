@@ -1,13 +1,62 @@
 #include "Shader.h"
 
 Shader::Shader(std::string shaderName) {
+	name = shaderName;
+}
+void Shader::bind() {
+	glUseProgram(program);
+}
+void Shader::unBind() {
+	glUseProgram(0);
+}
+GLint Shader::getLocation(std::string name) {
+	return glGetUniformLocation(program, name.c_str());
+}
+
+void Shader::setLocation(GLint& location, glm::mat4& value) {
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+void Shader::setLocation(GLint& location, glm::vec3& value) {
+	glUniform3f(location, value.x, value.y, value.z);
+}
+void Shader::setLocation(GLint& location, GLfloat& value) {
+	glUniform1f(location, value);
+}
+void Shader::setLocation(GLint& location, GLint& value) {
+	glUniform1f(location, value);
+}
+GLboolean Shader::setValue(std::string name, GLint& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
+GLboolean Shader::setValue(std::string name, glm::vec3& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
+GLboolean Shader::setValue(std::string name, GLfloat& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
+GLboolean Shader::setValue(std::string name, glm::mat4& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
+void Shader::setUp() {
 	std::string vertexCode, fragmentCode;
 	std::ifstream vShaderFile, fShaderFile;
 	vShaderFile.exceptions(std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::badbit);
 	try {
-		vShaderFile.open(("Shaders/" + shaderName + "_v.gls").c_str());
-		fShaderFile.open(("Shaders/" + shaderName + "_f.gls").c_str());
+		vShaderFile.open(("Shaders/" + name + "_v.gls").c_str());
+		fShaderFile.open(("Shaders/" + name + "_f.gls").c_str());
 		std::stringstream vShaderStream, fShaderStream;
 
 		vShaderStream << vShaderFile.rdbuf();
@@ -65,49 +114,6 @@ Shader::Shader(std::string shaderName) {
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 }
-void Shader::bind() {
-	glUseProgram(program);
-}
-void Shader::unBind() {
-	glUseProgram(0);
-}
-GLint Shader::getLocation(std::string name) {
-	return glGetUniformLocation(program, name.c_str());
-}
-
-void Shader::setLocation(GLint& location, glm::mat4& value) {
-	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
-}
-void Shader::setLocation(GLint& location, glm::vec3& value) {
-	glUniform3f(location, value.x, value.y, value.z);
-}
-void Shader::setLocation(GLint& location, GLfloat& value) {
-	glUniform1f(location, value);
-}
-void Shader::setLocation(GLint& location, GLint& value) {
-	glUniform1f(location, value);
-}
-GLboolean Shader::setValue(std::string name, GLint& value) {
-	GLint loc = getLocation(name);
-	if (loc == -1) return GL_FALSE;
-	setLocation(loc, value);
-	return GL_TRUE;
-}
-GLboolean Shader::setValue(std::string name, glm::vec3& value) {
-	GLint loc = getLocation(name);
-	if (loc == -1) return GL_FALSE;
-	setLocation(loc, value);
-	return GL_TRUE;
-}
-GLboolean Shader::setValue(std::string name, GLfloat& value) {
-	GLint loc = getLocation(name);
-	if (loc == -1) return GL_FALSE;
-	setLocation(loc, value);
-	return GL_TRUE;
-}
-GLboolean Shader::setValue(std::string name, glm::mat4& value) {
-	GLint loc = getLocation(name);
-	if (loc == -1) return GL_FALSE;
-	setLocation(loc, value);
-	return GL_TRUE;
+void Shader::setName(std::string name) {
+	this->name = name;
 }

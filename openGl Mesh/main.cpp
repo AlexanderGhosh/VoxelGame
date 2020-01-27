@@ -17,6 +17,9 @@ int main() {
 	for (auto& tex : TEXTURES) {
 		tex->load3D(tex->getName());
 	}
+	for (auto& shader : SHADERS) {
+		shader->setUp();
+	}
 	Game game;
 	// GameConfig::showFPS = true;
 	game.setWindow(window);

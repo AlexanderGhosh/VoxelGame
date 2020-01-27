@@ -158,6 +158,11 @@ GLuint Chunk::getBlock_unsafe(const glm::vec3 pos) {
 	return blocks[getBlockIndex(pos)];
 }
 GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk> chunks) {
+	if (inChunkPosition.x >= 0 && inChunkPosition.y >= 0 && inChunkPosition.z >= 0) {
+		if (inChunkPosition.x < CHUNK_SIZE && inChunkPosition.y < CHUNK_SIZE && inChunkPosition.z < CHUNK_SIZE) {
+			return blocks[getBlockIndex(inChunkPosition)];
+		}
+	}
 	glm::vec3 toLookAt = inChunkPosition;
 	glm::vec3 chunkPositionToLookAt = position;
 	if (inChunkPosition.x < 0) {

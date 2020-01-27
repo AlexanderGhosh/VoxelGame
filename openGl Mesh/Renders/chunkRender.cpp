@@ -1,12 +1,15 @@
 #include "chunkRender.h"
 namespace Render {
-	ChunkMeshRender::ChunkMeshRender(std::string shaderName) : shader("block2") {
-		shader = Shader(shaderName);
+	ChunkMeshRender::ChunkMeshRender(std::string shaderName) {
+		shader = new Shader(shaderName);
 		canRender = GL_FALSE;
+	}
+	ChunkMeshRender::ChunkMeshRender(Shader* shader) {
+		this->shader = shader;
 	}
 	ChunkMeshRender::ChunkMeshRender(GLboolean init) {
 		if (init) {
-			shader = Shader("block2");
+			shader = SHADERS[BLOCK2];
 			canRender = GL_FALSE;
 		}
 		else {
@@ -26,37 +29,38 @@ namespace Render {
 			std::cout << "Unable to render please call 'loadMesh()'" << std::endl;
 			return;
 		}
-		shader.bind();
+		shader->bind();
 
 		glm::mat4 view(1);
 		view = p1.GetViewMatrix();
-		if (!shader.setValue("view", view)) {
+		if (!shader->setValue("view", view)) {
 			std::cout << "shader not working" << std::endl;
-			shader = Shader("block2");
+			shader = SHADERS[BLOCK2];
 			for (auto& mesh : meshes) {
-				mesh.setTexture("grass");
+				// mesh.setTexture("grass");
+				mesh.texture = TEXTURES[GRASS];
 			}
 		}
-		shader.setValue("projection", projection);
+		shader->setValue("projection", projection);
 
-		glm::vec3 objCol(1, 0.5, 0.31), lightCol(1);
-		shader.setValue("objCol", objCol);
-		shader.setValue("lightCol", lightCol);
+		/*glm::vec3 objCol(1, 0.5, 0.31), lightCol(1);
+		shader->setValue("objCol", objCol);
+		shader->setValue("lightCol", lightCol);*/
 
 		glm::vec3 viewPos = p1.GetPosition();
-		shader.setValue("viewPos", viewPos);
+		shader->setValue("viewPos", viewPos);
 
 		Texture* prevTex = nullptr;
 		Buffer* prevBuffer = nullptr;
 		std::vector<Buffer*> prevCombo = std::vector<Buffer*>();
 
-		auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader& shader) {
+		auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader* shader) {
 			glm::mat4 model(1);
 			model = glm::translate(model, position);
 			if (rotation.x != 0) {
 				model = glm::rotate(model, rotation.x, { 0, p1.GetPosition().y, 0 });
 			}
-			shader.setValue("model", model);
+			shader->setValue("model", model);
 		};
 
 		for (auto& mesh : meshes) {
@@ -84,6 +88,7 @@ namespace Render {
 			}
 		}
 		glBindVertexArray(0);
+		shader->unBind();
 	}
 	void ChunkMeshRender::loadMeshes(const std::vector<Mesh::FaceMesh>& m) {
 		meshes = m;
@@ -98,7 +103,10 @@ namespace Render {
 		}
 	}
 	void ChunkMeshRender::setShader(std::string name) {
-		shader = Shader(name);
+		shader = new Shader(name);
+	}
+	void ChunkMeshRender::setShader(Shader* shader) {
+		this->shader = shader;
 	}
 	void ChunkMeshRender::addPosition(glm::vec3 positon) {
 		for (auto& face : meshes) {
@@ -111,7 +119,7 @@ namespace Render {
 		}
 	}
 	void ChunkMeshRender::cleanUp() {
-		shader.unBind();
+		shader->unBind();
 		canRender = false;
 		meshes = std::vector<Mesh::FaceMesh>();
 	}

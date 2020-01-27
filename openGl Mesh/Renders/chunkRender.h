@@ -9,21 +9,24 @@
 namespace Render {
 	class ChunkMeshRender {
 	public:
-		ChunkMeshRender() : shader("block2") {
+		ChunkMeshRender() {
 			canRender = GL_FALSE;
+			shader = SHADERS[BLOCK2];
 		}
 		ChunkMeshRender(GLboolean init);
 		ChunkMeshRender(std::string shaderName);
+		ChunkMeshRender(Shader* shader);
 		void loadMeshes(const std::vector<Mesh::FaceMesh>& m);
 		void render(Camera p1, glm::mat4 projection);
 		void destroy();
 		void setPosition(glm::vec3 position);
 		void setShader(std::string name);
+		void setShader(Shader* shader);
 		void addPosition(glm::vec3 positon);
 		void setRotaion(const glm::vec3& rotation);
 		void cleanUp();
 	private:
-		Shader shader;
+		Shader* shader;
 		std::vector<Mesh::FaceMesh> meshes;
 		GLboolean canRender;
 	};

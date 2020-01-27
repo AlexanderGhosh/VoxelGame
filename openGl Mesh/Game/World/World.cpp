@@ -15,7 +15,7 @@ World::World(Player& player) {
 }
 void World::getNewChunkPositions() {
 	std::vector<glm::vec3> chunkPositions;
-	for (GLint x = -RENDER_DISTANCE/2; x < RENDER_DISTANCE/2; x++) {
+	for (GLint x = -RENDER_DISTANCE / 2; x < RENDER_DISTANCE/2; x++) {
 		for (GLint z = -RENDER_DISTANCE / 2; z < RENDER_DISTANCE/2; z++) {
 			chunkPositions.push_back({ x * CHUNK_SIZE , -CHUNK_SIZE, z * CHUNK_SIZE });
 		}
@@ -37,7 +37,7 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 	for (auto& tup : chunks) {
 		Chunk& chunk = std::get<0>(tup);
 		chunk.createMesh(getChunks());
-		Render::ChunkMeshRender cmr("block2");
+		Render::ChunkMeshRender cmr(SHADERS[BLOCK2]);
 		cmr.loadMeshes(chunk.getMeshes());
 		rs.push_back(cmr);
 

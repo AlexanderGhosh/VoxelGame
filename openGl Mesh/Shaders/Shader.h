@@ -19,6 +19,8 @@ public:
 
 	}
 	Shader(std::string shaderName);
+	void setUp();
+	void setName(std::string name);
 	void bind();
 	void unBind();
 	GLint getLocation(std::string name);
@@ -32,4 +34,5 @@ public:
 	GLboolean setValue(std::string name, GLint& value);
 private:
 	GLuint program;
+	std::string name;
 };
