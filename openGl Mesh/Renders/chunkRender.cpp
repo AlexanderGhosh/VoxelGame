@@ -36,7 +36,7 @@ namespace Render {
 		if (!shader->setValue("view", view)) {
 			std::cout << "shader not working" << std::endl;
 			shader = SHADERS[BLOCK2];
-			for (auto& mesh : meshes) {
+			for (auto& mesh : *meshes) {
 				// mesh.setTexture("grass");
 				mesh.texture = TEXTURES[GRASS];
 			}
@@ -63,7 +63,7 @@ namespace Render {
 			shader->setValue("model", model);
 		};
 
-		for (auto& mesh : meshes) {
+		for (auto& mesh : *meshes) {
 			
 			createModel(mesh.position, mesh.rotation, p1, shader);
 
@@ -90,7 +90,7 @@ namespace Render {
 		glBindVertexArray(0);
 		shader->unBind();
 	}
-	void ChunkMeshRender::loadMeshes(const std::vector<Mesh::FaceMesh>& m) {
+	void ChunkMeshRender::loadMeshes(std::vector<Mesh::FaceMesh>* m) {
 		meshes = m;
 		canRender = GL_TRUE;
 	}
@@ -98,7 +98,7 @@ namespace Render {
 		//buffer.destroy();
 	}
 	void ChunkMeshRender::setPosition(glm::vec3 position) {
-		for (auto& face : meshes) {
+		for (auto& face : *meshes) {
 			face.setPosition(position);
 		}
 	}
@@ -109,18 +109,18 @@ namespace Render {
 		this->shader = shader;
 	}
 	void ChunkMeshRender::addPosition(glm::vec3 positon) {
-		for (auto& face : meshes) {
+		for (auto& face : *meshes) {
 			face.setPosition(face.position + positon);
 		}
 	}
 	void ChunkMeshRender::setRotaion(const glm::vec3& rotation) {
-		for (auto& face : meshes) {
+		for (auto& face : *meshes) {
 			face.setRotation(rotation);
 		}
 	}
 	void ChunkMeshRender::cleanUp() {
 		shader->unBind();
 		canRender = false;
-		meshes = std::vector<Mesh::FaceMesh>();
+		meshes = new std::vector<Mesh::FaceMesh>();
 	}
 };

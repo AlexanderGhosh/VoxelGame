@@ -12,11 +12,13 @@ namespace Render {
 		ChunkMeshRender() {
 			canRender = GL_FALSE;
 			shader = SHADERS[BLOCK2];
+			meshes = new std::vector<Mesh::FaceMesh>();
 		}
 		ChunkMeshRender(GLboolean init);
 		ChunkMeshRender(std::string shaderName);
 		ChunkMeshRender(Shader* shader);
-		void loadMeshes(const std::vector<Mesh::FaceMesh>& m);
+
+		void loadMeshes(std::vector<Mesh::FaceMesh>* m);
 		void render(Camera p1, glm::mat4 projection);
 		void destroy();
 		void setPosition(glm::vec3 position);
@@ -27,7 +29,7 @@ namespace Render {
 		void cleanUp();
 	private:
 		Shader* shader;
-		std::vector<Mesh::FaceMesh> meshes;
+		std::vector<Mesh::FaceMesh>* meshes;
 		GLboolean canRender;
 	};
 };

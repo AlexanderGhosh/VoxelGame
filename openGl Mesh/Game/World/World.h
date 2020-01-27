@@ -21,10 +21,9 @@ public:
 	void cleanUp();
 	std::vector<Chunk> getChunks(); 
 private:
-	std::vector<std::tuple<Chunk, GLboolean>> chunks;
+	std::vector<std::pair<Chunk, GLboolean>> chunks;
 	glm::vec3 playerPosition;
 	Render::ChunkMeshRender render;
-	std::vector<Render::ChunkMeshRender> rs;
 	void generateFlatChunks(std::vector<glm::vec3> chunkPositions);
 	void getNewChunkPositions();
 };

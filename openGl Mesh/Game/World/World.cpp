@@ -1,17 +1,17 @@
 #include "World.h"
 World::World() {
 	playerPosition = { 0, 0, 0 };
-	chunks = std::vector<std::tuple<Chunk, GLboolean>>();
+	chunks = std::vector<std::pair<Chunk, GLboolean>>();
 	// getNewChunkPositions();
 }
 World::World(GLboolean gen) {
 	playerPosition = { 0, 0, 0 };
-	chunks = std::vector<std::tuple<Chunk, GLboolean>>();
+	chunks = std::vector<std::pair<Chunk, GLboolean>>();
 	getNewChunkPositions();
 }
 World::World(Player& player) {
 	playerPosition = player.getPosition();
-	chunks = std::vector<std::tuple<Chunk, GLboolean>>();
+	chunks = std::vector<std::pair<Chunk, GLboolean>>();
 }
 void World::getNewChunkPositions() {
 	std::vector<glm::vec3> chunkPositions;
@@ -22,8 +22,8 @@ void World::getNewChunkPositions() {
 	}
 	
 	generateFlatChunks(chunkPositions);
-	/*
-	std::thread obj(&World::generateFlatChunks, this, chunkPositions);
+	
+	/*std::thread obj(&World::generateFlatChunks, this, chunkPositions);
 	obj.detach();*/
 }
 void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
@@ -34,26 +34,22 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 		chunks.push_back({ chunk, GL_TRUE });
 	}
 
-	for (auto& tup : chunks) {
-		Chunk& chunk = std::get<0>(tup);
+	for (auto& pair : chunks) {
+		Chunk& chunk = pair.first;
 		chunk.createMesh(getChunks());
-		Render::ChunkMeshRender cmr(SHADERS[BLOCK2]);
-		cmr.loadMeshes(chunk.getMeshes());
-		rs.push_back(cmr);
 
 		std::cout << "Chunk created" << std::endl;
 	}
 }
 void World::renderChunksStatic(Camera c, glm::mat4 projection) {
-	for (GLuint i = 0; i < chunks.size(); i++) {
-		if (std::get<1>(chunks[i])) {
-			rs[i].render(c, projection);
-		}
+	for (auto& chunk : chunks) {
+		render.loadMeshes(&chunk.first.getMeshes());
+		render.render(c, projection);
 	}
 }
 void World::cleanUp() {
 	for (auto& chunk : chunks) {
-		std::get<0>(chunk).cleanUp();
+		chunk.first.cleanUp();
 	}
 	for (auto& renderer : rs) {
 		renderer.cleanUp();
@@ -63,7 +59,7 @@ void World::cleanUp() {
 std::vector<Chunk> World::getChunks() {
 	std::vector<Chunk> res;
 	for (auto& chunk : chunks) {
-		res.push_back(std::get<0>(chunk));
+		res.push_back(chunk.first);
 	}
 	return res;
 }
