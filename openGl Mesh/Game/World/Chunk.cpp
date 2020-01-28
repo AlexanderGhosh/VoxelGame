@@ -25,53 +25,29 @@ void Chunk::createMesh(std::vector<Chunk> chunks) {
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {
 		for (GLint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {
-				BlockMesh blockMesh;
 				Mesh::FaceMesh mesh((GLboolean)false);
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
 
 				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
 					mesh(FACES[LEFT], TEXTURES[GRASS], pos);
-					// mesh(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
-					// blockMesh.addFace(new FaceMesh(FACES[LEFT], TEXTURES[GRASS]), pos);
 				}
 				if (getBlock_safe({ x + 1, y, z }, chunks) == 0) {
 					mesh(FACES[RIGHT], TEXTURES[GRASS], pos);
-					// mesh(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
-					// blockMesh.addFace(new FaceMesh(FACES[RIGHT], TEXTURES[GRASS]), pos);
 				}
 
 				if (getBlock_safe({ x, y - 1, z }, chunks) == 0) {
 					mesh(FACES[BOTTOM], TEXTURES[GRASS], pos);
-					// mesh(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
-					// blockMesh.addFace(new FaceMesh(FACES[BOTTOM], TEXTURES[GRASS]), pos);
 				}
 				if (getBlock_safe({ x, y + 1, z }, chunks) == 0) {
 					mesh(FACES[TOP], TEXTURES[GRASS], pos);
-					// mesh(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
-					// blockMesh.addFace(new FaceMesh(FACES[TOP], TEXTURES[GRASS]), pos);
 				}
 
 				if (getBlock_safe({ x, y, z - 1}, chunks) == 0) {
 					mesh(FACES[BACK], TEXTURES[GRASS], pos);
-					// mesh(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
-					// blockMesh.addFace(new FaceMesh(FACES[BACK], TEXTURES[GRASS]), pos);
 				}
 				if (getBlock_safe({ x, y, z + 1}, chunks) == 0) {
 					mesh(FACES[FRONT], TEXTURES[GRASS], pos);
-					// mesh(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
-					// blockMesh.addFace(new FaceMesh(FACES[FRONT], TEXTURES[GRASS]), pos);
 				}
-				/*
-				if (blockMesh.faces.size() < 1) continue;
-				if (blockMesh.faces.size() > 1) {
-					for (auto& m : blockMesh.faces) {
-						mesh += *m;
-					}
-					meshes.push_back(mesh);
-				}
-				else {
-					meshes.push_back(*blockMesh.faces[0]);
-				}*/
 				if (mesh.comboOf.size() == 0) continue;
 				meshes.push_back(mesh);
 			}
