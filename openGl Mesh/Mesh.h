@@ -47,6 +47,8 @@ namespace Mesh {
 		Buffer* getBuffer();
 		void cleanUp();
 		bool operator <= (const FaceMesh& mesh);
+		void operator() (FaceMesh* mesh, glm::vec3 pos);
+		void operator() (Buffer*, Texture*, glm::vec3 pos);
 		bool isCombo();
 		Buffer* getCombo(int index);
 		// Physics::BoxCollider& getCollider();

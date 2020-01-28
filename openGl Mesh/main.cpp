@@ -14,6 +14,9 @@ GLFWwindow* createWindow();
 // Player p;
 int main() {
 	GLFWwindow* window = createWindow();
+	for (auto& face : FACES) {
+		face->createBuffers();
+	}
 	for (auto& tex : TEXTURES) {
 		tex->load3D(tex->getName());
 	}
@@ -27,6 +30,7 @@ int main() {
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
 	game.doLoop(projection);
 
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	return EXIT_SUCCESS;
 }
@@ -39,7 +43,9 @@ GLFWwindow* createWindow() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr, nullptr);
+	glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GL_TRUE);
+	int count;
+	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr/*glfwGetMonitors(&count)[1]*/, nullptr);
 
 	GLint w, h;
 	glfwGetFramebufferSize(window, &w, &h);

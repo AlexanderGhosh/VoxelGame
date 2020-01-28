@@ -51,9 +51,9 @@ void World::cleanUp() {
 	for (auto& chunk : chunks) {
 		chunk.first.cleanUp();
 	}
-	for (auto& renderer : rs) {
+	/*for (auto& renderer : rs) {
 		renderer.cleanUp();
-	}
+	}*/
 	render.cleanUp();
 }
 std::vector<Chunk> World::getChunks() {

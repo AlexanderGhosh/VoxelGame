@@ -84,6 +84,17 @@ namespace Mesh {
 	bool FaceMesh::operator <= (const FaceMesh& mesh) {
 		return buffer <= mesh.buffer;
 	}
+	void FaceMesh::operator() (FaceMesh* mesh, glm::vec3 pos) {
+		mesh->setPosition(pos);
+		*this += *mesh;
+	}
+	void FaceMesh::operator() (Buffer* buffer, Texture* texture, glm::vec3 pos) {
+		this->buffer->merge(*buffer);
+		comboOf.push_back(buffer);
+		setTexture(texture);
+		setPosition(pos);
+		setRotation({ 0, 0, 0 });
+	}
 	bool FaceMesh::isCombo() {
 		if (comboOf.size() > 1) {
 			return true;
