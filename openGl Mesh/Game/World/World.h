@@ -2,6 +2,7 @@
 #include <tuple>
 #include <thread>
 #include <vector>
+#include <chrono>
 #include "Chunk.h"
 #include "constants.h"
 #include "../Player/Player.h"
@@ -19,7 +20,7 @@ public:
 	void setPlayerPosition(Player& player);
 	Chunk* getChunkOccupied(glm::vec3 position);
 	void cleanUp();
-	std::vector<Chunk> getChunks(); 
+	std::vector<Chunk*> getChunks(); 
 private:
 	std::vector<std::pair<Chunk, GLboolean>> chunks;
 	glm::vec3 playerPosition;

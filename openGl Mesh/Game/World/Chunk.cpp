@@ -21,15 +21,18 @@ void Chunk::create() {
 void Chunk::createBlocks() {
 	blocks.fill(1);
 }
-void Chunk::createMesh(std::vector<Chunk> chunks) {
+void Chunk::createMesh(std::vector<Chunk*> chunks) {
+	std::chrono::time_point<std::chrono::high_resolution_clock> start;
+	std::chrono::time_point<std::chrono::high_resolution_clock> stop;
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {
 		for (GLint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {
 				Mesh::FaceMesh mesh((GLboolean)false);
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
-
 				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
+					start = std::chrono::high_resolution_clock::now();
 					mesh(FACES[LEFT], TEXTURES[GRASS], pos);
+					stop = std::chrono::high_resolution_clock::now();
 				}
 				if (getBlock_safe({ x + 1, y, z }, chunks) == 0) {
 					mesh(FACES[RIGHT], TEXTURES[GRASS], pos);
@@ -53,6 +56,8 @@ void Chunk::createMesh(std::vector<Chunk> chunks) {
 			}
 		}
 	}
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "Mesh loop: " << duration.count() << " microsecconds" << std::endl;
 	sortMesh();
 	compressBlocks();
 	compressMesh();
@@ -147,7 +152,7 @@ std::vector<Mesh::FaceMesh>& Chunk::getMeshes() {
 GLuint Chunk::getBlock_unsafe(const glm::vec3 pos) {
 	return blocks[getBlockIndex(pos)];
 }
-GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk> chunks) {
+GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
 	if (inChunkPosition.x >= 0 && inChunkPosition.y >= 0 && inChunkPosition.z >= 0) {
 		if (inChunkPosition.x < CHUNK_SIZE && inChunkPosition.y < CHUNK_SIZE && inChunkPosition.z < CHUNK_SIZE) {
 			return blocks[getBlockIndex(inChunkPosition)];
@@ -186,8 +191,8 @@ GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk> 
 
 	if (index < 0) return 0;
 	for (auto& chunk : chunks) {
-		if (chunk.position == chunkPositionToLookAt) {
-			return chunk.blocks[index];
+		if (chunk->position == chunkPositionToLookAt) {
+			return chunk->blocks[index];
 		}
 	}
 	return 0;

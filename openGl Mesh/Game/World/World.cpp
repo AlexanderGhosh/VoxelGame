@@ -36,9 +36,13 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 
 	for (auto& pair : chunks) {
 		Chunk& chunk = pair.first;
+		auto start = std::chrono::high_resolution_clock::now();
 		chunk.createMesh(getChunks());
+		auto stop = std::chrono::high_resolution_clock::now();
 
-		std::cout << "Chunk created" << std::endl;
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+		std::cout << "Chunk created: " << duration.count() << " microseconds" << std::endl;
 	}
 }
 void World::renderChunksStatic(Camera c, glm::mat4 projection) {
@@ -51,15 +55,12 @@ void World::cleanUp() {
 	for (auto& chunk : chunks) {
 		chunk.first.cleanUp();
 	}
-	/*for (auto& renderer : rs) {
-		renderer.cleanUp();
-	}*/
 	render.cleanUp();
 }
-std::vector<Chunk> World::getChunks() {
-	std::vector<Chunk> res;
+std::vector<Chunk*> World::getChunks() {
+	std::vector<Chunk*> res;
 	for (auto& chunk : chunks) {
-		res.push_back(chunk.first);
+		res.push_back(&chunk.first);
 	}
 	return res;
 }

@@ -88,6 +88,7 @@ namespace Render {
 			}
 		}
 		glBindVertexArray(0);
+		glBindTexture(0, 0);
 		shader->unBind();
 	}
 	void ChunkMeshRender::loadMeshes(std::vector<Mesh::FaceMesh>* m) {
