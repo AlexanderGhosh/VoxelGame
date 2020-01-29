@@ -39,10 +39,18 @@ GLuint Buffer::getTriangleCount() {
 }
 void Buffer::createBuffers() {
 	std::vector<GLfloat>& vertices = bufferData;
+	std::vector<GLushort>& indices = bufferIndices;
 	if (vertices.size() < 1) {
 		std::cout << "No data found in buffer" << std::endl;
 		return;
 	}
+
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
+
+
+
 	glGenBuffers(1, &VBO); // VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
@@ -63,12 +71,15 @@ void Buffer::createBuffers() {
 void Buffer::render() {
 	if (!canRender) {
 		createBuffers();
+		// std::cout << "created buffer\n";
 	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glBindVertexArray(VAO);
 	draw();
 }
 void Buffer::draw() {
 	glDrawArrays(GL_TRIANGLES, 0, getTriangleCount());
+	// glDrawElements(GL_TRIANGLES, bufferIndices.size(), GL_UNSIGNED_SHORT, 0);
 }
 void Buffer::setStructure(Structure structure) {
 	this->structure;

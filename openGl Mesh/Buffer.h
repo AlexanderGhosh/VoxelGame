@@ -34,6 +34,7 @@ public:
 	Buffer() {
 		VBO = 0;
 		VAO = 0;
+		IBO = 0;
 		canRender = GL_FALSE;
 		structure = Structure();
 	}
@@ -52,7 +53,9 @@ public:
 private:
 	GLuint VBO;
 	GLuint VAO;
+	GLuint IBO;
 	std::vector<GLfloat> bufferData;
+	std::vector<GLushort> bufferIndices;
 	Structure structure;
 	GLboolean canRender;
 };

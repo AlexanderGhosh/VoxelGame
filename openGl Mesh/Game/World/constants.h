@@ -4,8 +4,8 @@
 #include "../../Shaders/Shader.h"
 #include "../../Mesh.h"
 
-#define RENDER_DISTANCE 2
-#define CHUNK_SIZE 16
+#define RENDER_DISTANCE 4
+#define CHUNK_SIZE 8
 #define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 

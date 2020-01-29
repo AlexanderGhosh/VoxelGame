@@ -30,9 +30,7 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 				Mesh::FaceMesh mesh((GLboolean)false);
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
 				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
-					start = std::chrono::high_resolution_clock::now();
 					mesh(FACES[LEFT], TEXTURES[GRASS], pos);
-					stop = std::chrono::high_resolution_clock::now();
 				}
 				if (getBlock_safe({ x + 1, y, z }, chunks) == 0) {
 					mesh(FACES[RIGHT], TEXTURES[GRASS], pos);
@@ -56,8 +54,6 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 			}
 		}
 	}
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	std::cout << "Mesh loop: " << duration.count() << " microsecconds" << std::endl;
 	sortMesh();
 	compressBlocks();
 	compressMesh();

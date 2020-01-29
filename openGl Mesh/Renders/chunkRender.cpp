@@ -52,7 +52,8 @@ namespace Render {
 
 		Texture* prevTex = nullptr;
 		Buffer* prevBuffer = nullptr;
-		std::vector<Buffer*> prevCombo = std::vector<Buffer*>();
+		std::vector<Buffer*> temp;
+		std::vector<Buffer*>& prevCombo = temp;
 
 		auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader* shader) {
 			glm::mat4 model(1);
@@ -87,6 +88,9 @@ namespace Render {
 				mesh.getBuffer()->draw();
 			}
 		}
+		/*for (int i = 0; i < meshes->size(); i+=2) {
+			const FaceMesh& mesh = meshes->at(i);
+		}*/
 		glBindVertexArray(0);
 		glBindTexture(0, 0);
 		shader->unBind();

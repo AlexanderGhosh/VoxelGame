@@ -27,6 +27,7 @@ void World::getNewChunkPositions() {
 	obj.detach();*/
 }
 void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
+	std::cout << "Started\n";
 	for (auto& pos : chunkPositions) {
 		Chunk chunk(pos, false);
 		chunk.createBlocks();
@@ -34,16 +35,16 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 		chunks.push_back({ chunk, GL_TRUE });
 	}
 
+	auto start = std::chrono::high_resolution_clock::now();
 	for (auto& pair : chunks) {
 		Chunk& chunk = pair.first;
-		auto start = std::chrono::high_resolution_clock::now();
 		chunk.createMesh(getChunks());
-		auto stop = std::chrono::high_resolution_clock::now();
-
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-
-		std::cout << "Chunk created: " << duration.count() << " microseconds" << std::endl;
+		// std::cout << "Chunk created" << std::endl;
 	}
+	auto stop = std::chrono::high_resolution_clock::now();
+
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE*std::pow(chunks.size(), 0.5f) << "): " << duration.count() << " microseconds" << std::endl;
 }
 void World::renderChunksStatic(Camera c, glm::mat4 projection) {
 	for (auto& chunk : chunks) {

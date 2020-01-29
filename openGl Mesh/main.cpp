@@ -44,7 +44,7 @@ GLFWwindow* createWindow() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GL_TRUE);
-	int count;
+	// int count;
 	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr/*glfwGetMonitors(&count)[1]*/, nullptr);
 
 	GLint w, h;
@@ -74,6 +74,9 @@ GLFWwindow* createWindow() {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport
+
+	glEnable(GL_CULL_FACE); // face culling
+	glCullFace(GL_FRONT);
 
 	return window;
 }
