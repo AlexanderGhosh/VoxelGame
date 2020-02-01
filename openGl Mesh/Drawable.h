@@ -5,9 +5,9 @@ class Drawable
 {
 public:
 	Drawable();
-	Drawable(std::vector<Mesh::FaceMesh>& sortedMeshes);
+	Drawable(std::vector<Mesh::FaceMesh*>& sortedMeshes);
 	void render(Camera& cam, glm::mat4 projection);
-	void setUp(std::vector<Mesh::FaceMesh>& sortedMeshes);
+	void setUp(std::vector<Mesh::FaceMesh*>& sortedMeshes);
 private:
 	std::vector<std::tuple<Buffer, Texture*, GLuint>> buffers;
 	// std::vector<std::tuple<Buffer*, Texture*, GLuint>> buffers; // these are the buffer that will be drawn

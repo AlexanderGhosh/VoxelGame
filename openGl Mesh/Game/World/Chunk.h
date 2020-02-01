@@ -15,7 +15,7 @@ public:
 	Chunk(glm::vec3 pos, GLboolean create = false);
 	void create();
 	GLboolean checkCollision(Physics::Object& object);
-	std::vector<Mesh::FaceMesh>& getMeshes();
+	std::vector<Mesh::FaceMesh*> getMeshes();
 	void cleanUp();
 	std::vector<std::pair<GLuint, GLuint>>& getCompressBlocks();
 	std::vector<std::pair<Mesh::FaceMesh, GLuint>>& getCompressMesh();

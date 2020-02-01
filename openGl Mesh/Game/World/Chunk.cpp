@@ -148,8 +148,12 @@ void Chunk::sortMesh() {
 	meshes = res;
 }
 
-std::vector<Mesh::FaceMesh>& Chunk::getMeshes() {
-	return meshes;
+std::vector<Mesh::FaceMesh*> Chunk::getMeshes() {
+	std::vector<Mesh::FaceMesh*> res;
+	for (auto& mesh : meshes) {
+		res.push_back(&mesh);
+	}
+	return res;
 }
 GLuint Chunk::getBlock_unsafe(const glm::vec3 pos) {
 	return blocks[getBlockIndex(pos)];

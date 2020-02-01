@@ -73,15 +73,15 @@ std::vector<Chunk*> World::getChunks() {
 	return res;
 }
 void World::genWorldMesh() {
-	std::map<Buffer*, std::vector<Mesh::FaceMesh>> seperated;
-	std::vector<Mesh::FaceMesh> sorted;
+	std::map<Buffer*, std::vector<Mesh::FaceMesh*>> seperated;
+	std::vector<Mesh::FaceMesh*> sorted;
 	for (auto& chunk : chunks) {
 		for (auto& mesh : chunk.first.getMeshes()) {
 			try {
-				seperated[mesh.buffer].push_back(mesh);
+				seperated[mesh->buffer].push_back(mesh);
 			}
 			catch (std::exception e) {
-				seperated.insert({ mesh.buffer, { mesh } });
+				seperated.insert({ mesh->buffer, { mesh } });
 			}
 		}
 	}

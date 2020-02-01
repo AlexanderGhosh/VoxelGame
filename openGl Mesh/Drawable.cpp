@@ -2,29 +2,29 @@
 Drawable::Drawable() {
 
 }
-Drawable::Drawable(std::vector<Mesh::FaceMesh>& sortedMeshes) {
+Drawable::Drawable(std::vector<Mesh::FaceMesh*>& sortedMeshes) {
 	setUp(sortedMeshes);
 }
-void Drawable::setUp(std::vector<Mesh::FaceMesh>& sortedMeshes) {
-	Buffer* prevBuffer = sortedMeshes[0].getBuffer();
-	Texture* prevTex = sortedMeshes[0].texture;;
+void Drawable::setUp(std::vector<Mesh::FaceMesh*>& sortedMeshes) {
+	Buffer* prevBuffer = sortedMeshes[0]->buffer;
+	Texture* prevTex = sortedMeshes[0]->texture;;
 	GLuint counter = 0;
 	std::vector<glm::mat4> positions;
 
 	for (auto& mesh : sortedMeshes) {
-		if (mesh.buffer != prevBuffer || mesh.texture != prevTex) {
+		if (mesh->buffer != prevBuffer || mesh->texture != prevTex) {
 			prevBuffer->addPositions(positions);
 			buffers.push_back({ *prevBuffer, prevTex, counter });
 			prevBuffer->resetData();
 			// reset
 			counter = 0;
 			positions.clear();
-			prevBuffer = mesh.buffer;
-			prevTex = mesh.texture;
+			prevBuffer = mesh->buffer;
+			prevTex = mesh->texture;
 			prevBuffer->resetData();
 		}
 		glm::mat4 model(1);
-		model = glm::translate(model, mesh.position);
+		model = glm::translate(model, mesh->position);
 		positions.push_back(model);
 		counter += 1;
 	}
