@@ -6,6 +6,7 @@
 
 #include <map>
 using namespace Mesh;
+using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 class Chunk
 {
 public:
@@ -15,23 +16,23 @@ public:
 	Chunk(glm::vec3 pos, GLboolean create = false);
 	void create();
 	GLboolean checkCollision(Physics::Object& object);
-	std::vector<Mesh::FaceMesh*> getMeshes();
+	std::vector<Face*> getMeshes();
 	void cleanUp();
 	std::vector<std::pair<GLuint, GLuint>>& getCompressBlocks();
-	std::vector<std::pair<Mesh::FaceMesh, GLuint>>& getCompressMesh();
+	std::vector<std::pair<Face, GLuint>>& getCompressMesh();
 	void createMesh(std::vector<Chunk*> chunks = std::vector<Chunk*>());
 	void createBlocks();
 	GLuint getBlock_unsafe(const glm::vec3 pos);
 	GLuint getBlock_safe(const glm::vec3 pos, std::vector<Chunk*> chunks);
 private:
 	GLboolean isNull;
-	std::vector<Mesh::FaceMesh> meshes;
+	std::vector<Face> meshes;
 	Physics::Object object;
 	std::vector<std::pair<GLuint, GLuint>> compressedBlocks;
-	std::vector<std::pair<Mesh::FaceMesh, GLuint>> compressedMesh;
+	std::vector<std::pair<Face, GLuint>> compressedMesh;
 
 	std::vector<std::pair<GLuint, GLuint>>& compressBlocks();
-	std::vector<std::pair<Mesh::FaceMesh, GLuint>>& compressMesh();
+	std::vector<std::pair<Face, GLuint>>& compressMesh();
 	void sortMesh();
 };
 

@@ -11,7 +11,7 @@ Chunk::Chunk(glm::vec3 pos, GLboolean create) : object((GLfloat)100.0f, { positi
 	isNull = GL_FALSE;
 	if (create) {
 		this->create();
-		this->sortMesh();
+		// this->sortMesh();
 	}
 }
 void Chunk::create() {
@@ -22,41 +22,30 @@ void Chunk::createBlocks() {
 	blocks.fill(1);
 }
 void Chunk::createMesh(std::vector<Chunk*> chunks) {
-	std::chrono::time_point<std::chrono::high_resolution_clock> start;
-	std::chrono::time_point<std::chrono::high_resolution_clock> stop;
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {
 		for (GLint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {
-				Mesh::FaceMesh mesh((GLboolean)false);
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
 				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
-					// mesh(FACES[LEFT], TEXTURES[GRASS], pos);
 					meshes.push_back({ FACES[LEFT], TEXTURES[GRASS], pos });
 				}
 				if (getBlock_safe({ x + 1, y, z }, chunks) == 0) {
-					// mesh(FACES[RIGHT], TEXTURES[GRASS], pos);
 					meshes.push_back({ FACES[RIGHT], TEXTURES[GRASS], pos });
 				}
 
 				if (getBlock_safe({ x, y - 1, z }, chunks) == 0) {
-					// mesh(FACES[BOTTOM], TEXTURES[GRASS], pos);
 					meshes.push_back({ FACES[BOTTOM], TEXTURES[GRASS], pos });
 				}
 				if (getBlock_safe({ x, y + 1, z }, chunks) == 0) {
-					// mesh(FACES[TOP], TEXTURES[GRASS], pos);
 					meshes.push_back({ FACES[TOP], TEXTURES[GRASS], pos });
 				}
 
 				if (getBlock_safe({ x, y, z - 1}, chunks) == 0) {
-					// mesh(FACES[BACK], TEXTURES[GRASS], pos);
 					meshes.push_back({ FACES[BACK], TEXTURES[GRASS], pos });
 				}
 				if (getBlock_safe({ x, y, z + 1}, chunks) == 0) {
-					// mesh(FACES[FRONT], TEXTURES[GRASS], pos);
 					meshes.push_back({ FACES[FRONT], TEXTURES[GRASS], pos });
 				}
-				if (mesh.comboOf.size() == 0) continue;
-				meshes.push_back(mesh);
 			}
 		}
 	}
@@ -84,7 +73,7 @@ GLboolean Chunk::checkCollision(Physics::Object& object) {
 }
 void Chunk::cleanUp() {
 	for (auto& face : meshes) {
-		face.cleanUp();
+		face = {};
 	}
 }
 
@@ -103,11 +92,11 @@ std::vector<std::pair<GLuint, GLuint>>& Chunk::compressBlocks() {
 	compressedBlocks.push_back({ prevBlock, --count });
 	return compressedBlocks;
 }
-std::vector<std::pair<Mesh::FaceMesh, GLuint>>& Chunk::compressMesh() {
-	Mesh::FaceMesh prevMesh = meshes.front();
+std::vector<std::pair<Face, GLuint>>& Chunk::compressMesh() {
+	Face prevMesh = meshes.front();
 	unsigned int count = 1;
 	for (auto& mesh : meshes) {
-		if (prevMesh.getBuffer() == mesh.getBuffer()) {
+		if (std::get<0>(prevMesh) == std::get<0>(mesh)) {
 			count++;
 		}
 		else {
@@ -121,10 +110,10 @@ std::vector<std::pair<Mesh::FaceMesh, GLuint>>& Chunk::compressMesh() {
 std::vector<std::pair<GLuint, GLuint>>& Chunk::getCompressBlocks() {
 	return compressedBlocks;
 }
-std::vector<std::pair<Mesh::FaceMesh, GLuint>>& Chunk::getCompressMesh() {
+std::vector<std::pair<Face, GLuint>>& Chunk::getCompressMesh() {
 	return compressedMesh;
 }
-void Chunk::sortMesh() {
+/*void Chunk::sortMesh() {
 	std::map<int, std::vector<FaceMesh>> seperated;
 	for (auto& mesh : meshes) {
 		int location = 0;
@@ -146,10 +135,10 @@ void Chunk::sortMesh() {
 		res.insert(res.end(), sep.second.begin(), sep.second.end());
 	}
 	meshes = res;
-}
+}*/
 
-std::vector<Mesh::FaceMesh*> Chunk::getMeshes() {
-	std::vector<Mesh::FaceMesh*> res;
+std::vector<Face*> Chunk::getMeshes() {
+	std::vector<Face*> res;
 	for (auto& mesh : meshes) {
 		res.push_back(&mesh);
 	}
