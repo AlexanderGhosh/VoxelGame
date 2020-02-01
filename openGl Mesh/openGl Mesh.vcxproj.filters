@@ -75,6 +75,9 @@
     <ClCompile Include="Drawable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\World\Event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -183,6 +186,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Drawable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\World\Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

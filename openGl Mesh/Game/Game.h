@@ -13,7 +13,8 @@
 
 #include "Player/Camera.h"
 // #include "Player/Player.h"
-#include "World/World.h"
+//#include "World/World.h"
+#include "World/PhysicsEngine.h"
 struct GameConfig {
 	static GLboolean showFPS;
 	static glm::vec3 backgroundCol;
