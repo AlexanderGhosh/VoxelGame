@@ -30,7 +30,8 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("player/top", "")
 };
 const std::vector<Shader*>SHADERS = {
-	new Shader("block2")
+	new Shader("block2"),
+	new Shader("block3")
 };
 GLint getBlockIndex(glm::vec3 position) {
 	position.y = std::abs(position.y);

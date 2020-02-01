@@ -24,7 +24,7 @@ int main() {
 		shader->setUp();
 	}
 	Game game;
-	// GameConfig::showFPS = true;
+	GameConfig::showFPS = true;
 	game.setWindow(window);
 	game.generateWorld();
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
@@ -70,13 +70,13 @@ GLFWwindow* createWindow() {
 
 	glViewport(0, 0, DIM.x, DIM.y);
 
-	glEnable(GL_DEPTH_TEST);// enable depth
+	glEnable(GL_DEPTH_TEST);// dont render thing behind other things
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport
 
-	glEnable(GL_CULL_FACE); // face culling
-	glCullFace(GL_FRONT);
+	// glEnable(GL_CULL_FACE); // face culling
+	// glFrontFace(GL_CCW);
 
 	return window;
 }

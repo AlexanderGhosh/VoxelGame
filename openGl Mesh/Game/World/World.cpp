@@ -41,16 +41,23 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 		chunk.createMesh(getChunks());
 		// std::cout << "Chunk created" << std::endl;
 	}
+	genWorldMesh();
+	drawable.setUp(worldMesh);
 	auto stop = std::chrono::high_resolution_clock::now();
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE*std::pow(chunks.size(), 0.5f) << "): " << duration.count() << " microseconds" << std::endl;
 }
 void World::renderChunksStatic(Camera c, glm::mat4 projection) {
-	for (auto& chunk : chunks) {
+	/*for (auto& chunk : chunks) {
 		render.loadMeshes(&chunk.first.getMeshes());
 		render.render(c, projection);
-	}
+	}*/
+
+	/*render.loadMeshes(&worldMesh);
+	render.render(c, projection);*/
+
+	drawable.render(c, projection);
 }
 void World::cleanUp() {
 	for (auto& chunk : chunks) {
@@ -65,14 +72,42 @@ std::vector<Chunk*> World::getChunks() {
 	}
 	return res;
 }
-/*Chunk* World::getChunkOccupied(glm::vec3 position) {
-	/*for (auto& chunkP : chunks) {
-		Chunk chunk  = std::get<0>(chunkP);
-		if (position.x < chunk.position.x + CHUNK_SIZE && position.x > chunk.position.x) {
-			if (position.z < chunk.position.z + CHUNK_SIZE && position.z > chunk.position.z) {
-				return &chunk;
+void World::genWorldMesh() {
+	std::map<Buffer*, std::vector<Mesh::FaceMesh>> seperated;
+	std::vector<Mesh::FaceMesh> sorted;
+	for (auto& chunk : chunks) {
+		for (auto& mesh : chunk.first.getMeshes()) {
+			try {
+				seperated[mesh.buffer].push_back(mesh);
+			}
+			catch (std::exception e) {
+				seperated.insert({ mesh.buffer, { mesh } });
 			}
 		}
 	}
-	return nullptr;
-}*/
+	for (auto& pair : seperated) {
+		sorted.insert(sorted.end(), pair.second.begin(), pair.second.end());
+	}
+	worldMesh = sorted;
+	/*std::map<int, std::vector<Mesh::FaceMesh>> seperated;
+	std::vector<Mesh::FaceMesh> sorted;
+	int location = 0;
+	for (auto& chunk : chunks) {
+		for (auto& mesh : chunk.first.getMeshes()) {
+			for (auto& buffer : mesh.comboOf) {
+				location += (int)buffer;
+			}
+			try {
+				seperated[location].push_back(mesh);
+			}
+			catch (std::exception e) {
+				seperated.insert({ location, { mesh } });
+			}
+			location = 0;
+		}
+	}
+	for (auto& pair : seperated) {
+		sorted.insert(sorted.end(), pair.second.begin(), pair.second.end());
+	}
+	worldMesh = sorted;*/
+}

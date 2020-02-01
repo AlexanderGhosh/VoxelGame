@@ -1,6 +1,6 @@
 #include "Mesh.h"
 namespace Mesh {
-	FaceMesh::FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC) {
+	FaceMesh::FaceMesh(std::vector<glm::vec3>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC) {
 		vertices = vert;
 		normals = norm;
 		texCoords = texC;
@@ -9,7 +9,7 @@ namespace Mesh {
 		setupBufferStructure();
 	}
 	FaceMesh::FaceMesh(GLboolean loadTex) {
-		vertices = std::array<glm::vec3, 6>();
+		vertices = std::vector<glm::vec3>();
 		normals = std::array<glm::vec3, 6>();
 		texCoords = std::array<glm::vec3, 6>();
 		position = glm::vec3(3, 2, 0);
@@ -23,24 +23,25 @@ namespace Mesh {
 		}
 	}
 	void FaceMesh::setupBufferStructure(GLboolean is3D) {
-		std::vector<GLfloat> vertices_;
+		//std::vector<GLushort> indices = createIncides();
+		std::vector<GLfloat> bufferData;
 		for (int i = 0; i < 6; i++)
 		{
-			vertices_.push_back(vertices[i].x + position.x);
-			vertices_.push_back(vertices[i].y + position.y);
-			vertices_.push_back(vertices[i].z + position.z);
+			bufferData.push_back(vertices[i].x + position.x);
+			bufferData.push_back(vertices[i].y + position.y);
+			bufferData.push_back(vertices[i].z + position.z);
 
-			vertices_.push_back(normals[i].x + position.x);
-			vertices_.push_back(normals[i].y + position.y);
-			vertices_.push_back(normals[i].z + position.z);
+			bufferData.push_back(normals[i].x + position.x);
+			bufferData.push_back(normals[i].y + position.y);
+			bufferData.push_back(normals[i].z + position.z);
 
-			vertices_.push_back(texCoords[i].x + position.x);
-			vertices_.push_back(texCoords[i].y + position.y);
+			bufferData.push_back(texCoords[i].s + position.x);
+			bufferData.push_back(texCoords[i].t + position.y);
 			if (is3D) {
-				vertices_.push_back(texCoords[i].z + position.z);
+				bufferData.push_back(texCoords[i].p + position.z);
 			}
 		}
-		buffer->setBufferData(vertices_);
+		buffer->setBufferData(bufferData);
 		buffer->setStructure({ (is3D) ? (GLuint)9 : (GLuint)8, 3, {3, 3, (is3D) ? (GLuint)3 : (GLuint)2} });
 	}
 	void FaceMesh::bindTexture() {
@@ -65,7 +66,7 @@ namespace Mesh {
 		return buffer;
 	}
 	void FaceMesh::cleanUp() {
-		vertices = std::array<glm::vec3, 6>();
+		vertices = std::vector<glm::vec3>();
 		normals = std::array<glm::vec3, 6>();
 		texCoords = std::array<glm::vec3, 6>();
 		position = { 0, 0, 0 };
@@ -107,6 +108,23 @@ namespace Mesh {
 		if (index < 0 || index + 1 > comboOf.size()) return nullptr;
 		return comboOf[index];
 	}
+	std::vector<GLushort> FaceMesh::createIncides() {
+		std::vector<GLushort> indices;
+		std::vector<glm::vec3> vertices_unique;
+		for (auto& vertex : vertices) {
+			std::vector<glm::vec3>::iterator foundAt = std::find(vertices_unique.begin(), vertices_unique.end(), vertex);
+			if (foundAt == vertices_unique.end()) {
+				vertices_unique.push_back(vertex);
+				indices.push_back(vertices_unique.size() - 1);
+			}
+			else {
+				indices.push_back(std::distance(vertices_unique.begin(), foundAt));
+			}
+		}
+		vertices = vertices_unique;
+		return indices;
+	}
+
 
 	void BlockMesh::addFace(FaceMesh* face, glm::vec3 pos) {
 		if (faces.size() > 6) return;
@@ -127,4 +145,5 @@ namespace Mesh {
 	void BlockMesh::setTexture(Texture* texture) {
 		this->texture = texture;
 	}
+	
 };

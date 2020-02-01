@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\World\Chunk.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
@@ -170,11 +171,14 @@
     <None Include="glew32.dll" />
     <None Include="Shaders\block2_f.gls" />
     <None Include="Shaders\block2_v.gls" />
+    <None Include="Shaders\block3_f.gls" />
+    <None Include="Shaders\block3_v.gls" />
     <None Include="Shaders\block_f.gls" />
     <None Include="Shaders\block_v.gls" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Drawable.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\Player\Camera.h" />
     <ClInclude Include="Game\World\Chunk.h" />

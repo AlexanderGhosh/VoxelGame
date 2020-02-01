@@ -25,75 +25,73 @@ namespace Render {
 		return 1 - t;
 	}
 	void ChunkMeshRender::render(Camera p1, glm::mat4 projection) {
-		if (!canRender) {
-			std::cout << "Unable to render please call 'loadMesh()'" << std::endl;
-			return;
-		}
-		shader->bind();
+			if (!canRender) {
+				std::cout << "Unable to render please call 'loadMesh()'" << std::endl;
+				return;
+			}
+			shader->bind();
 
-		glm::mat4 view(1);
-		view = p1.GetViewMatrix();
-		if (!shader->setValue("view", view)) {
-			std::cout << "shader not working" << std::endl;
-			shader = SHADERS[BLOCK2];
+			glm::mat4 view(1);
+			view = p1.GetViewMatrix();
+			if (!shader->setValue("view", view)) {
+				std::cout << "shader not working" << std::endl;
+				shader = SHADERS[BLOCK2];
+				for (auto& mesh : *meshes) {
+					// mesh.setTexture("grass");
+					mesh.texture = TEXTURES[GRASS];
+				}
+			}
+			shader->setValue("projection", projection);
+
+			/*glm::vec3 objCol(1, 0.5, 0.31), lightCol(1);
+			shader->setValue("objCol", objCol);
+			shader->setValue("lightCol", lightCol);*/
+
+			glm::vec3 viewPos = p1.GetPosition();
+			shader->setValue("viewPos", viewPos);
+
+			Texture* prevTex = nullptr;
+			Buffer* prevBuffer = nullptr;
+			std::vector<Buffer*> temp;
+			std::vector<Buffer*>& prevCombo = temp;
+
+			auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader* shader) {
+				glm::mat4 model(1);
+				model = glm::translate(model, position);
+				if (rotation.x != 0) {
+					model = glm::rotate(model, rotation.x, { 0, p1.GetPosition().y, 0 });
+				}
+				shader->setValue("model", model);
+			};
+
 			for (auto& mesh : *meshes) {
-				// mesh.setTexture("grass");
-				mesh.texture = TEXTURES[GRASS];
-			}
-		}
-		shader->setValue("projection", projection);
-
-		/*glm::vec3 objCol(1, 0.5, 0.31), lightCol(1);
-		shader->setValue("objCol", objCol);
-		shader->setValue("lightCol", lightCol);*/
-
-		glm::vec3 viewPos = p1.GetPosition();
-		shader->setValue("viewPos", viewPos);
-
-		Texture* prevTex = nullptr;
-		Buffer* prevBuffer = nullptr;
-		std::vector<Buffer*> temp;
-		std::vector<Buffer*>& prevCombo = temp;
-
-		auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader* shader) {
-			glm::mat4 model(1);
-			model = glm::translate(model, position);
-			if (rotation.x != 0) {
-				model = glm::rotate(model, rotation.x, { 0, p1.GetPosition().y, 0 });
-			}
-			shader->setValue("model", model);
-		};
-
-		for (auto& mesh : *meshes) {
 			
-			createModel(mesh.position, mesh.rotation, p1, shader);
+				createModel(mesh.position, mesh.rotation, p1, shader);
 
-			if (mesh.texture != prevTex) {
-				mesh.texture->bind();
-				prevTex = mesh.texture;
-			}
+				if (mesh.texture != prevTex) {
+					mesh.texture->bind();
+					prevTex = mesh.texture;
+				}
 
-			// 26
-			if (mesh.getBuffer() != prevBuffer) {
-				if (mesh.isCombo() && mesh.comboOf == prevCombo) {
-					mesh.getBuffer()->draw();
+				// 26
+				if (mesh.getBuffer() != prevBuffer) {
+					if (mesh.comboOf.size() > 0 && mesh.comboOf == prevCombo) {
+						mesh.getBuffer()->draw();
+					}
+					else {
+						mesh.getBuffer()->render();
+						// std::cout << "rendered\n";
+						prevBuffer = mesh.getBuffer();
+						prevCombo = mesh.comboOf;
+					}
 				}
 				else {
-					mesh.getBuffer()->render();
-					prevBuffer = mesh.getBuffer();
-					prevCombo = mesh.comboOf;
+					mesh.getBuffer()->draw();
 				}
 			}
-			else {
-				mesh.getBuffer()->draw();
-			}
-		}
-		/*for (int i = 0; i < meshes->size(); i+=2) {
-			const FaceMesh& mesh = meshes->at(i);
-		}*/
-		glBindVertexArray(0);
-		glBindTexture(0, 0);
-		shader->unBind();
+			glBindVertexArray(0);
+			glBindTexture(0, 0);
+			shader->unBind();
 	}
 	void ChunkMeshRender::loadMeshes(std::vector<Mesh::FaceMesh>* m) {
 		meshes = m;

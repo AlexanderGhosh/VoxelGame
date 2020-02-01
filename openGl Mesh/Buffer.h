@@ -39,7 +39,7 @@ public:
 		structure = Structure();
 	}
 	GLuint getTriangleCount();
-	void render();
+	void render(GLboolean draw = GL_TRUE);
 	void createBuffers();
 	GLuint getVBO();
 	GLuint getVAO(); 
@@ -50,6 +50,8 @@ public:
 	void destroy();
 	void endRender();
 	void draw();
+	void addPositions(std::vector<glm::mat4>& positions);
+	void resetData();
 private:
 	GLuint VBO;
 	GLuint VAO;
@@ -58,5 +60,6 @@ private:
 	std::vector<GLushort> bufferIndices;
 	Structure structure;
 	GLboolean canRender;
+	std::vector<GLfloat> originalData;
 };
 

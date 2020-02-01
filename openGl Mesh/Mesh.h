@@ -4,12 +4,12 @@
 #include <array>
 #include <vector>
 // #include "Game/World/constants.h"
-#include "Buffer.h"
+ #include "Buffer.h"
 #include "Textures/Texture.h"
 // #include "Game/World/Physics.h"
 namespace Mesh {
 	struct FaceMesh {
-		std::array<glm::vec3, 6> vertices;
+		std::vector<glm::vec3> vertices;
 		std::array<glm::vec3, 6> normals;
 		std::array<glm::vec3, 6> texCoords;
 		glm::vec3 position;
@@ -19,7 +19,7 @@ namespace Mesh {
 		std::vector<Buffer*> comboOf;
 		// Physics::BoxCollider collider;
 		FaceMesh() {
-			vertices = std::array<glm::vec3, 6>();
+			vertices = std::vector<glm::vec3>();
 			normals = std::array<glm::vec3, 6>();
 			texCoords = std::array<glm::vec3, 6>();
 			position = glm::vec3(3, 2, 0);
@@ -28,15 +28,15 @@ namespace Mesh {
 			rotation = { 0, 0, 0 };
 			// collider = Physics::BoxCollider(position, 1);
 		}
-		FaceMesh(Buffer* buffer, Texture* texture) {
-			position = glm::vec3(3, 2, 0);
+		FaceMesh(Buffer* buffer, Texture* texture, glm::vec3 pos = { 3, 2, 0 }) {
+			position = pos;
 			this->buffer = buffer;
 			this->texture = texture;
 			// texture = new Texture("grass", GL_FALSE);
 			rotation = { 0, 0, 0 };
 		}
 		FaceMesh(GLboolean loadTex);
-		FaceMesh(std::array<glm::vec3, 6>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC);
+		FaceMesh(std::vector<glm::vec3>vert, std::array<glm::vec3, 6 > norm, std::array<glm::vec3, 6 > texC);
 		void setupBufferStructure(GLboolean is3D = GL_TRUE);
 		void setPosition(glm::vec3 position);
 		void setRotation(glm::vec3 rotation);
@@ -51,6 +51,7 @@ namespace Mesh {
 		void operator() (Buffer*, Texture*, glm::vec3 pos);
 		bool isCombo();
 		Buffer* getCombo(int index);
+		std::vector<GLushort> createIncides();
 		// Physics::BoxCollider& getCollider();
 	};
 	FaceMesh& operator+=(FaceMesh& mesh1, const FaceMesh& mesh2);

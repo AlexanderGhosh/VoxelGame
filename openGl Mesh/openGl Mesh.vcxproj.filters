@@ -72,6 +72,9 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Drawable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -79,6 +82,8 @@
     <None Include="Shaders\block_f.gls" />
     <None Include="Shaders\block2_f.gls" />
     <None Include="Shaders\block2_v.gls" />
+    <None Include="Shaders\block3_v.gls" />
+    <None Include="Shaders\block3_f.gls" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">
@@ -175,6 +180,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

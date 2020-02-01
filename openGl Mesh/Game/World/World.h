@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "../Player/Player.h"
 #include "../../Renders/chunkRender.h"
+#include "../../Drawable.h"
 
 class World
 {
@@ -25,6 +26,9 @@ private:
 	std::vector<std::pair<Chunk, GLboolean>> chunks;
 	glm::vec3 playerPosition;
 	Render::ChunkMeshRender render;
+	std::vector<Mesh::FaceMesh> worldMesh;
+	Drawable drawable;
 	void generateFlatChunks(std::vector<glm::vec3> chunkPositions);
 	void getNewChunkPositions();
+	void genWorldMesh();
 };

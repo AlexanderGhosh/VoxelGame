@@ -5,7 +5,7 @@
 #include "../../Mesh.h"
 
 #define RENDER_DISTANCE 4
-#define CHUNK_SIZE 8
+#define CHUNK_SIZE 16
 #define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 
@@ -27,7 +27,8 @@ enum TEXTURE_NAMES {
 	PLAYER_TOP
 };
 enum SHADER_NAMES {
-	BLOCK2
+	BLOCK2,
+	BLOCK3
 };
 
 extern const std::array<Buffer*, 6> FACES;
