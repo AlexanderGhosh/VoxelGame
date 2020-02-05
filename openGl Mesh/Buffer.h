@@ -2,6 +2,7 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <map>
 #include <string>
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -11,6 +12,14 @@
 #include <glm.hpp>
 #include <gtc/type_ptr.hpp>
 
+enum FACES_NAMES {
+	FRONT,
+	BACK,
+	LEFT,
+	RIGHT,
+	TOP,
+	BOTTOM
+};
 struct Structure {
 	GLuint total_data_len;
 	GLuint layout_count;
@@ -31,6 +40,7 @@ bool operator!=(const Structure& s1, const Structure& s2);
 class Buffer
 {
 public:
+	FACES_NAMES type;
 	Buffer() {
 		VBO = 0;
 		VAO = 0;
@@ -52,6 +62,7 @@ public:
 	void draw();
 	void addPositions(std::vector<glm::mat4>& positions);
 	void resetData();
+	std::vector<GLfloat> getVertices(GLboolean unique = true);
 private:
 	GLuint VBO;
 	GLuint VAO;

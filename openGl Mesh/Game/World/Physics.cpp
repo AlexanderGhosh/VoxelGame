@@ -10,7 +10,7 @@ namespace Physics {
 		setMaterial(material);
 		setAcceleration({ 0, 0, 0 });
 	}
-	Object::Object(GLfloat mass, BoxCollider collider) {
+	Object::Object(GLfloat mass, Collider collider) {
 		setMass(mass);
 		this->collider = collider;
 		setAcceleration({ 0, 0, 0 });
@@ -96,7 +96,7 @@ namespace Physics {
 	Material& Object::getMaterial() {
 		return material;
 	}
-	BoxCollider& Object::getCollider() {
+	Collider& Object::getCollider() {
 		return collider;
 	}
 
@@ -223,38 +223,61 @@ namespace Physics {
 		setPosition(update.Data);
 	}
 
-	BoxCollider::BoxCollider() {
+	Collider::Collider() {
 		position = { 0, 0, 0 };
 		size = 0;
+		tolerance = 0.1;
+		type = SPHERE;
 	}
-	BoxCollider::BoxCollider(glm::vec3& pos, GLfloat size) {
+	Collider::Collider(glm::vec3& pos, GLfloat size) {
 		position = pos;
 		this->size = size;
+		tolerance = 0.1;
+		type = SPHERE;
 	}
-	GLboolean BoxCollider::checkCollision(Object* object) {
-		GLfloat distance = glm::distance(position, object->getPosition());
-		distance = std::abs(distance);
-		if (distance > object->getCollider().size + size) {
+	GLboolean Collider::checkCollision(Object* obj) {
+		if (!obj->getCollider().isNull()) return false;
+		if (type == SPHERE) {
+			GLfloat distance = glm::distance(position, obj->getPosition());
+			distance = std::abs(distance);
+			if (distance > obj->getCollider().size + obj->getCollider().tolerance + tolerance + size) {
+				return GL_FALSE;
+			}
+			return GL_TRUE;
+		}
+		else {
 			return GL_FALSE;
 		}
-		return GL_TRUE;
-
-		//glm::vec3& pos = object->getPosition();
-		//glm::vec3 upper = position + size;
-		//glm::vec3 lower = position - size;
-		//if (pos.x < upper.x && pos.y < upper.y && pos.z < upper.z) {
-		//	if (pos.x > lower.x&& pos.y > lower.y&& pos.z > lower.z) {
-		//		return GL_FALSE;
-		//	}
-		//}
-		//return GL_FALSE;
 	}
+	GLboolean Collider::checkCollision(Collider* col) {
+		if (!col->isNull()) return false;
+		if (type == SPHERE) {
+			GLfloat distance = glm::distance(position, col->position);
+			distance = std::abs(distance);
+			if (distance > col->size + col->tolerance + tolerance + size) {
+				return GL_FALSE;
+			}
+			return GL_TRUE;
+		}
+		else {
+			return GL_FALSE;
+		}
+	}
+	GLboolean Collider::isNull() {
+			return null;
+		}
 
 	Material::Material() {
 		null = GL_TRUE;
 		bouncines = 0;
 		frictionConstant = 1;
-		position = { 0, 0, 0 };
+		// position = { 0, 0, 0 };
+	}
+	Material::Material(GLfloat firction, GLfloat bouncy) {
+		null = GL_FALSE;
+		bouncines = bouncy;
+		frictionConstant = firction;
+		// position = { 0, 0, 0 };
 	}
 	GLboolean Material::isNull() {
 		return null;
@@ -264,19 +287,19 @@ namespace Physics {
 	Clamp<T>::Clamp(T min, T max) {
 		Min = min;
 		Max = max;
+		null = GL_FALSE;
 	}
 	template <typename T>
 	Clamp<T>::Clamp() {
-
+		null = GL_TRUE;
 	}
 	template <typename T>
 	void Clamp<T>::clapValue(T& value) {
 		if (value < Min) value = Min;
 		else if (value > Max) value = Max;
 	}
-	Update::Update() {
+	Update::Update() : Tag(Null) {
 		Sender = nullptr;
-		Tag = TAG::Null;
 		Data = { 0, 0, 0 };
 		Positon = { 0, 0, 0 };
 	}

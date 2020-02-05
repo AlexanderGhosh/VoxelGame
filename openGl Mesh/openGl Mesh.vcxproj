@@ -148,7 +148,6 @@
   <ItemGroup>
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Drawable.cpp" />
-    <ClCompile Include="Game\World\Event.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\World\Chunk.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
@@ -180,7 +179,6 @@
   <ItemGroup>
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Drawable.h" />
-    <ClInclude Include="Game\World\Event.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\Player\Camera.h" />
     <ClInclude Include="Game\World\Chunk.h" />

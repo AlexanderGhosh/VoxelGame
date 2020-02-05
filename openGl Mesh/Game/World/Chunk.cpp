@@ -1,14 +1,14 @@
 #include "Chunk.h"
 Chunk::Chunk() {
-	isNull = GL_TRUE;
+	null = GL_TRUE;
 }
 Chunk::Chunk(glm::vec3 pos, GLboolean create) : object((GLfloat)100.0f, { position, (GLfloat)1 }) {
 	position = pos;
 	object.setKinematic(GL_TRUE);
 	object.setPhysical(GL_TRUE);
 	object.setPosition(position);
-	Physics::BoxCollider collider(position, 1);
-	isNull = GL_FALSE;
+	Physics::Collider collider(position, 1);
+	null = GL_FALSE;
 	if (create) {
 		this->create();
 		// this->sortMesh();
@@ -52,24 +52,6 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 	// sortMesh();
 	// compressBlocks();
 	// compressMesh();
-}
-GLboolean Chunk::checkCollision(Physics::Object& object) {
-	/*if (!object.getPhysical()) return GL_FALSE;
-	for (auto& mesh : meshes) {
-		Physics::BoxCollider collider = mesh.getCollider();
-		if (collider.checkCollision(&object)) {
-			return GL_TRUE;
-		}
-	}*/
-	return GL_FALSE;
-	/*try {
-		Physics::BoxCollider collider = this->object.getCollider();
-		return collider.checkCollision(&object);
-	}
-	catch ( std::exception e)
-	{
-
-	}*/
 }
 void Chunk::cleanUp() {
 	for (auto& face : meshes) {
@@ -144,8 +126,16 @@ std::vector<Face*> Chunk::getMeshes() {
 	}
 	return res;
 }
-GLuint Chunk::getBlock_unsafe(const glm::vec3 pos) {
-	return blocks[getBlockIndex(pos)];
+GLuint Chunk::getBlock_unsafe(glm::ivec3 pos) {
+	while (pos.x%CHUNK_SIZE != 0) {
+		pos -= glm::ivec3(CHUNK_SIZE);
+	}
+	try {
+		return blocks[getBlockIndex(pos)];
+	}
+	catch (std::exception e) {
+		return 0;
+	}
 }
 GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
 	if (inChunkPosition.x >= 0 && inChunkPosition.y >= 0 && inChunkPosition.z >= 0) {
@@ -191,4 +181,34 @@ GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*>
 		}
 	}
 	return 0;
+}
+GLboolean Chunk::isNull() {
+	return null;
+}
+GLboolean Chunk::checkCollision(Physics::Update& update) {
+	for (auto& chunkFace : this->meshes) {
+		std::array<glm::vec3, 2> cubeCorners = {
+				glm::vec3(0) + std::get<2>(chunkFace), glm::vec3(1, 1, -1) + std::get<2>(chunkFace)
+		};
+		for (auto& playerMesh : update.Extra) {
+			auto& meshPos = update.Data;
+			std::array<glm::vec3, 8> playerCorners = {
+				glm::vec3(0, 0, -1) + meshPos, glm::vec3(1, 0, -1) + meshPos,
+				glm::vec3(0, 1, -1) + meshPos, glm::vec3(1, 1, -1) + meshPos,
+
+				glm::vec3(0, 1, 0) + meshPos, glm::vec3(1, 1, 0) + meshPos,
+				glm::vec3(0, 0, 0) + meshPos, glm::vec3(1, 0, 0) + meshPos
+			};
+			for (auto& meshVertex : playerCorners) {
+				if (meshVertex.x <= cubeCorners[1].x && meshVertex.x >= cubeCorners[0].x) {
+					if (meshVertex.y <= cubeCorners[1].y && meshVertex.y >= cubeCorners[0].y) {
+						if (meshVertex.z >= cubeCorners[1].z && meshVertex.z <= cubeCorners[0].z) {
+							return GL_TRUE;
+						}
+					}
+				}
+			}
+		}
+	}
+	return GL_FALSE;
 }

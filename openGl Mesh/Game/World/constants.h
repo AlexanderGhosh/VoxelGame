@@ -4,8 +4,10 @@
 #include "../../Shaders/Shader.h"
 #include "../../Mesh.h"
 
-#define RENDER_DISTANCE 4
-#define CHUNK_SIZE 16
+#define RENDER_DISTANCE 2
+#define RENDERED_AREA RENDER_DISTANCE * RENDER_DISTANCE
+#define RENDERED_VOLUME RENDER_DISTANCE * RENDER_DISTANCE * RENDER_DISTANCE
+#define CHUNK_SIZE 4
 #define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 
@@ -13,14 +15,6 @@
 #define AIR_RESISTANCE 2
 
 using namespace Mesh;
-enum FACES_NAMES {
-	FRONT,
-	BACK,
-	LEFT,
-	RIGHT,
-	TOP,
-	BOTTOM
-};
 enum TEXTURE_NAMES {
 	GRASS,
 	PLAYER_BOTTOM,
@@ -36,3 +30,4 @@ extern const std::vector<Texture*> TEXTURES;
 extern const std::vector<Shader*> SHADERS;
 
 GLint getBlockIndex(glm::vec3 position);
+GLint getChunkIndex(glm::vec3 position, GLboolean reduced = GL_TRUE);

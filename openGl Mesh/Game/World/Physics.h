@@ -1,34 +1,45 @@
 #pragma once
 #include "constants.h"
-
+using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 namespace Physics {
 	template <typename T>
 	struct Clamp;
 	class Material;
-	class BoxCollider;
+	class Collider;
 	class Object;
 	struct Update;
 	class Material {
 	public:
 		Material();
+		Material(GLfloat firction, GLfloat bouncy);
 		GLboolean isNull();
 	private:
 		GLboolean null;
 		GLfloat frictionConstant;
 		GLfloat bouncines;
-		glm::vec3 position;
+		// glm::vec3 position;
 	};
 
-	class BoxCollider {
+	enum COLLIDERS {
+		BOX,
+		SPHERE,
+		MESH
+	};
+	class Collider {
 	public:
-		BoxCollider();
-		BoxCollider(glm::vec3& pos, GLfloat size);
+		Collider();
+		Collider(glm::vec3& pos, GLfloat size);
 		GLboolean checkCollision(Object* object);
+		GLboolean checkCollision(Collider* collider);
+		GLboolean isNull();
 	private:
+		GLboolean null;
 		glm::vec3 position;
 		GLfloat size;
+		GLfloat tolerance;
+		COLLIDERS type;
+		std::vector<Buffer*> mesh;
 	};
-
 
 	enum TAG {
 		Null,
@@ -40,11 +51,12 @@ namespace Physics {
 		TAG Tag;
 		glm::vec3 Data;
 		glm::vec3 Positon;
-		GLboolean null;
+		std::vector<Face> Extra;
 		Update();
 	};
 	template <typename T>
 	struct Clamp {
+		GLboolean null;
 		T Min;
 		T Max;
 		Clamp();
@@ -58,7 +70,7 @@ namespace Physics {
 	public:
 		Object();
 		Object(GLfloat mass, Material& material);
-		Object(GLfloat mass, BoxCollider collider);
+		Object(GLfloat mass, Collider collider);
 		void addForce(GLfloat force, glm::vec3 direction);
 		void addForce(glm::vec3 force);
 		void addForce(GLfloat force);
@@ -86,7 +98,7 @@ namespace Physics {
 		glm::vec3& getAngularAcceleration();
 		GLfloat getAngularSpeed();
 		Material& getMaterial();
-		BoxCollider& getCollider();
+		Collider& getCollider();
 		// setter
 		void setKinematic(const GLboolean& value);
 		void setPhysical(const GLboolean& value);
@@ -109,7 +121,7 @@ namespace Physics {
 		glm::vec3 angularVelocity;
 		glm::vec3 angularAcceleration;
 		Material material;
-		BoxCollider collider;
+		Collider collider;
 
 		GLboolean doVelocityClamp;
 		GLboolean doSpeedClamp;

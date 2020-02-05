@@ -2,7 +2,6 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
 #include <gtc/type_ptr.hpp>
 
 #include "Game/Game.h"
@@ -14,8 +13,11 @@ GLFWwindow* createWindow();
 // Player p;
 int main() {
 	GLFWwindow* window = createWindow();
+	int c = 0;
 	for (auto& face : FACES) {
 		face->createBuffers();
+		face->type = (FACES_NAMES)(FRONT + c);
+		c++;
 	}
 	for (auto& tex : TEXTURES) {
 		tex->load3D(tex->getName());
@@ -24,8 +26,8 @@ int main() {
 		shader->setUp();
 	}
 
-	Game game;
-	GameConfig::showFPS = true;
+	Game game(true);
+	// GameConfig::showFPS = true;
 	game.setWindow(window);
 	game.generateWorld();
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
