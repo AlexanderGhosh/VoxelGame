@@ -157,31 +157,3 @@ void Buffer::addPositions(std::vector<glm::mat4>& positions) {
 void Buffer::resetData() {
 	bufferData = originalData;
 }
-std::vector<GLfloat> Buffer::getVertices(GLboolean unique) {
-	std::vector<GLfloat> res;
-	if (!unique) {
-		for (int i = 0; i < bufferData.size(); i += 3) {
-			res.insert(res.end(), bufferData.begin() + i, bufferData.begin() + i + 3);
-		}
-	}
-	else {
-		std::map<GLfloat, GLfloat> uniq;
-		for (int i = 0; i < bufferData.size(); i += 3) {
-			try {
-				uniq.insert({ bufferData[i], 0 });
-			}catch(std::exception e){ }
-			try {
-				uniq.insert({ bufferData[i + 1], 0 });
-			}
-			catch (std::exception e) {}
-			try {
-				uniq.insert({ bufferData[i + 2], 0 });
-			}
-			catch (std::exception e) {}
-		}
-		for (auto& p : uniq) {
-			res.push_back(p.first);
-		}
-	}
-	return res;
-}

@@ -16,10 +16,8 @@ World::World(Player& player) {
 void World::getNewChunkPositions() {
 	std::vector<glm::vec3> chunkPositions;
 	for (GLint x = -RENDER_DISTANCE / 2; x < RENDER_DISTANCE/2; x++) {
-		for (GLint y = 1; y < RENDER_DISTANCE + 1 ; y++) {
-			for (GLint z = -RENDER_DISTANCE / 2; z < RENDER_DISTANCE / 2; z++) {
-				chunkPositions.push_back({ x * CHUNK_SIZE , y * -CHUNK_SIZE, z * CHUNK_SIZE });
-			}
+		for (GLint z = -RENDER_DISTANCE / 2; z < RENDER_DISTANCE/2; z++) {
+			chunkPositions.push_back({ x * CHUNK_SIZE , -CHUNK_SIZE, z * CHUNK_SIZE });
 		}
 	}
 	
@@ -29,17 +27,12 @@ void World::getNewChunkPositions() {
 	obj.detach();*/
 }
 void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
-	chunks.resize(RENDERED_VOLUME);
 	std::cout << "Started\n";
 	for (auto& pos : chunkPositions) {
 		Chunk chunk(pos, false);
 		chunk.createBlocks();
 
-		// chunks.push_back({ chunk, GL_TRUE });
-		glm::vec3 p = chunk.position;
-
-		int index = getChunkIndex(p, false);
-		chunks[index] = { chunk, GL_TRUE };
+		chunks.push_back({ chunk, GL_TRUE });
 	}
 
 	auto start = std::chrono::high_resolution_clock::now();
@@ -53,9 +46,17 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 	auto stop = std::chrono::high_resolution_clock::now();
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE*std::pow(chunks.size(), 1.0f/3.0f) << "): " << duration.count() << " microseconds" << std::endl;
+	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE*std::pow(chunks.size(), 0.5f) << "): " << duration.count() << " microseconds" << std::endl;
 }
 void World::renderChunksStatic(Camera c, glm::mat4 projection) {
+	/*for (auto& chunk : chunks) {
+		render.loadMeshes(&chunk.first.getMeshes());
+		render.render(c, projection);
+	}*/
+
+	/*render.loadMeshes(&worldMesh);
+	render.render(c, projection);*/
+
 	drawable.render(c, projection);
 }
 void World::cleanUp() {
@@ -88,17 +89,24 @@ void World::genWorldMesh() {
 		sorted.insert(sorted.end(), pair.second.begin(), pair.second.end());
 	}
 	worldMesh = sorted;
-}
-void reduceToMultiple(glm::ivec3& victim, GLuint multiple) {
-	while (victim.x % multiple != 0) {
-		victim.x -= 1;
+	/*std::map<int, std::vector<Mesh::FaceMesh>> seperated;
+	std::vector<Mesh::FaceMesh> sorted;
+	int location = 0;
+	for (auto& chunk : chunks) {
+		for (auto& mesh : chunk.first.getMeshes()) {
+			for (auto& buffer : mesh.comboOf) {
+				location += (int)buffer;
+			}
+			try {
+				seperated[location].push_back(mesh);
+			}
+			catch (std::exception e) {
+				seperated.insert({ location, { mesh } });
+			}
+			location = 0;
+		}
 	}
-	while (victim.y % multiple != 0 || victim.y >= 0) {
-		victim.y -= 1;
-	}
-	while (victim.z % multiple != 0) {
-		victim.z -= 1;
-	}
+<<<<<<< HEAD
 }
 Chunk& World::getOccupiedChunk(glm::ivec3 occPosition) {
 	reduceToMultiple(occPosition, CHUNK_SIZE);
@@ -106,6 +114,10 @@ Chunk& World::getOccupiedChunk(glm::ivec3 occPosition) {
 	if (index < 0) {
 		Chunk chunk = Chunk();
 		return chunk;
+=======
+	for (auto& pair : seperated) {
+		sorted.insert(sorted.end(), pair.second.begin(), pair.second.end());
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 	}
-	return std::get<0>(chunks[index]);
+	worldMesh = sorted;*/
 }

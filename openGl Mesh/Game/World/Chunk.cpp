@@ -1,14 +1,14 @@
 #include "Chunk.h"
 Chunk::Chunk() {
-	null = GL_TRUE;
+	isNull = GL_TRUE;
 }
 Chunk::Chunk(glm::vec3 pos, GLboolean create) : object((GLfloat)100.0f, { position, (GLfloat)1 }) {
 	position = pos;
 	object.setKinematic(GL_TRUE);
 	object.setPhysical(GL_TRUE);
 	object.setPosition(position);
-	Physics::Collider collider(position, 1);
-	null = GL_FALSE;
+	Physics::BoxCollider collider(position, 1);
+	isNull = GL_FALSE;
 	if (create) {
 		this->create();
 		// this->sortMesh();
@@ -49,6 +49,24 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 			}
 		}
 	}
+}
+GLboolean Chunk::checkCollision(Physics::Object& object) {
+	/*if (!object.getPhysical()) return GL_FALSE;
+	for (auto& mesh : meshes) {
+		Physics::BoxCollider collider = mesh.getCollider();
+		if (collider.checkCollision(&object)) {
+			return GL_TRUE;
+		}
+	}*/
+	return GL_FALSE;
+	/*try {
+		Physics::BoxCollider collider = this->object.getCollider();
+		return collider.checkCollision(&object);
+	}
+	catch ( std::exception e)
+	{
+
+	}*/
 }
 void Chunk::cleanUp() {
 	for (auto& face : meshes) {
@@ -100,16 +118,8 @@ std::vector<Face*> Chunk::getMeshes() {
 	}
 	return res;
 }
-GLuint Chunk::getBlock_unsafe(glm::ivec3 pos) {
-	while (pos.x%CHUNK_SIZE != 0) {
-		pos -= glm::ivec3(CHUNK_SIZE);
-	}
-	try {
-		return blocks[getBlockIndex(pos)];
-	}
-	catch (std::exception e) {
-		return 0;
-	}
+GLuint Chunk::getBlock_unsafe(const glm::vec3 pos) {
+	return blocks[getBlockIndex(pos)];
 }
 GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
 	if (inChunkPosition.x >= 0 && inChunkPosition.y >= 0 && inChunkPosition.z >= 0) {
@@ -155,6 +165,7 @@ GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*>
 		}
 	}
 	return 0;
+<<<<<<< HEAD
 }
 GLboolean Chunk::isNull() {
 	return null;
@@ -192,4 +203,6 @@ GLboolean Chunk::checkCollision(Physics::Update& update) {
 		}
 	}
 	return GL_FALSE;
+=======
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 }

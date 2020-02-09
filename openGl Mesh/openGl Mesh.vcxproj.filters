@@ -75,7 +75,11 @@
     <ClCompile Include="Drawable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Game\World\Physics\Ray.cpp">
+=======
+    <ClCompile Include="Game\World\Event.cpp">
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,7 +192,11 @@
     <ClInclude Include="Drawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Game\World\Physics\Ray.h">
+=======
+    <ClInclude Include="Game\World\Event.h">
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

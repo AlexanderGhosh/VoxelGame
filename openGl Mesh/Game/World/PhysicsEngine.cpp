@@ -3,8 +3,9 @@ namespace Physics {
 	std::vector<Update> Engine::updateBuffer;
 	std::vector<Object*> Engine::objects;
 	std::vector<Material> Engine::materials;
-	std::vector<Collider> Engine::colliders;
+	std::vector<BoxCollider> Engine::colliders;
 
+<<<<<<< HEAD
 	Engine::Engine() {
 
 	}
@@ -85,6 +86,12 @@ namespace Physics {
 				}
 				update.Position = t + update.PrevPosition;
 				break;
+=======
+	void Engine::doUpdates(World& world) {
+		for (auto& update : Engine::updateBuffer) {
+			if (update.Tag == TAG::COLLISION) {
+
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 			}
 			obj.doUpdate(update);
 		}
@@ -137,7 +144,7 @@ namespace Physics {
 		}
 	}
 	void Engine::addUpdate(Update& update) {
-		if (update.Tag == Physics::Null) return;
+		if (update.null) return;
 		Engine::updateBuffer.push_back(update);
 	}
 	void Engine::addObject(Object* object) {

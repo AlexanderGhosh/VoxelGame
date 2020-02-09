@@ -11,8 +11,8 @@
 #include <chrono>
 #include <thread>
 
-//#include "Player/Camera.h"
-#include "Player/Player.h"
+#include "Player/Camera.h"
+// #include "Player/Player.h"
 //#include "World/World.h"
 #include "World/PhysicsEngine.h"
 struct GameConfig {
@@ -47,9 +47,8 @@ private:
 	GLuint frameRate;
 	GLboolean gameRunning;
 	World world;
-	static Physics::Engine physicsEng;
-	static GLboolean hasPlayer;
-	static Player player;
+	GLboolean hasPlayer;
+	// Player player;
 	GLfloat lastFrameTime;
 	glm::mat4 projection;
 	// blockupdates

@@ -15,18 +15,17 @@ public:
 	Chunk();
 	Chunk(glm::vec3 pos, GLboolean create = false);
 	void create();
-	GLboolean checkCollision(Physics::Update& update);
+	GLboolean checkCollision(Physics::Object& object);
 	std::vector<Face*> getMeshes();
 	void cleanUp();
 	std::vector<std::pair<GLuint, GLuint>>& getCompressBlocks();
 	std::vector<std::pair<Face, GLuint>>& getCompressMesh();
 	void createMesh(std::vector<Chunk*> chunks = std::vector<Chunk*>());
 	void createBlocks();
-	GLuint getBlock_unsafe(glm::ivec3 pos);
+	GLuint getBlock_unsafe(const glm::vec3 pos);
 	GLuint getBlock_safe(const glm::vec3 pos, std::vector<Chunk*> chunks);
-	GLboolean isNull();
 private:
-	GLboolean null;
+	GLboolean isNull;
 	std::vector<Face> meshes;
 	Physics::Object object;
 	std::vector<std::pair<GLuint, GLuint>> compressedBlocks;

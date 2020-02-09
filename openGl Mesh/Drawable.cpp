@@ -4,14 +4,12 @@ Drawable::Drawable() {
 }
 Drawable::Drawable(std::vector<Face*>& sortedMeshes) {
 	setUp(sortedMeshes);
-	meshes = sortedMeshes;
 }
 void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
 	Buffer* prevBuffer = std::get<0>(*sortedMeshes[0]);
 	Texture* prevTex = std::get<1>(*sortedMeshes[0]);
 	GLuint counter = 0;
 	std::vector<glm::mat4> positions;
-	meshes = sortedMeshes;
 
 	for (auto& mesh : sortedMeshes) {
 		if (std::get<0>(*mesh) != prevBuffer || std::get<1>(*mesh) != prevTex) {

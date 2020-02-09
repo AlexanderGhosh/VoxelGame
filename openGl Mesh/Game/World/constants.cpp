@@ -39,15 +39,3 @@ GLint getBlockIndex(glm::vec3 position) {
 	if (index >= CHUNK_VOLUME) index *= -1;
 	return index;
 }
-GLint getChunkIndex(glm::vec3 position, GLboolean reduced) {
-	if (!reduced) {
-		position /= CHUNK_SIZE;
-	}
-	position.y+=1;
-	position.x += RENDER_DISTANCE / 2;
-	position.z += RENDER_DISTANCE / 2;
-	position = glm::abs(position);
-	int index = position.x + position.z * RENDER_DISTANCE + position.y * RENDERED_AREA;
-	if (index >= RENDERED_VOLUME) index *= -1;
-	return index;
-}

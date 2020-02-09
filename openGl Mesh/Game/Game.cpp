@@ -10,9 +10,6 @@ GLuint GameConfig::FPSlock = 0;
 Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
 glm::vec3 Game::mouseData(0);
 std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
-Player Game::player = Player(false);
-GLboolean Game::hasPlayer = GL_FALSE;
-Physics::Engine Game::physicsEng = Physics::Engine();
 #pragma endregion
 Game::Game() {
 	hasPlayer = false;
@@ -23,9 +20,8 @@ Game::Game() {
 }
 Game::Game(GLboolean hasPlayer) {
 	this -> hasPlayer = hasPlayer;
-	setupPlayer();
+
 	gameRunning = false;
-	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 }
 void Game::generateWorld() {
@@ -38,9 +34,16 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
+<<<<<<< HEAD
 	if (hasPlayer) {
 		Game::physicsEng.addObject(&player.getObject());
 	}
+=======
+	Mesh::FaceMesh top(FACES[TOP], TEXTURES[GRASS]);
+	top.setPosition({ 0, 2, 0 });
+	Render::ChunkMeshRender rend;
+	// rend.loadMeshes({ top });
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -52,7 +55,12 @@ void Game::doLoop(glm::mat4 projection) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();
+<<<<<<< HEAD
 		Game::physicsEng.applyPhysics(Game::world, Game::deltaTime);
+=======
+		// rend.render(*Game::mainCamera, projection);
+
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -86,12 +94,11 @@ void Game::lockFPS() {
 	}
 }
 void Game::showStuff(GLboolean showStatic) {
-	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	if (hasPlayer) {
-		player.render(projection);
+		// player.render(projection);
 	}
 	if (showStatic) {
-		world.renderChunksStatic(cam, projection);
+		world.renderChunksStatic(*mainCamera, projection);
 	}
 	else {
 		// world.renderChunksDynamic();
@@ -100,10 +107,14 @@ void Game::showStuff(GLboolean showStatic) {
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
+<<<<<<< HEAD
 void Game::setupPlayer() {
 	player = Player({ 0, 5, -3 }, { 0, 5, -1 });
 	player.create();
 }
+=======
+
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
 		glfwSetWindowShouldClose(window, true);
@@ -126,67 +137,43 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 
 	Game::mouseData.x = xPos;
 	Game::mouseData.y = yPos;
-	if (Game::hasPlayer) {
-		Game::player.processMouse(xOffset, yOffset, mouseData.x);
-		return;
-	}
+
 	Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
 }
 void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
+<<<<<<< HEAD
 void Game::processMovements() {
 	std::vector<Physics::Update> updates;
+=======
+void Game::doMovement() {
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 	if (Game::keys[GLFW_KEY_W] || Game::keys[GLFW_KEY_UP]) {
-		if (Game::hasPlayer) {
-			updates.push_back(Game::player.processMovement(FORWARD, deltaTime));
-		}
-		else {
-			Game::mainCamera->ProcessMovement(FORWARD, deltaTime);
-		}
+		Game::mainCamera->ProcessMovement(FORWARD, deltaTime);
+		/*Physics::Update up = p.processMovement(FORWARD, deltaTime);
+		Physics::Engine::addUpdate(up); */
 	}
 	if (Game::keys[GLFW_KEY_S] || Game::keys[GLFW_KEY_DOWN]) {
-		if (Game::hasPlayer) {
-			updates.push_back(Game::player.processMovement(BACKWARD, deltaTime));
-		}
-		else {
-			Game::mainCamera->ProcessMovement(BACKWARD, deltaTime);
-		}
+		Game::mainCamera->ProcessMovement(BACKWARD, deltaTime);
+		/*Physics::Update up = p.processMovement(BACKWARD, deltaTime);
+		Physics::Engine::addUpdate(up);*/
 	}
 	if (Game::keys[GLFW_KEY_D] || Game::keys[GLFW_KEY_RIGHT]) {
-		if (Game::hasPlayer) {
-			updates.push_back(Game::player.processMovement(RIGHT_C, deltaTime));
-		}
-		else {
-			Game::mainCamera->ProcessMovement(RIGHT_C, deltaTime);
-		}
+		Game::mainCamera->ProcessMovement(RIGHT_C, deltaTime);
+		/*Physics::Update up = p.processMovement(RIGHT, deltaTime);
+		Physics::Engine::addUpdate(up);*/
 	}
 	if (Game::keys[GLFW_KEY_A] || Game::keys[GLFW_KEY_LEFT]) {
-		if (Game::hasPlayer) {
-			updates.push_back(Game::player.processMovement(LEFT_C, deltaTime));
-		}
-		else {
-			Game::mainCamera->ProcessMovement(LEFT_C, deltaTime);
-		}
+		Game::mainCamera->ProcessMovement(LEFT_C, deltaTime);
+		/*Physics::Update up = p.processMovement(LEFT, deltaTime);
+		Physics::Engine::addUpdate(up);*/
 	}
-	if (Game::keys[GLFW_KEY_SPACE]) {
-		if (Game::hasPlayer) {
-			updates.push_back(Game::player.processMovement(UP_C, deltaTime));
-		}
-		else {
-			Game::mainCamera->ProcessMovement(UP_C, deltaTime);
-		}
-	}
-	if (Game::keys[GLFW_KEY_LEFT_SHIFT]) {
-		if (Game::hasPlayer) {
-			updates.push_back(Game::player.processMovement(DOWN_C, deltaTime));
-		}
-		else {
-			Game::mainCamera->ProcessMovement(DOWN_C, deltaTime);
-		}
-	}
+<<<<<<< HEAD
 	physicsEng.addUpdates(updates);
+=======
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 }
 void Game::cleanUp() {
 	world.cleanUp();

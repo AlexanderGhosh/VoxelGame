@@ -11,9 +11,7 @@ enum Camera_Movement {
 FORWARD,
 BACKWARD,
 LEFT_C,
-RIGHT_C,
-UP_C,
-DOWN_C
+RIGHT_C
 };
 
 const GLfloat YAW = -90.0f;

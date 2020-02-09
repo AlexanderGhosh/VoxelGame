@@ -1,17 +1,16 @@
 #pragma once
 #include "constants.h"
-using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
+
 namespace Physics {
 	template <typename T>
 	struct Clamp;
 	class Material;
-	class Collider;
+	class BoxCollider;
 	class Object;
 	struct Update;
 	class Material {
 	public:
 		Material();
-		Material(GLfloat firction, GLfloat bouncy);
 		GLboolean isNull();
 		GLfloat& getFrictionConstant();
 		GLfloat& getBouncyness();
@@ -19,29 +18,19 @@ namespace Physics {
 		GLboolean null;
 		GLfloat frictionConstant;
 		GLfloat bouncines;
-		// glm::vec3 position;
+		glm::vec3 position;
 	};
 
-	enum COLLIDERS {
-		BOX,
-		SPHERE,
-		MESH
-	};
-	class Collider {
+	class BoxCollider {
 	public:
-		Collider();
-		Collider(glm::vec3& pos, GLfloat size);
+		BoxCollider();
+		BoxCollider(glm::vec3& pos, GLfloat size);
 		GLboolean checkCollision(Object* object);
-		GLboolean checkCollision(Collider* collider);
-		GLboolean isNull();
 	private:
-		GLboolean null;
 		glm::vec3 position;
 		GLfloat size;
-		GLfloat tolerance;
-		COLLIDERS type;
-		std::vector<Buffer*> mesh;
 	};
+
 
 	enum TAG {
 		Null,
@@ -53,16 +42,21 @@ namespace Physics {
 	struct Update {
 		Object* Sender;
 		TAG Tag;
+<<<<<<< HEAD
 		glm::vec3 PrevPosition;
 		glm::vec3 Position;
 		glm::vec3 Velocity;
 		glm::vec3 PrevVelocity;
 		std::vector<Face> Vertices;
+=======
+		glm::vec3 Data;
+		glm::vec3 Positon;
+		GLboolean null;
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 		Update();
 	};
 	template <typename T>
 	struct Clamp {
-		GLboolean null;
 		T Min;
 		T Max;
 		Clamp();
@@ -76,7 +70,7 @@ namespace Physics {
 	public:
 		Object();
 		Object(GLfloat mass, Material& material);
-		Object(GLfloat mass, Collider collider);
+		Object(GLfloat mass, BoxCollider collider);
 		void addForce(GLfloat force, glm::vec3 direction);
 		void addForce(glm::vec3 force);
 		void addForce(GLfloat force);
@@ -105,8 +99,12 @@ namespace Physics {
 		glm::vec3& getAngularAcceleration();
 		GLfloat getAngularSpeed();
 		Material& getMaterial();
+<<<<<<< HEAD
 		Collider& getCollider();
 		std::vector<Update> getUpdates();
+=======
+		BoxCollider& getCollider();
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 		// setter
 		void setKinematic(const GLboolean& value);
 		void setPhysical(const GLboolean& value);
@@ -133,8 +131,12 @@ namespace Physics {
 		glm::vec3 angularVelocity;
 		glm::vec3 angularAcceleration;
 		Material material;
+<<<<<<< HEAD
 		Collider collider;
 		std::vector<Update> updates;
+=======
+		BoxCollider collider;
+>>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 
 		GLboolean doVelocityClamp;
 		GLboolean doSpeedClamp;

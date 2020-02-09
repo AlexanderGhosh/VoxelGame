@@ -19,9 +19,9 @@ public:
 	void renderChunksDynamic();
 	void processBlockUpdates();
 	void setPlayerPosition(Player& player);
+	Chunk* getChunkOccupied(glm::vec3 position);
 	void cleanUp();
 	std::vector<Chunk*> getChunks(); 
-	Chunk& getOccupiedChunk(glm::ivec3 occPosition);
 private:
 	std::vector<std::pair<Chunk, GLboolean>> chunks;
 	glm::vec3 playerPosition;
