@@ -31,8 +31,6 @@ namespace Render {
 			glm::vec3 viewPos = p1.GetPosition();
 			shader->setValue("viewPos", viewPos);
 
-			
-
 			auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader* shader) {
 				glm::mat4 model(1);
 				model = glm::translate(model, position);
@@ -42,10 +40,10 @@ namespace Render {
 				shader->setValue("model", model);
 			};
 
-			for (auto& mesh : *meshes) {
-				createModel(std::get<2>(mesh), { 0, 0, 0 }, p1, shader);
-				std::get<0>(mesh)->render();
+			for (auto& mesh: *meshes) {
+				createModel(std::get<2>(mesh), { 0, 0, 0 }, p1, shader);;
 				std::get<1>(mesh)->bind();
+				std::get<0>(mesh)->render();
 			}
 			glBindVertexArray(0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

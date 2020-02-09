@@ -99,6 +99,9 @@ namespace Physics {
 	Collider& Object::getCollider() {
 		return collider;
 	}
+	std::vector<Update> Object::getUpdates() {
+		return updates;
+	}
 
 	//setters
 	void Object::setKinematic(const GLboolean& value) {
@@ -130,6 +133,9 @@ namespace Physics {
 	}
 	void Object::setMaterial(Material& value) {
 		material = value;
+	}
+	void Object::addUpdate(Update update) {
+		updates.push_back(update);
 	}
 
 	void Object::clamp() {
@@ -208,19 +214,26 @@ namespace Physics {
 		}
 	}
 	Update Object::getUpdate() {
-		Update update_;
-		update_.Sender = this;
-		update_.Positon = position;
-		if (!isKinematic) {
-			position += velocity;
-			velocity += acceleration;
+		Update update;
+		if (isKinematic) {
+			update.Tag = Null;
+			return update;
 		}
-		update_.Data = position;
-		update_.Tag = TAG::COLLISION;
-		return update_;
+		update.Sender = this;
+		update.PrevPosition = position;
+		update.PrevVelocity = velocity;
+		update.Vertices = body;
+
+		update.Position = position + velocity;
+		update.Velocity = velocity + acceleration + glm::vec3(0, GRAVITY, 0);
+		update.Tag = COLLISION;
+
+		return update;
 	}
-	void Object::doUpdate(Update update) {
-		setPosition(update.Data);
+	void Object::doUpdate(Update& update) {
+		position += update.Position - update.PrevPosition;
+		// setPosition(update.Position); 
+		setVelocity(update.Velocity);
 	}
 
 	Collider::Collider() {
@@ -282,6 +295,12 @@ namespace Physics {
 	GLboolean Material::isNull() {
 		return null;
 	}
+	GLfloat& Material::getFrictionConstant() {
+		return frictionConstant;
+	}
+	GLfloat& Material::getBouncyness() {
+		return bouncines;
+	}
 
 	template <typename T>
 	Clamp<T>::Clamp(T min, T max) {
@@ -300,7 +319,7 @@ namespace Physics {
 	}
 	Update::Update() : Tag(Null) {
 		Sender = nullptr;
-		Data = { 0, 0, 0 };
-		Positon = { 0, 0, 0 };
+		PrevPosition = { 0, 0, 0 };
+		Position = { 0, 0, 0 };
 	}
 };

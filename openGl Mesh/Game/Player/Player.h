@@ -20,7 +20,7 @@ public:
 	void create();
 	void render(glm::mat4 projection);
 	Camera& getCamera();
-	void update();
+	Physics::Object& getObject();
 private:
 	Camera cam;
 	Physics::Object object;

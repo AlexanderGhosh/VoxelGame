@@ -101,9 +101,7 @@ void reduceToMultiple(glm::ivec3& victim, GLuint multiple) {
 	}
 }
 Chunk& World::getOccupiedChunk(glm::ivec3 occPosition) {
-	
 	reduceToMultiple(occPosition, CHUNK_SIZE);
-
 	int index = getChunkIndex(occPosition, false);
 	if (index < 0) {
 		Chunk chunk = Chunk();

@@ -154,6 +154,7 @@
     <ClCompile Include="Game\World\Physics.cpp" />
     <ClCompile Include="Game\World\PhysicsEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Game\World\Physics\Ray.cpp" />
     <ClCompile Include="Renders\chunkRender.cpp" />
     <ClCompile Include="Game\World\constants.cpp" />
     <ClCompile Include="Game\Player\Entity.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Game\World\Physics.h" />
     <ClInclude Include="Game\World\PhysicsEngine.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Game\World\Physics\Ray.h" />
     <ClInclude Include="Renders\chunkRender.h" />
     <ClInclude Include="Game\World\constants.h" />
     <ClInclude Include="Renders\meshRender.h" />

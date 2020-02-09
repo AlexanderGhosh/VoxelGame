@@ -16,9 +16,12 @@ Player::Player(GLboolean init) : renderer(init, "") {
 }
 Player::Player(glm::vec3 position, glm::vec3 camOff) {
 	object.setPosition(position);
-	movementSpeed = 6;
+	object.setVelocity({ 0, 0, 0 });
+	object.setMass(60);
+	movementSpeed = 1;
 	camera_offset = camOff;
 	cam.setPosition(camOff);
+	object.setKinematic(false);
 }
 glm::vec3 Player::getPosition() {
 	return object.getPosition();
@@ -31,13 +34,9 @@ void Player::create() {
 		tex += i == 0 ? "bottom" : "top";
 
 		TEXTURE_NAMES name = i == 0 ? PLAYER_BOTTOM : PLAYER_TOP;
-
-		Face face = { FACES[FRONT], TEXTURES[name], pos };
-		faces.push_back(face);
-
-		face = { FACES[BACK], TEXTURES[name], pos };
-		faces.push_back(face);
-
+		
+		Face face = { FACES[TOP], TEXTURES[name], pos };
+		
 		if (i != 0) {
 			face = { FACES[TOP], TEXTURES[name], pos };
 			faces.push_back(face);
@@ -46,61 +45,62 @@ void Player::create() {
 			face = { FACES[BOTTOM], TEXTURES[name], pos };
 			faces.push_back(face);
 		}
+		face = { FACES[FRONT], TEXTURES[name], pos };
+		faces.push_back(face);
+
+		face = { FACES[BACK], TEXTURES[name], pos };
+		faces.push_back(face);
+
 		face = { FACES[RIGHT], TEXTURES[name], pos };
 		faces.push_back(face);
 
 		face = { FACES[LEFT], TEXTURES[name], pos };
 		faces.push_back(face);
 	}
-	std::vector<Face*> arg;
-	for (auto& f : faces) {
-		arg.push_back(&f);
-	}
 
 	renderer.loadMeshes(&faces);
 	prevPos = object.getPosition();
+	object.body = faces;
 }
 void Player::render(glm::mat4 projection) {
 	renderer.setPosition(object.getPosition());
 	renderer.render(cam, projection);
 }
 Physics::Update Player::processMovement(Camera_Movement movement, GLfloat deltaTime) {
-	//cam.ProcessMovement(movement, deltaTime);
+	// object.setVelocity({ 0, 0, 0 });
 	Physics::Update update;
-	update.Sender = &object;
 	update.Tag = Physics::COLLISION;
-	update.Positon = object.getPosition();
-	update.Extra = faces;
-	glm::vec3 pos = object.getPosition();
+	update.Sender = &object;
+	update.PrevPosition = object.getPosition();
+	update.PrevVelocity = object.getVelocity();
+	glm::vec3 newPos = object.getPosition();
+	glm::vec3 newVel = object.getVelocity();
 	switch (movement)
 	{
 	case FORWARD:
-		object.setPosition(pos + glm::vec3(0, 0, -1) *deltaTime * movementSpeed);
+		newPos += glm::vec3(0, 0, -1) * deltaTime * movementSpeed;
 		break;
 	case BACKWARD:
-		object.setPosition(pos + glm::vec3(0, 0, -1) * -deltaTime * movementSpeed);
+		newPos += glm::vec3(0, 0, 1) * deltaTime * movementSpeed;
 		break;
 	case LEFT_C:
-		object.setPosition(pos + glm::vec3(1, 0, 0) * -deltaTime * movementSpeed);
+		newPos += glm::vec3(-1, 0, 0) * deltaTime * movementSpeed;
 		break;
 	case RIGHT_C:
-		object.setPosition(pos + glm::vec3(1, 0, 0) * deltaTime * movementSpeed);
+		newPos += glm::vec3(1, 0, 0) * deltaTime * movementSpeed;
 		break;
 	case UP_C:
-		object.setPosition(pos + glm::vec3(0, 1, 0) * deltaTime * movementSpeed);
+		newPos += glm::vec3(0, 1, 0) * deltaTime * movementSpeed;
 		break;
 	case DOWN_C:
-		object.setPosition(pos + glm::vec3(0, 1, 0) * -deltaTime * movementSpeed);
+		newPos += glm::vec3(0, -1, 0) * deltaTime * movementSpeed;
 		break;
 	}
-
-	update.Data = object.getPosition();
-	object.setPosition(update.Positon);
-	glm::vec3 p = object.getPosition() - pos;
-	//renderer.addPosition(p);
+	// cam.setPosition(newPos - object.getPosition() + cam.GetPosition());
+	// cam.updateCameraVectors();
+	update.Position = newPos;
+	update.Velocity = newVel;
 	return update;
-}
-void Player::update() {
 }
 void Player::processMouse(GLfloat xOffset, GLfloat yOffset, GLfloat x, GLboolean constrainPitch) {
 	x *= 0.01f;
@@ -117,4 +117,7 @@ void Player::processMouse(GLfloat xOffset, GLfloat yOffset, GLfloat x, GLboolean
 }
 Camera& Player::getCamera() {
 	return cam;
+}
+Physics::Object& Player::getObject() {
+	return object;
 }

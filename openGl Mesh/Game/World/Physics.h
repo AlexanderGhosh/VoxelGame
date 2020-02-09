@@ -13,6 +13,8 @@ namespace Physics {
 		Material();
 		Material(GLfloat firction, GLfloat bouncy);
 		GLboolean isNull();
+		GLfloat& getFrictionConstant();
+		GLfloat& getBouncyness();
 	private:
 		GLboolean null;
 		GLfloat frictionConstant;
@@ -43,15 +45,19 @@ namespace Physics {
 
 	enum TAG {
 		Null,
-		COLLISION
+		COLLISION,
+		GRAVITY_T,
+		ACCELERATION
 	};
 
 	struct Update {
 		Object* Sender;
 		TAG Tag;
-		glm::vec3 Data;
-		glm::vec3 Positon;
-		std::vector<Face> Extra;
+		glm::vec3 PrevPosition;
+		glm::vec3 Position;
+		glm::vec3 Velocity;
+		glm::vec3 PrevVelocity;
+		std::vector<Face> Vertices;
 		Update();
 	};
 	template <typename T>
@@ -83,7 +89,8 @@ namespace Physics {
 		void clampAngularSpeed(const GLfloat& max, const GLfloat& min);
 
 		Update getUpdate();
-		void doUpdate(Update update);
+		void addUpdate(Update update);
+		void doUpdate(Update& update);
 
 		// getters
 		GLboolean& getKinematic();
@@ -99,6 +106,7 @@ namespace Physics {
 		GLfloat getAngularSpeed();
 		Material& getMaterial();
 		Collider& getCollider();
+		std::vector<Update> getUpdates();
 		// setter
 		void setKinematic(const GLboolean& value);
 		void setPhysical(const GLboolean& value);
@@ -110,6 +118,10 @@ namespace Physics {
 		void setAngularVelocity(const glm::vec3& value);
 		void setAngularAcceleration(const glm::vec3& value);
 		void setMaterial(Material& value);
+
+		std::vector<Face> body;
+		glm::bvec3 colliding;
+		glm::vec3 displacementFromCollison;
 	private:
 		GLfloat mass;
 		GLboolean isKinematic;
@@ -122,6 +134,7 @@ namespace Physics {
 		glm::vec3 angularAcceleration;
 		Material material;
 		Collider collider;
+		std::vector<Update> updates;
 
 		GLboolean doVelocityClamp;
 		GLboolean doSpeedClamp;
@@ -131,6 +144,7 @@ namespace Physics {
 		Clamp<GLfloat> speedClamps;
 		Clamp<glm::vec3> angularVelocityClamps;
 		Clamp<GLfloat> angularSpeedClamps;
+
 
 		void clamp();
 	};

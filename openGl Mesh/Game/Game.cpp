@@ -38,20 +38,21 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
+	if (hasPlayer) {
+		Game::physicsEng.addObject(&player.getObject());
+	}
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
 		showFPS();
 		proccesEvents();
-		doMovement();
+		processMovements(); // creates the updates
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();
-		Game::physicsEng.doUpdates(Game::world);
-		// rend.render(*Game::mainCamera, projection);
-
+		Game::physicsEng.applyPhysics(Game::world, Game::deltaTime);
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -61,6 +62,9 @@ void Game::doLoop(glm::mat4 projection) {
 void Game::calcTimes() {
 	GLfloat frame = glfwGetTime();
 	deltaTime = frame - lastFrameTime;
+	if (lastFrameTime == 0) {
+		deltaTime = 1.0f / 60.0f;
+	}
 	lastFrameTime = frame;
 	frameRate = 1 / deltaTime;
 }
@@ -97,8 +101,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	//{ 0, 1, -1 }
-	player = Player({ 0, 0.01, 0 }, { 0, 5, -1 });
+	player = Player({ 0, 5, -3 }, { 0, 5, -1 });
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -133,7 +136,7 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
-void Game::doMovement() {
+void Game::processMovements() {
 	std::vector<Physics::Update> updates;
 	if (Game::keys[GLFW_KEY_W] || Game::keys[GLFW_KEY_UP]) {
 		if (Game::hasPlayer) {
@@ -183,11 +186,26 @@ void Game::doMovement() {
 			Game::mainCamera->ProcessMovement(DOWN_C, deltaTime);
 		}
 	}
-	//std::cout << updates.size() << "\n";
-	Game::physicsEng.addUpdates(updates);
+	physicsEng.addUpdates(updates);
 }
 void Game::cleanUp() {
 	world.cleanUp();
+}
+void Game::doPlayerMovement() {
+	if (!hasPlayer) return;
+	Physics::Object& obj = player.getObject();
+	Physics::Update update;
+
+	update.Tag = Physics::GRAVITY_T;
+	update.Sender = &player.getObject();
+	update.Vertices = player.getObject().body;
+
+	update.PrevPosition = obj.getPosition();
+	update.PrevVelocity = obj.getVelocity();
+
+	update.Velocity = obj.getVelocity() - GRAVITY;
+	update.Position = obj.getPosition() + update.Velocity;
+	Game::physicsEng.addUpdate(update);
 }
 
 

@@ -40,18 +40,15 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 					meshes.push_back({ FACES[TOP], TEXTURES[GRASS], pos });
 				}
 
-				if (getBlock_safe({ x, y, z - 1}, chunks) == 0) {
+				if (getBlock_safe({ x, y, z - 1 }, chunks) == 0) {
 					meshes.push_back({ FACES[BACK], TEXTURES[GRASS], pos });
 				}
-				if (getBlock_safe({ x, y, z + 1}, chunks) == 0) {
+				if (getBlock_safe({ x, y, z + 1 }, chunks) == 0) {
 					meshes.push_back({ FACES[FRONT], TEXTURES[GRASS], pos });
 				}
 			}
 		}
 	}
-	// sortMesh();
-	// compressBlocks();
-	// compressMesh();
 }
 void Chunk::cleanUp() {
 	for (auto& face : meshes) {
@@ -95,29 +92,6 @@ std::vector<std::pair<GLuint, GLuint>>& Chunk::getCompressBlocks() {
 std::vector<std::pair<Face, GLuint>>& Chunk::getCompressMesh() {
 	return compressedMesh;
 }
-/*void Chunk::sortMesh() {
-	std::map<int, std::vector<FaceMesh>> seperated;
-	for (auto& mesh : meshes) {
-		int location = 0;
-		for (auto& buffer : mesh.comboOf) {
-			location += (int)buffer;
-		}
-		if (!location) {
-			location = (int)mesh.getBuffer();
-		}
-		try {
-			seperated[location].push_back(mesh);
-		}
-		catch (std::exception e) {
-			seperated.insert({ location, { mesh } });
-		}
-	}
-	std::vector<FaceMesh> res;
-	for (auto& sep : seperated) {
-		res.insert(res.end(), sep.second.begin(), sep.second.end());
-	}
-	meshes = res;
-}*/
 
 std::vector<Face*> Chunk::getMeshes() {
 	std::vector<Face*> res;
@@ -186,19 +160,26 @@ GLboolean Chunk::isNull() {
 	return null;
 }
 GLboolean Chunk::checkCollision(Physics::Update& update) {
+	std::vector<glm::vec3> diag = {
+				glm::vec3(0), glm::vec3(1, 1, -1)
+	};
+	std::vector<glm::vec3> full = {
+				glm::vec3(0, 0, -1), glm::vec3(1, 0, -1),
+				glm::vec3(0, 1, -1), glm::vec3(1, 1, -1),
+														
+				glm::vec3(0, 1, 0), glm::vec3(1, 1, 0),
+				glm::vec3(0, 0, 0), glm::vec3(1, 0, 0) 
+	};
+	auto translate = [](std::vector<glm::vec3> vertices, glm::vec3 translation) {
+		for (auto& vertex : vertices) {
+			vertex += translation;
+		}
+		return vertices;
+	};
 	for (auto& chunkFace : this->meshes) {
-		std::array<glm::vec3, 2> cubeCorners = {
-				glm::vec3(0) + std::get<2>(chunkFace), glm::vec3(1, 1, -1) + std::get<2>(chunkFace)
-		};
-		for (auto& playerMesh : update.Extra) {
-			auto& meshPos = update.Data;
-			std::array<glm::vec3, 8> playerCorners = {
-				glm::vec3(0, 0, -1) + meshPos, glm::vec3(1, 0, -1) + meshPos,
-				glm::vec3(0, 1, -1) + meshPos, glm::vec3(1, 1, -1) + meshPos,
-
-				glm::vec3(0, 1, 0) + meshPos, glm::vec3(1, 1, 0) + meshPos,
-				glm::vec3(0, 0, 0) + meshPos, glm::vec3(1, 0, 0) + meshPos
-			};
+		std::vector<glm::vec3> cubeCorners = translate(diag, std::get<2>(chunkFace));
+		for (auto& playerMesh : update.Vertices) {
+			std::vector<glm::vec3> playerCorners = translate(full, update.PrevPosition);
 			for (auto& meshVertex : playerCorners) {
 				if (meshVertex.x <= cubeCorners[1].x && meshVertex.x >= cubeCorners[0].x) {
 					if (meshVertex.y <= cubeCorners[1].y && meshVertex.y >= cubeCorners[0].y) {
