@@ -6,13 +6,9 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <iostream>
+#include "../World/constants.h"
 
-enum Camera_Movement {
-FORWARD,
-BACKWARD,
-LEFT_C,
-RIGHT_C
-};
+
 
 const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
@@ -46,18 +42,29 @@ public:
 		return right;
 	}
 
-	void ProcessMovement(Camera_Movement direction, GLfloat deltaTime) {
+	void ProcessMovement(Move_Dir direction, GLfloat deltaTime) {
 		GLfloat velocity = this->movementSpeed * deltaTime;
-		if (direction == FORWARD) {
+		/*if (direction == Move_Dir::FORWARD) {
 			this->position += this->front * velocity;
 		}
-		if (direction == BACKWARD) {
+		if (direction == Move_Dir::BACKWARD) {
 			this->position -= this->front * velocity;
 		}
-		if (direction == LEFT_C) {
+		if (direction == Move_Dir::LEFT) {
 			this->position -= this->right * velocity;
 		}
-		if (direction == RIGHT_C) {
+		if (direction == Move_Dir::RIGHT) {
+			this->position += this->right * velocity;
+		}*/
+		switch (direction)
+		{
+		case Move_Dir::FORWARD:
+			this->position += this->front * velocity;
+		case Move_Dir::BACKWARD:
+			this->position -= this->front * velocity;
+		case Move_Dir::LEFT:
+			this->position -= this->right * velocity;
+		case Move_Dir::RIGHT:
 			this->position += this->right * velocity;
 		}
 	}
@@ -96,7 +103,7 @@ public:
 	GLfloat GetZoom() {
 		return this->zoom;
 	}
-	glm::vec3 GetPosition() {
+	glm::vec3& GetPosition() {
 		return this->position;
 	}
 	glm::vec3 GetFront() {

@@ -1,14 +1,10 @@
 #include "Chunk.h"
 Chunk::Chunk() {
-	isNull = GL_TRUE;
+	null = GL_TRUE;
 }
-Chunk::Chunk(glm::vec3 pos, GLboolean create) : object((GLfloat)100.0f, { position, (GLfloat)1 }) {
+Chunk::Chunk(glm::vec3 pos, GLboolean create) {
 	position = pos;
-	object.setKinematic(GL_TRUE);
-	object.setPhysical(GL_TRUE);
-	object.setPosition(position);
-	Physics::BoxCollider collider(position, 1);
-	isNull = GL_FALSE;
+	null = GL_FALSE;
 	if (create) {
 		this->create();
 		// this->sortMesh();
@@ -20,6 +16,24 @@ void Chunk::create() {
 }
 void Chunk::createBlocks() {
 	blocks.fill(1);
+	//if (position.y >= -CHUNK_SIZE) {
+	//	for (GLushort x = 0; x < CHUNK_SIZE; x++) {
+	//		for (GLushort z = 0; z < CHUNK_SIZE; z++) {		
+	//			for (GLushort y = 8; y < 16; y++) {
+	//				blocks[getBlockIndex({ x, y, z })] = 1;
+	//			}
+	//			/*GLushort noise = std::rand() % CHUNK_SIZE;
+	//			if (noise > CHUNK_SIZE) noise = CHUNK_SIZE;
+	//			for (GLushort i = 0; i < noise; i++) {
+	//				blocks[getBlockIndex({ x, i, z })] = 1;
+	//			}*/
+	//		}
+	//		
+	//	}
+	//}
+	//else {
+	//	blocks.fill(1);
+	//}
 }
 void Chunk::createMesh(std::vector<Chunk*> chunks) {
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {
@@ -40,33 +54,18 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 					meshes.push_back({ FACES[TOP], TEXTURES[GRASS], pos });
 				}
 
-				if (getBlock_safe({ x, y, z - 1 }, chunks) == 0) {
+				if (getBlock_safe({ x, y, z - 1}, chunks) == 0) {
 					meshes.push_back({ FACES[BACK], TEXTURES[GRASS], pos });
 				}
-				if (getBlock_safe({ x, y, z + 1 }, chunks) == 0) {
+				if (getBlock_safe({ x, y, z + 1}, chunks) == 0) {
 					meshes.push_back({ FACES[FRONT], TEXTURES[GRASS], pos });
 				}
 			}
 		}
 	}
-}
-GLboolean Chunk::checkCollision(Physics::Object& object) {
-	/*if (!object.getPhysical()) return GL_FALSE;
-	for (auto& mesh : meshes) {
-		Physics::BoxCollider collider = mesh.getCollider();
-		if (collider.checkCollision(&object)) {
-			return GL_TRUE;
-		}
-	}*/
-	return GL_FALSE;
-	/*try {
-		Physics::BoxCollider collider = this->object.getCollider();
-		return collider.checkCollision(&object);
-	}
-	catch ( std::exception e)
-	{
-
-	}*/
+	// sortMesh();
+	// compressBlocks();
+	// compressMesh();
 }
 void Chunk::cleanUp() {
 	for (auto& face : meshes) {
@@ -118,12 +117,20 @@ std::vector<Face*> Chunk::getMeshes() {
 	}
 	return res;
 }
-GLuint Chunk::getBlock_unsafe(const glm::vec3 pos) {
-	return blocks[getBlockIndex(pos)];
+GLuint Chunk::getBlock_unsafe(glm::ivec3 pos) {
+	while (pos.x%CHUNK_SIZE != 0) {
+		pos -= glm::ivec3(CHUNK_SIZE);
+	}
+	try {
+		return blocks[getBlockIndex(pos)];
+	}
+	catch (std::exception e) {
+		return 0;
+	}
 }
 GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
-	if (inChunkPosition.x >= 0 && inChunkPosition.y >= 0 && inChunkPosition.z >= 0) {
-		if (inChunkPosition.x < CHUNK_SIZE && inChunkPosition.y < CHUNK_SIZE && inChunkPosition.z < CHUNK_SIZE) {
+	if (glm::all(glm::greaterThanEqual(inChunkPosition, glm::vec3(0)))) {
+		if (glm::all(glm::lessThan(inChunkPosition, glm::vec3(CHUNK_SIZE)))) {
 			return blocks[getBlockIndex(inChunkPosition)];
 		}
 	}
@@ -165,44 +172,7 @@ GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*>
 		}
 	}
 	return 0;
-<<<<<<< HEAD
 }
 GLboolean Chunk::isNull() {
 	return null;
-}
-GLboolean Chunk::checkCollision(Physics::Update& update) {
-	std::vector<glm::vec3> diag = {
-				glm::vec3(0), glm::vec3(1, 1, -1)
-	};
-	std::vector<glm::vec3> full = {
-				glm::vec3(0, 0, -1), glm::vec3(1, 0, -1),
-				glm::vec3(0, 1, -1), glm::vec3(1, 1, -1),
-														
-				glm::vec3(0, 1, 0), glm::vec3(1, 1, 0),
-				glm::vec3(0, 0, 0), glm::vec3(1, 0, 0) 
-	};
-	auto translate = [](std::vector<glm::vec3> vertices, glm::vec3 translation) {
-		for (auto& vertex : vertices) {
-			vertex += translation;
-		}
-		return vertices;
-	};
-	for (auto& chunkFace : this->meshes) {
-		std::vector<glm::vec3> cubeCorners = translate(diag, std::get<2>(chunkFace));
-		for (auto& playerMesh : update.Vertices) {
-			std::vector<glm::vec3> playerCorners = translate(full, update.PrevPosition);
-			for (auto& meshVertex : playerCorners) {
-				if (meshVertex.x <= cubeCorners[1].x && meshVertex.x >= cubeCorners[0].x) {
-					if (meshVertex.y <= cubeCorners[1].y && meshVertex.y >= cubeCorners[0].y) {
-						if (meshVertex.z >= cubeCorners[1].z && meshVertex.z <= cubeCorners[0].z) {
-							return GL_TRUE;
-						}
-					}
-				}
-			}
-		}
-	}
-	return GL_FALSE;
-=======
->>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 }

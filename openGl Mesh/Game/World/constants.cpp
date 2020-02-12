@@ -27,15 +27,29 @@ const std::array<Buffer*, 6> FACES = {
 const std::vector<Texture*>TEXTURES = {
 	new Texture("grass", ""),
 	new Texture("player/bottom", ""),
-	new Texture("player/top", "")
+	new Texture("player/top", ""),
+	new Texture("skybox", "")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),
-	new Shader("block3")
+	new Shader("block3"),
+	new Shader("skybox")
 };
 GLint getBlockIndex(glm::vec3 position) {
 	position.y = std::abs(position.y);
 	int index = position.x + position.z * CHUNK_SIZE + position.y * CHUNK_AREA;
 	if (index >= CHUNK_VOLUME) index *= -1;
+	return index;
+}
+GLint getChunkIndex(glm::vec3 position, GLboolean reduced) {
+	if (!reduced) {
+		position /= CHUNK_SIZE;
+	}
+	position.y+=1;
+	position.x += RENDER_DISTANCE / 2;
+	position.z += RENDER_DISTANCE / 2;
+	position = glm::abs(position);
+	int index = position.x + position.z * RENDER_DISTANCE + position.y * RENDERED_AREA;
+	if (index >= RENDERED_VOLUME) index *= -1;
 	return index;
 }

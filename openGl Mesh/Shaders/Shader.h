@@ -27,11 +27,11 @@ public:
 	void setLocation(GLint& location, glm::mat4& value);
 	void setLocation(GLint& location, glm::vec3& value);
 	void setLocation(GLint& location, GLfloat& value);
-	void setLocation(GLint& location, GLint& value);
+	void setLocation(GLint& location, const GLint& value);
 	GLboolean setValue(std::string name, glm::vec3& value);
 	GLboolean setValue(std::string name, glm::mat4& value);
 	GLboolean setValue(std::string name, GLfloat& value);
-	GLboolean setValue(std::string name, GLint& value);
+	GLboolean setValue(std::string name, const GLint& value);
 private:
 	GLuint program;
 	std::string name;

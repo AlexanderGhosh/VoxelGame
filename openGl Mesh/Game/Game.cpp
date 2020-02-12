@@ -10,20 +10,31 @@ GLuint GameConfig::FPSlock = 0;
 Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
 glm::vec3 Game::mouseData(0);
 std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
+Player Game::player = Player();
+GLboolean Game::hasPlayer = GL_FALSE;
 #pragma endregion
 Game::Game() {
 	hasPlayer = false;
+	hasSkybox = false;
 	gameRunning = false;
+	lastFrameTime = -1.0f;
 	Game::mainCamera = new Camera({ 0, 2, 0 });
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 }
-Game::Game(GLboolean hasPlayer) {
-	this -> hasPlayer = hasPlayer;
-
+Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
+	this->hasPlayer = hasPlayer;
+	this->hasSkybox = hasSkybox;
+	setupPlayer();
 	gameRunning = false;
+	Game::mouseData = { 0, 0, -90 };
+	lastFrameTime = -1.0f;
 	GameConfig::setup();
+	if (hasSkybox) {
+		makeSkybox("skybox");
+	}
 }
+
 void Game::generateWorld() {
 	world = World(true);
 }
@@ -34,33 +45,17 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
-<<<<<<< HEAD
-	if (hasPlayer) {
-		Game::physicsEng.addObject(&player.getObject());
-	}
-=======
-	Mesh::FaceMesh top(FACES[TOP], TEXTURES[GRASS]);
-	top.setPosition({ 0, 2, 0 });
-	Render::ChunkMeshRender rend;
-	// rend.loadMeshes({ top });
->>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
 		showFPS();
 		proccesEvents();
-		processMovements(); // creates the updates
+		doMovement();
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();
-<<<<<<< HEAD
-		Game::physicsEng.applyPhysics(Game::world, Game::deltaTime);
-=======
-		// rend.render(*Game::mainCamera, projection);
-
->>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -70,9 +65,7 @@ void Game::doLoop(glm::mat4 projection) {
 void Game::calcTimes() {
 	GLfloat frame = glfwGetTime();
 	deltaTime = frame - lastFrameTime;
-	if (lastFrameTime == 0) {
-		deltaTime = 1.0f / 60.0f;
-	}
+	if (lastFrameTime == -1) deltaTime = 1.0f / 60.0f;
 	lastFrameTime = frame;
 	frameRate = 1 / deltaTime;
 }
@@ -94,27 +87,27 @@ void Game::lockFPS() {
 	}
 }
 void Game::showStuff(GLboolean showStatic) {
+	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	if (hasPlayer) {
-		// player.render(projection);
+		player.render(projection);
 	}
 	if (showStatic) {
-		world.renderChunksStatic(*mainCamera, projection);
+		world.renderChunksStatic(cam, projection);
 	}
 	else {
 		// world.renderChunksDynamic();
+	}
+	if (hasSkybox) {
+		showSkybox();
 	}
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
-<<<<<<< HEAD
 void Game::setupPlayer() {
-	player = Player({ 0, 5, -3 }, { 0, 5, -1 });
+	player = Player({ 0, 5, 0 }, { 0, 0, 5 });
 	player.create();
 }
-=======
-
->>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
 		glfwSetWindowShouldClose(window, true);
@@ -137,62 +130,160 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 
 	Game::mouseData.x = xPos;
 	Game::mouseData.y = yPos;
-
+	if (Game::hasPlayer) {
+		Game::player.processMouse(xOffset, yOffset, mouseData.x);
+		return;
+	}
 	Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
 }
 void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
-<<<<<<< HEAD
-void Game::processMovements() {
-	std::vector<Physics::Update> updates;
-=======
 void Game::doMovement() {
->>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
-	if (Game::keys[GLFW_KEY_W] || Game::keys[GLFW_KEY_UP]) {
-		Game::mainCamera->ProcessMovement(FORWARD, deltaTime);
-		/*Physics::Update up = p.processMovement(FORWARD, deltaTime);
-		Physics::Engine::addUpdate(up); */
+	auto& k = Game::keys;
+	if (Game::hasPlayer) {
+		player.setVelocity({ 0, player.getVelocity().y, 0 });
+		if (k[GLFW_KEY_W]) {
+			player.move(Move_Dir::FORWARD);
+		}
+		if (k[GLFW_KEY_S]) {
+			player.move(Move_Dir::BACKWARD);
+		}
+		if (k[GLFW_KEY_A]) {
+			player.move(Move_Dir::LEFT);
+		}
+		if (k[GLFW_KEY_D]) {
+			player.move(Move_Dir::RIGHT);
+		}
+		if (k[GLFW_KEY_SPACE]) {
+			player.move(Move_Dir::UP);
+		}
+
+		if (k[GLFW_KEY_UP]) {
+			player.getCamera().GetPosition() += glm::vec3(0, 1, 0) * 2.0f * deltaTime;
+		}
+		if (k[GLFW_KEY_DOWN]) {
+			player.getCamera().GetPosition() += glm::vec3(0, -1, 0) * 2.0f * deltaTime;
+		}
+		if (k[GLFW_KEY_LEFT]) {
+			player.getCamera().GetPosition() += glm::vec3(-1, 0, 0) * 2.0f * deltaTime;
+		}
+		if (k[GLFW_KEY_RIGHT]) {
+			player.getCamera().GetPosition() += glm::vec3(1, 0, 0) * 2.0f * deltaTime;
+		}
+
+		player.updatePosition(Game::deltaTime, world.getOccupiedChunk(player.getPosition()).getMeshes());
 	}
-	if (Game::keys[GLFW_KEY_S] || Game::keys[GLFW_KEY_DOWN]) {
-		Game::mainCamera->ProcessMovement(BACKWARD, deltaTime);
-		/*Physics::Update up = p.processMovement(BACKWARD, deltaTime);
-		Physics::Engine::addUpdate(up);*/
+	else {
+		GLfloat speed = 2.0f;
+		if (k[GLFW_KEY_LEFT_CONTROL]) {
+			speed = 5.0f;
+		}
+		else {
+			speed = 2.0f;
+		}
+		if (k[GLFW_KEY_W]) {
+			Game::mainCamera->GetPosition() += Game::mainCamera->GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
+		}
+		if (k[GLFW_KEY_S]) {
+			Game::mainCamera->GetPosition() -= Game::mainCamera->GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
+		}
+		if (k[GLFW_KEY_A]) {
+			Game::mainCamera->GetPosition() -= Game::mainCamera->GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
+		}
+		if (k[GLFW_KEY_D]) {
+			Game::mainCamera->GetPosition() += Game::mainCamera->GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
+		}
+		if (k[GLFW_KEY_SPACE]) {
+			Game::mainCamera->GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
+		}
+		if (k[GLFW_KEY_LEFT_SHIFT]) {
+			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
+		}
 	}
-	if (Game::keys[GLFW_KEY_D] || Game::keys[GLFW_KEY_RIGHT]) {
-		Game::mainCamera->ProcessMovement(RIGHT_C, deltaTime);
-		/*Physics::Update up = p.processMovement(RIGHT, deltaTime);
-		Physics::Engine::addUpdate(up);*/
-	}
-	if (Game::keys[GLFW_KEY_A] || Game::keys[GLFW_KEY_LEFT]) {
-		Game::mainCamera->ProcessMovement(LEFT_C, deltaTime);
-		/*Physics::Update up = p.processMovement(LEFT, deltaTime);
-		Physics::Engine::addUpdate(up);*/
-	}
-<<<<<<< HEAD
-	physicsEng.addUpdates(updates);
-=======
->>>>>>> parent of b4d0d51... physics engine working in super flat not extensivly tested also 3d chunks
 }
 void Game::cleanUp() {
 	world.cleanUp();
 }
-void Game::doPlayerMovement() {
-	if (!hasPlayer) return;
-	Physics::Object& obj = player.getObject();
-	Physics::Update update;
 
-	update.Tag = Physics::GRAVITY_T;
-	update.Sender = &player.getObject();
-	update.Vertices = player.getObject().body;
+void Game::makeSkybox(std::string skybox) {
+	GLfloat skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
 
-	update.PrevPosition = obj.getPosition();
-	update.PrevVelocity = obj.getVelocity();
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
 
-	update.Velocity = obj.getVelocity() - GRAVITY;
-	update.Position = obj.getPosition() + update.Velocity;
-	Game::physicsEng.addUpdate(update);
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+	// skybox VAO
+	GLuint skyboxVBO;
+	glGenVertexArrays(1, &SBVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glBindVertexArray(SBVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+
+
+	// shader configuration
+	// --------------------
+	auto& shader = SHADERS[SKYBOX];
+	shader->bind();
+	shader->setValue("skybox", 0);
+
 }
+void Game::showSkybox() {
+	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+	SHADERS[SKYBOX]->bind();
+	Camera& camera = hasPlayer ? Game::player.getCamera() : *Game::mainCamera;
+	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+	SHADERS[SKYBOX]->setValue("view", view);
+	SHADERS[SKYBOX]->setValue("projection", projection);
 
+	glBindVertexArray(SBVAO);
+	TEXTURES[SKYBOX_T]->bind();
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	glDepthFunc(GL_LESS); // set depth function back to default
+}
 

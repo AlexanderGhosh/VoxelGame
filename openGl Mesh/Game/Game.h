@@ -11,10 +11,9 @@
 #include <chrono>
 #include <thread>
 
-#include "Player/Camera.h"
-// #include "Player/Player.h"
-//#include "World/World.h"
-#include "World/PhysicsEngine.h"
+//#include "Player/Camera.h"
+#include "Player/Player.h"
+#include "World/World.h"
 struct GameConfig {
 	static GLboolean showFPS;
 	static glm::vec3 backgroundCol;
@@ -29,7 +28,7 @@ class Game
 {
 public:
 	Game();
-	Game(GLboolean hasPlayer);
+	Game(GLboolean hasPlayer, GLboolean hasSkybox);
 	void generateWorld();
 	void setupPlayer();
 	void update();
@@ -47,10 +46,12 @@ private:
 	GLuint frameRate;
 	GLboolean gameRunning;
 	World world;
-	GLboolean hasPlayer;
-	// Player player;
+	static GLboolean hasPlayer;
+	static Player player;
+	GLboolean hasSkybox;
 	GLfloat lastFrameTime;
 	glm::mat4 projection;
+	GLuint SBVAO;
 	// blockupdates
 	void showFPS();
 	void calcTimes();
@@ -60,6 +61,7 @@ private:
 	void showStuff(GLboolean showStatic = true);
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
-	void processMovements();
-	void doPlayerMovement();
+	void doMovement();
+	void makeSkybox(std::string skybox);
+	void showSkybox();
 };

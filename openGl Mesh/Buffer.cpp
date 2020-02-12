@@ -157,3 +157,49 @@ void Buffer::addPositions(std::vector<glm::mat4>& positions) {
 void Buffer::resetData() {
 	bufferData = originalData;
 }
+std::vector<GLfloat> Buffer::getVertices(GLboolean unique) {
+	std::vector<GLfloat> res;
+	if (!unique) {
+		for (GLuint i = 0; i < (GLuint)bufferData.size(); i += structure.total_data_len) {
+			res.insert(res.end(), bufferData.begin() + i, bufferData.begin() + i + 3);
+		}
+	}
+	else {
+		std::map<GLfloat, GLfloat> uniq;
+		for (int i = 0; i < bufferData.size(); i += 3) {
+			try {
+				uniq.insert({ bufferData[i], 0 });
+			}catch(std::exception e){ }
+			try {
+				uniq.insert({ bufferData[i + 1], 0 });
+			}
+			catch (std::exception e) {}
+			try {
+				uniq.insert({ bufferData[i + 2], 0 });
+			}
+			catch (std::exception e) {}
+		}
+		for (auto& p : uniq) {
+			res.push_back(p.first);
+		}
+	}
+	return res;
+}
+std::vector<glm::vec3> Buffer::getVertices() {
+	glm::vec3 vertex;
+	std::vector<glm::vec3> res;
+	for (GLuint i = 0; i < (GLuint)bufferData.size(); i += structure.total_data_len) {
+		vertex = { bufferData[i], bufferData[i + 1] , bufferData[i + 2] };
+		GLboolean found = 0;
+		for (auto const& contence : res) {
+			if (contence == vertex) {
+				found = 1;
+				break;
+			}
+		}
+		if (!found) {
+			res.push_back(vertex);
+		}
+	}
+	return res;
+}

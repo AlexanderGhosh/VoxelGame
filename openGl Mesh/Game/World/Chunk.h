@@ -1,8 +1,8 @@
 #pragma once
 #include <chrono>
+#include <gtc/noise.hpp>
 #include "../Player/Camera.h"
 #include "constants.h"
-#include "Physics.h"
 
 #include <map>
 using namespace Mesh;
@@ -15,24 +15,22 @@ public:
 	Chunk();
 	Chunk(glm::vec3 pos, GLboolean create = false);
 	void create();
-	GLboolean checkCollision(Physics::Object& object);
 	std::vector<Face*> getMeshes();
 	void cleanUp();
 	std::vector<std::pair<GLuint, GLuint>>& getCompressBlocks();
 	std::vector<std::pair<Face, GLuint>>& getCompressMesh();
 	void createMesh(std::vector<Chunk*> chunks = std::vector<Chunk*>());
 	void createBlocks();
-	GLuint getBlock_unsafe(const glm::vec3 pos);
+	GLuint getBlock_unsafe(glm::ivec3 pos);
 	GLuint getBlock_safe(const glm::vec3 pos, std::vector<Chunk*> chunks);
+	GLboolean isNull();
 private:
-	GLboolean isNull;
+	GLboolean null;
 	std::vector<Face> meshes;
-	Physics::Object object;
 	std::vector<std::pair<GLuint, GLuint>> compressedBlocks;
 	std::vector<std::pair<Face, GLuint>> compressedMesh;
 
 	std::vector<std::pair<GLuint, GLuint>>& compressBlocks();
 	std::vector<std::pair<Face, GLuint>>& compressMesh();
-	void sortMesh();
 };
 

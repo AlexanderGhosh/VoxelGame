@@ -22,10 +22,10 @@ void Shader::setLocation(GLint& location, glm::vec3& value) {
 void Shader::setLocation(GLint& location, GLfloat& value) {
 	glUniform1f(location, value);
 }
-void Shader::setLocation(GLint& location, GLint& value) {
+void Shader::setLocation(GLint& location, const GLint& value) {
 	glUniform1f(location, value);
 }
-GLboolean Shader::setValue(std::string name, GLint& value) {
+GLboolean Shader::setValue(std::string name, const GLint& value) {
 	GLint loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
