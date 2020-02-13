@@ -142,6 +142,15 @@ void Game::setupEventCB(GLFWwindow* window) {
 }
 void Game::doMovement() {
 	auto& k = Game::keys;
+	GLfloat speed = 2.0f;
+	if (k[GLFW_KEY_LEFT_CONTROL]) {
+		speed = 5.0f;
+		player.setMovementSpeed(PLAYER_SPEED * 2.5f);
+	}
+	else {
+		speed = 2.0f;
+		player.setMovementSpeed(PLAYER_SPEED);
+	}
 	if (Game::hasPlayer) {
 		player.setVelocity({ 0, player.getVelocity().y, 0 });
 		if (k[GLFW_KEY_W]) {
@@ -161,28 +170,21 @@ void Game::doMovement() {
 		}
 
 		if (k[GLFW_KEY_UP]) {
-			player.getCamera().GetPosition() += glm::vec3(0, 1, 0) * 2.0f * deltaTime;
+			player.getCamera().GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_DOWN]) {
-			player.getCamera().GetPosition() += glm::vec3(0, -1, 0) * 2.0f * deltaTime;
+			player.getCamera().GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_LEFT]) {
-			player.getCamera().GetPosition() += glm::vec3(-1, 0, 0) * 2.0f * deltaTime;
+			player.getCamera().GetPosition() += glm::vec3(-1, 0, 0) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_RIGHT]) {
-			player.getCamera().GetPosition() += glm::vec3(1, 0, 0) * 2.0f * deltaTime;
+			player.getCamera().GetPosition() += glm::vec3(1, 0, 0) * speed * deltaTime;
 		}
 
 		player.updatePosition(Game::deltaTime, world.getOccupiedChunk(player.getPosition()).getMeshes());
 	}
 	else {
-		GLfloat speed = 2.0f;
-		if (k[GLFW_KEY_LEFT_CONTROL]) {
-			speed = 5.0f;
-		}
-		else {
-			speed = 2.0f;
-		}
 		if (k[GLFW_KEY_W]) {
 			Game::mainCamera->GetPosition() += Game::mainCamera->GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
 		}
@@ -286,4 +288,3 @@ void Game::showSkybox() {
 
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
-

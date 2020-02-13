@@ -35,6 +35,9 @@ void Entity::setVelocity(const GLfloat& vel) {
 void Entity::setAcceleration(const glm::vec3& acc) {
 	this->acc = acc;
 }
+void Entity::setMovementSpeed(const GLfloat& speed) {
+	movementSpeed = speed;
+}
 
 void Entity::addVelocity(const glm::vec3& vel) {
 	this->vel += vel;

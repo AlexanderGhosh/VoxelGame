@@ -14,6 +14,7 @@ public:
 	void setVelocity(const glm::vec3& vel);
 	void setVelocity(const GLfloat& vel);
 	void setAcceleration(const glm::vec3& acc);
+	void setMovementSpeed(const GLfloat& speed);
 
 	void addVelocity(const glm::vec3& vel);
 	void addAcceleration(const glm::vec3& acc);
