@@ -84,20 +84,49 @@ void Entity::render(glm::mat4 projection, Camera* cam) {
 	renderer.render(*cam, projection);
 }
 GLboolean Entity::determinCollision(std::array<glm::vec3, 4> plane, glm::vec3 deltaV) {
+	auto getOposites = [](std::array<glm::vec3, 4> plane) -> std::array<glm::vec3, 2> {
+		std::array<GLushort, 2> indices;
+		GLfloat dist = 0;
+		plane[3] = plane[0];
+		for (GLushort i = 0; i < 3; i++) {
+			auto d = glm::distance(plane[i], plane[i + 1]);
+			if (std::abs(d) > dist) {
+				dist = std::abs(d);
+				if (d < 0) {
+					indices = { (GLushort)(i + 1), i };
+				}
+				else {
+					indices = { i , (GLushort)(i + 1) };
+				}
+			}
+		}
+		return { plane[indices[0]], plane[indices[1]] };
+	};
+	auto op = getOposites(plane);
+	// s big
+	// t small
+	glm::vec3 s = op[0] + plane[3], t = op[1] + plane[3];
+	glm::vec3 d = deltaV + getCenter();
+
+	s += glm::vec3(1, 0, 1);
+	//t -= glm::vec3(0, 0, 2);
+
+	if (d.x > s.x || d.x < t.x /*|| std::abs(d.z) > s.z || d.z  < t.z*/) {
+		return 0;
+	}
 	GLfloat a, b, c, eq, u, v;
 	glm::vec3 norm;
 	// normal calculating
 	glm::vec3 pq = plane[1] - plane[0];
 	glm::vec3 pr = plane[2] - plane[0];
 	norm = glm::cross(pq, pr);
-
 	// plane equation
 	a = norm.x;
 	b = norm.y;
 	c = norm.z;
-	eq = a * plane[0].x + b * plane[0].y + c * plane[0].z;
+	eq = glm::dot(norm, plane[0]);
 
-	v = eq - a * deltaV.x - b * deltaV.y - c * deltaV.z;
+	v = eq + glm::dot(-norm, deltaV);
 	u = a + b + c;
 	// check intersection
 	if (u != 0 || v == 0) {
@@ -108,12 +137,12 @@ GLboolean Entity::determinCollision(std::array<glm::vec3, 4> plane, glm::vec3 de
 		glm::vec3 center = (plane[0] + plane[1] + plane[2]) / 3.0f;
 		auto c = deltaV + getCenter();
 		auto dist = c.y - center.y;
-		if (dist < 1.015f) return 1;
+		if (dist < 1.025f) return 1;
 	}
 	return 0;
 }
 GLboolean Entity::determinCollision(std::array<glm::vec3, 4> plane) {
-	return determinCollision(plane, pos);
+	return determinCollision(plane, vel);
 }
 
 void Entity::findGrounded(std::vector<Face*> ground, glm::vec3 deltaV) {

@@ -7,6 +7,7 @@ Drawable::Drawable(std::vector<Face*>& sortedMeshes) {
 	meshes = sortedMeshes;
 }
 void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
+	if (sortedMeshes.size() < 1) return;
 	Buffer* prevBuffer = std::get<0>(*sortedMeshes[0]);
 	Texture* prevTex = std::get<1>(*sortedMeshes[0]);
 	GLuint counter = 0;
@@ -34,6 +35,7 @@ void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
 	buffers.push_back({ *prevBuffer, prevTex, counter });
 }
 void Drawable::render(Camera& cam, glm::mat4 projection) {
+	if (buffers.size() < 1) return;
 	Shader* shader = SHADERS[BLOCK3];
 	shader->bind();
 

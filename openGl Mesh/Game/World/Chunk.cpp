@@ -15,7 +15,15 @@ void Chunk::create() {
 	createMesh();
 }
 void Chunk::createBlocks() {
-	blocks.fill(1);
+	for (auto& b : blocks) {
+		GLfloat num = std::rand() / GLfloat(RAND_MAX);
+		if (num > 0.6f) {
+			b = 1;
+		}
+		else {
+			b = 0;
+		}
+	}
 	//if (position.y >= -CHUNK_SIZE) {
 	//	for (GLushort x = 0; x < CHUNK_SIZE; x++) {
 	//		for (GLushort z = 0; z < CHUNK_SIZE; z++) {		
@@ -36,10 +44,15 @@ void Chunk::createBlocks() {
 	//}
 }
 void Chunk::createMesh(std::vector<Chunk*> chunks) {
+	auto addblock = [](FACES_NAMES face, GLshort blockType, glm::vec3 position, std::vector<Face>& meshes) {
+		meshes.push_back({ FACES[face], TEXTURES[blockType], position });
+	};
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {
 		for (GLint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
+				if (getBlock_safe({ x, y, z }, chunks) == 0)
+					continue;
 				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
 					meshes.push_back({ FACES[LEFT], TEXTURES[GRASS], pos });
 				}
@@ -63,51 +76,11 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 			}
 		}
 	}
-	// sortMesh();
-	// compressBlocks();
-	// compressMesh();
 }
 void Chunk::cleanUp() {
 	for (auto& face : meshes) {
 		face = {};
 	}
-}
-
-std::vector<std::pair<GLuint, GLuint>>& Chunk::compressBlocks() {
-	unsigned int prevBlock = blocks.front();
-	unsigned int count = 1;
-	for (auto& block : blocks) {
-		if (prevBlock == block) {
-			count++;
-		}
-		else {
-			compressedBlocks.push_back({ block, count });
-			prevBlock = block;
-		}
-	}
-	compressedBlocks.push_back({ prevBlock, --count });
-	return compressedBlocks;
-}
-std::vector<std::pair<Face, GLuint>>& Chunk::compressMesh() {
-	Face prevMesh = meshes.front();
-	unsigned int count = 1;
-	for (auto& mesh : meshes) {
-		if (std::get<0>(prevMesh) == std::get<0>(mesh)) {
-			count++;
-		}
-		else {
-			compressedMesh.push_back({ mesh, count });
-			prevMesh = mesh;
-		}
-	}
-	compressedMesh.push_back({ prevMesh, --count });
-	return compressedMesh;
-}
-std::vector<std::pair<GLuint, GLuint>>& Chunk::getCompressBlocks() {
-	return compressedBlocks;
-}
-std::vector<std::pair<Face, GLuint>>& Chunk::getCompressMesh() {
-	return compressedMesh;
 }
 
 std::vector<Face*> Chunk::getMeshes() {
@@ -117,18 +90,19 @@ std::vector<Face*> Chunk::getMeshes() {
 	}
 	return res;
 }
-GLuint Chunk::getBlock_unsafe(glm::ivec3 pos) {
-	while (pos.x%CHUNK_SIZE != 0) {
+GLushort Chunk::getBlock_unsafe(glm::ivec3 pos) {
+	auto p = pos;
+	while (pos.x%CHUNK_SIZE != 0 && !(std::abs(pos.x) > CHUNK_SIZE || std::abs(pos.x) < CHUNK_SIZE)) {
 		pos -= glm::ivec3(CHUNK_SIZE);
 	}
 	try {
-		return blocks[getBlockIndex(pos)];
+		return blocks.at(getBlockIndex(pos));
 	}
 	catch (std::exception e) {
 		return 0;
 	}
 }
-GLuint Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
+GLushort Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
 	if (glm::all(glm::greaterThanEqual(inChunkPosition, glm::vec3(0)))) {
 		if (glm::all(glm::lessThan(inChunkPosition, glm::vec3(CHUNK_SIZE)))) {
 			return blocks[getBlockIndex(inChunkPosition)];

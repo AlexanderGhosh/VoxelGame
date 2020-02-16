@@ -4,7 +4,7 @@
 #include "../../Shaders/Shader.h"
 #include "../../Mesh.h"
 
-#define RENDER_DISTANCE 2.0
+#define RENDER_DISTANCE 8
 #define RENDERED_AREA RENDER_DISTANCE * RENDER_DISTANCE
 #define RENDERED_VOLUME RENDER_DISTANCE * RENDER_DISTANCE * RENDER_DISTANCE
 #define CHUNK_SIZE 16
