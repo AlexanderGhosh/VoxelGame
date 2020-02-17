@@ -14,7 +14,7 @@ class World
 public:
 	World();
 	World(Player& player);
-	World(GLboolean gen);
+	World(GLboolean gen, GLboolean flat = true);
 	void renderChunksStatic(Camera c, glm::mat4 projection);
 	void renderChunksDynamic();
 	void processBlockUpdates();
@@ -29,6 +29,7 @@ private:
 	std::vector<Face*> worldMesh;
 	Drawable drawable;
 	void generateFlatChunks(std::vector<glm::vec3> chunkPositions);
-	void getNewChunkPositions();
+	void generateTerrain(std::vector<glm::vec3> chunkPositions);
+	void getNewChunkPositions(GLboolean flat);
 	void genWorldMesh();
 };

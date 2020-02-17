@@ -8,11 +8,15 @@ Drawable::Drawable(std::vector<Face*>& sortedMeshes) {
 }
 void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
 	if (sortedMeshes.size() < 1) return;
+	sortedMeshes = sortMesh(sortedMeshes);
+	meshes = sortedMeshes;
+
 	Buffer* prevBuffer = std::get<0>(*sortedMeshes[0]);
 	Texture* prevTex = std::get<1>(*sortedMeshes[0]);
 	GLuint counter = 0;
 	std::vector<glm::mat4> positions;
-	meshes = sortedMeshes;
+	
+	
 
 	for (auto& mesh : sortedMeshes) {
 		if (std::get<0>(*mesh) != prevBuffer || std::get<1>(*mesh) != prevTex) {
@@ -58,4 +62,29 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 	shader->unBind();
+}
+std::vector<Face*> Drawable::sortMesh(std::vector<Face*>& meshes) {
+	std::map<Texture*, std::vector<GLuint>> texture_inices;
+	for (int i = 0; i < meshes.size(); i++) {
+		auto& mesh = meshes[i];
+		try {
+			texture_inices[std::get<1>(*mesh)].push_back(i);
+		}
+		catch (std::exception e) {
+			texture_inices.insert({ std::get<1>(*mesh), {} });
+		}
+	}
+	std::map<int, std::vector<GLuint>> buffer_tex_split;
+	for (auto& pair : texture_inices) {
+		for (auto& index : pair.second) {
+			buffer_tex_split[(int)pair.first * (int)std::get<1>(*meshes[index])].push_back(index);
+		}
+	}
+	std::vector<Face*> res;
+	for (auto& pair : buffer_tex_split) {
+		for (auto& index : pair.second) {
+			res.push_back(meshes[index]);
+		}
+	}
+	return res;
 }

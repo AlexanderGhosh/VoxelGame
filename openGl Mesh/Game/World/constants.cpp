@@ -28,7 +28,9 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("grass", ""),
 	new Texture("player/bottom", ""),
 	new Texture("player/top", ""),
-	new Texture("skybox", "")
+	new Texture("skybox", ""),
+	new Texture("stone", ""),
+	new Texture("dirt", "")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),

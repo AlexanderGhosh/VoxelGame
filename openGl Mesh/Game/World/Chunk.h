@@ -18,7 +18,7 @@ public:
 	std::vector<Face*> getMeshes();
 	void cleanUp();
 	void createMesh(std::vector<Chunk*> chunks = std::vector<Chunk*>());
-	void createBlocks();
+	void createBlocks(GLboolean isFlat);
 	GLushort getBlock_unsafe(glm::ivec3 pos);
 	GLushort getBlock_safe(const glm::vec3 pos, std::vector<Chunk*> chunks);
 	GLboolean isNull();

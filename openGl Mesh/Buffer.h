@@ -68,6 +68,7 @@ private:
 	GLuint VBO;
 	GLuint VAO;
 	GLuint IBO;
+	GLboolean hasInstances;
 	std::vector<GLfloat> bufferData;
 	std::vector<GLushort> bufferIndices;
 	Structure structure;

@@ -36,7 +36,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(true);
+	world = World(true, false);
 }
 void Game::update() {
 
@@ -142,9 +142,9 @@ void Game::setupEventCB(GLFWwindow* window) {
 }
 void Game::doMovement() {
 	auto& k = Game::keys;
-	GLfloat speed = 2.0f;
+	GLfloat speed = 6.0f;
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
-		speed = 5.0f;
+		speed = 12.0f;
 		player.setMovementSpeed(PLAYER_SPEED * 2.5f);
 	}
 	else {

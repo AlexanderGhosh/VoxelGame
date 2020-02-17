@@ -9,7 +9,7 @@ uniform samplerCube skybox;
 uniform vec3 viewPos;
 
 vec3 lightCol = vec3(1);
-vec3 lightPos = vec3( 5, 3, -2);
+vec3 lightPos = vec3( 50, 50, 50);
 
 void main()
 {    

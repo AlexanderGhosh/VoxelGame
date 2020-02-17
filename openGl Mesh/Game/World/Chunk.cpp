@@ -11,67 +11,95 @@ Chunk::Chunk(glm::vec3 pos, GLboolean create) {
 	}
 }
 void Chunk::create() {
-	createBlocks();
+	createBlocks(true);
 	createMesh();
 }
-void Chunk::createBlocks() {
-	for (auto& b : blocks) {
-		GLfloat num = std::rand() / GLfloat(RAND_MAX);
-		if (num > 0.6f) {
-			b = 1;
+void Chunk::createBlocks(GLboolean isFlat) {
+	
+	if (isFlat) {
+		if (position.y < -CHUNK_SIZE) {
+			blocks.fill(1);
 		}
 		else {
-			b = 0;
+			blocks.fill(1);
+		}
+		return;
+	}
+	/*for (int x = 0; x < blocks.size(); x++) {
+		if ((float)rand()/(float)RAND_MAX > 0.5f) {
+			blocks[x] = 1;
+		}
+		else {
+			blocks[x] = 5;
+		}
+	}*/
+
+	GLfloat xFactor = 1 / (CHUNK_SIZE - 1);
+	GLfloat yFactor = 1 / (CHUNK_SIZE - 1);
+	GLfloat freq(0.25);
+	if (position.y >= -CHUNK_SIZE) {
+		blocks.fill(0);
+		for (GLushort x = 0; x < CHUNK_SIZE; x++) {
+			for (GLushort z = 0; z < CHUNK_SIZE; z++) {
+				GLfloat sum = 0;
+				glm::vec2 n((GLfloat)x / (GLfloat)CHUNK_SIZE - 0.5, (GLfloat)z / (GLfloat)CHUNK_SIZE - 0.5);
+				n += (position.x + position.y + position.z) / 3.0f;
+				sum = glm::perlin(n) + 0.5 * glm::perlin(2.0f * n) + 0.25 * glm::perlin(4.0f * n);
+				GLushort height = std::abs(sum) * CHUNK_SIZE;
+				height = height > CHUNK_SIZE ? CHUNK_SIZE : height;
+				height = height == 0 ? 1 : height;
+				for (GLushort y = 0; y < height; y++) {
+					GLushort block = 1; 
+					/*if ((float)rand() / (float)RAND_MAX > 0.5f) {
+						blocks[getBlockIndex({ x, y, z })] = 1;
+					}
+					else {
+						blocks[getBlockIndex({ x, y, z })] = 5;
+					}*/
+					if (y < height - 2) {
+						block = 5; // stone
+					}
+					else if (y < height - 1) {
+						block = 6; // dirt
+					}
+					blocks[getBlockIndex({ x, y, z })] = block;
+				}
+			}
 		}
 	}
-	//if (position.y >= -CHUNK_SIZE) {
-	//	for (GLushort x = 0; x < CHUNK_SIZE; x++) {
-	//		for (GLushort z = 0; z < CHUNK_SIZE; z++) {		
-	//			for (GLushort y = 8; y < 16; y++) {
-	//				blocks[getBlockIndex({ x, y, z })] = 1;
-	//			}
-	//			/*GLushort noise = std::rand() % CHUNK_SIZE;
-	//			if (noise > CHUNK_SIZE) noise = CHUNK_SIZE;
-	//			for (GLushort i = 0; i < noise; i++) {
-	//				blocks[getBlockIndex({ x, i, z })] = 1;
-	//			}*/
-	//		}
-	//		
-	//	}
-	//}
-	//else {
-	//	blocks.fill(1);
-	//}
+	else {
+		blocks.fill(5);
+	}
 }
 void Chunk::createMesh(std::vector<Chunk*> chunks) {
-	auto addblock = [](FACES_NAMES face, GLshort blockType, glm::vec3 position, std::vector<Face>& meshes) {
-		meshes.push_back({ FACES[face], TEXTURES[blockType], position });
-	};
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {
 		for (GLint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
-				if (getBlock_safe({ x, y, z }, chunks) == 0)
+				GLuint block = getBlock_safe({ x, y, z }, chunks);
+				if (block == 0)
 					continue;
+				block--;
+				
 				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
-					meshes.push_back({ FACES[LEFT], TEXTURES[GRASS], pos });
+					meshes.push_back({ FACES[LEFT], TEXTURES[block], pos });
 				}
 				if (getBlock_safe({ x + 1, y, z }, chunks) == 0) {
-					meshes.push_back({ FACES[RIGHT], TEXTURES[GRASS], pos });
+					meshes.push_back({ FACES[RIGHT], TEXTURES[block], pos });
 				}
 
 				if (getBlock_safe({ x, y - 1, z }, chunks) == 0) {
-					meshes.push_back({ FACES[BOTTOM], TEXTURES[GRASS], pos });
+					meshes.push_back({ FACES[BOTTOM], TEXTURES[block], pos });
 				}
 				if (getBlock_safe({ x, y + 1, z }, chunks) == 0) {
-					meshes.push_back({ FACES[TOP], TEXTURES[GRASS], pos });
+					meshes.push_back({ FACES[TOP], TEXTURES[block], pos });
 				}
 
 				if (getBlock_safe({ x, y, z - 1}, chunks) == 0) {
-					meshes.push_back({ FACES[BACK], TEXTURES[GRASS], pos });
+					meshes.push_back({ FACES[BACK], TEXTURES[block], pos });
 				}
 				if (getBlock_safe({ x, y, z + 1}, chunks) == 0) {
-					meshes.push_back({ FACES[FRONT], TEXTURES[GRASS], pos });
+					meshes.push_back({ FACES[FRONT], TEXTURES[block], pos });
 				}
 			}
 		}

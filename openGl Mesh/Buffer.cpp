@@ -105,31 +105,6 @@ void Buffer::endRender() {
 	glBindVertexArray(0);
 }
 void Buffer::addPositions(std::vector<glm::mat4>& positions) {
-	/*structure.layout_count += 4;
-	structure.total_data_len += 16;
-	structure.individual_lens.push_back(4);
-	structure.individual_lens.push_back(4);
-	structure.individual_lens.push_back(4); 
-	structure.individual_lens.push_back(4);*/
-
-	/*int insertPos = 0;
-	for (int i = 0; i < positions.size(); i++) {
-		auto& pos = positions[i];
-		//insertPos = 25 * i + 9; // 9(i + 1) + 16i
-		std::vector<GLfloat> data;
-		
-		const GLfloat* d = (const GLfloat*)glm::value_ptr(pos);
-		for (int j = 0; j < 16; j++) {
-			data.push_back(d[j]);
-		}
-
-		// bufferData.insert(bufferData.begin() + insertPos, data.begin(), data.end());
-	}*/
-	/*glDeleteBuffers(1, &VBO);
-	glGenBuffers(1, &VBO); // VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, bufferData.size() * sizeof(GLfloat), bufferData.data(), GL_STATIC_DRAW);*/
-
 	GLuint instanceVBO;
 	glGenBuffers(1, &instanceVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -153,9 +128,13 @@ void Buffer::addPositions(std::vector<glm::mat4>& positions) {
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	hasInstances = 1;
 }
 void Buffer::resetData() {
 	bufferData = originalData;
+	hasInstances = 0;
+	// destroy();
+	createBuffers();
 }
 std::vector<GLfloat> Buffer::getVertices(GLboolean unique) {
 	std::vector<GLfloat> res;

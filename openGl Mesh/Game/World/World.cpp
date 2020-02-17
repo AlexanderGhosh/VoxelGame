@@ -2,18 +2,17 @@
 World::World() {
 	playerPosition = { 0, 0, 0 };
 	chunks = std::vector<std::pair<Chunk, GLboolean>>();
-	// getNewChunkPositions();
 }
-World::World(GLboolean gen) {
+World::World(GLboolean gen, GLboolean flat) {
 	playerPosition = { 0, 0, 0 };
 	chunks = std::vector<std::pair<Chunk, GLboolean>>();
-	getNewChunkPositions();
+	getNewChunkPositions(flat);
 }
 World::World(Player& player) {
 	playerPosition = player.getPosition();
 	chunks = std::vector<std::pair<Chunk, GLboolean>>();
 }
-void World::getNewChunkPositions() {
+void World::getNewChunkPositions(GLboolean flat) {
 	std::vector<glm::vec3> chunkPositions;
 	for (GLint x = -RENDER_DISTANCE / 2; x < RENDER_DISTANCE/2; x++) {
 		for (GLint y = 1; y < RENDER_DISTANCE + 1 ; y++) {
@@ -22,22 +21,23 @@ void World::getNewChunkPositions() {
 			}
 		}
 	}
-	
-	generateFlatChunks(chunkPositions);
-	
-	/*std::thread obj(&World::generateFlatChunks, this, chunkPositions);
-	obj.detach();*/
+	if (flat) {
+		generateFlatChunks(chunkPositions);
+	}
+	else {
+		generateTerrain(chunkPositions);
+	}
 }
 void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 	chunks.resize(RENDERED_VOLUME);
 	chunks.reserve(RENDERED_VOLUME);
 	std::cout << "Started\n";
 	for (auto& pos : chunkPositions) {
+		pos -= glm::vec3(0, 0, 0);
 		Chunk chunk(pos, false);
-		chunk.createBlocks();
+		chunk.createBlocks(true);
 
-		// chunks.push_back({ chunk, GL_TRUE });
-		glm::vec3 p = chunk.position;
+		glm::vec3& p = chunk.position;
 
 		int index = getChunkIndex(p, false);
 		chunks[index] = { chunk, GL_TRUE };
@@ -55,6 +55,34 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE*std::pow(chunks.size(), 1.0f/3.0f) << "): " << duration.count() << " microseconds" << std::endl;
+}
+void World::generateTerrain(std::vector<glm::vec3> chunkPositions) {
+	chunks.resize(RENDERED_VOLUME);
+	chunks.reserve(RENDERED_VOLUME);
+	std::cout << "Started\n";
+	for (auto& pos : chunkPositions) {
+		pos -= glm::vec3(0, 0, 0);
+		Chunk chunk(pos, false);
+		chunk.createBlocks(false);
+
+		glm::vec3& p = chunk.position;
+
+		int index = getChunkIndex(p, false);
+		chunks[index] = { chunk, GL_TRUE };
+	}
+
+	auto start = std::chrono::high_resolution_clock::now();
+	for (auto& pair : chunks) {
+		Chunk& chunk = pair.first;
+		chunk.createMesh(getChunks());
+		// std::cout << "Chunk created" << std::endl;
+	}
+	genWorldMesh();
+	drawable.setUp(worldMesh);
+	auto stop = std::chrono::high_resolution_clock::now();
+
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE * std::pow(chunks.size(), 1.0f / 3.0f) << "): " << duration.count() << " microseconds" << std::endl;
 }
 void World::renderChunksStatic(Camera c, glm::mat4 projection) {
 	drawable.render(c, projection);

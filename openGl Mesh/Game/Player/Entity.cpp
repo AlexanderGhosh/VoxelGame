@@ -84,7 +84,7 @@ void Entity::render(glm::mat4 projection, Camera* cam) {
 	renderer.render(*cam, projection);
 }
 GLboolean Entity::determinCollision(std::array<glm::vec3, 4> plane, glm::vec3 deltaV) {
-	auto getOposites = [](std::array<glm::vec3, 4> plane) -> std::array<glm::vec3, 2> {
+	auto getOposites = [](std::array<glm::vec3, 4> plane) -> std::pair<glm::vec3, glm::vec3> {
 		std::array<GLushort, 2> indices;
 		GLfloat dist = 0;
 		plane[3] = plane[0];
@@ -105,13 +105,13 @@ GLboolean Entity::determinCollision(std::array<glm::vec3, 4> plane, glm::vec3 de
 	auto op = getOposites(plane);
 	// s big
 	// t small
-	glm::vec3 s = op[0] + plane[3], t = op[1] + plane[3];
+	glm::vec3 s = op.first + plane[3], t = op.second + plane[3];
 	glm::vec3 d = deltaV + getCenter();
 
 	s += glm::vec3(1, 0, 1);
-	//t -= glm::vec3(0, 0, 2);
+	t -= glm::vec3(0, 0, 1);
 
-	if (d.x > s.x || d.x < t.x /*|| std::abs(d.z) > s.z || d.z  < t.z*/) {
+	if (d.x > s.x || d.x < t.x || d.z < t.z || d.z > s.z) {
 		return 0;
 	}
 	GLfloat a, b, c, eq, u, v;

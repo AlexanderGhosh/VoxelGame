@@ -9,6 +9,7 @@ public:
 	Drawable(std::vector<Face*>& sortedMeshes);
 	void render(Camera& cam, glm::mat4 projection);
 	void setUp(std::vector<Face*>& sortedMeshes);
+	std::vector<Face*> sortMesh(std::vector<Face*>& meshes);
 private:
 	std::vector<std::tuple<Buffer, Texture*, GLuint>> buffers;
 	std::vector<Face*> meshes;
