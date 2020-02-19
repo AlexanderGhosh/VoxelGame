@@ -45,4 +45,4 @@ extern const std::vector<Texture*> TEXTURES;
 extern const std::vector<Shader*> SHADERS;
 
 GLint getBlockIndex(glm::vec3 position);
-GLint getChunkIndex(glm::vec3 position, GLboolean reduced = GL_TRUE);
+GLint getChunkIndex(glm::vec3 position, GLboolean absalute = GL_TRUE, GLboolean reduced = GL_TRUE);
