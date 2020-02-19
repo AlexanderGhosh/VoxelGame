@@ -18,14 +18,14 @@ const std::array<Buffer*, 6> FACES = {
 
 	FaceMesh({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5) },	  // TOP
 	{ glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0) },
-	{ glm::vec3(-1), glm::vec3(-1, -1, 1), glm::vec3(1, -1, -1), glm::vec3(1, -1, -1), glm::vec3(-1, -1, 1), glm::vec3(1, -1, 1) }).getBuffer(),
+	{ glm::vec3(1, -1, 1), glm::vec3(-1, -1, 1), glm::vec3(-1, -1, -1), glm::vec3(-1, -1, -1), glm::vec3(1, -1, -1), glm::vec3(1, -1, 1) }).getBuffer(),
 
 	FaceMesh({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5),glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5) },   // BOTTOM
 	{ glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec3(0, -1, 0) },
 	{ glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1), glm::vec3(1), glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1) }).getBuffer()
 }; 
 const std::vector<Texture*>TEXTURES = {
-	new Texture("grass", ""),
+	new Texture("grass/hd", ""),
 	new Texture("player/bottom", ""),
 	new Texture("player/top", ""),
 	new Texture("skybox", ""),
@@ -43,14 +43,16 @@ GLint getBlockIndex(glm::vec3 position) {
 	if (index >= CHUNK_VOLUME) index *= -1;
 	return index;
 }
-GLint getChunkIndex(glm::vec3 position, GLboolean reduced) {
+GLint getChunkIndex(glm::vec3 position, GLboolean absalute, GLboolean reduced) {
 	if (!reduced) {
 		position /= CHUNK_SIZE;
 	}
-	position.y+=1;
-	position.x += RENDER_DISTANCE / 2;
-	position.z += RENDER_DISTANCE / 2;
-	position = glm::abs(position);
+	if (!absalute) {
+		position.y += 1;
+		position.x += RENDER_DISTANCE / 2;
+		position.z += RENDER_DISTANCE / 2;
+		position = glm::abs(position);
+	}
 	int index = position.x + position.z * RENDER_DISTANCE + position.y * RENDERED_AREA;
 	if (index >= RENDERED_VOLUME) index *= -1;
 	return index;

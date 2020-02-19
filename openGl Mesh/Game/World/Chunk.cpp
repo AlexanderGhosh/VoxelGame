@@ -23,8 +23,17 @@ void Chunk::createBlocks(GLboolean isFlat) {
 		else {
 			blocks.fill(1);
 		}
+		if (position == glm::vec3(0, -2, 0) || position == glm::vec3(-2, -2, - 2)) {
+			blocks[getBlockIndex({ 0, -1, 0 })] = 0;
+			blocks[getBlockIndex({ 1, -1, 0 })] = 0;
+			blocks[getBlockIndex({ 1, -1, 1 })] = 0;
+			blocks[getBlockIndex({ 0, -1, 1 })] = 0;
+		}
+
 		return;
 	}
+
+	// random blocks
 	/*for (int x = 0; x < blocks.size(); x++) {
 		if ((float)rand()/(float)RAND_MAX > 0.5f) {
 			blocks[x] = 1;

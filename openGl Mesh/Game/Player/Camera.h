@@ -56,7 +56,7 @@ public:
 		if (direction == Move_Dir::RIGHT) {
 			this->position += this->right * velocity;
 		}*/
-		switch (direction)
+		/*switch (direction)
 		{
 		case Move_Dir::FORWARD:
 			this->position += this->front * velocity;
@@ -66,6 +66,25 @@ public:
 			this->position -= this->right * velocity;
 		case Move_Dir::RIGHT:
 			this->position += this->right * velocity;
+		case Move_Dir::UP:
+			this->position += glm::vec3(0, 1, 0) * velocity;
+		case Move_Dir::DOWN:
+			this->position -= glm::vec3(0, 1, 0) * velocity;
+		}*/
+		switch (direction)
+		{
+		case Move_Dir::FORWARD:
+			this->position += glm::vec3(0, 0, -1) * velocity;
+		case Move_Dir::BACKWARD:
+			this->position += glm::vec3(0, 0, 1) * velocity;
+		case Move_Dir::LEFT:
+			this->position += glm::vec3(-1, 0, 0) * velocity;
+		case Move_Dir::RIGHT:
+			this->position += glm::vec3(1, 0, 0) * velocity;
+		case Move_Dir::UP:
+			this->position += glm::vec3(0, 1, 0) * velocity;
+		case Move_Dir::DOWN:
+			this->position += glm::vec3(0, -1, 0) * velocity;
 		}
 	}
 	void t() {

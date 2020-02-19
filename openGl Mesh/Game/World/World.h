@@ -5,7 +5,6 @@
 #include <chrono>
 #include "Chunk.h"
 #include "constants.h"
-#include "../Player/Player.h"
 #include "../../Renders/chunkRender.h"
 #include "../../Drawable.h"
 
@@ -13,18 +12,16 @@ class World
 {
 public:
 	World();
-	World(Player& player);
 	World(GLboolean gen, GLboolean flat = true);
 	void renderChunksStatic(Camera c, glm::mat4 projection);
 	void renderChunksDynamic();
 	void processBlockUpdates();
-	void setPlayerPosition(Player& player);
 	void cleanUp();
-	std::vector<Chunk*> getChunks(); 
+	std::vector<Chunk*> getChunks();
 	Chunk& getOccupiedChunk(glm::ivec3 occPosition);
+	std::vector<Face*>& getWorldMesh();
 private:
 	std::vector<std::pair<Chunk, GLboolean>> chunks;
-	glm::vec3 playerPosition;
 	Render::ChunkMeshRender render;
 	std::vector<Face*> worldMesh;
 	Drawable drawable;

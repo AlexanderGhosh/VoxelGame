@@ -36,7 +36,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(true, false);
+	world = World(1, 0);
 }
 void Game::update() {
 
@@ -105,7 +105,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ 0, 5, 0 }, { 0, 0, 5 });
+	player = Player({ -2.0f, 5.0f, -0.0f }, { -0.5f, 1.5f, 4.0f });
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -140,9 +140,10 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
+GLboolean alt = 0;
 void Game::doMovement() {
 	auto& k = Game::keys;
-	GLfloat speed = 6.0f;
+	GLfloat speed = 9.0f;
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
 		speed = 12.0f;
 		player.setMovementSpeed(PLAYER_SPEED * 2.5f);
@@ -151,38 +152,52 @@ void Game::doMovement() {
 		speed = 2.0f;
 		player.setMovementSpeed(PLAYER_SPEED);
 	}
-	if (Game::hasPlayer) {
+	if (Game::hasPlayer ) {
 		player.setVelocity({ 0, player.getVelocity().y, 0 });
-		if (k[GLFW_KEY_W]) {
-			player.move(Move_Dir::FORWARD);
+		if (k[GLFW_KEY_LEFT_ALT]) {
+			alt = !alt;
 		}
-		if (k[GLFW_KEY_S]) {
-			player.move(Move_Dir::BACKWARD);
+		if (alt) {
+			if (k[GLFW_KEY_W]) {
+				player.move(Move_Dir::FORWARD);
+			}
+			if (k[GLFW_KEY_S]) {
+				player.move(Move_Dir::BACKWARD);
+			}
+			if (k[GLFW_KEY_A]) {
+				player.move(Move_Dir::LEFT);
+			}
+			if (k[GLFW_KEY_D]) {
+				player.move(Move_Dir::RIGHT);
+			}
+			if (k[GLFW_KEY_SPACE]) {
+				player.move(Move_Dir::UP);
+			}
 		}
-		if (k[GLFW_KEY_A]) {
-			player.move(Move_Dir::LEFT);
+		else {
+			auto& c = player.getCamera();
+			if (k[GLFW_KEY_W]) {
+				c.GetPosition() += c.GetFront() * glm::vec3(1, 0, 1) *  speed * deltaTime;
+			}
+			if (k[GLFW_KEY_S]) {
+				c.GetPosition() -= c.GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
+			}
+			if (k[GLFW_KEY_A]) {
+				c.GetPosition() -= c.GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
+			}
+			if (k[GLFW_KEY_D]) {
+				c.GetPosition() += c.GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
+			}
+			if (k[GLFW_KEY_SPACE]) {
+				c.GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
+			}
+			if (k[GLFW_KEY_LEFT_SHIFT]) {
+				c.GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
+			}
 		}
-		if (k[GLFW_KEY_D]) {
-			player.move(Move_Dir::RIGHT);
-		}
-		if (k[GLFW_KEY_SPACE]) {
-			player.move(Move_Dir::UP);
-		}
+		
 
-		if (k[GLFW_KEY_UP]) {
-			player.getCamera().GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_DOWN]) {
-			player.getCamera().GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_LEFT]) {
-			player.getCamera().GetPosition() += glm::vec3(-1, 0, 0) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_RIGHT]) {
-			player.getCamera().GetPosition() += glm::vec3(1, 0, 0) * speed * deltaTime;
-		}
-
-		player.updatePosition(Game::deltaTime, world.getOccupiedChunk(player.getPosition()).getMeshes());
+		player.updatePosition(Game::deltaTime, world);
 	}
 	else {
 		if (k[GLFW_KEY_W]) {
@@ -264,9 +279,6 @@ void Game::makeSkybox(std::string skybox) {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
 
-
-	// shader configuration
-	// --------------------
 	auto& shader = SHADERS[SKYBOX];
 	shader->bind();
 	shader->setValue("skybox", 0);

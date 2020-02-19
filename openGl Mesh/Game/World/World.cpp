@@ -1,16 +1,10 @@
 #include "World.h"
 World::World() {
-	playerPosition = { 0, 0, 0 };
 	chunks = std::vector<std::pair<Chunk, GLboolean>>();
 }
 World::World(GLboolean gen, GLboolean flat) {
-	playerPosition = { 0, 0, 0 };
 	chunks = std::vector<std::pair<Chunk, GLboolean>>();
 	getNewChunkPositions(flat);
-}
-World::World(Player& player) {
-	playerPosition = player.getPosition();
-	chunks = std::vector<std::pair<Chunk, GLboolean>>();
 }
 void World::getNewChunkPositions(GLboolean flat) {
 	std::vector<glm::vec3> chunkPositions;
@@ -39,7 +33,7 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 
 		glm::vec3& p = chunk.position;
 
-		int index = getChunkIndex(p, false);
+		int index = getChunkIndex(p, false, false);
 		chunks[index] = { chunk, GL_TRUE };
 	}
 
@@ -67,7 +61,7 @@ void World::generateTerrain(std::vector<glm::vec3> chunkPositions) {
 
 		glm::vec3& p = chunk.position;
 
-		int index = getChunkIndex(p, false);
+		int index = getChunkIndex(p, false, false);
 		chunks[index] = { chunk, GL_TRUE };
 	}
 
@@ -131,13 +125,30 @@ void reduceToMultiple(glm::ivec3& victim, GLuint multiple) {
 	}
 }
 Chunk& World::getOccupiedChunk(glm::ivec3 occPosition) {
-	
+	glm::vec3 op = occPosition;
 	reduceToMultiple(occPosition, CHUNK_SIZE);
 
-	int index = getChunkIndex(occPosition, false);
+	for (auto& c : chunks) {
+		auto& chunk = std::get<0>(c);
+		if (glm::all(glm::equal(chunk.position, (glm::vec3)occPosition))) {
+			return chunk;
+		}
+	}
+	Chunk chunk = Chunk();
+	return chunk;
+	/*
+	occPosition = glm::abs(occPosition);
+	int index = getChunkIndex(occPosition, 1, 0);
 	if (index < 0) {
 		Chunk chunk = Chunk();
 		return chunk;
 	}
-	return std::get<0>(chunks[index]);
+	auto& chunk = std::get<0>(chunks[index]);
+	if (glm::all(glm::lessThan(op, chunk.position)) || glm::all(glm::greaterThan(op, chunk.position + (GLfloat)CHUNK_SIZE))) {
+		chunk = Chunk();
+	}
+	return chunk;*/
+}
+std::vector<Face*>& World::getWorldMesh() {
+	return worldMesh;
 }

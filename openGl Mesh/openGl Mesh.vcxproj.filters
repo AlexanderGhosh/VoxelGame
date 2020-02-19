@@ -57,13 +57,13 @@
     <ClCompile Include="Game\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Drawable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\Player\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,6 +77,8 @@
     <None Include="Shaders\block3_f.gls" />
     <None Include="Shaders\skybox_f.gls" />
     <None Include="Shaders\skybox_v.gls" />
+    <None Include="txt_v.gls" />
+    <None Include="txt_f.gls" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">
