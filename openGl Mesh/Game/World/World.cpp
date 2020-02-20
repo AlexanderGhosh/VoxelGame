@@ -41,27 +41,62 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 	for (auto& pair : chunks) {
 		Chunk& chunk = pair.first;
 		chunk.createMesh(getChunks());
-		// std::cout << "Chunk created" << std::endl;
 	}
 	genWorldMesh();
 	drawable.setUp(worldMesh);
 	auto stop = std::chrono::high_resolution_clock::now();
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE*std::pow(chunks.size(), 1.0f/3.0f) << "): " << duration.count() << " microseconds" << std::endl;
+	std::cout << "World created (Chunk count: " << chunks.size() << "): " << duration.count() << " microseconds" << std::endl;
+}
+HeightMapWorld createHeightMap(std::vector<glm::vec3> chunkPositions) {
+	HeightMapWorld res;
+	GLushort i = 0;
+	for (GLubyte j = 0; j < res.size(); j++) {
+		auto& chunk = res[j];
+		glm::vec3 p = chunkPositions[i++];
+		if (p.y != -CHUNK_SIZE) {
+			j--;
+			continue;
+		}
+		p += glm::vec3((CHUNK_SIZE * RENDER_DISTANCE)/2, 0, (CHUNK_SIZE * RENDER_DISTANCE)/2);
+		for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
+			for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
+				GLfloat sum = 0;
+				glm::vec2 n((GLfloat)(p.x + x) / (GLfloat)CHUNK_SIZE - 0.5, (GLfloat)(p.z + z) / (GLfloat)CHUNK_SIZE - 0.5);
+				sum = glm::perlin(n) + 0.5 * glm::perlin(0.5f * n) + 0.25 * glm::perlin(0.5f * n);
+				sum *= 10;
+				sum = std::abs(sum);
+				// if (sum < 1) sum = 1;
+				if (sum > CHUNK_SIZE) sum = CHUNK_SIZE-1;
+				sum = std::lround(sum);
+				chunk.first[x][z] = sum;
+			}
+		}
+		auto k = getChunkIndex(chunkPositions[i - 1]);;
+		chunk.second = k;
+	}
+	return res;
 }
 void World::generateTerrain(std::vector<glm::vec3> chunkPositions) {
+	auto heightMap = createHeightMap(chunkPositions);
 	chunks.resize(RENDERED_VOLUME);
 	chunks.reserve(RENDERED_VOLUME);
 	std::cout << "Started\n";
-	for (auto& pos : chunkPositions) {
-		pos -= glm::vec3(0, 0, 0);
+	GLubyte i = 0;
+	for (auto& pos :  chunkPositions) {
+
 		Chunk chunk(pos, false);
-		chunk.createBlocks(false);
+		int index = getChunkIndex(pos);
+		// if (i >= heightMap.size()) i = 0;
+		HeightMapChunk& hm = heightMap[0].first;
+		for (auto& map : heightMap) {
+			if (map.second == index) {
+				hm = map.first;
+			}
+		}
+		chunk.createBlocks(hm);
 
-		glm::vec3& p = chunk.position;
-
-		int index = getChunkIndex(p, false, false);
 		chunks[index] = { chunk, GL_TRUE };
 	}
 

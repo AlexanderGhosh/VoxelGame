@@ -69,16 +69,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
-    <None Include="Shaders\block_v.gls" />
-    <None Include="Shaders\block_f.gls" />
-    <None Include="Shaders\block2_f.gls" />
-    <None Include="Shaders\block2_v.gls" />
     <None Include="Shaders\block3_v.gls" />
     <None Include="Shaders\block3_f.gls" />
     <None Include="Shaders\skybox_f.gls" />
     <None Include="Shaders\skybox_v.gls" />
     <None Include="txt_v.gls" />
     <None Include="txt_f.gls" />
+    <None Include="Shaders\block2_f.gls" />
+    <None Include="Shaders\block2_v.gls" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">

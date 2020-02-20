@@ -248,18 +248,18 @@ glm::vec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 			//if (diff.y > -1) return 1;
 			break;
 		case FRONT:
-			if (diff.z < 1.04 && isBehind(p, rayEnd)) res.z = -1;
+			if (diff.z < 1.03 && isBehind(p, rayEnd)) res.z = -1;
 			break;
 		case BACK:
-			if (diff.z > -1.04 && diff.z < 0 && isInFront(p, rayEnd)) res.z = 1;
+			if (diff.z > -1.03 && diff.z < -0.0f && isInFront(p, rayEnd)) res.z = 1;
 			break;
 		case LEFT: 
 		{
-			if (diff.x > -1.04 && diff.x < 0 && isRight(p, rayEnd)) res.x = 1;
+			if (diff.x > -1.03 && diff.x < -0.0f && isRight(p, rayEnd)) res.x = 1;
 			break; 
 		}
 		case RIGHT: 
-			if (diff.x < 1.04 && isLeft(p, rayEnd)) res.x = -1;
+			if (diff.x < 1.03 && isLeft(p, rayEnd)) res.x = -1;
 			break;
 		}
 
@@ -267,20 +267,6 @@ glm::vec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 	}
 
 	return res;
-}
-GLboolean Entity::determinCollision(std::array<glm::vec3, 4> plane) {
-	//return determinCollision(plane, vel);
-	return 0;
-}
-
-void Entity::findGrounded(std::vector<Face*> ground, glm::vec3 deltaV) {
-	for (auto& face : ground) {
-		Buffer* b = std::get<0>(*face);
-		std::vector<glm::vec3> vertices = b->getVertices();
-		std::array<glm::vec3, 4> plane = { vertices[0], vertices[1], vertices[2] , std::get<2>(*face) };
-		// grounded = determinCollision(plane, deltaV);
-		if (grounded) return;
-	}
 }
 glm::vec3 Entity::getCenter() {
 	return getCenter(pos);

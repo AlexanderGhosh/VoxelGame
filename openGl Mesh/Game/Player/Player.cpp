@@ -17,6 +17,10 @@ Camera& Player::getCamera() {
 glm::vec3 Player::getPosition() {
 	return pos;
 }
+void Player::updatePosition(GLfloat deltaTime, World& world) {
+	Entity::updatePosition(deltaTime, world);
+	cam.setPosition(pos + camera_offset);
+}
 void Player::create() {
 	// Entity(true);
 	for(GLuint i = 0; i < 2; i++){
@@ -52,6 +56,8 @@ void Player::create() {
 void Player::render(glm::mat4 projection, Camera* cam) {
 	renderer.render(this->cam, projection);
 }
-void Player::processMouse(GLfloat xOffset, GLfloat yOffset, GLfloat x, GLboolean constrainPitch) {
-	cam.ProcessMouseMovement(xOffset, yOffset);
+void Player::updateCamera(GLfloat xOff, GLfloat yOff) {
+	cam.ProcessMouseMovement(xOff, yOff);
+	forward = cam.GetFront() * glm::vec3(1, 0, 1);
+	right = cam.GetRight() * glm::vec3(1, 0, 1);
 }

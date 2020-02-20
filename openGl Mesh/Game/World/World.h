@@ -3,11 +3,13 @@
 #include <thread>
 #include <vector>
 #include <chrono>
+#include <gtc/noise.hpp>
 #include "Chunk.h"
 #include "constants.h"
 #include "../../Renders/chunkRender.h"
 #include "../../Drawable.h"
 
+// using HeightMap = std::array<std::array<GLushort, CHUNK_SIZE * RENDER_DISTANCE>, CHUNK_SIZE * RENDER_DISTANCE>;
 class World
 {
 public:

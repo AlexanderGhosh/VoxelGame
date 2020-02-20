@@ -30,7 +30,8 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("player/top", ""),
 	new Texture("skybox", ""),
 	new Texture("stone", ""),
-	new Texture("dirt", "")
+	new Texture("dirt", ""),
+	new Texture("water", "")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),

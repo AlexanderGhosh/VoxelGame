@@ -15,7 +15,6 @@ void Chunk::create() {
 	createMesh();
 }
 void Chunk::createBlocks(GLboolean isFlat) {
-	
 	if (isFlat) {
 		if (position.y < -CHUNK_SIZE) {
 			blocks.fill(1);
@@ -59,12 +58,34 @@ void Chunk::createBlocks(GLboolean isFlat) {
 				height = height == 0 ? 1 : height;
 				for (GLushort y = 0; y < height; y++) {
 					GLushort block = 1; 
-					/*if ((float)rand() / (float)RAND_MAX > 0.5f) {
-						blocks[getBlockIndex({ x, y, z })] = 1;
+					if (y < height - 2) {
+						block = 5; // stone
 					}
-					else {
-						blocks[getBlockIndex({ x, y, z })] = 5;
-					}*/
+					else if (y < height - 1) {
+						block = 6; // dirt
+					}
+					blocks[getBlockIndex({ x, y, z })] = block;
+				}
+			}
+		}
+	}
+	else {
+		blocks.fill(5);
+	}
+}
+void Chunk::createBlocks(HeightMapChunk heightMap) {
+	if (position.y >= -CHUNK_SIZE) {
+		blocks.fill(0);
+		for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
+			for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
+				glm::vec3 position = glm::abs(this->position);
+				GLubyte height = heightMap[x][z];
+				if (height < 2) {
+					blocks[getBlockIndex({ x, 0, z })] = 7;
+					continue;
+				}
+				for (GLubyte y = 0; y < height; y++) {
+					GLubyte block = 1; // grass
 					if (y < height - 2) {
 						block = 5; // stone
 					}

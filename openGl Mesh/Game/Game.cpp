@@ -105,7 +105,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ -2.0f, 5.0f, -0.0f }, { -0.5f, 1.5f, 4.0f });
+	player = Player({ -2.0f, 5.0f, -0.0f }, { 0.0f, 1.5f, 0.0f });
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -131,7 +131,8 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	Game::mouseData.x = xPos;
 	Game::mouseData.y = yPos;
 	if (Game::hasPlayer) {
-		Game::player.processMouse(xOffset, yOffset, mouseData.x);
+		Game::player.updateCamera(xOffset, yOffset);
+		// Game::player.processMouse(xOffset, yOffset, mouseData.x);
 		return;
 	}
 	Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
@@ -157,7 +158,7 @@ void Game::doMovement() {
 		if (k[GLFW_KEY_LEFT_ALT]) {
 			alt = !alt;
 		}
-		if (alt) {
+		if (alt || 0) {
 			if (k[GLFW_KEY_W]) {
 				player.move(Move_Dir::FORWARD);
 			}
