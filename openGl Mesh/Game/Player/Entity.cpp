@@ -122,7 +122,7 @@ GLboolean isAbove(glm::vec3 above, glm::vec3 bellow, GLboolean isCube = 1) {
 }
 GLboolean isBellow(glm::vec3 bellow, glm::vec3 above, GLboolean isCube = 1) {
 	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { above + glm::vec3(1), above - glm::vec3(1) };
+		std::pair<glm::vec3, glm::vec3> corners = { above + glm::vec3(0.97), above - glm::vec3(0.97) };
 		auto& top = corners.first;
 		auto& bottom = corners.second;
 		if (bellow.x < top.x && bellow.x > bottom.x) {
@@ -142,7 +142,7 @@ GLboolean isBellow(glm::vec3 bellow, glm::vec3 above, GLboolean isCube = 1) {
 }
 GLboolean isRight(glm::vec3 right, glm::vec3 left, GLboolean isCube = 1) {
 	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { left + glm::vec3(1), left - glm::vec3(1) };
+		std::pair<glm::vec3, glm::vec3> corners = { left + glm::vec3(0.9), left - glm::vec3(0.9) };
 		auto& top = corners.first;
 		auto& bottom = corners.second;
 		if (right.y < top.y && right.y > bottom.y) {
@@ -232,14 +232,10 @@ glm::vec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 	glm::vec3 res(0);
 	for (auto& mesh : /*chunkOccupied.getMeshes()*//**/world.getWorldMesh()/**/) {
 		Face& face = *mesh;
-
 		glm::vec3 p = std::get<2>(face);
 		Buffer* b = std::get<0>(face);
-
-
 		glm::vec3 diff = rayEnd - p;
-		auto& typ = b->type;
-		switch (typ)
+		switch (b->type)
 		{
 		case TOP:
 			if (diff.y < 1.005f && isBellow(p, rayEnd)) res.y = -1;
@@ -248,18 +244,16 @@ glm::vec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 			//if (diff.y > -1) return 1;
 			break;
 		case FRONT:
-			if (diff.z < 1.03 && isBehind(p, rayEnd)) res.z = -1;
+			if (diff.z < 1.005 && isBehind(p, rayEnd)) res.z = -1; // -1
 			break;
 		case BACK:
-			if (diff.z > -1.03 && diff.z < -0.0f && isInFront(p, rayEnd)) res.z = 1;
+			if (diff.z > -1.005 && diff.z < -0.0f && isInFront(p, rayEnd)) res.z = 1; // 1
 			break;
 		case LEFT: 
-		{
-			if (diff.x > -1.03 && diff.x < -0.0f && isRight(p, rayEnd)) res.x = 1;
+			if (diff.x > -1.005 && diff.x < -0.0f && isRight(p, rayEnd)) res.x = 1; // 1
 			break; 
-		}
 		case RIGHT: 
-			if (diff.x < 1.03 && isLeft(p, rayEnd)) res.x = -1;
+			if (diff.x < 1.005 && isLeft(p, rayEnd)) res.x = -1; // 1.03 -1
 			break;
 		}
 
@@ -272,5 +266,25 @@ glm::vec3 Entity::getCenter() {
 	return getCenter(pos);
 }
 glm::vec3 Entity::getCenter(glm::vec3 pos) {
-	return pos /*+ glm::vec3(-0.5f, -0.265, -0.5f)*/;
+	return pos;
+}
+std::vector<glm::vec3> Entity::getVertices() {
+	std::vector<glm::vec3> res;
+	std::map<glm::vec3, GLubyte> unique;
+	for (auto& face : body) {
+		Buffer* b = std::get<0>(face);
+		auto t = b->getVertices();
+		for (auto& vertex : b->getVertices()) {
+			try {
+				unique.insert({ vertex, 0 });
+			}
+			catch (std::exception e) {
+
+			}
+		}
+	}
+	for (auto& pair : unique) {
+		res.push_back(pair.first);
+	}
+	return res;
 }

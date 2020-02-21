@@ -27,6 +27,7 @@ public:
 
 	void render(glm::mat4 projection, Camera* cam = nullptr);
 	glm::vec3 determinCollision(World& world, glm::vec3 deltaV);
+	std::vector<glm::vec3> getVertices();
 
 protected:
 	glm::vec3 pos, vel, acc;
