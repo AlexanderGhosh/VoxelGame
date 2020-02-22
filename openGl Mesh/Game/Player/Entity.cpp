@@ -244,20 +244,18 @@ glm::vec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 			//if (diff.y > -1) return 1;
 			break;
 		case FRONT:
-			if (diff.z < 1.005 && isBehind(p, rayEnd)) res.z = -1; // -1
+			if (diff.z < 1.03 && isBehind(p, rayEnd)) res.z = -1; // -1
 			break;
 		case BACK:
-			if (diff.z > -1.005 && diff.z < -0.0f && isInFront(p, rayEnd)) res.z = 1; // 1
+			if (diff.z > -1.03 && diff.z < -0.0f && isInFront(p, rayEnd)) res.z = 1; // 1
 			break;
 		case LEFT: 
-			if (diff.x > -1.005 && diff.x < -0.0f && isRight(p, rayEnd)) res.x = 1; // 1
+			if (diff.x > -1.03 && diff.x < -0.0f && isRight(p, rayEnd)) res.x = 1; // 1
 			break; 
 		case RIGHT: 
-			if (diff.x < 1.005 && isLeft(p, rayEnd)) res.x = -1; // 1.03 -1
+			if (diff.x < 1.03 && isLeft(p, rayEnd)) res.x = -1; // 1.03 -1
 			break;
 		}
-
-		
 	}
 
 	return res;
@@ -267,24 +265,4 @@ glm::vec3 Entity::getCenter() {
 }
 glm::vec3 Entity::getCenter(glm::vec3 pos) {
 	return pos;
-}
-std::vector<glm::vec3> Entity::getVertices() {
-	std::vector<glm::vec3> res;
-	std::map<glm::vec3, GLubyte> unique;
-	for (auto& face : body) {
-		Buffer* b = std::get<0>(face);
-		auto t = b->getVertices();
-		for (auto& vertex : b->getVertices()) {
-			try {
-				unique.insert({ vertex, 0 });
-			}
-			catch (std::exception e) {
-
-			}
-		}
-	}
-	for (auto& pair : unique) {
-		res.push_back(pair.first);
-	}
-	return res;
 }

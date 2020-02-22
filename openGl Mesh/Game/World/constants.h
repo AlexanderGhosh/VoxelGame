@@ -4,11 +4,12 @@
 #include "../../Shaders/Shader.h"
 #include "../../Mesh.h"
 
-#define RENDER_DISTANCE 2
-#define CHUNK_DEPTH 4
-#define RENDERED_AREA RENDER_DISTANCE * RENDER_DISTANCE
-#define RENDERED_VOLUME RENDER_DISTANCE * RENDER_DISTANCE * RENDER_DISTANCE
-#define CHUNK_SIZE 2
+#define RENDER_DISTANCE 4
+
+#define INITALL_VIEW 16
+#define INITALL_VIEW_AREA INITALL_VIEW * INITALL_VIEW
+#define INITALL_VIEW_VOLUME INITALL_VIEW * INITALL_VIEW * INITALL_VIEW
+#define CHUNK_SIZE 16
 #define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 
@@ -46,4 +47,7 @@ extern const std::vector<Texture*> TEXTURES;
 extern const std::vector<Shader*> SHADERS;
 
 GLint getBlockIndex(glm::vec3 position);
-GLint getChunkIndex(glm::vec3 position, GLboolean absalute = GL_FALSE, GLboolean reduced = GL_FALSE);
+//GLint getChunkIndex(glm::vec3 position, GLboolean absalute = GL_FALSE, GLboolean reduced = GL_FALSE);
+//GLuint getChunkIndex(glm::vec3 pos, GLboolean rectify, GLboolean raw, const char* overload);
+void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload);
+glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple);

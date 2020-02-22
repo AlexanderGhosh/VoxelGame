@@ -6,17 +6,47 @@ Drawable::Drawable(std::vector<Face*>& sortedMeshes) {
 	setUp(sortedMeshes);
 	meshes = sortedMeshes;
 }
-void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
+void Drawable::setUp(std::vector<Face*> sortedMeshes, const char* overload) {
 	if (sortedMeshes.size() < 1) return;
 	sortedMeshes = sortMesh(sortedMeshes);
 	meshes = sortedMeshes;
+	buffers.clear();
 
 	Buffer* prevBuffer = std::get<0>(*sortedMeshes[0]);
 	Texture* prevTex = std::get<1>(*sortedMeshes[0]);
 	GLuint counter = 0;
 	std::vector<glm::mat4> positions;
-	
-	
+
+	for (auto& mesh : sortedMeshes) {
+		if (std::get<0>(*mesh) != prevBuffer || std::get<1>(*mesh) != prevTex) {
+			prevBuffer->addPositions(positions);
+			buffers.push_back({ *prevBuffer, prevTex, counter });
+			prevBuffer->resetData();
+			// reset
+			counter = 0;
+			positions.clear();
+			prevBuffer = std::get<0>(*mesh);
+			prevTex = std::get<1>(*mesh);
+			prevBuffer->resetData();
+		}
+		glm::mat4 model(1);
+		model = glm::translate(model, std::get<2>(*mesh));
+		positions.push_back(model);
+		counter += 1;
+	}
+	prevBuffer->addPositions(positions);
+	buffers.push_back({ *prevBuffer, prevTex, counter });
+}
+void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
+	if (sortedMeshes.size() < 1) return;
+	sortedMeshes = sortMesh(sortedMeshes);
+	meshes = sortedMeshes;
+	buffers.clear();
+
+	Buffer* prevBuffer = std::get<0>(*sortedMeshes[0]);
+	Texture* prevTex = std::get<1>(*sortedMeshes[0]);
+	GLuint counter = 0;
+	std::vector<glm::mat4> positions;
 
 	for (auto& mesh : sortedMeshes) {
 		if (std::get<0>(*mesh) != prevBuffer || std::get<1>(*mesh) != prevTex) {

@@ -8,7 +8,7 @@
 using namespace Mesh;
 using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 using HeightMapChunk = std::array<std::array<GLubyte, CHUNK_SIZE>, CHUNK_SIZE>;
-using HeightMapWorld = std::array<std::pair<HeightMapChunk, GLushort>, RENDERED_AREA>;
+using HeightMapWorld = std::array<std::pair<HeightMapChunk, GLuint>, INITALL_VIEW_AREA>;
 class Chunk
 {
 public:

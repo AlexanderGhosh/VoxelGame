@@ -171,6 +171,7 @@
     <ClCompile Include="SOIL2\SOIL2.c" />
     <ClCompile Include="Textures\Texture.cpp" />
     <ClCompile Include="Game\World\World.cpp" />
+    <ClCompile Include="Game\World\world_generation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -214,6 +215,7 @@
     <ClInclude Include="SOIL2\stb_image_write.h" />
     <ClInclude Include="Textures\Texture.h" />
     <ClInclude Include="Game\World\World.h" />
+    <ClInclude Include="Game\World\world_generation.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />

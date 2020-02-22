@@ -58,7 +58,7 @@ private:
 	void proccesEvents();
 	void setupEventCB(GLFWwindow* window);
 	void lockFPS();
-	void showStuff(GLboolean showStatic = true);
+	void showStuff();
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
 	void doMovement();

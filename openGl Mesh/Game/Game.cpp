@@ -36,7 +36,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1);
+	world = World(1, 0, 1);
 }
 void Game::update() {
 
@@ -86,17 +86,12 @@ void Game::lockFPS() {
 		}
 	}
 }
-void Game::showStuff(GLboolean showStatic) {
+void Game::showStuff() {
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	if (hasPlayer) {
 		player.render(projection);
 	}
-	if (showStatic) {
-		world.renderChunksStatic(cam, projection);
-	}
-	else {
-		// world.renderChunksDynamic();
-	}
+	world.render(cam, projection);
 	if (hasSkybox) {
 		showSkybox();
 	}
@@ -220,6 +215,8 @@ void Game::doMovement() {
 			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
 	}
+	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+	world.updatePlayerPos(&cam.GetPosition());
 }
 void Game::cleanUp() {
 	world.cleanUp();

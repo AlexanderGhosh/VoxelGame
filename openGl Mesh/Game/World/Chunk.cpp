@@ -7,7 +7,6 @@ Chunk::Chunk(glm::vec3 pos, GLboolean create) {
 	null = GL_FALSE;
 	if (create) {
 		this->create();
-		// this->sortMesh();
 	}
 }
 void Chunk::create() {
