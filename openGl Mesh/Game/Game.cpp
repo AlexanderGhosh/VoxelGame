@@ -36,7 +36,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 0, 1);
+	world = World(1, 0, 0);
 }
 void Game::update() {
 

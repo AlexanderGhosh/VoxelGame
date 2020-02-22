@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "../../Renders/chunkRender.h"
 #include "../../Drawable.h"
+#include "world_generation.h"
 
 class World
 {

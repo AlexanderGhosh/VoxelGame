@@ -39,7 +39,7 @@ void World::generateFlatChunks(std::vector<glm::vec3> chunkPositions) {
 	std::cout << "Started\n";
 	for (auto& pos : chunkPositions) {
 		Chunk chunk(pos, false);
-		chunk.createBlocks(true);
+		chunk.createBlocks(true, 1);
 
 		chunks.push_back({ chunk, GL_TRUE });
 	}
@@ -74,7 +74,6 @@ HeightMapWorld createHeightMap(std::vector<glm::vec3> chunkPositions) {
 				sum = glm::perlin(n) + 0.5 * glm::perlin(0.5f * n) + 0.25 * glm::perlin(0.5f * n);
 				sum *= 10;
 				sum = std::abs(sum);
-				// if (sum < 1) sum = 1;
 				if (sum > CHUNK_SIZE) sum = CHUNK_SIZE - 1;
 				sum = std::lround(sum);
 				chunk.first[x][z] = sum;
@@ -85,21 +84,23 @@ HeightMapWorld createHeightMap(std::vector<glm::vec3> chunkPositions) {
 	return res;
 }
 void World::generateTerrain(std::vector<glm::vec3> chunkPositions) {
-	auto heightMap = createHeightMap(chunkPositions);
+	// auto heightMap = createHeightMap(chunkPositions);
 	std::cout << "Started\n";
 	GLubyte i = 0;
+	world_generation wg(CHUNK_SIZE, 3, 1, { {1.5f, 1.5f}, {0.75f, 0.75f}, {0.325f, 0.325f} });
 	for (GLuint i = 0; i < chunkPositions.size(); i++) {
 		auto& pos = chunkPositions[i];
 		Chunk chunk(pos, false);
-		HeightMapChunk& hm = heightMap[0].first;
-		for (auto& map : heightMap) {
-			if (i == map.second) {
-				hm = map.first;
-				break;
-			}
-		}
-		chunk.createBlocks(hm);
 
+		ChunkHeighMap hm = wg.genHeightMap(pos);
+
+		if (pos.y < -CHUNK_SIZE) {
+			chunk.createBlocks(1, 5);
+		}
+		else {
+			chunk.createBlocks(hm);
+		}
+		
 		chunks.push_back({ chunk, GL_TRUE });
 	}
 
