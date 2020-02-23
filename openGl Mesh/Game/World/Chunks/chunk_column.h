@@ -9,14 +9,15 @@ public:
 	chunk_column();
 	chunk_column(GLboolean gen);
 	chunk_column(ChunkPosition pos, GLboolean isFlat = 0);
-	chunk_column(ChunkPosition pos, HeightMap hm);
+	chunk_column(ChunkPosition pos, ChunkHeightMap hm);
 	Faces getMesh();
 	void addChunk(Chunk chunk, GLboolean sort = 0);
 	void addChunks(std::vector<Chunk> chunks, GLboolean sort = 0);
 	void createMesh(std::vector<chunk_column*> columns);
+	ChunkPosition& getPosition();
 private:
 	ChunkPosition pos;
-	HeightMap heightMap;
+	ChunkHeightMap heightMap;
 	std::vector<Chunk> chunks;
 	Faces faces;
 	GLboolean hasCaves;

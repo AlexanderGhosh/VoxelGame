@@ -18,7 +18,7 @@ void World::getNewChunkPositions(GLboolean flat) {
 		generateFlatChunks(chunkPositions);
 	}
 	else {
-		// generateTerrain(chunkPositions);
+		generateTerrain(chunkPositions);
 	}
 }
 std::vector<glm::vec2> World::getNewChunkPositions(glm::vec2 origin, GLint renderDist) {
@@ -80,32 +80,20 @@ HeightMapWorld createHeightMap(std::vector<glm::vec3> chunkPositions) {
 	}
 	return res;
 }
-void World::generateTerrain(std::vector<glm::vec3> chunkPositions) {
-	// auto heightMap = createHeightMap(chunkPositions);
+void World::generateTerrain(std::vector<glm::vec2> chunkPositions) {
 	std::cout << "Started\n";
 	GLubyte i = 0;
 	world_generation wg(CHUNK_SIZE, 3, 1, { {1.5f, 1.5f}, {0.75f, 0.75f}, {0.325f, 0.325f} });
 	for (GLuint i = 0; i < chunkPositions.size(); i++) {
 		auto& pos = chunkPositions[i];
 		chunk_column chunk(pos);
-
-		ChunkHeightMap hm = wg.genHeightMap(pos);
-
-		/*if (pos.y < -CHUNK_SIZE) {
-			chunk.createBlocks(1, 5);
-		}
-		else {
-			chunk.createBlocks(hm);
-		}*/
-		
 		chunks.push_back({ chunk, GL_TRUE });
 	}
 
 	auto start = std::chrono::high_resolution_clock::now();
 	for (auto& pair : chunks) {
-		//Chunk& chunk = pair.first;
-		//chunk.createMesh(getChunks());
-		// std::cout << "Chunk created" << std::endl;
+		chunk_column& chunk = pair.first;
+		chunk.createMesh(getChunks());
 	}
 	genWorldMesh();
 	drawable.setUp(worldMesh);
@@ -114,6 +102,7 @@ void World::generateTerrain(std::vector<glm::vec3> chunkPositions) {
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	std::cout << "World created (Chunk count: " << chunks.size() << " size: " << CHUNK_SIZE * std::pow(chunks.size(), 1.0f / 3.0f) << "): " << duration.count() << " microseconds" << std::endl;
 }
+
 void World::render(Camera& c, glm::mat4 projection) {
 	if (isDynamic) {
 		renderChunksDynamic(c, projection);

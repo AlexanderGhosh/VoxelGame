@@ -30,7 +30,7 @@ private:
 	GLboolean reDraw;
 	glm::vec3* playerPos;
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
-	void generateTerrain(std::vector<glm::vec3> chunkPositions);
+	void generateTerrain(std::vector<glm::vec2> chunkPositions);
 	void getNewChunkPositions(GLboolean flat);
 	std::vector<glm::vec2> getNewChunkPositions(glm::vec2 origin, GLint renderDist = INITALL_VIEW);
 	void genWorldMesh();

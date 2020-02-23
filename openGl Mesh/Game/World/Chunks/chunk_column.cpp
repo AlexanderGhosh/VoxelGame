@@ -10,7 +10,7 @@ chunk_column::chunk_column(ChunkPosition pos, GLboolean isFlat) : hasCaves(0) {
 	createChunks();
 	genHeightMap(isFlat);
 }
-chunk_column::chunk_column(ChunkPosition pos, HeightMap hm) : hasCaves(0) {
+chunk_column::chunk_column(ChunkPosition pos, ChunkHeightMap hm) : hasCaves(0) {
 	this->pos = pos;
 	this->heightMap = hm;
 	applyHeightMap();
@@ -22,7 +22,8 @@ void chunk_column::genHeightMap(GLboolean isFlat) {
 		}
 	}
 	else {
-		heightMap = world_generation::createHeightMap({ pos.x, 0, pos.y }, 0);
+		heightMap = world_generation::genHeightMap(chunks[0].position);
+		applyHeightMap();
 	}
 }
 std::vector<Chunk*> getChunks(std::vector<Chunk>& chunks) {
@@ -54,33 +55,7 @@ void chunk_column::applyHeightMap() {
 		// deal with caves
 	}
 	else {
-		auto range = getHeightRange();
-		auto& max = range.first;
-		auto& min = range.second;
-		auto i_raw = reduceToMultiple(min, CHUNK_SIZE);
-		auto i = i_raw / CHUNK_SIZE;
-		for (GLubyte j = 0; j < i; j++) {
-			chunks[j].createBlocks(1, 5);
-		}
-		ChunkHeightMap hm;
-		for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
-			for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
-				auto newHeight = heightMap[x][z].size() - i_raw;
-				if (newHeight >= CHUNK_SIZE) newHeight = CHUNK_SIZE - 1;
-				hm[x][z] = newHeight;
-			}
-		}
-		if (max - CHUNK_SIZE >= CHUNK_SIZE) {
-			chunks.push_back(Chunk(fromIndex(chunks.size()), 0));
-		}
-
-		for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
-			for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
-
-				hm[x][z] = heightMap[x][z].size() - hm[x][z];
-			}
-		}
-		chunks.back().createBlocks(hm);
+		chunks[0].createBlocks(heightMap);
 	}
 }
 void chunk_column::addChunk(Chunk chunk, GLboolean sort) {
@@ -111,7 +86,7 @@ std::pair<GLushort, GLushort> chunk_column::getHeightRange() {
 				// deal with caves
 			}
 			else {
-				Height height = heightMap[x][z].size();
+				Height height = heightMap[x][z];
 				if (height > largest) largest = height;
 				else if (height < smallest) smallest = height;
 			}
@@ -127,4 +102,7 @@ Faces chunk_column::getMesh() {
 	for (GLubyte i = 0; i < number; i++) {
 		chunks.push_back(Chunk({ pos.x, -(i + 1) * CHUNK_SIZE, pos.y }, 0));
 	}
+}
+ChunkPosition& chunk_column::getPosition() {
+	return pos;
 }

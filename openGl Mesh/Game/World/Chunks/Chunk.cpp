@@ -109,7 +109,7 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 				if (block == 0)
 					continue;
 				block--;
-				
+				if (block > TEXTURES.size()) block = 4; // the skybox
 				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
 					meshes.push_back({ FACES[LEFT], TEXTURES[block], pos });
 				}
