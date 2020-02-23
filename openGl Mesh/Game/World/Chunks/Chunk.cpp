@@ -11,7 +11,7 @@ Chunk::Chunk(glm::vec3 pos, GLboolean create) {
 }
 void Chunk::create() {
 	createBlocks(true, 1);
-	createMesh();
+	createMesh({});
 }
 void Chunk::createBlocks(GLboolean isFlat, GLubyte block) {
 	if (isFlat) {

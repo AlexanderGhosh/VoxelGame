@@ -51,3 +51,4 @@ GLint getBlockIndex(glm::vec3 position);
 //GLuint getChunkIndex(glm::vec3 pos, GLboolean rectify, GLboolean raw, const char* overload);
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload);
 glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple);
+GLint reduceToMultiple(GLfloat victim, GLuint multiple);

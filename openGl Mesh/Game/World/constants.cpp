@@ -81,6 +81,13 @@ glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple) {
 	}
 	return victim;
 }
+GLint reduceToMultiple(GLfloat victim, GLuint multiple) {
+	victim = std::lround(victim);
+	while ((GLint)victim % multiple != 0) {
+		victim--;
+	}
+	return victim;
+}
 //GLuint getChunkIndex(glm::vec3 pos, GLboolean rectify, GLboolean raw, const char* overload) {
 //	if (rectify) {
 //		pos /= CHUNK_SIZE;

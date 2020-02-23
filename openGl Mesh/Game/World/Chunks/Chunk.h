@@ -1,8 +1,8 @@
 #pragma once
 #include <chrono>
 #include <gtc/noise.hpp>
-#include "../Player/Camera.h"
-#include "constants.h"
+#include "../../Player/Camera.h"
+#include "../constants.h"
 
 #include <map>
 using namespace Mesh;
@@ -19,7 +19,7 @@ public:
 	void create();
 	std::vector<Face*> getMeshes();
 	void cleanUp();
-	void createMesh(std::vector<Chunk*> chunks = std::vector<Chunk*>());
+	void createMesh(std::vector<Chunk*> chunks);
 	void createBlocks(GLboolean isFlat, GLubyte block);
 	void createBlocks(HeightMapChunk hightMap);
 	GLushort getBlock_unsafe(glm::ivec3 pos);
