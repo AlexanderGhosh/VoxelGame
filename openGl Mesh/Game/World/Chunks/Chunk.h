@@ -13,7 +13,7 @@ class Chunk
 {
 public:
 	glm::vec3 position;
-	std::array<GLushort, CHUNK_VOLUME> blocks; // 0 - air, 1 - grass
+	std::array<GLubyte, CHUNK_VOLUME> blocks; // 0 - air, 1 - grass
 	Chunk();
 	Chunk(glm::vec3 pos, GLboolean create = false);
 	void create();

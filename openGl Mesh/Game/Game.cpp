@@ -12,6 +12,7 @@ glm::vec3 Game::mouseData(0);
 std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
 Player Game::player = Player();
 GLboolean Game::hasPlayer = GL_FALSE;
+World Game::world = World(0);
 #pragma endregion
 Game::Game() {
 	hasPlayer = false;
@@ -36,7 +37,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 0, 0);
+	world = World(1, 1, 0);
 }
 void Game::update() {
 
@@ -132,8 +133,15 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	}
 	Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
 }
+void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
+	if ((button == GLFW_MOUSE_BUTTON_LEFT || button == GLFW_MOUSE_BUTTON_RIGHT) && action == GLFW_PRESS) {
+		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+		Game::world.breakBlock(cam.GetPosition(), cam.GetFront());
+	}
+}
 void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
+	glfwSetMouseButtonCallback(window, Game::clickCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
 GLboolean alt = 0;
@@ -215,11 +223,17 @@ void Game::doMovement() {
 			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
 	}
+	/*if (k[GLFW_KEY_F1]) {
+		auto start = std::chrono::high_resolution_clock::now();
+		world.createChunk({ 32, 16 });
+		auto stop = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+		std::cout << "made in: " << duration.count() << " microsecconds\n";
+	}*/
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	world.updatePlayerPos(&cam.GetPosition());
 }
 void Game::cleanUp() {
-	world.cleanUp();
 }
 
 void Game::makeSkybox(std::string skybox) {

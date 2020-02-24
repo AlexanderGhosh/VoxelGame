@@ -225,10 +225,10 @@ glm::vec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 	auto rayOrigin = getCenter();
 	auto rayEnd = rayOrigin + deltaV;
 	auto r = glm::round(rayEnd);
-	Chunk& chunkOccupied = world.getOccupiedChunk(rayEnd);
+	// Chunk& chunkOccupied = world.getOccupiedChunk(rayEnd);
 	std::pair<glm::vec3, glm::vec3> bounds = { rayEnd + glm::vec3(1), rayEnd - glm::vec3(1) };
 
-	if (chunkOccupied.isNull()) return { 0, 0, 0 };
+	// if (chunkOccupied.isNull()) return { 0, 0, 0 };
 	glm::vec3 res(0);
 	for (auto& mesh : /*chunkOccupied.getMeshes()*//**/world.getWorldMesh()/**/) {
 		Face& face = *mesh;

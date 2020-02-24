@@ -13,6 +13,7 @@ chunk_column::chunk_column(ChunkPosition pos, GLboolean isFlat) : hasCaves(0) {
 chunk_column::chunk_column(ChunkPosition pos, ChunkHeightMap hm) : hasCaves(0) {
 	this->pos = pos;
 	this->heightMap = hm;
+	createChunks();
 	applyHeightMap();
 }
 void chunk_column::genHeightMap(GLboolean isFlat) {
@@ -35,6 +36,7 @@ std::vector<Chunk*> getChunks(std::vector<Chunk>& chunks) {
 }
 void chunk_column::createMesh(std::vector<chunk_column*> columns) {
 	std::vector<Chunk*> chunks;
+	faces.clear();
 	for (auto& column : columns) {
 		std::vector<Chunk*> subChunks = getChunks(column->chunks);
 		chunks.insert(chunks.end(), subChunks.begin(), subChunks.end());
@@ -105,4 +107,9 @@ Faces chunk_column::getMesh() {
 }
 ChunkPosition& chunk_column::getPosition() {
 	return pos;
+}
+GLubyte& chunk_column::getBlock(glm::ivec3 blockPos) {
+	GLubyte index = std::abs(blockPos.y / CHUNK_SIZE);
+	blockPos.y %= CHUNK_SIZE;
+	return chunks[index].blocks[getBlockIndex(blockPos)];
 }

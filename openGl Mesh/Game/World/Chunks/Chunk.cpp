@@ -21,12 +21,13 @@ void Chunk::createBlocks(GLboolean isFlat, GLubyte block) {
 		else {
 			blocks.fill(block);
 		}
-		/*if (position == glm::vec3(0, -2, 0) || position == glm::vec3(-2, -2, - 2)) {
-			blocks[getBlockIndex({ 0, -1, 0 })] = 0;
-			blocks[getBlockIndex({ 1, -1, 0 })] = 0;
+		if (position == glm::vec3(0, -2, 0) || position == glm::vec3(-2, -2, - 2)) {
+			/*blocks[getBlockIndex({ 0, 0, 0 })] = 0;
+			blocks[getBlockIndex({ 0, -1, 0 })] = 0;*/
+			/*blocks[getBlockIndex({ 1, -1, 0 })] = 0;
 			blocks[getBlockIndex({ 1, -1, 1 })] = 0;
-			blocks[getBlockIndex({ 0, -1, 1 })] = 0;
-		}*/
+			blocks[getBlockIndex({ 0, -1, 1 })] = 0;*/
+		}
 
 		return;
 	}
@@ -101,6 +102,7 @@ void Chunk::createBlocks(HeightMapChunk heightMap) {
 	}
 }
 void Chunk::createMesh(std::vector<Chunk*> chunks) {
+	meshes.clear();
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {
 		for (GLint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {

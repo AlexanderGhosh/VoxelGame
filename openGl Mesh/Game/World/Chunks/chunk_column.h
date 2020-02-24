@@ -6,6 +6,9 @@ using Faces = std::vector<Face*>;
 class chunk_column
 {
 public:
+	std::vector<Chunk> chunks; // move to private
+
+
 	chunk_column();
 	chunk_column(GLboolean gen);
 	chunk_column(ChunkPosition pos, GLboolean isFlat = 0);
@@ -15,10 +18,10 @@ public:
 	void addChunks(std::vector<Chunk> chunks, GLboolean sort = 0);
 	void createMesh(std::vector<chunk_column*> columns);
 	ChunkPosition& getPosition();
+	GLubyte& getBlock(glm::ivec3 blockPos);
 private:
 	ChunkPosition pos;
 	ChunkHeightMap heightMap;
-	std::vector<Chunk> chunks;
 	Faces faces;
 	GLboolean hasCaves;
 	void genHeightMap(GLboolean isFlat);

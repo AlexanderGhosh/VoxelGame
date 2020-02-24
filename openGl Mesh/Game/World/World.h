@@ -16,12 +16,13 @@ public:
 	World();
 	World(GLboolean gen, GLboolean flat = 1, GLboolean isDynamic = 0);
 	void processBlockUpdates();
-	void cleanUp();
 	void render(Camera& c, glm::mat4 projection);
 	std::vector<chunk_column*> getChunks();
-	Chunk& getOccupiedChunk(glm::ivec3 occPosition);
 	std::vector<Face*>& getWorldMesh();
 	void updatePlayerPos(glm::vec3* pos);
+
+	void createChunk(ChunkPosition position);
+	void breakBlock(glm::vec3 pos, glm::vec3 front);
 private:
 	std::vector<std::pair<chunk_column, GLboolean>> chunks;
 	std::vector<Face*> worldMesh;
@@ -37,4 +38,6 @@ private:
 	std::vector<Face*> genWorldMesh(std::vector<Chunk*> chunks);
 	void renderChunksStatic(Camera& c, glm::mat4 projection);
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
+
+	GLubyte& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
 };
