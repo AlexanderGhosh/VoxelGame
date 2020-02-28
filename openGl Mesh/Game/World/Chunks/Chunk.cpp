@@ -22,9 +22,9 @@ void Chunk::createBlocks(GLboolean isFlat, GLubyte block) {
 			blocks.fill(block);
 		}
 		if (position == glm::vec3(0, -2, 0) || position == glm::vec3(-2, -2, - 2)) {
-			/*blocks[getBlockIndex({ 0, 0, 0 })] = 0;
-			blocks[getBlockIndex({ 0, -1, 0 })] = 0;*/
-			/*blocks[getBlockIndex({ 1, -1, 0 })] = 0;
+			//blocks[getBlockIndex({ 0, 0, 0 })] = 0;
+			/*blocks[getBlockIndex({ 0, -1, 0 })] = 0;
+			blocks[getBlockIndex({ 1, -1, 0 })] = 0;
 			blocks[getBlockIndex({ 1, -1, 1 })] = 0;
 			blocks[getBlockIndex({ 0, -1, 1 })] = 0;*/
 		}

@@ -39,13 +39,11 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 void Game::generateWorld() {
 	world = World(1, 1, 0);
 }
-void Game::update() {
-
-}
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
+	mainCamera->setPosition({ -0.0f, -11.0f, 0.0f });
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -101,7 +99,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ -2.0f, 5.0f, -0.0f }, { 0.0f, 1.5f, 0.0f });
+	player = Player({ -2.0f, 5.0f, -0.0f }, { 0.0f, 1.5f, 0.0f } /*{ -0.5f, 0.25f, 3.0f }*/);
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {

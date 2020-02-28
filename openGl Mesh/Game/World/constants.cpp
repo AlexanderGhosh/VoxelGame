@@ -25,7 +25,7 @@ const std::array<Buffer*, 6> FACES = {
 	{ glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1), glm::vec3(1), glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1) }).getBuffer()
 }; 
 const std::vector<Texture*>TEXTURES = {
-	new Texture("grass/hd", ""),
+	new Texture("grass/hd/debug", ""),
 	new Texture("player/bottom", ""),
 	new Texture("player/top", ""),
 	new Texture("skybox", ""),
@@ -82,7 +82,7 @@ glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple) {
 	return victim;
 }
 GLint reduceToMultiple(GLfloat victim, GLuint multiple) {
-	victim = std::lround(victim);
+	victim = std::round(victim);
 	while ((GLint)victim % multiple != 0) {
 		victim--;
 	}

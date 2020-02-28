@@ -98,7 +98,8 @@ std::pair<GLushort, GLushort> chunk_column::getHeightRange() {
 }
 Faces chunk_column::getMesh() {
 	return faces;
-}void chunk_column::createChunks() {
+}
+void chunk_column::createChunks() {
 	chunks.clear();
 	GLubyte number = 64 / CHUNK_SIZE;
 	for (GLubyte i = 0; i < number; i++) {
@@ -109,7 +110,12 @@ ChunkPosition& chunk_column::getPosition() {
 	return pos;
 }
 GLubyte& chunk_column::getBlock(glm::ivec3 blockPos) {
-	GLubyte index = std::abs(blockPos.y / CHUNK_SIZE);
+	blockPos.y += CHUNK_SIZE;
+	GLbyte index = std::abs(blockPos.y) - 1;
+	if (index % 2 != 0) index -= 1; // if odd
+	index /= CHUNK_SIZE;
+
+	
 	blockPos.y %= CHUNK_SIZE;
 	return chunks[index].blocks[getBlockIndex(blockPos)];
 }

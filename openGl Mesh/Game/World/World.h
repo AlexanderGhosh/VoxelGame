@@ -14,7 +14,7 @@ class World
 {
 public:
 	World();
-	World(GLboolean gen, GLboolean flat = 1, GLboolean isDynamic = 0);
+	World(GLboolean gen, GLboolean terrain = 1, GLboolean isDynamic = 0);
 	void processBlockUpdates();
 	void render(Camera& c, glm::mat4 projection);
 	std::vector<chunk_column*> getChunks();
