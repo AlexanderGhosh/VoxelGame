@@ -5,100 +5,48 @@ Chunk::Chunk() {
 Chunk::Chunk(glm::vec3 pos, GLboolean create) {
 	position = pos;
 	null = GL_FALSE;
+	blocks.fill(Blocks::AIR);
 	if (create) {
 		this->create();
 	}
 }
 void Chunk::create() {
-	createBlocks(true, 1);
+	createBlocksFlat(Blocks::AIR);
 	createMesh({});
 }
-void Chunk::createBlocks(GLboolean isFlat, GLubyte block) {
-	if (isFlat) {
-		if (position.y < -CHUNK_SIZE) {
-			blocks.fill(block);
-		}
-		else {
-			blocks.fill(block);
-		}
-		if (position == glm::vec3(0, -2, 0) || position == glm::vec3(-2, -2, - 2)) {
-			//blocks[getBlockIndex({ 0, 0, 0 })] = 0;
-			/*blocks[getBlockIndex({ 0, -1, 0 })] = 0;
-			blocks[getBlockIndex({ 1, -1, 0 })] = 0;
-			blocks[getBlockIndex({ 1, -1, 1 })] = 0;
-			blocks[getBlockIndex({ 0, -1, 1 })] = 0;*/
-		}
+void Chunk::createBlocksFlat(Blocks block) {
+	if (position.y > -CHUNK_SIZE) block = Blocks::AIR;
+	blocks.fill(block);
 
-		return;
-	}
-
-	// random blocks
-	/*for (int x = 0; x < blocks.size(); x++) {
-		if ((float)rand()/(float)RAND_MAX > 0.5f) {
-			blocks[x] = 1;
-		}
-		else {
-			blocks[x] = 5;
-		}
-	}*/
-
-	GLfloat xFactor = 1 / (CHUNK_SIZE - 1);
-	GLfloat yFactor = 1 / (CHUNK_SIZE - 1);
-	GLfloat freq(0.25);
-	if (position.y >= -CHUNK_SIZE) {
-		blocks.fill(0);
-		for (GLushort x = 0; x < CHUNK_SIZE; x++) {
-			for (GLushort z = 0; z < CHUNK_SIZE; z++) {
-				GLfloat sum = 0;
-				glm::vec2 n((GLfloat)x / (GLfloat)CHUNK_SIZE - 0.5, (GLfloat)z / (GLfloat)CHUNK_SIZE - 0.5);
-				n += (position.x + position.y + position.z) / 3.0f;
-				sum = glm::perlin(n) + 0.5 * glm::perlin(2.0f * n) + 0.25 * glm::perlin(4.0f * n);
-				GLushort height = std::abs(sum) * CHUNK_SIZE;
-				height = height > CHUNK_SIZE ? CHUNK_SIZE : height;
-				height = height == 0 ? 1 : height;
-				for (GLushort y = 0; y < height; y++) {
-					GLushort block = 1; 
-					if (y < height - 2) {
-						block = 5; // stone
-					}
-					else if (y < height - 1) {
-						block = 6; // dirt
-					}
-					blocks[getBlockIndex({ x, y, z })] = block;
-				}
-			}
-		}
-	}
-	else {
-		blocks.fill(5);
+	if (position == glm::vec3(0, -2, 0) || position == glm::vec3(-2, -2, -2)) {
+		//blocks[getBlockIndex({ 0, 0, 0 })] = 0;
+		blocks[getBlockIndex({ 0, -1, 0 })] = Blocks::AIR;
+		blocks[getBlockIndex({ 1, -1, 0 })] = Blocks::AIR;
+		blocks[getBlockIndex({ 1, -1, 1 })] = Blocks::AIR;
+		blocks[getBlockIndex({ 0, -1, 1 })] = Blocks::AIR;
 	}
 }
 void Chunk::createBlocks(HeightMapChunk heightMap) {
-	if (position.y >= -CHUNK_SIZE) {
-		blocks.fill(0);
-		for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
-			for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
-				glm::vec3 position = glm::abs(this->position);
-				GLubyte height = heightMap[x][z];
-				if (height < 2) {
-					blocks[getBlockIndex({ x, 0, z })] = 7;
-					continue;
+	blocks.fill(Blocks::AIR);
+	for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
+		for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
+			glm::vec3 position = glm::abs(this->position);
+			GLubyte height = heightMap[x][z];
+			if (height < 2) {
+				blocks[getBlockIndex({ x, 0, z })] = Blocks::WATER;
+				continue;
+			}
+			for (GLubyte y = 0; y < height; y++) {
+				Blocks block = Blocks::GRASS; // grass
+				if (y < height - 3) {
+					block = Blocks::STONE; // stone
 				}
-				for (GLubyte y = 0; y < height; y++) {
-					GLubyte block = 1; // grass
-					if (y < height - 3) {
-						block = 5; // stone
-					}
-					else if (y < height - 1) {
-						block = 6; // dirt
-					}
-					blocks[getBlockIndex({ x, y, z })] = block;
+				else if (y < height - 1) {
+					block = Blocks::DIRT; // dirt
 				}
+				blocks[getBlockIndex({ x, y, z })] = block;
 			}
 		}
-	}
-	else {
-		blocks.fill(5);
 	}
 }
 void Chunk::createMesh(std::vector<Chunk*> chunks) {
@@ -107,30 +55,29 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 		for (GLint y = 0; y < CHUNK_SIZE; y++) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
-				GLuint block = getBlock_safe({ x, y, z }, chunks);
-				if (block == 0)
+				Blocks block = getBlock_safe({ x, y, z }, chunks);
+				if (block == Blocks::AIR)
 					continue;
-				block--;
-				if (block > TEXTURES.size()) block = 4; // the skybox
-				if (getBlock_safe({ x - 1, y, z }, chunks) == 0) {
-					meshes.push_back({ FACES[LEFT], TEXTURES[block], pos });
+				Texture_Names tex = getTexture(block);
+				if (getBlock_safe({ x - 1, y, z }, chunks) == Blocks::AIR) {
+					meshes.push_back({ FACES[LEFT], TEXTURES[(int)tex], pos });
 				}
-				if (getBlock_safe({ x + 1, y, z }, chunks) == 0) {
-					meshes.push_back({ FACES[RIGHT], TEXTURES[block], pos });
-				}
-
-				if (getBlock_safe({ x, y - 1, z }, chunks) == 0) {
-					meshes.push_back({ FACES[BOTTOM], TEXTURES[block], pos });
-				}
-				if (getBlock_safe({ x, y + 1, z }, chunks) == 0) {
-					meshes.push_back({ FACES[TOP], TEXTURES[block], pos });
+				if (getBlock_safe({ x + 1, y, z }, chunks) == Blocks::AIR) {
+					meshes.push_back({ FACES[RIGHT], TEXTURES[(int)tex], pos });
 				}
 
-				if (getBlock_safe({ x, y, z - 1}, chunks) == 0) {
-					meshes.push_back({ FACES[BACK], TEXTURES[block], pos });
+				if (getBlock_safe({ x, y - 1, z }, chunks) == Blocks::AIR) {
+					meshes.push_back({ FACES[BOTTOM], TEXTURES[(int)tex], pos });
 				}
-				if (getBlock_safe({ x, y, z + 1}, chunks) == 0) {
-					meshes.push_back({ FACES[FRONT], TEXTURES[block], pos });
+				if (getBlock_safe({ x, y + 1, z }, chunks) == Blocks::AIR) {
+					meshes.push_back({ FACES[TOP], TEXTURES[(int)tex], pos });
+				}
+
+				if (getBlock_safe({ x, y, z - 1}, chunks) == Blocks::AIR) {
+					meshes.push_back({ FACES[BACK], TEXTURES[(int)tex], pos });
+				}
+				if (getBlock_safe({ x, y, z + 1}, chunks) == Blocks::AIR) {
+					meshes.push_back({ FACES[FRONT], TEXTURES[(int)tex], pos });
 				}
 			}
 		}
@@ -149,7 +96,7 @@ std::vector<Face*> Chunk::getMeshes() {
 	}
 	return res;
 }
-GLushort Chunk::getBlock_unsafe(glm::ivec3 pos) {
+Blocks Chunk::getBlock_unsafe(glm::ivec3 pos) {
 	auto p = pos;
 	while (pos.x%CHUNK_SIZE != 0 && !(std::abs(pos.x) > CHUNK_SIZE || std::abs(pos.x) < CHUNK_SIZE)) {
 		pos -= glm::ivec3(CHUNK_SIZE);
@@ -158,10 +105,10 @@ GLushort Chunk::getBlock_unsafe(glm::ivec3 pos) {
 		return blocks.at(getBlockIndex(pos));
 	}
 	catch (std::exception e) {
-		return 0;
+		return Blocks::AIR;
 	}
 }
-GLushort Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
+Blocks Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
 	if (glm::all(glm::greaterThanEqual(inChunkPosition, glm::vec3(0)))) {
 		if (glm::all(glm::lessThan(inChunkPosition, glm::vec3(CHUNK_SIZE)))) {
 			return blocks[getBlockIndex(inChunkPosition)];
@@ -198,13 +145,13 @@ GLushort Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk
 	
 	int index = getBlockIndex(toLookAt); 
 
-	if (index < 0) return 0;
+	if (index < 0) return Blocks::AIR;
 	for (auto& chunk : chunks) {
 		if (chunk->position == chunkPositionToLookAt) {
 			return chunk->blocks[index];
 		}
 	}
-	return 0;
+	return Blocks::AIR;
 }
 GLboolean Chunk::isNull() {
 	return null;

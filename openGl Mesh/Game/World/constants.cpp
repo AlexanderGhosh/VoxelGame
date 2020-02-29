@@ -29,8 +29,8 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("player/bottom", ""),
 	new Texture("player/top", ""),
 	new Texture("skybox", ""),
-	new Texture("stone", ""),
-	new Texture("dirt", ""),
+	new Texture("stone/debug", ""),
+	new Texture("dirt/debug", ""),
 	new Texture("water", "")
 };
 const std::vector<Shader*>SHADERS = {
@@ -44,20 +44,6 @@ GLint getBlockIndex(glm::vec3 position) {
 	if (index >= CHUNK_VOLUME) index *= -1;
 	return index;
 }
-//GLint getChunkIndex(glm::vec3 position, GLboolean absalute, GLboolean reduced) {
-//	if (!reduced) {
-//		position /= CHUNK_SIZE;
-//	}
-//	if (!absalute) {
-//		position.y += 1;
-//		position.x += INITALL_VIEW / 2;
-//		position.z += INITALL_VIEW / 2;
-//		position = glm::abs(position);
-//	}
-//	int index = position.x + position.z * INITALL_VIEW + position.y * INITALL_VIEW_AREA;
-//	if (index >= INITALL_VIEW_VOLUME) index *= -1;
-//	return index;
-//}
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload) {
 	while (victim.x % multiple != 0) {
 		victim.x -= 1;
@@ -88,16 +74,33 @@ GLint reduceToMultiple(GLfloat victim, GLuint multiple) {
 	}
 	return victim;
 }
-//GLuint getChunkIndex(glm::vec3 pos, GLboolean rectify, GLboolean raw, const char* overload) {
-//	if (rectify) {
-//		pos /= CHUNK_SIZE;
-//		pos.y += 1;
-//		pos.x += INITALL_VIEW / 2;
-//		pos.z += INITALL_VIEW / 2;
-//		pos = glm::abs(pos);
-//	}
-//	GLuint index = pos.x + pos.z * INITALL_VIEW + pos.y * INITALL_VIEW_AREA; // needs a new formula
-//	if (raw) return index;
-//	if (index >= INITALL_VIEW_VOLUME) index *= -1;
-//	return index;
-//}
+Texture_Names getTexture(Blocks block) {
+	Texture_Names res = Texture_Names::GRASS;
+	switch (block)
+	{
+	case Blocks::AIR:
+		break;
+	case Blocks::GRASS:
+		res = Texture_Names::GRASS;
+		break;
+	case Blocks::DIRT:
+		res = Texture_Names::DIRT;
+		break;
+	case Blocks::STONE:
+		res = Texture_Names::STONE;
+		break;
+	case Blocks::WATER:
+		res = Texture_Names::WATER;
+		break;
+	default:
+		res = Texture_Names::SKYBOX;
+		break;
+	}
+	return res;
+}
+GLubyte toIndex(Texture_Names tex) {
+	return GLubyte(tex);
+}
+GLubyte toIndex(Blocks block) {
+	return GLubyte(block);
+}

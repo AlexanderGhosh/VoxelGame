@@ -19,7 +19,7 @@ chunk_column::chunk_column(ChunkPosition pos, ChunkHeightMap hm) : hasCaves(0) {
 void chunk_column::genHeightMap(GLboolean isFlat) {
 	if (isFlat) {
 		for (auto& chunk : chunks) {
-			chunk.createBlocks(1, 1);
+			chunk.createBlocksFlat(Blocks::GRASS);
 		}
 	}
 	else {
@@ -57,7 +57,18 @@ void chunk_column::applyHeightMap() {
 		// deal with caves
 	}
 	else {
-		chunks[0].createBlocks(heightMap);
+		for (GLubyte i = 0; i < chunks.size(); i++) {
+			auto& chunk = chunks[i];
+			if (i == 4) {
+				chunk.createBlocks(heightMap);
+			}
+			else if (i < 4){
+				chunk.createBlocksFlat(Blocks::AIR);
+			}
+			else {
+				chunk.createBlocksFlat(Blocks::STONE);
+			}
+		}
 	}
 }
 void chunk_column::addChunk(Chunk chunk, GLboolean sort) {
@@ -101,15 +112,15 @@ Faces chunk_column::getMesh() {
 }
 void chunk_column::createChunks() {
 	chunks.clear();
-	GLubyte number = 64 / CHUNK_SIZE;
+	GLubyte number = 64 / CHUNK_SIZE + 4;
 	for (GLubyte i = 0; i < number; i++) {
-		chunks.push_back(Chunk({ pos.x, -(i + 1) * CHUNK_SIZE, pos.y }, 0));
+		chunks.push_back(Chunk({ pos.x, (-(i + 1) + 4) * CHUNK_SIZE, pos.y }, 0));
 	}
 }
 ChunkPosition& chunk_column::getPosition() {
 	return pos;
 }
-GLubyte& chunk_column::getBlock(glm::ivec3 blockPos) {
+Blocks& chunk_column::getBlock(glm::ivec3 blockPos) {
 	blockPos.y += CHUNK_SIZE;
 	GLbyte index = std::abs(blockPos.y) - 1;
 	if (index % 2 != 0) index -= 1; // if odd
@@ -117,5 +128,7 @@ GLubyte& chunk_column::getBlock(glm::ivec3 blockPos) {
 
 	
 	blockPos.y %= CHUNK_SIZE;
+
+	index = 4;
 	return chunks[index].blocks[getBlockIndex(blockPos)];
 }

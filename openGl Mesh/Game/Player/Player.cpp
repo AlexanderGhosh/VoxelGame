@@ -28,33 +28,33 @@ void Player::create() {
 		std::string tex = "player/";
 		tex += i == 0 ? "bottom" : "top";
 
-		TEXTURE_NAMES name = i == 0 ? PLAYER_BOTTOM : PLAYER_TOP;
-
-		Face face = { FACES[FRONT], TEXTURES[name], pos };
+		Texture_Names name = i == 0 ? Texture_Names::PLAYER_BOTTOM : Texture_Names::PLAYER_TOP;
+		auto texture = toIndex(name);
+		Face face = { FACES[FRONT], TEXTURES[texture], pos };
 		body.push_back(face);
 
-		face = { FACES[BACK], TEXTURES[name], pos };
+		face = { FACES[BACK], TEXTURES[texture], pos };
 		body.push_back(face);
 
 		if (i != 0) {
-			face = { FACES[TOP], TEXTURES[name], pos };
+			face = { FACES[TOP], TEXTURES[texture], pos };
 			body.push_back(face);
 		}
 		if (i == 0) {
-			face = { FACES[BOTTOM], TEXTURES[name], pos };
+			face = { FACES[BOTTOM], TEXTURES[texture], pos };
 			body.push_back(face);
 		}
-		face = { FACES[RIGHT], TEXTURES[name], pos };
+		face = { FACES[RIGHT], TEXTURES[texture], pos };
 		body.push_back(face);
 
-		face = { FACES[LEFT], TEXTURES[name], pos };
+		face = { FACES[LEFT], TEXTURES[texture], pos };
 		body.push_back(face);
 	}
 
 	renderer.loadMeshes(&body);
 }
 void Player::render(glm::mat4 projection, Camera* cam) {
-	renderer.render(this->cam, projection);
+	// renderer.render(this->cam, projection);
 }
 void Player::updateCamera(GLfloat xOff, GLfloat yOff) {
 	cam.ProcessMouseMovement(xOff, yOff);

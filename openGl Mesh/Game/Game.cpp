@@ -64,7 +64,7 @@ void Game::doLoop(glm::mat4 projection) {
 void Game::calcTimes() {
 	GLfloat frame = glfwGetTime();
 	deltaTime = frame - lastFrameTime;
-	if (lastFrameTime == -1) deltaTime = 1.0f / 60.0f;
+	/*if (lastFrameTime == -1)*/ deltaTime = 1.0f / 60.0f;
 	lastFrameTime = frame;
 	frameRate = 1 / deltaTime;
 }
@@ -99,7 +99,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ -2.0f, 5.0f, -0.0f }, { 0.0f, 1.5f, 0.0f } /*{ -0.5f, 0.25f, 3.0f }*/);
+	player = Player({ -2.0f, 5.0f, -0.0f }, { 0.0f, 1.25f, 0.0f } /*{ -0.5f, 0.25f, 3.0f }*/);
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -132,9 +132,13 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
 }
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
-	if ((button == GLFW_MOUSE_BUTTON_LEFT || button == GLFW_MOUSE_BUTTON_RIGHT) && action == GLFW_PRESS) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 		Game::world.breakBlock(cam.GetPosition(), cam.GetFront());
+	}
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+		Game::world.placeBlock(cam.GetPosition(), cam.GetFront());
 	}
 }
 void Game::setupEventCB(GLFWwindow* window) {
@@ -303,7 +307,7 @@ void Game::showSkybox() {
 	SHADERS[SKYBOX]->setValue("projection", projection);
 
 	glBindVertexArray(SBVAO);
-	TEXTURES[SKYBOX_T]->bind();
+	TEXTURES[(int)Texture_Names::SKYBOX]->bind();
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

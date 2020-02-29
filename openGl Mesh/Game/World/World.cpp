@@ -210,10 +210,10 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 		lookPos += front;
 		glm::ivec3 blockPos = glm::round(lookPos);
 		std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
-		GLubyte& block = getBlock(blockPos, chunk);
+		Blocks& block = getBlock(blockPos, chunk);
 		std::cout << "block: " << (int)block << std::endl;
-		if (block != 0) {
-			block = 0;
+		if (block != Blocks::AIR) {
+			block = Blocks::AIR;
 			changed = 1;
 			break;
 		}
@@ -229,18 +229,54 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 		drawable.setUp(worldMesh);
 	}
 }
-GLubyte& World::getBlock(glm::ivec3 blockPos, chunk_column*& chunk_) {
+Blocks& World::getBlock(glm::ivec3 blockPos, chunk_column*& chunk_) {
 	glm::vec3 subChunkPos = reduceToMultiple(blockPos, CHUNK_SIZE);
 	subChunkPos.y = 0;
 	glm::vec2 chunkPos(subChunkPos.x, subChunkPos.z);
-	GLubyte b = 0;
 	for (auto& chunk : chunks) {
 		if (chunk.first.getPosition() == chunkPos) {
 			chunk_ = &chunk.first;
 			auto& block = chunk.first.getBlock(blockPos - (glm::ivec3)subChunkPos);
-			if (block < 0) return b;
 			return block;
 		}
 	}
 
+}
+void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
+	std::array<glm::ivec3, 6> dirs = {
+		glm::ivec3(1, 0, 0), glm::ivec3(-1, 0, 0),
+		glm::ivec3(0, 1, 0), glm::ivec3(0, -1, 0),
+		glm::ivec3(0, 0, 1), glm::ivec3(0, 0, -1)
+	};
+	std::cout << "__________________________________________________________________ " << std::endl;
+	// pos.y += 0.5f;
+	GLboolean changed = 0;
+	chunk_column* chunk = nullptr;
+	glm::vec3 lookPos = pos + front * (GLfloat)(PLAYER_REACH - 1);
+	for (GLubyte i = 0; i < PLAYER_REACH; i++) {
+		lookPos -= front;
+		glm::ivec3 blockPos = glm::round(lookPos);
+		std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
+		Blocks& block = getBlock(blockPos, chunk);
+		std::cout << "block: " << (int)block << std::endl;
+		if (block == Blocks::AIR) {
+			for (auto& dir : dirs) {
+				auto bp = blockPos + dir;
+				auto& newBlock = getBlock(bp, chunk);
+				if (newBlock != Blocks::AIR) {
+					block = Blocks::WATER;
+					changed = 1;
+					break;
+				}
+			}
+			if (changed)break;
+		}
+	}
+	if (changed) {
+		auto chunks_ = getChunks();
+		chunk->createMesh(chunks_);
+		worldMesh.clear();
+		genWorldMesh();
+		drawable.setUp(worldMesh);
+	}
 }

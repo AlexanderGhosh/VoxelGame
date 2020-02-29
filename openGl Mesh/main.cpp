@@ -15,8 +15,7 @@ int main() {
 	int c = 0;
 	for (auto& face : FACES) {
 		face->createBuffers();
-		face->type = (FACES_NAMES)(FRONT + c);
-		c++;
+		face->type = (FACES_NAMES)(FRONT + c++);
 	}
 	for (auto& tex : TEXTURES) {
 		tex->load3D(tex->getName());
@@ -25,10 +24,10 @@ int main() {
 		shader->setUp();
 	}
 
-	Game game(0, 1);
+	Game game(1, 1);
 	// GameConfig::showFPS = true;
 	game.setWindow(window);
-	game.generateWorld();
+	game.generateWorld();				 // angle, screen ratio,                    near, far
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 1000.0f);
 	game.doLoop(projection);
 
@@ -74,8 +73,8 @@ GLFWwindow* createWindow() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport
 
-	// glEnable(GL_CULL_FACE); // face culling
-	// glFrontFace(GL_CCW);
+	 //glEnable(GL_CULL_FACE); // face culling
+	 //glFrontFace(GL_CCW);
 
 	return window;
 }

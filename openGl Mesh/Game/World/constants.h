@@ -19,11 +19,11 @@
 #define PLAYER_SPEED 2.0
 
 using namespace Mesh;
-enum TEXTURE_NAMES {
+enum class Texture_Names {
 	GRASS,
 	PLAYER_BOTTOM,
 	PLAYER_TOP,
-	SKYBOX_T,
+	SKYBOX,
 	STONE,
 	DIRT,
 	WATER
@@ -33,8 +33,7 @@ enum SHADER_NAMES {
 	BLOCK3,
 	SKYBOX
 };
-enum class Move_Dir
-{
+enum class Move_Dir {
 	FORWARD,
 	BACKWARD,
 	LEFT,
@@ -43,13 +42,21 @@ enum class Move_Dir
 	DOWN,
 	Null
 };
+enum class Blocks : uint8_t {
+	AIR,
+	GRASS,
+	DIRT,
+	STONE,
+	WATER	
+};
 extern const std::array<Buffer*, 6> FACES;
 extern const std::vector<Texture*> TEXTURES;
 extern const std::vector<Shader*> SHADERS;
 
 GLint getBlockIndex(glm::vec3 position);
-//GLint getChunkIndex(glm::vec3 position, GLboolean absalute = GL_FALSE, GLboolean reduced = GL_FALSE);
-//GLuint getChunkIndex(glm::vec3 pos, GLboolean rectify, GLboolean raw, const char* overload);
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload);
 glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple);
 GLint reduceToMultiple(GLfloat victim, GLuint multiple);
+Texture_Names getTexture(Blocks block);
+GLubyte toIndex(Texture_Names tex);
+GLubyte toIndex(Blocks block);

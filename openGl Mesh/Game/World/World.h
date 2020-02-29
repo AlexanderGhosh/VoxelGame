@@ -23,6 +23,7 @@ public:
 
 	void createChunk(ChunkPosition position);
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
+	void placeBlock(glm::vec3 pos, glm::vec3 front);
 private:
 	std::vector<std::pair<chunk_column, GLboolean>> chunks;
 	std::vector<Face*> worldMesh;
@@ -39,5 +40,5 @@ private:
 	void renderChunksStatic(Camera& c, glm::mat4 projection);
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
 
-	GLubyte& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
+	Blocks& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
 };
