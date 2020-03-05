@@ -14,10 +14,11 @@ public:
 	Player();
 	Player(glm::vec3 position, glm::vec3 camOff);
 	glm::vec3 getPosition();
-	void processMouse(GLfloat xOffset, GLfloat yOffset, GLfloat x, GLboolean constrainPitch = true);
 	void create();
 	void render(glm::mat4 projection, Camera* cam = nullptr);
-	Camera& getCamera();
+	Camera& getCamera(); 
+	void updatePosition(GLfloat deltaTime, World& world);
+	void updateCamera(GLfloat xOff, GLfloat yOff);
 private:
 	Camera cam;
 	glm::vec3 camera_offset;

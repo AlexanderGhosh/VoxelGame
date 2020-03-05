@@ -10,14 +10,12 @@ glm::ivec2 DIM(1600, 900);
 
 GLFWwindow* createWindow();
 
-// Player p;
 int main() {
 	GLFWwindow* window = createWindow();
 	int c = 0;
 	for (auto& face : FACES) {
 		face->createBuffers();
-		face->type = (FACES_NAMES)(FRONT + c);
-		c++;
+		face->type = (FACES_NAMES)(FRONT + c++);
 	}
 	for (auto& tex : TEXTURES) {
 		tex->load3D(tex->getName());
@@ -29,8 +27,8 @@ int main() {
 	Game game(1, 1);
 	// GameConfig::showFPS = true;
 	game.setWindow(window);
-	game.generateWorld();
-	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 100.0f);
+	game.generateWorld();				 // angle, screen ratio,                    near, far
+	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 1000.0f);
 	game.doLoop(projection);
 
 	glfwDestroyWindow(window);
@@ -47,8 +45,8 @@ GLFWwindow* createWindow() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GL_TRUE);
-	// int count;
-	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr/*glfwGetMonitors(&count)[1]*/, nullptr);
+
+	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr, nullptr);
 
 	GLint w, h;
 	glfwGetFramebufferSize(window, &w, &h);
@@ -63,9 +61,6 @@ GLFWwindow* createWindow() {
 		std::cout << "Falid to initialise GLEW" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	// setup events
-	// glfwSetKeyCallback(window, KeyCallBack);
-	// glfwSetCursorPosCallback(window, MouseCallBack);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disabel cursor visabilaty
 
@@ -78,8 +73,8 @@ GLFWwindow* createWindow() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport
 
-	// glEnable(GL_CULL_FACE); // face culling
-	// glFrontFace(GL_CCW);
+	 //glEnable(GL_CULL_FACE); // face culling
+	 //glFrontFace(GL_CCW);
 
 	return window;
 }

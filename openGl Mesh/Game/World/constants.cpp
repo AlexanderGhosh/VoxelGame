@@ -30,7 +30,8 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("player/top", ""),
 	new Texture("skybox", ""),
 	new Texture("stone", ""),
-	new Texture("dirt", "")
+	new Texture("dirt", ""),
+	new Texture("water", "")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),
@@ -43,17 +44,63 @@ GLint getBlockIndex(glm::vec3 position) {
 	if (index >= CHUNK_VOLUME) index *= -1;
 	return index;
 }
-GLint getChunkIndex(glm::vec3 position, GLboolean absalute, GLboolean reduced) {
-	if (!reduced) {
-		position /= CHUNK_SIZE;
+void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload) {
+	while (victim.x % multiple != 0) {
+		victim.x -= 1;
 	}
-	if (!absalute) {
-		position.y += 1;
-		position.x += RENDER_DISTANCE / 2;
-		position.z += RENDER_DISTANCE / 2;
-		position = glm::abs(position);
+	while (victim.y % multiple != 0 || victim.y >= 0) {
+		victim.y -= 1;
 	}
-	int index = position.x + position.z * RENDER_DISTANCE + position.y * RENDERED_AREA;
-	if (index >= RENDERED_VOLUME) index *= -1;
-	return index;
+	while (victim.z % multiple != 0) {
+		victim.z -= 1;
+	}
+}
+glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple) {
+	while (victim.x % multiple != 0) {
+		victim.x -= 1;
+	}
+	while (victim.y % multiple != 0 || victim.y >= 0) {
+		victim.y -= 1;
+	}
+	while (victim.z % multiple != 0) {
+		victim.z -= 1;
+	}
+	return victim;
+}
+GLint reduceToMultiple(GLfloat victim, GLuint multiple) {
+	victim = std::round(victim);
+	while ((GLint)victim % multiple != 0) {
+		victim--;
+	}
+	return victim;
+}
+Texture_Names getTexture(Blocks block) {
+	Texture_Names res = Texture_Names::GRASS;
+	switch (block)
+	{
+	case Blocks::AIR:
+		break;
+	case Blocks::GRASS:
+		res = Texture_Names::GRASS;
+		break;
+	case Blocks::DIRT:
+		res = Texture_Names::DIRT;
+		break;
+	case Blocks::STONE:
+		res = Texture_Names::STONE;
+		break;
+	case Blocks::WATER:
+		res = Texture_Names::WATER;
+		break;
+	default:
+		res = Texture_Names::SKYBOX;
+		break;
+	}
+	return res;
+}
+GLubyte toIndex(Texture_Names tex) {
+	return GLubyte(tex);
+}
+GLubyte toIndex(Blocks block) {
+	return GLubyte(block);
 }

@@ -39,9 +39,7 @@ namespace Render {
 			auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader* shader) {
 				glm::mat4 model(1);
 				model = glm::translate(model, position);
-				if (rotation.x != 0) {
-					model = glm::rotate(model, rotation.x, { 0, 1, 0 });
-				}
+				model = glm::scale(model, glm::vec3(0.8f));
 				shader->setValue("model", model);
 			};
 

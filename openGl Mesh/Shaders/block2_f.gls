@@ -30,6 +30,6 @@ void main()
     vec3 specular = specularStrength * spec * vec3(texture(skybox, TexCoords));
 
     result = (ambient + diffuse + specular) * lightCol;
-    //result = vec3(texture(skybox, TexCoords)); // nullifes lighting
+    result == vec3(0);
     color = vec4(result, 1.0f);
 }

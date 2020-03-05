@@ -42,9 +42,6 @@
     <ClCompile Include="Renders\chunkRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\World\Chunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\World\constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,19 +63,24 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\World\world_generation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\World\Chunks\Chunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\World\Chunks\chunk_column.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
-    <None Include="Shaders\block_v.gls" />
-    <None Include="Shaders\block_f.gls" />
-    <None Include="Shaders\block2_f.gls" />
-    <None Include="Shaders\block2_v.gls" />
     <None Include="Shaders\block3_v.gls" />
     <None Include="Shaders\block3_f.gls" />
     <None Include="Shaders\skybox_f.gls" />
     <None Include="Shaders\skybox_v.gls" />
-    <None Include="txt_v.gls" />
-    <None Include="txt_f.gls" />
+    <None Include="Shaders\block2_f.gls" />
+    <None Include="Shaders\block2_v.gls" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">
@@ -144,9 +146,6 @@
     <ClInclude Include="Renders\chunkRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\World\Chunk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Player\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -169,6 +168,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Player\Entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\World\world_generation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\World\Chunks\Chunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\World\Chunks\chunk_column.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
