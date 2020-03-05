@@ -25,12 +25,12 @@ const std::array<Buffer*, 6> FACES = {
 	{ glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1), glm::vec3(1), glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1) }).getBuffer()
 }; 
 const std::vector<Texture*>TEXTURES = {
-	new Texture("grass/hd/debug", ""),
+	new Texture("grass/hd", ""),
 	new Texture("player/bottom", ""),
 	new Texture("player/top", ""),
 	new Texture("skybox", ""),
-	new Texture("stone/debug", ""),
-	new Texture("dirt/debug", ""),
+	new Texture("stone", ""),
+	new Texture("dirt", ""),
 	new Texture("water", "")
 };
 const std::vector<Shader*>SHADERS = {
