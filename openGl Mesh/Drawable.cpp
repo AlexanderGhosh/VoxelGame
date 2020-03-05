@@ -86,10 +86,10 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 		Texture* t = std::get<1>(buffer);
 		GLuint c = std::get<2>(buffer);
 		t->bind();
-		b.render(false);
+		b.render(0);
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, c);
-		glBindVertexArray(0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		b.endRender();
+		t->unBind();
 	}
 	shader->unBind();
 }

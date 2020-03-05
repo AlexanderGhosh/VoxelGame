@@ -11,9 +11,9 @@
 #include <chrono>
 #include <thread>
 
-//#include "Player/Camera.h"
 #include "Player/Player.h"
 #include "World/World.h"
+
 struct GameConfig {
 	static GLboolean showFPS;
 	static glm::vec3 backgroundCol;
@@ -31,7 +31,6 @@ public:
 	Game(GLboolean hasPlayer, GLboolean hasSkybox);
 	void generateWorld();
 	void setupPlayer();
-	void update();
 	void doLoop(glm::mat4 projection);
 
 	void setWindow(GLFWwindow* window);
@@ -51,7 +50,8 @@ private:
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;
 	glm::mat4 projection;
-	GLuint SBVAO;
+	GLuint SBVAO, CHVAO;
+	Texture texCH;
 	// blockupdates
 	void showFPS();
 	void calcTimes();
@@ -65,4 +65,6 @@ private:
 	void doMovement();
 	void makeSkybox(std::string skybox);
 	void showSkybox();
+	void createCrossHair();
+	void showCrossHair();
 };

@@ -81,6 +81,14 @@
     <None Include="Shaders\skybox_v.gls" />
     <None Include="Shaders\block2_f.gls" />
     <None Include="Shaders\block2_v.gls" />
+    <None Include="Shaders\block2_f.glsl" />
+    <None Include="Shaders\block2_v.glsl" />
+    <None Include="Shaders\block3_f.glsl" />
+    <None Include="Shaders\block3_v.glsl" />
+    <None Include="Shaders\crosshair_f.glsl" />
+    <None Include="Shaders\crosshair_v.glsl" />
+    <None Include="Shaders\skybox_f.glsl" />
+    <None Include="Shaders\skybox_v.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">

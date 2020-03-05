@@ -55,8 +55,8 @@ void Shader::setUp() {
 	vShaderFile.exceptions(std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::badbit);
 	try {
-		vShaderFile.open(("Shaders/" + name + "_v.gls").c_str());
-		fShaderFile.open(("Shaders/" + name + "_f.gls").c_str());
+		vShaderFile.open(("Shaders/" + name + "_v.glsl").c_str());
+		fShaderFile.open(("Shaders/" + name + "_f.glsl").c_str());
 		std::stringstream vShaderStream, fShaderStream;
 
 		vShaderStream << vShaderFile.rdbuf();

@@ -34,6 +34,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 	if (hasSkybox) {
 		makeSkybox("skybox");
 	}
+	createCrossHair();
 }
 
 void Game::generateWorld() {
@@ -94,6 +95,7 @@ void Game::showStuff() {
 	if (hasSkybox) {
 		showSkybox();
 	}
+	showCrossHair();
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
@@ -313,4 +315,49 @@ void Game::showSkybox() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	glDepthFunc(GL_LESS); // set depth function back to default
+}
+
+void Game::createCrossHair() {
+	texCH = Texture("crosshair", 1);
+	GLfloat vertices[] = {
+		0.25f,  0.45f, 0.0f,  1, 1,
+		0.25f, -0.45f, 0.0f,  1, 0,
+		-0.25f,  0.45f, 0.0f, 0, 1,
+
+		0.25f, -0.45f, 0.0f,  1, 0,
+		-0.25f, -0.45f, 0.0f, 0, 0,
+		-0.25f,  0.45f, 0.0f, 0, 1
+	};
+	GLuint vbo;
+	glGenVertexArrays(1, &CHVAO);
+	glGenBuffers(1, &vbo);
+
+	glBindVertexArray(CHVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+
+	auto& shader = SHADERS[CROSSHAIR];
+	shader->bind();
+	texCH.bind();
+	auto scale = glm::vec3(0.1f);
+	shader->setValue("scale", scale);
+	shader->setValue("texture0", 0);
+	shader->unBind();
+}
+void Game::showCrossHair() {
+	auto& shader = SHADERS[CROSSHAIR];
+	shader->bind();
+	texCH.bind();
+	glBindVertexArray(CHVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+	shader->unBind();
+	texCH.unBind();
 }
