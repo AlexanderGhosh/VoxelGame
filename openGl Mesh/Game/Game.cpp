@@ -118,6 +118,9 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 			Game::keys[key] ^= true;
 		}
 	}
+	if (key == GLFW_KEY_F3 && action == GLFW_RELEASE) {
+		GameConfig::showFPS = !GameConfig::showFPS;
+	}
 }
 void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	if ((int)Game::mouseData.z) {
