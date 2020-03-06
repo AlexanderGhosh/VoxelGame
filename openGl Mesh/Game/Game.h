@@ -10,10 +10,18 @@
 #include <array>
 #include <chrono>
 #include <thread>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <time.h>
 
 #include "Player/Player.h"
 #include "World/World.h"
-
+struct Character {
+	GLuint     TextureID;  // ID handle of the glyph texture
+	glm::ivec2 Size;       // Size of glyph
+	glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
+	GLuint     Advance;    // Offset to advance to next glyph
+};
 struct GameConfig {
 	static GLboolean showFPS;
 	static glm::vec3 backgroundCol;
@@ -50,8 +58,9 @@ private:
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;
 	glm::mat4 projection;
-	GLuint SBVAO, CHVAO;
+	GLuint SBVAO, CHVAO, LSVAO, LSVBO;
 	Texture texCH;
+	std::map<GLchar, Character> Letters;
 	// blockupdates
 	void showFPS();
 	void calcTimes();
@@ -67,4 +76,6 @@ private:
 	void showSkybox();
 	void createCrossHair();
 	void showCrossHair();
+	void setUpFreeType();
+	void showText(std::string text, glm::vec2 position, GLfloat scale = 1.0f, glm::vec3 colour = glm::vec3(0));
 };

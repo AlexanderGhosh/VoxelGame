@@ -32,7 +32,8 @@ enum SHADER_NAMES {
 	BLOCK2,
 	BLOCK3,
 	SKYBOX,
-	CROSSHAIR
+	CROSSHAIR,
+	GLYPH
 };
 enum class Move_Dir {
 	FORWARD,
