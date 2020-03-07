@@ -1,7 +1,9 @@
 #pragma once
 #include <gtx/string_cast.hpp>
+#include <algorithm>
 #include "../World/World.h"
 #include "../../Renders/chunkRender.h"
+#include "../Physics/BoxCollider.h"
 using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 class Entity
 {
@@ -26,7 +28,7 @@ public:
 	void move(Move_Dir dir);
 
 	void render(glm::mat4 projection, Camera* cam = nullptr);
-	glm::vec3 determinCollision(World& world, glm::vec3 deltaV);
+	GLboolean determinCollision(World& world, glm::vec3 deltaV);
 	std::vector<glm::vec3> getVertices();
 
 protected:
@@ -38,6 +40,6 @@ protected:
 	Render::ChunkMeshRender renderer;
 	GLboolean grounded;
 	GLboolean hasBody;
-
+	BoxCollider collider;
 };
 

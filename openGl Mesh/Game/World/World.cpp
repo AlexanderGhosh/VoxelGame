@@ -206,7 +206,7 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	GLboolean changed = 0;
 	chunk_column* chunk = nullptr;
 	glm::vec3 lookPos = pos;
-	for (GLubyte i = 0; i < PLAYER_REACH; i++) {
+	/*for (GLubyte i = 0; i < PLAYER_REACH; i++) {
 		lookPos += front;
 		glm::ivec3 blockPos = glm::round(lookPos);
 		std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
@@ -217,6 +217,15 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 			changed = 1;
 			break;
 		}
+	}*/
+	lookPos += front;
+	glm::ivec3 blockPos = glm::round(lookPos);
+	std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
+	Blocks& block = getBlock({ 0, -11, 0 }, chunk);
+	std::cout << "block: " << (int)block << std::endl;
+	if (block != Blocks::AIR) {
+		block = Blocks::AIR;
+		changed = 1;
 	}
 	if (changed) {
 		auto chunks_ = getChunks();

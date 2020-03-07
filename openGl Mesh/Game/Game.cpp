@@ -48,7 +48,7 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
-	mainCamera->setPosition({ -0.0f, -11.0f, 0.0f });
+	mainCamera->setPosition({ 0.0f, -11.0f, 0.0f });
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -106,7 +106,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ -2.0f, 5.0f, -0.0f }, { 0.0f, 1.25f, 0.0f } /*{ -0.5f, 0.25f, 3.0f }*/);
+	player = Player({ 0.0f, 5.0f, 0.0f }, { 0.0f, 1.25f, 0.0f } /*{ -0.5f, 0.25f, 3.0f }*/);
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -156,7 +156,7 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetMouseButtonCallback(window, Game::clickCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
-GLboolean alt = 0;
+GLboolean alt = 1;
 void Game::doMovement() {
 	auto& k = Game::keys;
 	GLfloat speed = 9.0f;
