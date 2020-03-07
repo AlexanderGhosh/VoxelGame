@@ -42,7 +42,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 0);
+	world = World(1, 0, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -77,8 +77,9 @@ void Game::showFPS() {
 	if (GameConfig::showFPS) {
 		showText("FPS: " + std::to_string(frameRate), { 5, 875 }, 0.5f);
 	}
-
 }
+std::string m;
+GLboolean alt = 0;
 void Game::proccesEvents() {
 	glfwPollEvents();
 }
@@ -101,6 +102,17 @@ void Game::showStuff() {
 		showSkybox();
 	}
 	showCrossHair();
+	showText(m, { 5, 850 }, 0.5f);
+	m = "Position: " + glm::to_string(player.getPosition());
+	showText(m, { 5, 825 }, 0.5f);
+	m = "Controlling: ";
+	if (alt) {
+		m += "Player";
+	}
+	else {
+		m += "Camera";
+	}
+	showText(m, { 5, 800 }, 0.5f);
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
@@ -156,7 +168,6 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetMouseButtonCallback(window, Game::clickCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
-GLboolean alt = 1;
 void Game::doMovement() {
 	auto& k = Game::keys;
 	GLfloat speed = 9.0f;
@@ -170,7 +181,7 @@ void Game::doMovement() {
 	}
 	if (Game::hasPlayer ) {
 		player.setVelocity({ 0, player.getVelocity().y, 0 });
-		if (k[GLFW_KEY_LEFT_ALT]) {
+		if (k[GLFW_KEY_LEFT_ALT] && (GLuint)time(NULL)%2 == 0) {
 			alt = !alt;
 		}
 		if (alt || 0) {
@@ -211,9 +222,8 @@ void Game::doMovement() {
 				c.GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 			}
 		}
-		
 
-		player.updatePosition(Game::deltaTime, world);
+		m = "Collison: " + player.updatePosition(Game::deltaTime, world);
 	}
 	else {
 		if (k[GLFW_KEY_W]) {

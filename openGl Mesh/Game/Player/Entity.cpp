@@ -47,45 +47,38 @@ void Entity::addAcceleration(const glm::vec3& acc) {
 	this->acc += acc;
 }
 
-void Entity::updatePosition(GLfloat deltaTime, World& world) {
+void Entity::updatePosition(GLfloat deltaTime, World& world, std::string& collision) {
 	deltaTime = 1.0f / 60.0f;
 	grounded = 0;
 	vel += acc * deltaTime;
 	vel.y -= GRAVITY * deltaTime;
-	auto collisions = determinCollision(world, vel * deltaTime);
-	// GLboolean collisions = 0;
-	if (!collisions) {
-		pos += vel * deltaTime;
-		collider.setPosition(pos);
-	}
-	else {
-		collider.setPosition(pos);
-		vel = { 0, 0, 0 };
-	}
-
-	/*if (collisions.y == -1) {
+	glm::ivec3 collisions = determinCollision(world, vel * deltaTime);
+	collision = glm::to_string(collisions);
+	if (collisions.y == -1) {
 		grounded = 1;
-	}
-	if (collisions.x == 1) {
-		if (vel.x > 0) vel.x = 0;
+		vel.y = 0;
 	}
 	if (collisions.x == -1) {
-		if (vel.x < 0) vel.x = 0;
+		vel.x = 0;
 	}
-	if (collisions.z == 1) {
-		if (vel.z > 0) vel.z = 0;
+	if (collisions.x == 1) {
+		vel.x = 0;
 	}
 	if (collisions.z == -1) {
-		if (vel.z < 0) vel.z = 0;
-	}*/
+		vel.z = 0;
+	}
+	if (collisions.z == 1) {
+		vel.z = 0;
+	}
 
-	// if (!grounded) vel.y -= GRAVITY * deltaTime;
-	// else if (vel.y < 0) vel.y = 0;
-	// pos += vel * deltaTime;
+	/*if (!grounded) vel.y -= GRAVITY * deltaTime;
+	else if (vel.y < 0) vel.y = 0;*/
+	pos += vel * deltaTime;
 	renderer.setPosition(pos);
 }
 
 void Entity::move(Move_Dir dir) {
+	prevVel = vel;
 	switch (dir)
 	{
 	case Move_Dir::FORWARD:
@@ -234,7 +227,7 @@ GLboolean isBehind(glm::vec3 behind, glm::vec3 front, GLboolean isCube = 1) {
 	return 0;
 }
 
-GLboolean Entity::determinCollision(World& world, glm::vec3 deltaV) {
+glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 	/*auto rayOrigin = getCenter();
 	auto rayEnd = rayOrigin + deltaV;
 	auto r = glm::round(rayEnd);
@@ -272,21 +265,39 @@ GLboolean Entity::determinCollision(World& world, glm::vec3 deltaV) {
 	}
 
 	return res;*/
-	glm::vec3 nPos = pos + deltaV;
-	collider.setPosition(nPos);
-	auto& worldMesh = world.getWorldMesh();
-	std::vector<glm::vec3> blockPositions;
-	for (auto& face : worldMesh) {
-		blockPositions.push_back(std::get<2>(*face));
-	}
 	
 	BoxCollider boxColl = BoxCollider(glm::vec3(1.0f), glm::vec3(0));
-	for (auto& pos : blockPositions) {
-		boxColl.setPosition(pos);
-		GLboolean colliding = collider.isColliding(boxColl);
-		if (colliding) return colliding;
+	/*glm::vec3 p(0, -11, 0);
+	boxColl.setPosition(p);*/
+
+
+	glm::ivec3 res(0);
+	if (glm::all(glm::equal(deltaV, glm::vec3(0)))) return res;
+	for (auto& face : world.getWorldMesh()) {
+		glm::vec3& pos = std::get<2>(*face);
+		// TESTING ONLY
+		/*glm::vec3 p(0, -11, 0);
+		boxColl.setPosition(p);*/
+		// TESTING ONLY
+		boxColl.setPosition(pos); // COMMENT WHEN TESTING
+		for (GLubyte i = 0; i < 3; i++) {
+			GLfloat& component = deltaV[i];
+			if (component == 0) continue;
+			glm::vec3 p = this->pos;
+			p[i] += component;
+			collider.setPosition(p);
+			GLboolean colliding = collider.isColliding(boxColl);
+			if (colliding) {
+				res[i] = 1;
+				if (component < 0) res[i] = -1;
+			}
+		}
+		// TESTING ONLY
+		// return res;
+		// TESTING ONLY
+		// if (!glm::all(glm::equal(res, glm::ivec3(0)))) return res;
 	}
-	return 0;
+	return res;
 }
 glm::vec3 Entity::getCenter() {
 	return getCenter(pos);

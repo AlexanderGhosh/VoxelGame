@@ -25,6 +25,7 @@ int main() {
 	}
 
 	Game game = Game(1, 1);
+	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.1f, 1000.0f);

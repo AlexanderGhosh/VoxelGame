@@ -23,16 +23,14 @@ public:
 	void addVelocity(const glm::vec3& vel);
 	void addAcceleration(const glm::vec3& acc);
 
-	void updatePosition(GLfloat deltaTime, World& world);
+	void updatePosition(GLfloat deltaTime, World& world, std::string& collision);
 
 	void move(Move_Dir dir);
 
 	void render(glm::mat4 projection, Camera* cam = nullptr);
-	GLboolean determinCollision(World& world, glm::vec3 deltaV);
-	std::vector<glm::vec3> getVertices();
-
 protected:
-	glm::vec3 pos, vel, acc;
+	glm::ivec3 determinCollision(World& world, glm::vec3 deltaV);
+	glm::vec3 pos, vel, acc, prevVel;
 	glm::vec3 forward, right;
 	GLfloat movementSpeed;
 	GLfloat jumpForce;

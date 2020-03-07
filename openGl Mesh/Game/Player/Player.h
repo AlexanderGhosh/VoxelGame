@@ -17,7 +17,7 @@ public:
 	void create();
 	void render(glm::mat4 projection, Camera* cam = nullptr);
 	Camera& getCamera(); 
-	void updatePosition(GLfloat deltaTime, World& world);
+	std::string updatePosition(GLfloat deltaTime, World& world);
 	void updateCamera(GLfloat xOff, GLfloat yOff);
 private:
 	Camera cam;

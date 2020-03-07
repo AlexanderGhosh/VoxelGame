@@ -1,6 +1,5 @@
 #include "Player.h"
 Player::Player() : Entity(false) {
-	
 	movementSpeed = PLAYER_SPEED;
 	cam.setPosition({ 0, 1.25, -0.75 });
 	renderer = Render::ChunkMeshRender(false, "");
@@ -10,6 +9,7 @@ Player::Player(glm::vec3 position, glm::vec3 camOff) : Entity(true) {
 	camera_offset = camOff;
 	cam.setPosition(camOff);
 	pos = position;
+	collider = BoxCollider(glm::vec3(0.85f), pos);
 }
 Camera& Player::getCamera() {
 	return cam;
@@ -17,9 +17,11 @@ Camera& Player::getCamera() {
 glm::vec3 Player::getPosition() {
 	return pos;
 }
-void Player::updatePosition(GLfloat deltaTime, World& world) {
-	Entity::updatePosition(deltaTime, world);
-	cam.setPosition(pos + camera_offset);
+std::string Player::updatePosition(GLfloat deltaTime, World& world) {
+	std::string res = "";
+	Entity::updatePosition(deltaTime, world, res);
+	// cam.setPosition(pos + camera_offset);
+	return res;
 }
 void Player::create() {
 	// Entity(true);
@@ -54,10 +56,10 @@ void Player::create() {
 	renderer.loadMeshes(&body);
 }
 void Player::render(glm::mat4 projection, Camera* cam) {
-	// renderer.render(this->cam, projection);
+	renderer.render(this->cam, projection);
 }
 void Player::updateCamera(GLfloat xOff, GLfloat yOff) {
 	cam.ProcessMouseMovement(xOff, yOff);
-	forward = cam.GetFront() * glm::vec3(1, 0, 1);
-	right = cam.GetRight() * glm::vec3(1, 0, 1);
+	// forward = cam.GetFront() * glm::vec3(1, 0, 1);
+	// right = cam.GetRight() * glm::vec3(1, 0, 1);
 }
