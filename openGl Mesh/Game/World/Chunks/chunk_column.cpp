@@ -126,9 +126,12 @@ Blocks& chunk_column::getBlock(glm::ivec3 blockPos) {
 	if (index % 2 != 0) index -= 1; // if odd
 	index /= CHUNK_SIZE;
 
-	
 	blockPos.y %= CHUNK_SIZE;
 
 	index = 4;
 	return chunks[index].blocks[getBlockIndex(blockPos)];
+}
+Chunk* chunk_column::getSubchunk_unsafe(GLuint yPos) {
+	// to do
+	return &chunks[4];
 }

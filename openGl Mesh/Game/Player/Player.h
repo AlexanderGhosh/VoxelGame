@@ -12,7 +12,7 @@ class Player : public Entity
 {
 public:
 	Player();
-	Player(glm::vec3 position, glm::vec3 camOff);
+	Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam = 1);
 	glm::vec3 getPosition();
 	void create();
 	void render(glm::mat4 projection, Camera* cam = nullptr);
@@ -22,5 +22,6 @@ public:
 private:
 	Camera cam;
 	glm::vec3 camera_offset;
+	GLboolean attachCam;
 };
 

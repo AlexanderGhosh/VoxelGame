@@ -228,58 +228,22 @@ GLboolean isBehind(glm::vec3 behind, glm::vec3 front, GLboolean isCube = 1) {
 }
 
 glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
-	/*auto rayOrigin = getCenter();
-	auto rayEnd = rayOrigin + deltaV;
-	auto r = glm::round(rayEnd);
-	// Chunk& chunkOccupied = world.getOccupiedChunk(rayEnd);
-	std::pair<glm::vec3, glm::vec3> bounds = { rayEnd + glm::vec3(1), rayEnd - glm::vec3(1) };
-
-	// if (chunkOccupied.isNull()) return { 0, 0, 0 };
-	glm::vec3 res(0);
-	for (auto& mesh : world.getWorldMesh()) {
-		Face& face = *mesh;
-		glm::vec3 p = std::get<2>(face);
-		Buffer* b = std::get<0>(face);
-		glm::vec3 diff = rayEnd - p;
-		switch (b->type)
-		{
-		case TOP:
-			if (diff.y < 0.905 && isBellow(p, rayEnd)) res.y = -1;
-			break;
-		case BOTTOM:
-			//if (diff.y > -1) return 1;
-			break;
-		case FRONT:
-			if (diff.z < 0.935 && isBehind(p, rayEnd)) res.z = -1; // -1
-			break;
-		case BACK:
-			if (diff.z > -0.935 && diff.z < -0.0f && isInFront(p, rayEnd)) res.z = 1; // 1
-			break;
-		case LEFT: 
-			if (diff.x > -0.935 && diff.x < -0.0f && isRight(p, rayEnd)) res.x = 1; // 1
-			break; 
-		case RIGHT: 
-			if (diff.x < 0.935 && isLeft(p, rayEnd)) res.x = -1; // 1.03 -1
-			break;
-		}
-	}
-
-	return res;*/
-	
-	BoxCollider boxColl = BoxCollider(glm::vec3(1.0f), glm::vec3(0));
-	/*glm::vec3 p(0, -11, 0);
-	boxColl.setPosition(p);*/
-
-
 	glm::ivec3 res(0);
-	if (glm::all(glm::equal(deltaV, glm::vec3(0)))) return res;
-	for (auto& face : world.getWorldMesh()) {
-		glm::vec3& pos = std::get<2>(*face);
-		// TESTING ONLY
-		/*glm::vec3 p(0, -11, 0);
-		boxColl.setPosition(p);*/
-		// TESTING ONLY
-		boxColl.setPosition(pos); // COMMENT WHEN TESTING
+	if (glm::all(glm::equal(deltaV, glm::vec3(0)))) return res; 
+	glm::ivec3 rounded = glm::round(pos + deltaV);
+	if (rounded == glm::ivec3(0, -1, 1)) {
+		int g = 0;
+	}
+	Faces mesh;
+	std::vector<Chunk*> chunks = world.getSubChunk(rounded, 1);
+	for (auto& chunk : chunks) {
+		if (!chunk) continue;
+		auto t = chunk->getMeshes();
+		mesh.insert(mesh.end(), t.begin(), t.end());
+	}
+	BoxCollider boxColl = BoxCollider(glm::vec3(1.0f), glm::vec3(0));
+	for (auto& face : mesh) {
+		boxColl.setPosition(std::get<2>(*face)); // COMMENT WHEN TESTING
 		for (GLubyte i = 0; i < 3; i++) {
 			GLfloat& component = deltaV[i];
 			if (component == 0) continue;
@@ -292,10 +256,6 @@ glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 				if (component < 0) res[i] = -1;
 			}
 		}
-		// TESTING ONLY
-		// return res;
-		// TESTING ONLY
-		// if (!glm::all(glm::equal(res, glm::ivec3(0)))) return res;
 	}
 	return res;
 }

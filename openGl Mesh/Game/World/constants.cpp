@@ -57,6 +57,14 @@ void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload)
 		victim.z -= 1;
 	}
 }
+void reduceToMultiple(glm::ivec2& victim, GLuint multiple, const char* overload) {
+	while (victim.x % multiple != 0) {
+		victim.x -= 1;
+	}
+	while (victim.y % multiple != 0) {
+		victim.y -= 1;
+	}
+}
 glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple) {
 	while (victim.x % multiple != 0) {
 		victim.x -= 1;

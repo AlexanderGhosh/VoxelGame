@@ -7,10 +7,10 @@
 #define RENDER_DISTANCE 4
 #define PLAYER_REACH 5
 
-#define INITALL_VIEW 2
+#define INITALL_VIEW 4
 #define INITALL_VIEW_AREA INITALL_VIEW * INITALL_VIEW
 #define INITALL_VIEW_VOLUME INITALL_VIEW * INITALL_VIEW * INITALL_VIEW
-#define CHUNK_SIZE 2
+#define CHUNK_SIZE 16
 #define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
 #define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
 
@@ -57,6 +57,7 @@ extern const std::vector<Shader*> SHADERS;
 
 GLint getBlockIndex(glm::vec3 position);
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload);
+void reduceToMultiple(glm::ivec2& victim, GLuint multiple, const char* overload);
 glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple);
 GLint reduceToMultiple(GLfloat victim, GLuint multiple);
 Texture_Names getTexture(Blocks block);

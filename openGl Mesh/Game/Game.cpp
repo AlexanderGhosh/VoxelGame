@@ -42,7 +42,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 0, 0);
+	world = World(1, 1, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -113,6 +113,11 @@ void Game::showStuff() {
 		m += "Camera";
 	}
 	showText(m, { 5, 800 }, 0.5f);
+	glm::vec3 p(0);
+	auto e = world.getSubChunk(glm::round(player.getPosition()));
+	if (e)  p = e->position;
+	m = "Chunk Pos: " + glm::to_string(p);
+	showText(m, { 5, 775 }, 0.5f);
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;

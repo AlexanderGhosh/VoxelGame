@@ -19,6 +19,7 @@ public:
 	void createMesh(std::vector<chunk_column*> columns);
 	ChunkPosition& getPosition();
 	Blocks& getBlock(glm::ivec3 blockPos);
+	Chunk* getSubchunk_unsafe(GLuint yPos);
 private:
 	ChunkPosition pos;
 	ChunkHeightMap heightMap;

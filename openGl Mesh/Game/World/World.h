@@ -15,7 +15,6 @@ class World
 public:
 	World();
 	World(GLboolean gen, GLboolean terrain = 1, GLboolean isDynamic = 0);
-	void processBlockUpdates();
 	void render(Camera& c, glm::mat4 projection);
 	std::vector<chunk_column*> getChunks();
 	std::vector<Face*>& getWorldMesh();
@@ -24,6 +23,10 @@ public:
 	void createChunk(ChunkPosition position);
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front);
+
+	Chunk* getSubChunk(glm::ivec3 pos);
+	std::vector<Chunk*> getSubChunk(glm::ivec3 pos, GLboolean surrounding);
+
 private:
 	std::vector<std::pair<chunk_column, GLboolean>> chunks;
 	std::vector<Face*> worldMesh;

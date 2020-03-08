@@ -289,3 +289,45 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
 		drawable.setUp(worldMesh);
 	}
 }
+Chunk* World::getSubChunk(glm::ivec3 pos) {
+	glm::ivec2 chunkPos(pos.x, pos.z);
+	reduceToMultiple(chunkPos, (GLfloat)CHUNK_SIZE, "");
+	// chunkPos.y += 2;
+	chunk_column* chunkOcc = nullptr;
+	for (auto& chunk_ : chunks) {
+		auto& chunk = std::get<0>(chunk_);
+		if (chunk.getPosition() == (ChunkPosition)chunkPos) {
+			chunkOcc = &chunk;
+			break;
+		}
+	}
+	if (!chunkOcc) return nullptr;
+	return chunkOcc->getSubchunk_unsafe(pos.y);
+}
+std::vector<Chunk*> World::getSubChunk(glm::ivec3 pos, GLboolean surrounding) {
+	ChunkPosition chunkPos(pos.x, pos.z);
+	glm::ivec2 chunkP = chunkPos;
+	reduceToMultiple(chunkP, (GLfloat)CHUNK_SIZE, "");
+	chunkPos = chunkP;
+	std::vector<ChunkPosition> poses = {
+		chunkPos,
+
+		chunkPos + ChunkPosition(CHUNK_SIZE, 0),
+		chunkPos + ChunkPosition(-CHUNK_SIZE, 0),
+
+		chunkPos + ChunkPosition(0, CHUNK_SIZE),
+		chunkPos + ChunkPosition(0, -CHUNK_SIZE),
+
+		chunkPos + ChunkPosition(CHUNK_SIZE, CHUNK_SIZE),
+		chunkPos + ChunkPosition(-CHUNK_SIZE, CHUNK_SIZE),
+
+		chunkPos + ChunkPosition(-CHUNK_SIZE, -CHUNK_SIZE),
+		chunkPos + ChunkPosition(CHUNK_SIZE, -CHUNK_SIZE)
+	};
+	std::vector<Chunk*> subChunks;
+	for (auto& p : poses) {
+		glm::vec3 po(p.x, pos.y, p.y);
+		subChunks.push_back(getSubChunk(po));
+	}
+	return subChunks;
+}
