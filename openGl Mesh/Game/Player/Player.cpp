@@ -4,13 +4,14 @@ Player::Player() : Entity(false) {
 	cam.setPosition({ 0, 1.25, -0.75 });
 	renderer = Render::ChunkMeshRender(false, "");
 }
-Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam) : Entity(true) {
+Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLboolean render) : Entity(true) {
 	movementSpeed = PLAYER_SPEED;
 	camera_offset = camOff;
 	cam.setPosition(camOff);
 	pos = position;
 	collider = BoxCollider(glm::vec3(0.85f), pos);
 	this->attachCam = attachCam;
+	this->canRender = render;
 }
 Camera& Player::getCamera() {
 	return cam;
@@ -57,7 +58,8 @@ void Player::create() {
 	renderer.loadMeshes(&body);
 }
 void Player::render(glm::mat4 projection, Camera* cam) {
-	// renderer.render(this->cam, projection);
+	if (!canRender) return;
+	renderer.render(this->cam, projection);
 }
 void Player::updateCamera(GLfloat xOff, GLfloat yOff) {
 	cam.ProcessMouseMovement(xOff, yOff);

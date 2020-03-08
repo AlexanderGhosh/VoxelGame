@@ -94,7 +94,11 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 	shader->unBind();
 }
 std::vector<Face*> Drawable::sortMesh(std::vector<Face*>& meshes) {
-	std::map<Texture*, std::vector<GLuint>> texture_inices;
+
+	std::vector<Face*> res = meshes;
+	std::sort(res.begin(), res.end());
+	return res;
+	/*std::map<Texture*, std::vector<GLuint>> texture_inices;
 	for (int i = 0; i < meshes.size(); i++) {
 		auto& mesh = meshes[i];
 		try {
@@ -116,5 +120,5 @@ std::vector<Face*> Drawable::sortMesh(std::vector<Face*>& meshes) {
 			res.push_back(meshes[index]);
 		}
 	}
-	return res;
+	return res;*/
 }

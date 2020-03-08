@@ -16,4 +16,3 @@ private:
 	std::vector<Face*> meshes;
 	// std::vector<std::tuple<Buffer*, Texture*, GLuint>> buffers; // these are the buffer that will be drawn
 };
-

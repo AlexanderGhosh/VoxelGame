@@ -34,8 +34,12 @@ std::vector<Chunk*> getChunks(std::vector<Chunk>& chunks) {
 	}
 	return res;
 }
-void chunk_column::createMesh(std::vector<chunk_column*> columns) {
+void chunk_column::createMesh(std::vector<chunk_column*> columns, GLboolean getChanged, std::vector<std::pair<Face*, GLboolean>>& changed) {
 	std::vector<Chunk*> chunks;
+	Faces before;
+	if (getChanged) {
+		before = faces;
+	}
 	faces.clear();
 	for (auto& column : columns) {
 		std::vector<Chunk*> subChunks = getChunks(column->chunks);
@@ -45,6 +49,23 @@ void chunk_column::createMesh(std::vector<chunk_column*> columns) {
 		chunk.createMesh(chunks);
 		auto t = chunk.getMeshes();
 		faces.insert(faces.end(), t.begin(), t.end());
+	}
+	if (getChanged) {
+		std::vector<GLuint> indices;
+		for (auto& face : before) {
+			Faces::iterator found = std::find(faces.begin(), faces.end(), face);
+			GLuint index = std::distance(faces.begin(), found);
+			if (found == faces.end()) { // not found				changed.push_back({ face, 0 });
+			}
+			else { // found
+				indices.push_back(index);
+			}
+		}
+		for (GLuint i = 0; i < faces.size(); i++) {
+			if (std::find(indices.begin(), indices.end(), i) == indices.end()) { // not found
+				changed.push_back({ faces[i], 1 });
+			}
+		}
 	}
 }
 glm::vec3 chunk_column::fromIndex(GLushort index) {
