@@ -26,6 +26,7 @@ public:
 
 	Chunk* getSubChunk(glm::ivec3 pos);
 	std::vector<Chunk*> getSubChunk(glm::ivec3 pos, GLboolean surrounding);
+	std::vector<Chunk*> getSubChunks();
 
 private:
 	std::vector<std::pair<chunk_column, GLboolean>> chunks;
