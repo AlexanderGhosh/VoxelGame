@@ -103,7 +103,13 @@ void Game::showStuff() {
 	}
 	showCrossHair();
 	showText(m, { 5, 850 }, 0.5f);
-	m = "Position: " + glm::to_string(player.getPosition());
+	m = "Position: ";
+	if (hasPlayer) {
+		m += glm::to_string(player.getPosition());
+	}
+	else {
+		m += glm::to_string(cam.GetPosition());
+	}
 	showText(m, { 5, 825 }, 0.5f);
 	m = "Controlling: ";
 	if (alt) {

@@ -7,69 +7,67 @@ Drawable::Drawable(std::vector<Face*>& sortedMeshes) {
 	meshes = sortedMeshes;
 }
 void Drawable::setUp(std::vector<Face*> sortedMeshes, const char* overload) {
-	if (sortedMeshes.size() < 1) return;
-	sortedMeshes = sortMesh(sortedMeshes);
-	meshes = sortedMeshes;
+	if (sortedMeshes.size() == 0) return;
 	buffers.clear();
-
-	Buffer* prevBuffer = std::get<0>(*sortedMeshes[0]);
-	Texture* prevTex = std::get<1>(*sortedMeshes[0]);
-	GLuint counter = 0;
-	std::vector<glm::mat4> positions;
-
+	std::map<GLuint, std::vector<glm::mat4>> positions;
 	for (auto& mesh : sortedMeshes) {
-		if (std::get<0>(*mesh) != prevBuffer || std::get<1>(*mesh) != prevTex) {
-			prevBuffer->addPositions(positions);
-			buffers.push_back({ *prevBuffer, prevTex, counter });
-			prevBuffer->resetData();
-			// reset
-			counter = 0;
-			positions.clear();
-			prevBuffer = std::get<0>(*mesh);
-			prevTex = std::get<1>(*mesh);
-			prevBuffer->resetData();
-		}
+		Buffer*& b = std::get<0>(*mesh);
+		Texture*& t = std::get<1>(*mesh);
+		glm::vec3& p = std::get<2>(*mesh);
+		GLuint key = std::pow(b->type + 1, 2) * t->getTexMap();
 		glm::mat4 model(1);
-		model = glm::translate(model, std::get<2>(*mesh));
-		positions.push_back(model);
-		counter += 1;
+		model = glm::translate(model, p);
+		try {
+			auto& face = buffers.at(key);
+			std::get<2>(face)++;
+			positions[key].push_back(model);
+		}
+		catch (std::exception e) {
+			buffers.insert({ key, { *b, t, 1 } });
+			positions.insert({ key, { model } });
+		}
 	}
-	prevBuffer->addPositions(positions);
-	buffers.push_back({ *prevBuffer, prevTex, counter });
+	Buffer* front = FACES[FRONT];
+	for (auto& b : buffers) {
+		auto& key = std::get<0>(b);
+		auto& buff = std::get<1>(b);
+		auto& buf = std::get<0>(buff);
+		buf.resetData();
+		buf.addPositions(positions[key]);
+	}
 }
 void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
-	if (sortedMeshes.size() < 1) return;
-	sortedMeshes = sortMesh(sortedMeshes);
-	meshes = sortedMeshes;
+	if (sortedMeshes.size() == 0) return;
 	buffers.clear();
-
-	Buffer* prevBuffer = std::get<0>(*sortedMeshes[0]);
-	Texture* prevTex = std::get<1>(*sortedMeshes[0]);
-	GLuint counter = 0;
-	std::vector<glm::mat4> positions;
-
+	std::map<GLuint, std::vector<glm::mat4>> positions;
 	for (auto& mesh : sortedMeshes) {
-		if (std::get<0>(*mesh) != prevBuffer || std::get<1>(*mesh) != prevTex) {
-			prevBuffer->addPositions(positions);
-			buffers.push_back({ *prevBuffer, prevTex, counter });
-			prevBuffer->resetData();
-			// reset
-			counter = 0;
-			positions.clear();
-			prevBuffer = std::get<0>(*mesh);
-			prevTex = std::get<1>(*mesh);
-			prevBuffer->resetData();
-		}
+		Buffer*& b = std::get<0>(*mesh);
+		Texture*& t = std::get<1>(*mesh);
+		glm::vec3& p = std::get<2>(*mesh);
+		GLuint key = std::pow(b->type+1, 2) * t->getTexMap();
 		glm::mat4 model(1);
-		model = glm::translate(model, std::get<2>(*mesh));
-		positions.push_back(model);
-		counter += 1;
+		model = glm::translate(model, p);
+		try {
+			auto& face = buffers.at(key);
+			std::get<2>(face)++;
+			positions[key].push_back(model);
+		}
+		catch (std::exception e) {
+			buffers.insert({ key, { *b, t, 1 } });
+			positions.insert({ key, { model } });
+		}
 	}
-	prevBuffer->addPositions(positions);
-	buffers.push_back({ *prevBuffer, prevTex, counter });
+	Buffer* front = FACES[FRONT];
+	for (auto& b : buffers) {
+		auto& key = std::get<0>(b);
+		auto& buff = std::get<1>(b);
+		auto& buf = std::get<0>(buff);
+		buf.resetData();
+		buf.addPositions(positions[key]);
+	}
 }
 void Drawable::render(Camera& cam, glm::mat4 projection) {
-	if (buffers.size() < 1) return;
+	if (buffers.size() == 0) return;
 	Shader* shader = SHADERS[BLOCK3];
 	shader->bind();
 
@@ -81,7 +79,8 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 	glm::vec3 viewPos = cam.GetPosition();
 	shader->setValue("viewPos", viewPos);
 
-	for (auto& buffer : buffers) {
+	for (auto& bu : buffers) {
+		FaceB& buffer = std::get<1>(bu);
 		Buffer& b = std::get<0>(buffer);
 		Texture* t = std::get<1>(buffer);
 		GLuint c = std::get<2>(buffer);
@@ -92,33 +91,4 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 		t->unBind();
 	}
 	shader->unBind();
-}
-std::vector<Face*> Drawable::sortMesh(std::vector<Face*>& meshes) {
-
-	std::vector<Face*> res = meshes;
-	std::sort(res.begin(), res.end());
-	return res;
-	/*std::map<Texture*, std::vector<GLuint>> texture_inices;
-	for (int i = 0; i < meshes.size(); i++) {
-		auto& mesh = meshes[i];
-		try {
-			texture_inices[std::get<1>(*mesh)].push_back(i);
-		}
-		catch (std::exception e) {
-			texture_inices.insert({ std::get<1>(*mesh), {} });
-		}
-	}
-	std::map<int, std::vector<GLuint>> buffer_tex_split;
-	for (auto& pair : texture_inices) {
-		for (auto& index : pair.second) {
-			buffer_tex_split[(int)pair.first * (int)std::get<1>(*meshes[index])].push_back(index);
-		}
-	}
-	std::vector<Face*> res;
-	for (auto& pair : buffer_tex_split) {
-		for (auto& index : pair.second) {
-			res.push_back(meshes[index]);
-		}
-	}
-	return res;*/
 }
