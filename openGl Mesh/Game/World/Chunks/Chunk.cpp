@@ -56,29 +56,9 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 			for (GLint z = 0; z < CHUNK_SIZE; z++) {
 				glm::vec3 pos = glm::vec3(x, y, z) + position;
 				Blocks block = getBlock_safe({ x, y, z }, chunks);
-				if (block == Blocks::AIR) return;
-				// addBlock(block, chunks, pos, { x, y, z });
-				GLuint tex_index = (GLuint)getTexture(block);
-				if (getBlock_safe({ x - 1, y, z }, chunks) == Blocks::AIR) {
-					meshes.push_back({ FACES[LEFT], TEXTURES[tex_index], pos });
-				}
-				if (getBlock_safe({ x + 1, y, z }, chunks) == Blocks::AIR) {
-					meshes.push_back({ FACES[RIGHT], TEXTURES[tex_index], pos });
-				}
-
-				if (getBlock_safe({ x, y - 1, z }, chunks) == Blocks::AIR) {
-					meshes.push_back({ FACES[BOTTOM], TEXTURES[tex_index], pos });
-				}
-				if (getBlock_safe({ x, y + 1, z }, chunks) == Blocks::AIR) {
-					meshes.push_back({ FACES[TOP], TEXTURES[tex_index], pos });
-				}
-
-				if (getBlock_safe({ x, y, z - 1 }, chunks) == Blocks::AIR) {
-					meshes.push_back({ FACES[BACK], TEXTURES[tex_index], pos });
-				}
-				if (getBlock_safe({ x, y, z + 1 }, chunks) == Blocks::AIR) {
-					meshes.push_back({ FACES[FRONT], TEXTURES[tex_index], pos });
-				}
+				if (block == Blocks::AIR) continue;
+				addBlock(block, chunks, pos, { x, y, z }, 1);
+				
 			}
 		}
 	}
@@ -226,7 +206,8 @@ Blocks Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::map<GLuint, Ch
 	return Blocks::AIR;
 }
 
-void Chunk::addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3& absPos, glm::vec3 xyz) {
+void Chunk::addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3& absPos, glm::vec3 xyz, GLboolean skip) {
+	if (skip && block == Blocks::AIR) return;
 	auto& pos = absPos;
 	auto& x = xyz.x;
 	auto& y = xyz.y;
@@ -257,20 +238,19 @@ void Chunk::addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3& absPo
 void Chunk::editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks) {
 	if (block == Blocks::AIR) {
 		// break block
-		std::vector<Face*> victims;
+		std::vector<Face> victims;
 		for (GLuint i = 0; i < meshes.size(); i++) {
 			auto& face = meshes[i];
 			auto& p = std::get<2>(face);
 			if (p == pos) {
-				victims.push_back(&face);
+				victims.push_back(face);
 			}
 		}
 		for (auto& victim : victims) {
-			auto found = std::find(meshes.begin(), meshes.end(), *victim);
+			auto found = std::find(meshes.begin(), meshes.end(), victim); // 567
 			meshes.erase(found);
 		}
-
-		// addBlock(block, chunks, pos - position, pos);
+		// addBlock(block, chunks, pos, pos - position);
 	}
 	else {
 		// place block

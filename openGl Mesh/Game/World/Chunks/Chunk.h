@@ -31,6 +31,6 @@ public:
 private:
 	GLboolean null;
 	std::vector<Face> meshes;
-	void addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3& absPos, glm::vec3 xyz);
+	void addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3& absPos, glm::vec3 xyz, GLboolean skip = 0);
 };
 
