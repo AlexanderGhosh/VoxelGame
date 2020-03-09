@@ -7,7 +7,7 @@
 #define RENDER_DISTANCE 4
 #define PLAYER_REACH 5
 
-#define INITALL_VIEW 8
+#define INITALL_VIEW 2
 #define INITALL_VIEW_AREA INITALL_VIEW * INITALL_VIEW
 #define INITALL_VIEW_VOLUME INITALL_VIEW * INITALL_VIEW * INITALL_VIEW
 #define CHUNK_SIZE 16
@@ -63,3 +63,4 @@ GLint reduceToMultiple(GLfloat victim, GLuint multiple);
 Texture_Names getTexture(Blocks block);
 GLubyte toIndex(Texture_Names tex);
 GLubyte toIndex(Blocks block);
+GLint hash(glm::vec3 vec);

@@ -221,22 +221,27 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 		Blocks& block = getBlock(blockPos, chunk);
 		std::cout << "block: " << (int)block << std::endl;
 		if (block != Blocks::AIR) {
-			block = Blocks::AIR;
+			// block = Blocks::AIR;
 			changed = 1;
 			break;
 		}  
 	}
-	auto start1 = std::chrono::high_resolution_clock::now();
 	if (changed) {
-		auto chunks = getSubChunk(glm::round(lookPos), 1);
-
-		
-		auto subChunks = getSubChunks();
+		auto all = getSubChunks();
+		auto chunks = getSubChunk(glm::round(lookPos));
 
 		auto start2 = std::chrono::high_resolution_clock::now();
-		for (auto& chunk : chunks) {
-			chunk->createMesh(subChunks); // <----- problem child
-		}
+		/*for (GLuint i = 0; i < chunks.size(); i++)
+		{
+			if (i == 0) {
+
+			}
+			else {
+
+			}
+		}*/
+		chunks->editBlock(glm::round(lookPos), Blocks::AIR, all);
+	
 		auto end = std::chrono::high_resolution_clock::now();
 
 		genWorldMesh();
@@ -246,8 +251,8 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 
 	}
 	auto end = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start1);
-	std::cout << "visual time: " << duration.count() << std::endl;
+	// auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start1);
+	// std::cout << "visual time: " << duration.count() << std::endl;
 }
 Blocks& World::getBlock(glm::ivec3 blockPos, chunk_column*& chunk_) {
 	glm::vec3 subChunkPos = reduceToMultiple(blockPos, CHUNK_SIZE);
@@ -325,7 +330,7 @@ std::vector<Chunk*> World::getSubChunk(glm::ivec3 pos, GLboolean surrounding) {
 	std::vector<ChunkPosition> poses = {
 		chunkPos,
 
-		chunkPos + ChunkPosition(CHUNK_SIZE, 0),
+		chunkPos + ChunkPosition(CHUNK_SIZE, 0),	
 		chunkPos + ChunkPosition(-CHUNK_SIZE, 0),
 
 		chunkPos + ChunkPosition(0, CHUNK_SIZE),
@@ -349,6 +354,7 @@ std::vector<Chunk*> World::getSubChunks() {
 	for (auto& chunk : chunks) {
 		for (auto& subChunk : chunk.first.chunks) {
 			subChunks.push_back(&subChunk);
+			
 		}
 	}
 	return subChunks;

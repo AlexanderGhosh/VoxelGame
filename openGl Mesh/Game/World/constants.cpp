@@ -114,3 +114,10 @@ GLubyte toIndex(Texture_Names tex) {
 GLubyte toIndex(Blocks block) {
 	return GLubyte(block);
 }
+GLint hash(glm::vec3 vec) {
+	GLint product = 1;
+	for (GLubyte i = 0; i < 3; i++) {
+		product *= std::pow(vec[i] + 1, i + 1);
+	}
+	return product;
+}

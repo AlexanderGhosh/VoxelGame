@@ -3,6 +3,7 @@
 #include <thread>
 #include <vector>
 #include <chrono>
+#include <gtx/hash.hpp>
 #include <gtc/noise.hpp>
 #include "Chunks/Chunk.h"
 #include "constants.h"
