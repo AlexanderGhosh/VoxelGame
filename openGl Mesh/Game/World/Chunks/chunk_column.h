@@ -13,7 +13,7 @@ public:
 	chunk_column(GLboolean gen);
 	chunk_column(ChunkPosition pos, GLboolean isFlat = 0);
 	chunk_column(ChunkPosition pos, ChunkHeightMap hm);
-	Faces getMesh();
+	Faces getMesh(GLboolean reGen =0);
 	void addChunk(Chunk chunk, GLboolean sort = 0);
 	void addChunks(std::vector<Chunk> chunks, GLboolean sort = 0);
 	void createMesh(std::vector<chunk_column*> columns, GLboolean getChanged, std::vector<std::pair<Face*, GLboolean>>& changed);

@@ -40,7 +40,7 @@ private:
 	void generateTerrain(std::vector<glm::vec2> chunkPositions);
 	void getNewChunkPositions(GLboolean flat);
 	std::vector<glm::vec2> getNewChunkPositions(glm::vec2 origin, GLint renderDist = INITALL_VIEW);
-	void genWorldMesh();
+	void genWorldMesh(GLboolean gen = 0);
 	std::vector<Face*> genWorldMesh(std::vector<Chunk*> chunks);
 	void renderChunksStatic(Camera& c, glm::mat4 projection);
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);

@@ -12,6 +12,7 @@
 #include <glm.hpp>
 #include <gtc/type_ptr.hpp>
 
+
 enum FACES_NAMES {
 	FRONT,
 	BACK,

@@ -128,7 +128,13 @@ std::pair<GLushort, GLushort> chunk_column::getHeightRange() {
 	}
 	return { largest, smallest };
 }
-Faces chunk_column::getMesh() {
+Faces chunk_column::getMesh(GLboolean reGen) {
+	if(!reGen) return faces;
+	faces.clear();
+	for (auto& chunk : chunks) {
+		auto fac = chunk.getPointerMesh();
+		faces.insert(faces.end(), fac.begin(), fac.end());
+	}
 	return faces;
 }
 void chunk_column::createChunks() {

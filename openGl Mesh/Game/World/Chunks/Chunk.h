@@ -20,17 +20,17 @@ public:
 	std::vector<Face*> getMeshes();
 	void cleanUp(); 
 	void createMesh(std::vector<Chunk*> chunks);
-	void createMesh(std::map<GLuint, Chunk*> chunks);
 	void createBlocksFlat(Blocks block);
 	void createBlocks(HeightMapChunk hightMap);
 	Blocks getBlock_unsafe(glm::ivec3 pos);
-	Blocks getBlock_safe(const glm::vec3 pos, std::vector<Chunk*> chunks); 
-	Blocks getBlock_safe(const glm::vec3 pos, std::map<GLuint, Chunk*> chunks);
+	Blocks& getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks);
 	GLboolean isNull();
 	void editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks);
+	std::vector<Face*> getPointerMesh();
 private:
 	GLboolean null;
 	std::vector<Face> meshes;
-	void addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3& absPos, glm::vec3 xyz, GLboolean skip = 0);
+	void addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3 absPos, GLboolean skip = 0);
+	Blocks& getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks, Chunk*& chunk_);
 };
 

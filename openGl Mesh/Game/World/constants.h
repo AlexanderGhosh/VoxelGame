@@ -18,7 +18,7 @@
 #define AIR_RESISTANCE 2.0
 #define PLAYER_SPEED 2.0
 
-using namespace Mesh;
+using namespace Mesh; 
 enum class Texture_Names {
 	GRASS,
 	PLAYER_BOTTOM,

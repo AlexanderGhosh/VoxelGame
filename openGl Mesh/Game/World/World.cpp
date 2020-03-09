@@ -148,7 +148,7 @@ std::vector<chunk_column*> World::getChunks() {
 	}
 	return res;
 }
-void World::genWorldMesh() {
+void World::genWorldMesh(GLboolean gen) {
 	/*std::map<Buffer*, std::vector<Face*>> seperated;
 	std::vector<Face*> sorted;
 	for (auto& chunk : chunks) {
@@ -168,7 +168,7 @@ void World::genWorldMesh() {
 	worldMesh = sorted;*/
 	worldMesh.clear();
 	for(auto & chunk : chunks) {
-		auto mesh = chunk.first.getMesh();
+		auto mesh = chunk.first.getMesh(gen);
 		worldMesh.insert(worldMesh.end(), mesh.begin(), mesh.end());
 	}
 }
@@ -209,19 +209,19 @@ void World::createChunk(ChunkPosition position) {
 	drawable.setUp(worldMesh);
 }
 void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
-	std::cout << "__________________________________________________________________" << std::endl;
-	// pos.y += 0.5f;
+	// std::cout << "__________________________________________________________________" << std::endl;
+	// auto start1 = std::chrono::high_resolution_clock::now();
 	GLboolean changed = 0;
 	chunk_column* chunk = nullptr;
-	glm::vec3 lookPos = pos;
+	glm::vec3 lookPos = pos; 
+	Blocks* block = nullptr;
 	for (GLubyte i = 0; i < PLAYER_REACH; i++) {
 		lookPos += front;
 		glm::ivec3 blockPos = glm::round(lookPos);
-		std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
-		Blocks& block = getBlock(blockPos, chunk);
-		std::cout << "block: " << (int)block << std::endl;
-		if (block != Blocks::AIR) {
-			// block = Blocks::AIR;
+		// std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
+		block = &getBlock(blockPos, chunk);
+		// std::cout << "block: " << (int)block << std::endl;
+		if (*block != Blocks::AIR) {
 			changed = 1;
 			break;
 		}  
@@ -229,28 +229,12 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	if (changed) {
 		auto all = getSubChunks();
 		auto chunks = getSubChunk(glm::round(lookPos));
-
-		auto start2 = std::chrono::high_resolution_clock::now();
-		/*for (GLuint i = 0; i < chunks.size(); i++)
-		{
-			if (i == 0) {
-
-			}
-			else {
-
-			}
-		}*/
 		chunks->editBlock(glm::round(lookPos), Blocks::AIR, all);
-	
-		auto end = std::chrono::high_resolution_clock::now();
-
-		genWorldMesh();
+		*block = Blocks::AIR;
+		genWorldMesh(1);
 		drawable.setUp(worldMesh);
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start2);
-		std::cout << "genWorldMesh time: " << duration.count() << std::endl;
-
 	}
-	auto end = std::chrono::high_resolution_clock::now();
+	// auto end = std::chrono::high_resolution_clock::now();
 	// auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start1);
 	// std::cout << "visual time: " << duration.count() << std::endl;
 }
@@ -273,23 +257,24 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
 		glm::ivec3(0, 1, 0), glm::ivec3(0, -1, 0),
 		glm::ivec3(0, 0, 1), glm::ivec3(0, 0, -1)
 	};
-	std::cout << "__________________________________________________________________ " << std::endl;
+	// std::cout << "__________________________________________________________________ " << std::endl;
 	// pos.y += 0.5f;
 	GLboolean changed = 0;
 	chunk_column* chunk = nullptr;
 	glm::vec3 lookPos = pos + front * (GLfloat)(PLAYER_REACH - 1);
+	glm::vec3 blockPos(0);
 	for (GLubyte i = 0; i < PLAYER_REACH; i++) {
 		lookPos -= front;
-		glm::ivec3 blockPos = glm::round(lookPos);
-		std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
+		blockPos = glm::round(lookPos);
+		// std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
 		Blocks& block = getBlock(blockPos, chunk);
-		std::cout << "block: " << (int)block << std::endl;
+		// std::cout << "block: " << (int)block << std::endl;
 		if (block == Blocks::AIR) {
 			for (auto& dir : dirs) {
-				auto bp = blockPos + dir;
+				glm::vec3 bp = blockPos + (glm::vec3)dir;
 				auto& newBlock = getBlock(bp, chunk);
 				if (newBlock != Blocks::AIR) {
-					block = Blocks::WATER;
+					// block = Blocks::WATER;
 					changed = 1;
 					break;
 				}
@@ -298,11 +283,10 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
 		}
 	}
 	if (changed) {
-		auto chunks_ = getChunks();
-		std::vector<std::pair<Face*, GLboolean>> changed;
-		chunk->createMesh(chunks_, 1, changed);
-		worldMesh.clear();
-		genWorldMesh();
+		auto all = getSubChunks();
+		auto chunks = getSubChunk(blockPos);
+		chunks->editBlock(blockPos, Blocks::WATER, all);
+		genWorldMesh(1);
 		drawable.setUp(worldMesh);
 	}
 }
