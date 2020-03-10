@@ -114,6 +114,9 @@ GLubyte toIndex(Texture_Names tex) {
 GLubyte toIndex(Blocks block) {
 	return GLubyte(block);
 }
+Blocks toBlock(GLubyte number) {
+	return Blocks(number);
+}
 GLint hash(glm::vec3 vec) {
 	GLint product = 1;
 	for (GLubyte i = 0; i < 3; i++) {

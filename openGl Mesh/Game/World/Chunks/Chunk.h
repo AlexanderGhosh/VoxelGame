@@ -13,6 +13,7 @@ class Chunk
 {
 public:
 	glm::vec3 position;
+	std::vector<Face> meshes;
 	std::array<Blocks, CHUNK_VOLUME> blocks; // 0 - air, 1 - grass
 	Chunk();
 	Chunk(glm::vec3 pos, GLboolean create = false);
@@ -29,7 +30,6 @@ public:
 	std::vector<Face*> getPointerMesh();
 private:
 	GLboolean null;
-	std::vector<Face> meshes;
 	void addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3 absPos, GLboolean skip = 0);
 	Blocks& getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks, Chunk*& chunk_);
 };

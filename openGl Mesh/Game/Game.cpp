@@ -119,9 +119,9 @@ void Game::showStuff() {
 		m += "Camera";
 	}
 	showText(m, { 5, 800 }, 0.5f);
-	glm::vec3 p(0);
-	auto e = world.getSubChunk(glm::round(player.getPosition()));
-	if (e)  p = e->position;
+	glm::vec2 p(0);
+	auto e = world.getChunkOccupied(hasPlayer ? player.getPosition() : mainCamera->GetPosition());
+	if (e)  p = e->getPosition();
 	m = "Chunk Pos: " + glm::to_string(p);
 	showText(m, { 5, 775 }, 0.5f);
 }
@@ -270,8 +270,15 @@ void Game::doMovement() {
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 		std::cout << "removed in: " << duration.count() << " microsecconds\n";
 	}
+	if (k[GLFW_KEY_F4]) {
+		auto start = std::chrono::high_resolution_clock::now();
+		world.getChunks()[0]->save(CHUNK_SIZE * 2);
+		auto stop = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+		std::cout << "saved in: " << duration.count() << " microsecconds\n";
+	}
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
-	world.updatePlayerPos(&cam.GetPosition());
+	world.updatePlayerPos(cam.GetPosition());
 }
 void Game::cleanUp() {
 }

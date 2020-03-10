@@ -15,13 +15,13 @@ class World
 {
 public:
 	World();
-	World(GLboolean gen, GLboolean terrain = 1, GLboolean isDynamic = 0);
+	World(GLboolean gen, GLboolean terrain = 1, GLboolean isDynamic = 0, GLuint seed = CHUNK_SIZE*2);
 	void render(Camera& c, glm::mat4 projection);
 	std::vector<chunk_column*> getChunks();
 	std::vector<Face*>& getWorldMesh();
-	void updatePlayerPos(glm::vec3* pos);
+	void updatePlayerPos(glm::vec3 pos);
 
-	void createChunk(ChunkPosition position);
+	void createChunk(ChunkPosition position, GLboolean updateMesh = 1);
 	void removeChunk(ChunkPosition position);
 
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
@@ -30,16 +30,16 @@ public:
 	Chunk* getSubChunk(glm::ivec3 pos);
 	std::vector<Chunk*> getSubChunk(glm::ivec3 pos, GLboolean surrounding);
 	std::vector<Chunk*> getSubChunks();
+	chunk_column* getChunkOccupied(glm::vec3 position);
 
 private:
-	std::vector<std::pair<chunk_column, GLboolean>> chunks;
+	GLuint seed;
+	std::vector<chunk_column> chunks;
 	std::vector<Face*> worldMesh;
 	Drawable drawable;
 	GLboolean isDynamic;
 	GLboolean reDraw;
-	glm::vec3* playerPos;
-
-	std::vector<std::pair<GLuint, GLuint>> meshLayout;
+	ChunkPosition prevChunkPos;
 
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
 	void generateTerrain(std::vector<glm::vec2> chunkPositions);
@@ -51,4 +51,6 @@ private:
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
 
 	Blocks& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
+
+	std::vector<chunk_column> createChunks(std::vector<ChunkPosition> positions, GLboolean lazyLoading, GLboolean rectifyExisting);
 };

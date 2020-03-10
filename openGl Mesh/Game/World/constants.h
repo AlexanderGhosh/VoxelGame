@@ -4,7 +4,7 @@
 #include "../../Shaders/Shader.h"
 #include "../../Mesh.h"
 
-#define RENDER_DISTANCE 4
+#define RENDER_DISTANCE 3
 #define PLAYER_REACH 5
 
 #define INITALL_VIEW 2
@@ -63,4 +63,5 @@ GLint reduceToMultiple(GLfloat victim, GLuint multiple);
 Texture_Names getTexture(Blocks block);
 GLubyte toIndex(Texture_Names tex);
 GLubyte toIndex(Blocks block);
+Blocks toBlock(GLubyte number);
 GLint hash(glm::vec3 vec);

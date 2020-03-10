@@ -6,44 +6,14 @@ Drawable::Drawable(std::vector<Face*>& sortedMeshes) {
 	setUp(sortedMeshes);
 	meshes = sortedMeshes;
 }
-void Drawable::setUp(std::vector<Face*> sortedMeshes, const char* overload) {
-	if (sortedMeshes.size() == 0) return;
+void Drawable::setUp(std::vector<Face*> meshes) {
+	if (meshes.size() == 0) return;
 	buffers.clear();
 	std::map<GLuint, std::vector<glm::mat4>> positions;
-	for (auto& mesh : sortedMeshes) {
-		Buffer*& b = std::get<0>(*mesh);
-		Texture*& t = std::get<1>(*mesh);
-		glm::vec3& p = std::get<2>(*mesh);
-		GLuint key = std::pow(b->type + 1, 2) * t->getTexMap();
-		glm::mat4 model(1);
-		model = glm::translate(model, p);
-		try {
-			auto& face = buffers.at(key);
-			std::get<2>(face)++;
-			positions[key].push_back(model);
-		}
-		catch (std::exception e) {
-			buffers.insert({ key, { *b, t, 1 } });
-			positions.insert({ key, { model } });
-		}
-	}
-	Buffer* front = FACES[FRONT];
-	for (auto& b : buffers) {
-		auto& key = std::get<0>(b);
-		auto& buff = std::get<1>(b);
-		auto& buf = std::get<0>(buff);
-		buf.resetData();
-		buf.addPositions(positions[key]);
-	}
-}
-void Drawable::setUp(std::vector<Face*>& sortedMeshes) {
-	if (sortedMeshes.size() == 0) return;
-	buffers.clear();
-	std::map<GLuint, std::vector<glm::mat4>> positions;
-	for (auto& mesh : sortedMeshes) {
-		Buffer*& b = std::get<0>(*mesh);
-		Texture*& t = std::get<1>(*mesh);
-		glm::vec3& p = std::get<2>(*mesh);
+	for (auto& mesh : meshes) {
+		Buffer* b = std::get<0>(*mesh);
+		Texture* t = std::get<1>(*mesh);
+		glm::vec3 p = std::get<2>(*mesh);
 		GLuint key = std::pow(b->type+1, 2) * t->getTexMap();
 		glm::mat4 model(1);
 		model = glm::translate(model, p);

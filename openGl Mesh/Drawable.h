@@ -8,10 +8,9 @@ class Drawable
 {
 public:
 	Drawable();
-	Drawable(std::vector<Face*>& sortedMeshes);
+	Drawable(std::vector<Face*>& meshes);
 	void render(Camera& cam, glm::mat4 projection);
-	void setUp(std::vector<Face*>& sortedMeshes);
-	void setUp(std::vector<Face*> sortedMeshes, const char* overload);
+	void setUp(std::vector<Face*> meshes);
 private:
 	std::vector<Face*> meshes;
 	std::map<GLuint, FaceB> buffers;

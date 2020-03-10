@@ -16,6 +16,45 @@ chunk_column::chunk_column(ChunkPosition pos, ChunkHeightMap hm) : hasCaves(0) {
 	createChunks();
 	applyHeightMap();
 }
+chunk_column::chunk_column(std::string fileName) {
+	fileName = "Chunks/" + fileName + ".dat";
+	createChunks();
+	Savable s;
+	std::ifstream in;
+	if (!in) {
+		std::cout << "File not found: " + fileName + "\n";
+		return;
+	}
+	in.open(fileName, std::ios::binary);
+
+	in.read(reinterpret_cast<char*>(&s), sizeof(s));
+
+	std::vector<GLubyte> blocks(4096*8);
+	in.read(reinterpret_cast<char*>(&blocks[0]), 4096 * 8 * sizeof(GLubyte));
+	unsigned size;
+	in.read(reinterpret_cast<char*>(&size), sizeof(unsigned));
+	std::vector<Tuple> elements(size);
+	for (GLuint i = 0; i < size; i++) {
+		Tuple& element = elements[i];
+		in.read(reinterpret_cast<char*>(&element), sizeof(element));
+	}
+	in.close();
+
+
+	chunks[4].meshes.clear();
+	for (auto& element : elements) {
+		chunks[4].meshes.push_back(element.toFace());
+	}
+	pos = { s.x, s.z };
+	for (GLuint i = 0; i < chunks.size(); i++) {
+		chunks[i].blocks.empty();
+		for (GLuint j = i * 4096; j < (i + 1) * 4096; j++) {
+			chunks[i].blocks[j - i * 4096] = toBlock(blocks[j]);
+		}
+	}
+	hasCaves = 0;
+}
+
 void chunk_column::genHeightMap(GLboolean isFlat) {
 	if (isFlat) {
 		for (auto& chunk : chunks) {
@@ -48,10 +87,10 @@ void chunk_column::createMesh(std::vector<chunk_column*> columns) {
 		faces.insert(faces.end(), t.begin(), t.end());
 	}
 }
-void chunk_column::createMesh(std::vector<Chunk*> chunks) {
+void chunk_column::createMesh(std::vector<Chunk*> chunks, GLboolean create) {
 	faces.clear();
 	for (auto& chunk : this->chunks) {
-		chunk.createMesh(chunks);
+		if(create) chunk.createMesh(chunks);
 		auto t = chunk.getMeshes();
 		faces.insert(faces.end(), t.begin(), t.end());
 	}
@@ -149,4 +188,52 @@ Blocks& chunk_column::getBlock(glm::ivec3 blockPos) {
 Chunk* chunk_column::getSubchunk_unsafe(GLuint yPos) {
 	// to do
 	return &chunks[4];
+}
+
+void chunk_column::save(GLuint seed) {
+	remove("chunk.dat"); // deletes it
+	std::vector<GLubyte> blocks;
+
+	std::ofstream out("chunk.dat", std::ios::binary | std::ios::app);
+	if (!out) {
+		std::cout << "Cannot open file!" << std::endl;
+		return;
+	}
+	for (auto& chunk : chunks) {
+		for (auto& block : chunk.blocks) {
+			blocks.push_back(toIndex(block));
+		}
+	}
+	Savable s = {
+		pos.x, pos.y,
+		seed
+	};
+	out.write((char*)&s, sizeof(s)); // pos and seed
+
+	out.write(reinterpret_cast<char*>(&blocks[0]), blocks.size() * sizeof(GLubyte)); // blocks
+
+	// mesh
+	std::vector<Tuple> meshes;
+	for (Face*& f : faces) {
+		Buffer*& b = std::get<0>(*f);
+		Texture*& t = std::get<1>(*f);
+		glm::vec3& p = std::get<2>(*f);
+		meshes.push_back({ (GLubyte)b->type, (GLubyte)t->getTexMap(), p.x, p.y, p.z });
+	}
+	unsigned size = meshes.size();
+	out.write(reinterpret_cast<char*>(&size), sizeof(unsigned)); // blocks
+	out.write(reinterpret_cast<char*>(&meshes[0]), meshes.size() * sizeof(Tuple)); // blocks
+	out.close();
+}
+
+Face Tuple::toFace() {
+	Texture* tex = nullptr;
+	for (auto& t : TEXTURES) {
+		if (t->getTexMap() == textureMap) {
+			tex = t;
+			break;
+		}
+	}if (!tex) tex = TEXTURES[0];
+	Face face = { FACES[bufferType], tex, glm::vec3(x, y, z) };
+	return face;
 }
