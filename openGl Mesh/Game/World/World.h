@@ -22,6 +22,8 @@ public:
 	void updatePlayerPos(glm::vec3* pos);
 
 	void createChunk(ChunkPosition position);
+	void removeChunk(ChunkPosition position);
+
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front);
 
@@ -36,6 +38,9 @@ private:
 	GLboolean isDynamic;
 	GLboolean reDraw;
 	glm::vec3* playerPos;
+
+	std::vector<std::pair<GLuint, GLuint>> meshLayout;
+
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
 	void generateTerrain(std::vector<glm::vec2> chunkPositions);
 	void getNewChunkPositions(GLboolean flat);

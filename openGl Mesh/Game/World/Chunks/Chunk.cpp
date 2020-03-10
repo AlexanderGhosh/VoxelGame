@@ -127,6 +127,7 @@ void Chunk::addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3 absPos
 
 void Chunk::editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks) {
 	std::vector<Face> victims;
+	if (!this) return;
 	if (block == Blocks::AIR) {
 		// break block
 		for (GLuint i = 0; i < meshes.size(); i++) {

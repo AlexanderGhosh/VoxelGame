@@ -256,13 +256,20 @@ void Game::doMovement() {
 			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
 	}
-	/*if (k[GLFW_KEY_F1]) {
+	if (k[GLFW_KEY_F1]) {
 		auto start = std::chrono::high_resolution_clock::now();
 		world.createChunk({ 32, 16 });
 		auto stop = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 		std::cout << "made in: " << duration.count() << " microsecconds\n";
-	}*/
+	}
+	if (k[GLFW_KEY_F2]) {
+		auto start = std::chrono::high_resolution_clock::now();
+		world.removeChunk({ 32, 16 });
+		auto stop = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+		std::cout << "removed in: " << duration.count() << " microsecconds\n";
+	}
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	world.updatePlayerPos(&cam.GetPosition());
 }

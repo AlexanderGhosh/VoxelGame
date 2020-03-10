@@ -16,7 +16,8 @@ public:
 	Faces getMesh(GLboolean reGen =0);
 	void addChunk(Chunk chunk, GLboolean sort = 0);
 	void addChunks(std::vector<Chunk> chunks, GLboolean sort = 0);
-	void createMesh(std::vector<chunk_column*> columns, GLboolean getChanged, std::vector<std::pair<Face*, GLboolean>>& changed);
+	void createMesh(std::vector<chunk_column*> columns);
+	void createMesh(std::vector<Chunk*> chunks);
 	ChunkPosition& getPosition();
 	Blocks& getBlock(glm::ivec3 blockPos);
 	Chunk* getSubchunk_unsafe(GLuint yPos);
