@@ -235,7 +235,7 @@ glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 		int g = 0;
 	}
 	Faces mesh;
-	std::vector<Chunk*> chunks = world.getSubChunk(rounded, 1);
+	std::vector<Chunk*> chunks = world.getSubChunkOccupied(rounded, 1);
 	for (auto& chunk : chunks) {
 		if (!chunk) continue;
 		auto t = chunk->getMeshes();

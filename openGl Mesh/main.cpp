@@ -4,12 +4,13 @@
 #include <GLFW/glfw3.h>
 #include <gtc/type_ptr.hpp>
 
+
 #include "Game/Game.h"
 
 glm::ivec2 DIM(1600, 900);
 
 GLFWwindow* createWindow();
-
+namespace fs = std::experimental::filesystem;
 int main() {
 	GLFWwindow* window = createWindow();
 	int c = 0;

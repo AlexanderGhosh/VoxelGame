@@ -1,5 +1,7 @@
 #include "World.h"
 #include "gtx/string_cast.hpp"
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+#include <experimental/filesystem>
 World::World() {
 	chunks = std::vector<chunk_column>();
 }
@@ -68,11 +70,11 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions) {
 	}
 
 	auto start = std::chrono::high_resolution_clock::now();
+	std::vector<Chunk*> subChunks = getSubChunks();
 	for (auto& chunk : chunks) {
-		std::vector<std::pair<Face*, GLboolean>> changed;
-		chunk.createMesh(getSubChunks());
+		chunk.createMesh(subChunks);
 	}
-	chunks.erase(chunks.begin());
+	// chunks.erase(chunks.begin());
 	genWorldMesh();
 	drawable.setUp(worldMesh);
 
@@ -92,39 +94,31 @@ void World::render(Camera& c, glm::mat4 projection) {
 void World::renderChunksStatic(Camera& c, glm::mat4 projection) {
 	drawable.render(c, projection);
 }
+GLboolean first = 1;
 void World::renderChunksDynamic(Camera& c, glm::mat4 projection) {
-	if (reDraw) {
-		ChunkPosition& origin = prevChunkPos;
-		std::vector<ChunkPosition> positions = getNewChunkPositions(origin, RENDER_DISTANCE);
-		std::vector<ChunkPosition> positionsMissing = positions;
-		std::vector<GLubyte> toRemove;
-		for (GLubyte i = 0; i < chunks.size(); i++) {
-			ChunkPosition& chunkPos = chunks[i].getPosition();
-			auto found = std::find(positions.begin(), positions.end(), chunkPos);
-			if (found == positions.end()) { // if not found
-				toRemove.push_back(i);
-				continue;
-			}
-			else {
-				positionsMissing.erase(std::find(positionsMissing.begin(), positionsMissing.end(), chunkPos));
-			}
-		}
-		for (GLubyte i = 0; i < toRemove.size(); i++) {
-			GLubyte index = toRemove[i] - i;
-			chunks.erase(chunks.begin() + index);
-		}
-		for (ChunkPosition& pos : positionsMissing) {
-			createChunk(pos, 0);
-		}
+	if (reDraw && !first) {
+  		auto start = std::chrono::high_resolution_clock::now();
 
-		auto subs = getSubChunks();
-		auto start = std::chrono::high_resolution_clock::now();
-		for (GLubyte i = chunks.size() - positionsMissing.size() - 1; i < chunks.size(); i++) {
-			chunks[i].createMesh(subs);
+		std::vector<glm::vec2> chunkPositions_active = centeredPositions(prevChunkPos, std::vector<glm::vec2>(), RENDER_DISTANCE);
+		std::vector<glm::vec2> chunkPositions_lazy = centeredPositions(prevChunkPos, chunkPositions_active, RENDER_DISTANCE + 1);
+		std::vector<glm::vec2> exclude = chunkPositions_active;
+		exclude.insert(exclude.end(), chunkPositions_lazy.begin(), chunkPositions_lazy.end());     
+		std::vector<glm::vec2> chunkPositions_extended = centeredPositions(prevChunkPos, exclude, RENDER_DISTANCE + 3);
+		std::vector<chunk_column> buffer;
+		for (glm::vec2& pos : chunkPositions_extended) {
+			buffer.push_back({ pos });
 		}
-
+		std::vector<chunk_column> lazyChunks = createChunks(chunkPositions_lazy, 1, 0, 1, buffer);							// most costly
+		std::vector<chunk_column> activeChunks = createChunks(chunkPositions_active, 1, 1, 1, std::vector<chunk_column>()); // most costly
 		auto end = std::chrono::high_resolution_clock::now();
-		genWorldMesh();
+		for (chunk_column& lazyChunk : lazyChunks) {
+			lazyChunk.destroy();
+		}
+		lazyChunks.clear();
+
+		chunks.insert(chunks.begin(), activeChunks.begin(), activeChunks.end());
+		// re-draw the world
+		genWorldMesh(1);
 		drawable.setUp(worldMesh);
 
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
@@ -132,6 +126,7 @@ void World::renderChunksDynamic(Camera& c, glm::mat4 projection) {
 	}
 	drawable.render(c, projection);
 	reDraw = 0;
+	first = 0;
 }
 std::vector<chunk_column*> World::getChunks() {
 	std::vector<chunk_column*> res;
@@ -165,9 +160,6 @@ std::vector<Face*> World::genWorldMesh(std::vector<Chunk*> chunks) {
 		sorted.insert(sorted.end(), pair.second.begin(), pair.second.end());
 	}
 	return sorted;
-}
-std::vector<Face*>& World::getWorldMesh() {
-	return worldMesh;
 }
 void World::updatePlayerPos(glm::vec3 pos) {
 	ChunkPosition& position = getChunkOccupied(pos)->getPosition();
@@ -229,7 +221,7 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	}
 	if (changed) {
 		auto all = getSubChunks();
-		auto chunks = getSubChunk(glm::round(lookPos));
+		auto chunks = getSubChunkOccupied(glm::round(lookPos));
 		chunks->editBlock(glm::round(lookPos), Blocks::AIR, all);
 		*block = Blocks::AIR;
 		genWorldMesh(1);
@@ -295,14 +287,14 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
 	}
 	if (changed) {
 		auto all = getSubChunks();
-		auto chunks = getSubChunk(blockPos);
+		auto chunks = getSubChunkOccupied(blockPos);
 		chunks->editBlock(blockPos, Blocks::WATER, all);
 		genWorldMesh(1);
 		drawable.setUp(worldMesh);
 	}
 }
 
-Chunk* World::getSubChunk(glm::ivec3 pos) {
+Chunk* World::getSubChunkOccupied(glm::ivec3 pos) {
 	glm::ivec2 chunkPos(pos.x, pos.z);
 	reduceToMultiple(chunkPos, (GLfloat)CHUNK_SIZE, "");
 	// chunkPos.y += 2;
@@ -316,7 +308,7 @@ Chunk* World::getSubChunk(glm::ivec3 pos) {
 	if (!chunkOcc) return nullptr;
 	return chunkOcc->getSubchunk_unsafe(pos.y);
 }
-std::vector<Chunk*> World::getSubChunk(glm::ivec3 pos, GLboolean surrounding) {
+std::vector<Chunk*> World::getSubChunkOccupied(glm::ivec3 pos, GLboolean surrounding) {
 	ChunkPosition chunkPos(pos.x, pos.z);
 	glm::ivec2 chunkP = chunkPos;
 	reduceToMultiple(chunkP, (GLfloat)CHUNK_SIZE, "");
@@ -339,7 +331,7 @@ std::vector<Chunk*> World::getSubChunk(glm::ivec3 pos, GLboolean surrounding) {
 	std::vector<Chunk*> subChunks;
 	for (auto& p : poses) {
 		glm::vec3 po(p.x, pos.y, p.y);
-		subChunks.push_back(getSubChunk(po));
+		subChunks.push_back(getSubChunkOccupied(po));
 	}
 	return subChunks;
 }
@@ -348,12 +340,110 @@ std::vector<Chunk*> World::getSubChunks() {
 	for (auto& chunk : chunks) {
 		for (auto& subChunk : chunk.chunks) {
 			subChunks.push_back(&subChunk);
-			
 		}
 	}
 	return subChunks;
 }
 
-std::vector<chunk_column> World::createChunks(std::vector<ChunkPosition> positions, GLboolean lazyLoading, GLboolean rectifyExisting) {
+std::vector<chunk_column> World::createChunks(std::vector<ChunkPosition> positions,
+	GLboolean lazyLoading, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<chunk_column> check)
+{
+	std::vector<chunk_column> res;
+	for (ChunkPosition& chunkPos : positions) {
+		res.push_back(chunk_column(chunkPos));
+	} // generation of blocks
+	
+	if (rectifyForExisting) {
+		std::vector<glm::vec2> hitList;
+		for (chunk_column& chunk : chunks) {
+			std::vector<chunk_column>::iterator found = std::find(res.begin(), res.end(), chunk);
+			if (found != res.end()) res.erase(found);
+			else {
+				hitList.push_back(chunk.getPosition());
+			}
+		}
+		for (glm::vec2& pos : hitList) {
+			std::vector<chunk_column>::iterator found = std::find(chunks.begin(), chunks.end(), pos);
+			if (found == chunks.end()) continue;
+			chunks.erase(found);
+		}
+	}
+	std::vector<chunk_column> fromFile;
+	if (checkLazy) {
+		for (auto& p : std::experimental::filesystem::directory_iterator("Chunks")) {
+			if (!p.path().has_extension() || p.path().extension() != ".dat") continue;
+			std::string fileName = p.path().filename().string();
+			for (auto& l : p.path().extension().string()) {
+				fileName.pop_back();
+			}
+			fileName.erase(fileName.begin(), fileName.begin() + 5);
+			std::stringstream ss(fileName);
+			std::string token;
+			glm::vec2 pos(0);
+			GLubyte i = 0;
+			while (getline(ss, token, ',')) {
+				pos[i++] = std::stof(token);
+			}
 
+			std::vector<chunk_column>::iterator found = std::find(res.begin(), res.end(), pos);
+			if (found != res.end()) {
+				res.erase(found);
+				fromFile.push_back(chunk_column("chunk" + fileName));
+				fromFile.back().createMesh({}, 0);
+			}
+		}
+	}
+
+	std::vector<Chunk*> subChunks = getSubChunks();
+	for (chunk_column& chunk : res) {
+		std::vector<Chunk*> subs = chunk.getSubChunkPointers();
+		subChunks.insert(subChunks.end(), subs.begin(), subs.end());
+	}
+	for (chunk_column& chunk : check) {
+		std::vector<Chunk*> subs = chunk.getSubChunkPointers();
+		subChunks.insert(subChunks.end(), subs.begin(), subs.end());
+	}
+	if (checkLazy || lazyLoading) {
+		for (chunk_column& chunk : fromFile) {
+			std::vector<Chunk*> subs = chunk.getSubChunkPointers();
+			subChunks.insert(subChunks.end(), subs.begin(), subs.end());
+		}
+	}
+	
+	if (lazyLoading) {
+		for (chunk_column& chunk : res) {
+			chunk.createMesh(subChunks);
+		} // generation of mesh
+		for (chunk_column& chunk : res) {
+			chunk.save("chunk" + std::to_string((int)chunk.getPosition().x) + "," + std::to_string((int)chunk.getPosition().y), seed);
+		} // saving as file
+		/*std::thread meshing([](std::vector<Chunk*>& subChunks, std::vector<chunk_column>& res, GLuint& seed) {
+			
+		}, std::ref(subChunks), std::ref(res), std::ref(seed));
+		// std::thread meshing(createSave, std::ref(subChunks), std::ref(res), std::ref(seed));
+		meshing.join();*/
+	}
+	else {
+		for (chunk_column& chunk : res) {
+			chunk.createMesh(subChunks);
+		} // generation of mesh
+	}
+	res.insert(res.end(), fromFile.begin(), fromFile.end());
+	return res;
+}
+
+std::vector<glm::vec2> World::centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist) {
+	if (renderDist % 2 == 0)  renderDist++;
+	GLubyte radius = (renderDist - 1) / 2;
+	std::vector<glm::vec2> res;
+	for (GLbyte x = -radius; x < radius + 1; x++) {
+		for (GLbyte y = -radius; y < radius + 1; y++) {
+			glm::vec2 pos(x, y);
+			pos *= CHUNK_SIZE;
+			pos += origin;
+			if (std::find(exclude.begin(), exclude.end(), pos) != exclude.end()) continue;
+			res.push_back(pos);
+		}
+	}
+	return res;
 }

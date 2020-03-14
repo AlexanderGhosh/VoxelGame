@@ -18,7 +18,6 @@ chunk_column::chunk_column(ChunkPosition pos, ChunkHeightMap hm) : hasCaves(0) {
 }
 chunk_column::chunk_column(std::string fileName) {
 	fileName = "Chunks/" + fileName + ".dat";
-	createChunks();
 	Savable s;
 	std::ifstream in;
 	if (!in) {
@@ -28,10 +27,12 @@ chunk_column::chunk_column(std::string fileName) {
 	in.open(fileName, std::ios::binary);
 
 	in.read(reinterpret_cast<char*>(&s), sizeof(s));
+	pos = { s.x, s.z };
+	createChunks();
 
 	std::vector<GLubyte> blocks(4096*8);
 	in.read(reinterpret_cast<char*>(&blocks[0]), 4096 * 8 * sizeof(GLubyte));
-	unsigned size;
+	unsigned size = 0;
 	in.read(reinterpret_cast<char*>(&size), sizeof(unsigned));
 	std::vector<Tuple> elements(size);
 	for (GLuint i = 0; i < size; i++) {
@@ -45,7 +46,6 @@ chunk_column::chunk_column(std::string fileName) {
 	for (auto& element : elements) {
 		chunks[4].meshes.push_back(element.toFace());
 	}
-	pos = { s.x, s.z };
 	for (GLuint i = 0; i < chunks.size(); i++) {
 		chunks[i].blocks.empty();
 		for (GLuint j = i * 4096; j < (i + 1) * 4096; j++) {
@@ -53,6 +53,13 @@ chunk_column::chunk_column(std::string fileName) {
 		}
 	}
 	hasCaves = 0;
+}
+
+chunk_column::~chunk_column() {
+	/*for (Face* face : faces) {
+		delete face;
+	}
+	faces.clear();*/
 }
 
 void chunk_column::genHeightMap(GLboolean isFlat) {
@@ -190,13 +197,14 @@ Chunk* chunk_column::getSubchunk_unsafe(GLuint yPos) {
 	return &chunks[4];
 }
 
-void chunk_column::save(GLuint seed) {
-	remove("chunk.dat"); // deletes it
+void chunk_column::save(std::string name, GLuint seed) {
+	name = "Chunks/" + name + ".dat";
+	remove(name.c_str()); // deletes it
 	std::vector<GLubyte> blocks;
 
-	std::ofstream out("chunk.dat", std::ios::binary | std::ios::app);
+	std::ofstream out(name.c_str(), std::ios::binary | std::ios::app);
 	if (!out) {
-		std::cout << "Cannot open file!" << std::endl;
+		std::cout << "Cannot open file: " << name << std::endl;
 		return;
 	}
 	for (auto& chunk : chunks) {
@@ -209,8 +217,7 @@ void chunk_column::save(GLuint seed) {
 		seed
 	};
 	out.write((char*)&s, sizeof(s)); // pos and seed
-
-	out.write(reinterpret_cast<char*>(&blocks[0]), blocks.size() * sizeof(GLubyte)); // blocks
+	out.write(reinterpret_cast<char*>(&blocks[0]), blocks.size() * sizeof(GLubyte)); // block data
 
 	// mesh
 	std::vector<Tuple> meshes;
@@ -219,11 +226,32 @@ void chunk_column::save(GLuint seed) {
 		Texture*& t = std::get<1>(*f);
 		glm::vec3& p = std::get<2>(*f);
 		meshes.push_back({ (GLubyte)b->type, (GLubyte)t->getTexMap(), p.x, p.y, p.z });
-	}
+	} // convert to useable data
 	unsigned size = meshes.size();
-	out.write(reinterpret_cast<char*>(&size), sizeof(unsigned)); // blocks
-	out.write(reinterpret_cast<char*>(&meshes[0]), meshes.size() * sizeof(Tuple)); // blocks
+	out.write(reinterpret_cast<char*>(&size), sizeof(unsigned)); // size of mesh
+	out.write(reinterpret_cast<char*>(&meshes[0]), meshes.size() * sizeof(Tuple)); // mesh data
 	out.close();
+}
+
+void chunk_column::destroy() {
+	pos = { 0, 0 };
+	hasCaves = 0;
+	// delete[] heightMap.data();
+	heightMap.empty();
+	heightMap = {};
+	/*for (Face*& face : faces) {
+		delete face;
+	}*/
+	faces.clear();
+	faces = {};
+}
+
+std::vector<Chunk*> chunk_column::getSubChunkPointers() {
+	std::vector<Chunk*> res;
+	for (Chunk& chunk : chunks) {
+		res.push_back(&chunk);
+	}
+	return res;
 }
 
 Face Tuple::toFace() {
@@ -237,3 +265,19 @@ Face Tuple::toFace() {
 	Face face = { FACES[bufferType], tex, glm::vec3(x, y, z) };
 	return face;
 }
+
+
+#pragma region Operators
+bool chunk_column::operator ==(chunk_column chunk2) {
+	return pos == chunk2.pos;
+}
+bool chunk_column::operator !=(chunk_column chunk2) {
+	return pos != chunk2.pos;
+}
+bool chunk_column::operator ==(glm::vec2 pos2) {
+	return pos == pos2;
+}
+bool chunk_column::operator !=(glm::vec2 pos2) {
+	return pos != pos2;
+}
+#pragma endregion

@@ -42,7 +42,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 0);
+	world = World(1, 1, 1);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -272,7 +272,7 @@ void Game::doMovement() {
 	}
 	if (k[GLFW_KEY_F4]) {
 		auto start = std::chrono::high_resolution_clock::now();
-		world.getChunks()[0]->save(CHUNK_SIZE * 2);
+		world.getChunks()[0]->save("chunk:-1", CHUNK_SIZE * 2);
 		auto stop = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 		std::cout << "saved in: " << duration.count() << " microsecconds\n";

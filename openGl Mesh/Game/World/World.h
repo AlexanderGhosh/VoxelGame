@@ -3,8 +3,8 @@
 #include <thread>
 #include <vector>
 #include <chrono>
-#include <gtx/hash.hpp>
 #include <gtc/noise.hpp>
+
 #include "Chunks/Chunk.h"
 #include "constants.h"
 #include "../../Renders/chunkRender.h"
@@ -17,8 +17,6 @@ public:
 	World();
 	World(GLboolean gen, GLboolean terrain = 1, GLboolean isDynamic = 0, GLuint seed = CHUNK_SIZE*2);
 	void render(Camera& c, glm::mat4 projection);
-	std::vector<chunk_column*> getChunks();
-	std::vector<Face*>& getWorldMesh();
 	void updatePlayerPos(glm::vec3 pos);
 
 	void createChunk(ChunkPosition position, GLboolean updateMesh = 1);
@@ -27,10 +25,12 @@ public:
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front);
 
-	Chunk* getSubChunk(glm::ivec3 pos);
-	std::vector<Chunk*> getSubChunk(glm::ivec3 pos, GLboolean surrounding);
-	std::vector<Chunk*> getSubChunks();
+	Chunk* getSubChunkOccupied(glm::ivec3 pos);
+	std::vector<Chunk*> getSubChunkOccupied(glm::ivec3 pos, GLboolean surrounding);
 	chunk_column* getChunkOccupied(glm::vec3 position);
+
+	std::vector<chunk_column*> getChunks();
+	std::vector<Chunk*> getSubChunks();
 
 private:
 	GLuint seed;
@@ -41,16 +41,21 @@ private:
 	GLboolean reDraw;
 	ChunkPosition prevChunkPos;
 
-	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
-	void generateTerrain(std::vector<glm::vec2> chunkPositions);
 	void getNewChunkPositions(GLboolean flat);
 	std::vector<glm::vec2> getNewChunkPositions(glm::vec2 origin, GLint renderDist = INITALL_VIEW);
+	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
+
+	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
+	void generateTerrain(std::vector<glm::vec2> chunkPositions);
+
 	void genWorldMesh(GLboolean gen = 0);
 	std::vector<Face*> genWorldMesh(std::vector<Chunk*> chunks);
+
 	void renderChunksStatic(Camera& c, glm::mat4 projection);
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
 
 	Blocks& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
 
-	std::vector<chunk_column> createChunks(std::vector<ChunkPosition> positions, GLboolean lazyLoading, GLboolean rectifyExisting);
+	std::vector<chunk_column> createChunks(std::vector<ChunkPosition> positions,
+		GLboolean lazyLoading, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<chunk_column> check);
 };
