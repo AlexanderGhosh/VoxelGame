@@ -58,7 +58,6 @@ void Chunk::createMesh(std::vector<Chunk*> chunks) {
 				Blocks block = getBlock_safe({ x, y, z }, chunks);
 				if (block == Blocks::AIR) continue;
 				addBlock(block, chunks, pos, 1);
-				
 			}
 		}
 	}

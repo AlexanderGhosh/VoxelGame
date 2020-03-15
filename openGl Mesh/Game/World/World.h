@@ -25,7 +25,7 @@ public:
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front);
 
-	Chunk* getSubChunkOccupied(glm::ivec3 pos);
+	Chunk* getSubChunkOccupied(glm::ivec3 pos, chunk_column*& chunkOcc);
 	std::vector<Chunk*> getSubChunkOccupied(glm::ivec3 pos, GLboolean surrounding);
 	chunk_column* getChunkOccupied(glm::vec3 position);
 
@@ -56,6 +56,6 @@ private:
 
 	Blocks& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
 
-	std::vector<chunk_column> createChunks(std::vector<ChunkPosition> positions,
-		GLboolean lazyLoading, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<chunk_column> check);
+	std::vector<chunk_column> createChunks(std::vector<ChunkPosition> positions, std::vector<ChunkPosition> activeChunks,
+		std::vector<ChunkPosition> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<Chunk*> subChunks);
 };
