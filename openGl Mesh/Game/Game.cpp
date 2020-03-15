@@ -102,7 +102,6 @@ void Game::showStuff() {
 		showSkybox();
 	}
 	showGUI();
-	showText(m, { 5, 850 }, 0.5f);
 	m = "Position: ";
 	if (hasPlayer) {
 		m += glm::to_string(player.getPosition());
@@ -110,7 +109,7 @@ void Game::showStuff() {
 	else {
 		m += glm::to_string(cam.GetPosition());
 	}
-	showText(m, { 5, 825 }, 0.5f);
+	showText(m, { 5, 850 }, 0.5f);
 	m = "Controlling: ";
 	if (alt) {
 		m += "Player";
@@ -118,12 +117,12 @@ void Game::showStuff() {
 	else {
 		m += "Camera";
 	}
-	showText(m, { 5, 800 }, 0.5f);
+	showText(m, { 5, 825 }, 0.5f);
 	glm::vec2 p(0);
 	auto e = world.getChunkOccupied(hasPlayer ? player.getPosition() : mainCamera->GetPosition());
 	if (e)  p = e->getPosition();
 	m = "Chunk Pos: " + glm::to_string(p);
-	showText(m, { 5, 775 }, 0.5f);
+	showText(m, { 5, 800 }, 0.5f);
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
