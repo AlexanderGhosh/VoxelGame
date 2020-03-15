@@ -37,7 +37,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 	if (hasSkybox) {
 		makeSkybox("skybox");
 	}
-	createCrossHair();
+	createGUI();
 	setUpFreeType();
 }
 
@@ -53,7 +53,7 @@ void Game::doLoop(glm::mat4 projection) {
 		calcTimes();
 		lockFPS();
 		proccesEvents();
-		doMovement();
+		processKeys();
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -101,7 +101,7 @@ void Game::showStuff() {
 	if (hasSkybox) {
 		showSkybox();
 	}
-	showCrossHair();
+	showGUI();
 	showText(m, { 5, 850 }, 0.5f);
 	m = "Position: ";
 	if (hasPlayer) {
@@ -171,7 +171,7 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
-		Game::world.placeBlock(cam.GetPosition(), cam.GetFront());
+		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player.getInvBar()[player.getSlot()]);
 	}
 }
 void Game::setupEventCB(GLFWwindow* window) {
@@ -179,7 +179,7 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetMouseButtonCallback(window, Game::clickCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 }
-void Game::doMovement() {
+void Game::processKeys() {
 	auto& k = Game::keys;
 	GLfloat speed = 9.0f;
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
@@ -279,6 +279,33 @@ void Game::doMovement() {
 	}
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	world.updatePlayerPos(cam.GetPosition());
+	if (k[GLFW_KEY_1]) {
+		player.setInvSlot(0);
+	}
+	if (k[GLFW_KEY_2]) {
+		player.setInvSlot(1);
+	}
+	if (k[GLFW_KEY_3]) {
+		player.setInvSlot(2);
+	}
+	if (k[GLFW_KEY_4]) {
+		player.setInvSlot(3);
+	}
+	if (k[GLFW_KEY_5]) {
+		player.setInvSlot(4);
+	}
+	if (k[GLFW_KEY_6]) {
+		player.setInvSlot(5);
+	}
+	if (k[GLFW_KEY_7]) {
+		player.setInvSlot(6);
+	}
+	if (k[GLFW_KEY_8]) {
+		player.setInvSlot(7);
+	}
+	if (k[GLFW_KEY_9]) {
+		player.setInvSlot(8);
+	}
 }
 void Game::cleanUp() {
 }
@@ -360,6 +387,60 @@ void Game::showSkybox() {
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
+void Game::createGUI() {
+	createCrossHair();
+	texBN = Texture("boarders/normal", 1);
+	texBS = Texture("boarders/selected", 1);
+}
+void Game::showGUI() {
+	showCrossHair();
+	auto invBar = [](std::array<Blocks, 9> bar, glm::vec3 center, Texture& texNorm, Texture& texSele, Shader& shader, GLuint VAO) {
+		GLubyte length = 9;
+		shader.bind();
+		glBindVertexArray(VAO); 
+		glm::vec3 delta(0.5, 0, 0);
+		for(GLbyte i = -length/2; i < length/2 +1; i++) {
+			glm::vec3 delta1(delta.x * i, 0, 0);
+			glm::vec3 pos = center + delta1;
+			
+
+			shader.setValue("modelPos", pos);
+
+			Blocks block = bar[i + length / 2];
+			if (block != Blocks::AIR) {
+				BLOCKS[block].ItemTex.bind();
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+				BLOCKS[block].ItemTex.unBind();
+			}
+			if (player.getSlot() == i + length / 2) {
+				texSele.bind();
+			}
+			else {
+				texNorm.bind();
+			}
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			texNorm.unBind();
+		}
+		glBindVertexArray(0);
+		shader.unBind();
+		texNorm.unBind();
+	};
+	Shader& shader = *SHADERS[CROSSHAIR];
+	std::array<Blocks, 9> bar = {
+		Blocks::GRASS,
+		Blocks::DIRT,
+		Blocks::STONE,
+		Blocks::WATER,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR
+	};
+	if (hasPlayer) bar = player.getInvBar();
+	invBar(bar, { 0, -9.5, 0 }, texBN, texBS, shader, CHVAO);
+}
+
 void Game::createCrossHair() {
 	texCH = Texture("crosshair", 1);
 	GLfloat vertices[] = {
@@ -395,8 +476,12 @@ void Game::createCrossHair() {
 	shader->unBind();
 }
 void Game::showCrossHair() {
+	glm::vec3 scale(0.1);
 	auto& shader = SHADERS[CROSSHAIR];
 	shader->bind();
+	glm::vec3 pos(0, 0, 0);
+	shader->setValue("modelPos", pos);
+	shader->setValue("scale", scale);
 	texCH.bind();
 	glBindVertexArray(CHVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);

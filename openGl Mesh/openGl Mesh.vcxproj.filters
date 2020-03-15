@@ -92,6 +92,8 @@
     <None Include="Shaders\crosshair_v.glsl" />
     <None Include="Shaders\skybox_f.glsl" />
     <None Include="Shaders\skybox_v.glsl" />
+    <None Include="Shaders\glyph_v.glsl" />
+    <None Include="Shaders\glyph_f.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">

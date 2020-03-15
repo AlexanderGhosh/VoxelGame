@@ -40,6 +40,19 @@ const std::vector<Shader*>SHADERS = {
 	new Shader("crosshair"),
 	new Shader("glyph")
 };
+std::map<Blocks, BlockDet> BLOCKS = {
+	{ Blocks::GRASS, {} },
+	{ Blocks::DIRT, {} },
+	{ Blocks::STONE, {} },
+	{ Blocks::WATER, {} }
+};
+const std::vector<Blocks> AllBlocks = {
+	Blocks::AIR,
+	Blocks::GRASS,
+	Blocks::DIRT,
+	Blocks::STONE,
+	Blocks::WATER
+};
 GLint getBlockIndex(glm::vec3 position) {
 	position.y = std::abs(position.y);
 	int index = position.x + position.z * CHUNK_SIZE + position.y * CHUNK_AREA;
@@ -108,6 +121,9 @@ Texture_Names getTexture(Blocks block) {
 	}
 	return res;
 }
+Texture* getBlockTexture(Blocks block) {
+	return BLOCKS[block].Tex;
+}
 GLubyte toIndex(Texture_Names tex) {
 	return GLubyte(tex);
 }
@@ -117,10 +133,25 @@ GLubyte toIndex(Blocks block) {
 Blocks toBlock(GLubyte number) {
 	return Blocks(number);
 }
-GLint hash(glm::vec3 vec) {
-	GLint product = 1;
-	for (GLubyte i = 0; i < 3; i++) {
-		product *= std::pow(vec[i] + 1, i + 1);
+std::string getName(Blocks block) {
+	std::string name("null");
+	switch (block)
+	{
+	case Blocks::AIR:
+		name = "air";
+		break;
+	case Blocks::GRASS:
+		name = "grass";
+		break;
+	case Blocks::DIRT:
+		name = "dirt";
+		break;
+	case Blocks::STONE:
+		name = "stone";
+		break;
+	case Blocks::WATER:
+		name = "water";
+		break;
 	}
-	return product;
+	return name;
 }

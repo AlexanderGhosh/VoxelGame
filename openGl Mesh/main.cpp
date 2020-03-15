@@ -4,12 +4,12 @@
 #include <GLFW/glfw3.h>
 #include <gtc/type_ptr.hpp>
 
-
 #include "Game/Game.h"
 
 glm::ivec2 DIM(1600, 900);
 
 GLFWwindow* createWindow();
+void createBlocks();
 namespace fs = std::experimental::filesystem;
 int main() {
 	GLFWwindow* window = createWindow();
@@ -24,8 +24,9 @@ int main() {
 	for (auto& shader : SHADERS) {
 		shader->setUp();
 	}
+	createBlocks();
 
-	Game game = Game(0, 1);
+	Game game = Game(1, 1);
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
@@ -36,7 +37,15 @@ int main() {
 	glfwTerminate();
 	return EXIT_SUCCESS;
 }
-
+void createBlocks() {
+	for (auto& block_ : BLOCKS) {
+		auto& block = block_.first;
+		auto& dets = block_.second;
+		dets.Name = getName(block);
+		dets.Tex = TEXTURES[(GLuint)getTexture(block)];
+		dets.ItemTex = { "Items/" + dets.Name, 1 };
+	}
+}
 GLFWwindow* createWindow() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -46,7 +55,6 @@ GLFWwindow* createWindow() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GL_TRUE);
-
 	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr, nullptr);
 
 	GLint w, h;

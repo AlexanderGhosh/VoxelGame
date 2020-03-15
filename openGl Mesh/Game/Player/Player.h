@@ -19,9 +19,14 @@ public:
 	Camera& getCamera(); 
 	std::string updatePosition(GLfloat deltaTime, World& world);
 	void updateCamera(GLfloat xOff, GLfloat yOff);
+	GLubyte getSlot();
+	std::array<Blocks, 9> getInvBar();
+	void setInvSlot(GLubyte slot);
 private:
 	Camera cam;
 	glm::vec3 camera_offset;
 	GLboolean attachCam, canRender;
+	std::array<Blocks, 9> invBar;
+	GLubyte invSlot;
 };
 

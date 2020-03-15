@@ -12,6 +12,18 @@ Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLbool
 	collider = BoxCollider(glm::vec3(0.85f), pos);
 	this->attachCam = attachCam;
 	this->canRender = render;
+	invBar = {
+		Blocks::GRASS,
+		Blocks::DIRT,
+		Blocks::STONE,
+		Blocks::WATER,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR
+	};
+	invSlot = 0;
 }
 Camera& Player::getCamera() {
 	return cam;
@@ -66,4 +78,13 @@ void Player::updateCamera(GLfloat xOff, GLfloat yOff) {
 	if (attachCam) {
 		forward = cam.GetFront() * glm::vec3(1, 0, 1);
 		right = cam.GetRight() * glm::vec3(1, 0, 1);	}
+}
+GLubyte Player::getSlot() {
+	return invSlot;
+}
+std::array<Blocks, 9> Player::getInvBar() {
+	return invBar;
+}
+void Player::setInvSlot(GLubyte slot) {
+	invSlot = slot;
 }

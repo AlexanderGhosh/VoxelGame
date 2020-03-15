@@ -23,7 +23,7 @@ public:
 	void removeChunk(ChunkPosition position);
 
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
-	void placeBlock(glm::vec3 pos, glm::vec3 front);
+	void placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block);
 
 	Chunk* getSubChunkOccupied(glm::ivec3 pos, chunk_column*& chunkOcc);
 	std::vector<Chunk*> getSubChunkOccupied(glm::ivec3 pos, GLboolean surrounding);

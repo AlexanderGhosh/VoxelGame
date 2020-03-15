@@ -271,7 +271,7 @@ chunk_column* World::getChunkOccupied(glm::vec3 position) {
 		}
 	}
 }
-void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
+void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
 	std::array<glm::ivec3, 6> dirs = {
 		glm::ivec3(1, 0, 0), glm::ivec3(-1, 0, 0),
 		glm::ivec3(0, 1, 0), glm::ivec3(0, -1, 0),
@@ -294,7 +294,6 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
 				glm::vec3 bp = blockPos + (glm::vec3)dir;
 				auto& newBlock = getBlock(bp, chunk);
 				if (newBlock != Blocks::AIR) {
-					// block = Blocks::WATER;
 					changed = 1;
 					break;
 				}
@@ -306,7 +305,7 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front) {
 		auto all = getSubChunks();
 		chunk_column* chunkOcc = nullptr;
 		auto chunks = getSubChunkOccupied(blockPos, chunkOcc);
-		chunks->editBlock(blockPos, Blocks::WATER, all);
+		chunks->editBlock(blockPos, block, all);
 		if (chunkOcc) {
 			chunkOcc->createMesh({}, 0);
 			chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
