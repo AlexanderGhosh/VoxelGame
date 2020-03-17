@@ -164,7 +164,7 @@ std::vector<GLfloat> Buffer::getVertices(GLboolean unique) {
 	}
 	return res;
 }
-std::vector<glm::vec3> Buffer::getVertices() {
+std::vector<glm::vec3> Buffer::getVertices(GLboolean unique, GLboolean overload) {
 	glm::vec3 vertex;
 	std::vector<glm::vec3> res;
 	for (GLuint i = 0; i < (GLuint)bufferData.size(); i += structure.total_data_len) {
@@ -177,6 +177,7 @@ std::vector<glm::vec3> Buffer::getVertices() {
 			}
 		}
 		if (!found) {
+			if (std::find(res.begin(), res.end(), vertex) != res.end() && unique) continue;
 			res.push_back(vertex);
 		}
 	}

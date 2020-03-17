@@ -10,6 +10,7 @@
 #include "../../Renders/chunkRender.h"
 #include "../../Drawable.h"
 #include "Chunks/chunk_column.h"
+#include "../../Ray.h"
 
 class World
 {

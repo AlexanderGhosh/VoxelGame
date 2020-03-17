@@ -163,6 +163,7 @@
     <ClCompile Include="Game\World\Chunks\Chunk.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Renders\chunkRender.cpp" />
     <ClCompile Include="Game\World\constants.cpp" />
     <ClCompile Include="main.cpp" />
@@ -189,6 +190,8 @@
     <None Include="Shaders\crosshair_v.glsl" />
     <None Include="Shaders\glyph_f.glsl" />
     <None Include="Shaders\glyph_v.glsl" />
+    <None Include="Shaders\ray_f.glsl" />
+    <None Include="Shaders\ray_v.glsl" />
     <None Include="Shaders\skybox_f.gls" />
     <None Include="Shaders\skybox_f.glsl" />
     <None Include="Shaders\skybox_v.gls" />
@@ -205,6 +208,7 @@
     <ClInclude Include="Game\World\Chunks\Chunk.h" />
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Ray.h" />
     <ClInclude Include="Renders\chunkRender.h" />
     <ClInclude Include="Game\World\constants.h" />
     <ClInclude Include="Shaders\Shader.h" />

@@ -259,7 +259,6 @@ Blocks& World::getBlock(glm::ivec3 blockPos, chunk_column*& chunk_) {
 			return block;
 		}
 	}
-
 }
 chunk_column* World::getChunkOccupied(glm::vec3 position) {
 	position = (glm::ivec3)position;

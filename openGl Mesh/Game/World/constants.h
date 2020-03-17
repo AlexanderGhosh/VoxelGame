@@ -6,6 +6,7 @@
 
 #define RENDER_DISTANCE 3
 #define PLAYER_REACH 5
+#define RAY_INCREMENT 0.1f
 
 #define INITALL_VIEW 4
 #define INITALL_VIEW_AREA INITALL_VIEW * INITALL_VIEW
@@ -37,7 +38,8 @@ enum SHADER_NAMES {
 	BLOCK3,
 	SKYBOX,
 	CROSSHAIR,
-	GLYPH
+	GLYPH,
+	RAY
 };
 enum class Move_Dir {
 	FORWARD,

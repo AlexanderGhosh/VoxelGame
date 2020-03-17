@@ -47,6 +47,7 @@ public:
 	static Camera* mainCamera;
 	static glm::vec3 mouseData;
 	static std::array<GLboolean, 1024> keys;
+	Ray ray;
 private:
 	GLFWwindow* window;
 	GLfloat deltaTime;

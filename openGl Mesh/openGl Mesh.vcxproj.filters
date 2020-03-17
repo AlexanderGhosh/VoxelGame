@@ -75,6 +75,9 @@
     <ClCompile Include="Game\Physics\BoxCollider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -94,6 +97,8 @@
     <None Include="Shaders\skybox_v.glsl" />
     <None Include="Shaders\glyph_v.glsl" />
     <None Include="Shaders\glyph_f.glsl" />
+    <None Include="Shaders\ray_v.glsl" />
+    <None Include="Shaders\ray_f.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">
@@ -193,6 +198,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Physics\BoxCollider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

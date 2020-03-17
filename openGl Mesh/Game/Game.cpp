@@ -42,13 +42,13 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 1);
+	world = World(1, 1, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
-	mainCamera->setPosition({ 0.0f, -11.0f, 0.0f });
+	mainCamera->setPosition({ 0.0f, 0.0f, 1.0f });
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -123,6 +123,7 @@ void Game::showStuff() {
 	if (e)  p = e->getPosition();
 	m = "Chunk Pos: " + glm::to_string(p);
 	showText(m, { 5, 800 }, 0.5f);
+	ray.render(cam, projection);
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
@@ -189,9 +190,9 @@ void Game::processKeys() {
 		speed = 2.0f;
 		player.setMovementSpeed(PLAYER_SPEED);
 	}
-	if (Game::hasPlayer ) {
+	if (Game::hasPlayer) {
 		player.setVelocity({ 0, player.getVelocity().y, 0 });
-		if (k[GLFW_KEY_LEFT_ALT] && (GLuint)time(NULL)%2 == 0) {
+		if (k[GLFW_KEY_LEFT_ALT] && (GLuint)time(NULL) % 2 == 0) {
 			alt = !alt;
 		}
 		if (alt || 0) {
@@ -214,7 +215,7 @@ void Game::processKeys() {
 		else {
 			auto& c = player.getCamera();
 			if (k[GLFW_KEY_W]) {
-				c.GetPosition() += c.GetFront() * glm::vec3(1, 0, 1) *  speed * deltaTime;
+				c.GetPosition() += c.GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
 			}
 			if (k[GLFW_KEY_S]) {
 				c.GetPosition() -= c.GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
@@ -278,6 +279,10 @@ void Game::processKeys() {
 	}
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	world.updatePlayerPos(cam.GetPosition());
+	if (k[GLFW_KEY_0]) {
+		ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH, 1);
+	}
+
 	if (k[GLFW_KEY_1]) {
 		player.setInvSlot(0);
 	}

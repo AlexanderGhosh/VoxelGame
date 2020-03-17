@@ -38,7 +38,8 @@ const std::vector<Shader*>SHADERS = {
 	new Shader("block3"),
 	new Shader("skybox"),
 	new Shader("crosshair"),
-	new Shader("glyph")
+	new Shader("glyph"),
+	new Shader("ray")
 };
 std::map<Blocks, BlockDet> BLOCKS = {
 	{ Blocks::GRASS, {} },

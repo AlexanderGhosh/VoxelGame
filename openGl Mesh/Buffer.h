@@ -19,7 +19,8 @@ enum FACES_NAMES {
 	LEFT,
 	RIGHT,
 	TOP,
-	BOTTOM
+	BOTTOM,
+	NULL_
 };
 struct Structure {
 	GLuint total_data_len;
@@ -64,7 +65,7 @@ public:
 	void addPositions(std::vector<glm::mat4>& positions);
 	void resetData();
 	std::vector<GLfloat> getVertices(GLboolean unique);
-	std::vector<glm::vec3> getVertices();
+	std::vector<glm::vec3> getVertices(GLboolean unique, GLboolean overload);
 private:
 	GLuint VBO;
 	GLuint VAO;
