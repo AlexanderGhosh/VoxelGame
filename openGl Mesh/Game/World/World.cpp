@@ -213,40 +213,34 @@ void World::removeChunk(ChunkPosition position) {
 }
 
 void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
-	// std::cout << "__________________________________________________________________" << std::endl;
-	// auto start1 = std::chrono::high_resolution_clock::now();
-	GLboolean changed = 0;
-	chunk_column* chunk = nullptr;
-	glm::vec3 lookPos = pos; 
-	Blocks* block = nullptr;
-	for (GLubyte i = 0; i < PLAYER_REACH; i++) {
-		lookPos += front;
-		glm::ivec3 blockPos = glm::round(lookPos);
-		// std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
-		block = &getBlock(blockPos, chunk);
-		// std::cout << "block: " << (int)block << std::endl;
-		if (*block != Blocks::AIR) {
-			changed = 1;
-			break;
-		}  
-	}
-	if (changed) {
-		auto all = getSubChunks();
-		chunk_column* chunkOcc = nullptr;
-		auto chunks = getSubChunkOccupied(glm::round(lookPos), chunkOcc);
-		chunks->editBlock(glm::round(lookPos), Blocks::AIR, all);
-		*block = Blocks::AIR;
-		if (chunkOcc) {
-			chunkOcc->createMesh({}, 0);
-			chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
-		}
-		genWorldMesh(1);
-		drawable.setUp(worldMesh);
+	Ray ray = Ray(pos, front, PLAYER_REACH);
+	chunk_column* chunkOcc = getChunkOccupied(pos);
+	auto meshes = chunkOcc->getMesh(0);
+	
+	glm::vec3 p(0);
+	GLfloat shortestDistance = 1000;
 
+	for (auto& mesh : meshes) {
+		FACES_NAMES& face = std::get<0>(*mesh)->type;
+		glm::vec3& pos = std::get<2>(*mesh);
+		auto dist = ray.checkIntercesction_Block(pos, face);
+		if (dist == -1) continue;
+		if (dist < shortestDistance) {
+			shortestDistance = dist;
+			p = pos;
+		}
 	}
-	// auto end = std::chrono::high_resolution_clock::now();
-	// auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start1);
-	// std::cout << "visual time: " << duration.count() << std::endl;
+	Blocks& block = getBlock(p, chunkOcc);
+	auto all = getSubChunks();
+	auto chunks = getSubChunkOccupied(p, chunkOcc);
+	chunks->editBlock(p, Blocks::AIR, all);
+	block = Blocks::AIR;
+	if (chunkOcc) {
+		chunkOcc->createMesh({}, 0);
+		chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
+	}
+	genWorldMesh(1);
+	drawable.setUp(worldMesh);
 }
 Blocks& World::getBlock(glm::ivec3 blockPos, chunk_column*& chunk_) {
 	glm::vec3 subChunkPos = reduceToMultiple(blockPos, CHUNK_SIZE);

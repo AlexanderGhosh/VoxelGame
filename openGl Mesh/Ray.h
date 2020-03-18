@@ -11,7 +11,7 @@ public:
 	void setDirection(const glm::vec3 dir);
 	void render(Camera cam, glm::mat4 projection, glm::vec3 colour = glm::vec3(1, 0, 0));
 	void translate(glm::vec3 translation);
-	FACES_NAMES checkIntercesction_Block(glm::vec3 blockPos_abs);
+	GLfloat checkIntercesction_Block(glm::vec3 blockPos_abs, FACES_NAMES face);
 private:
 	GLfloat maxLen;
 	GLboolean visable;

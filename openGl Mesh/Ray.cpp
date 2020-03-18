@@ -1,6 +1,6 @@
 #include "Ray.h"
 Ray::Ray() : maxLen(-1), origin(0), direction(0), visable(0), end(0), VAO(0) { }
-Ray::Ray(glm::vec3 origin, glm::vec3 dir, GLfloat max, GLboolean visable) : origin(origin), direction(dir),  maxLen(max), visable(visable), end(0), VAO(0) {
+Ray::Ray(glm::vec3 origin, glm::vec3 dir, GLfloat max, GLboolean visable) : origin(origin), direction(dir), maxLen(max), visable(visable), end(0), VAO(0) {
 	calcEnd();
 }
 void Ray::setMax(const GLfloat max) {
@@ -23,7 +23,7 @@ void Ray::setUpRender() {
 		origin.x, origin.y, origin.z,
 		end.x, end.y, end.z
 	};
-	if(VAO) glDeleteVertexArrays(1, &VAO);
+	if (VAO) glDeleteVertexArrays(1, &VAO);
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
@@ -56,43 +56,43 @@ void Ray::translate(glm::vec3 translation) {
 }
 void Ray::calcEnd() {
 	end = origin + direction * maxLen;
-	if(visable) setUpRender();
+	if (visable) setUpRender();
 }
-FACES_NAMES Ray::checkIntercesction_Block(glm::vec3 blockPos_abs) {
+GLfloat sumVec(glm::vec3 vec) {
+	return vec.x + vec.y + vec.z;
+}
+GLfloat Ray::checkIntercesction_Block(glm::vec3 blockPos_abs, FACES_NAMES face) {
 	std::map<FACES_NAMES, glm::vec3> normals = {
 		{ TOP, {0, 1, 0} },
-		{ BOTTOM, {0, -1, 0} },
+		{ BOTTOM, {0, 1, 0} },
 		{ FRONT, {0, 0, 1} },
 		{ BACK, {0, 0, -1} },
-		{ LEFT, {-1, 0, 0} },
-		{ RIGHT, {1, -1, 0} }
+		{ LEFT, {1, 0, 0} },
+		{ RIGHT, {1, 0, 0} }
 	};
-	std::map<FACES_NAMES, GLfloat> distances;
-	for (auto& normal : normals) {
-		auto& face = normal.first;
-		auto& norm = normal.second;
-		auto vertices = FACES[face]->getVertices(0, 0);
-		GLfloat k = glm::dot(vertices[0], norm);
-		GLfloat c = glm::dot(direction, norm);
-		if (c == k) {
-			glm::vec3 intercection;
-			GLfloat t = 0;
-			glm::vec3 grad = origin - end;
-			grad *= norm;
-			glm::vec3 i = origin * norm;
-			t = (k - (i.x + i.y + i.z)) / (grad.x + grad.y + grad.z);
-			distances.insert({ face, glm::distance(origin, t * (grad / norm) + origin) });
-		}
-	}
-	GLfloat dist_ = 1000;
-	FACES_NAMES face_ = NULL_;
-	for (auto& dist : distances) {
-		auto& face = dist.first;
-		auto& dis = dist.second;
-		if (abs(dis) < dist_) {
-			dist_ = dis;
-			face_ = face;
-		}
-	}
-	return face_;
+
+	glm::vec3 max(blockPos_abs + glm::vec3(0.5f));
+	glm::vec3 min(blockPos_abs - glm::vec3(0.5f));
+	glm::vec3 normal = normals[face];
+	auto vertices = FACES[face]->getVertices(1, 0);
+	glm::vec3 vertex = vertices[0] + blockPos_abs;
+	/*direction = { 0, 0, 1 };
+	blockPos_abs = { 0, -10, 3 };
+	normal = { 0, 0, -1 };
+	origin = { 0, -9.5, 0 };
+	glm::vec3 vertex = t1[0] + blockPos_abs;*/
+
+	GLfloat k = glm::dot(vertex, normal); // equation of plane
+
+	GLfloat coefficant = glm::dot(normal, direction);
+	if (coefficant == 0) return -1; // no intersection
+	GLfloat neumirator = k - glm::dot(normal, origin);
+	GLfloat t  = neumirator / coefficant;
+
+	glm::vec3 point = origin + t * (direction);
+
+	if (!glm::all(glm::lessThanEqual(point, max) && glm::greaterThanEqual(point, min))) return -1;
+
+	GLfloat distance = std::abs(glm::distance(origin, point));
+	return distance;
 }
