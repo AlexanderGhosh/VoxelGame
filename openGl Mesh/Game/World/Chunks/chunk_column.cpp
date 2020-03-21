@@ -192,9 +192,14 @@ Blocks& chunk_column::getBlock(glm::ivec3 blockPos) {
 	index = 4;
 	return chunks[index].blocks[getBlockIndex(blockPos)];
 }
-Chunk* chunk_column::getSubchunk_unsafe(GLuint yPos) {
+Chunk* chunk_column::getSubchunk_unsafe(GLint yPos) {
 	// to do
-	return &chunks[4];
+	if (yPos >= 0) yPos += CHUNK_SIZE;
+	yPos /= CHUNK_SIZE;
+	if (yPos < 0) yPos *= -1;
+	yPos *= -1;
+	yPos += 4;
+ 	return &chunks[yPos];
 }
 
 void chunk_column::save(std::string name, GLuint seed) {
@@ -252,6 +257,15 @@ std::vector<Chunk*> chunk_column::getSubChunkPointers() {
 		res.push_back(&chunk);
 	}
 	return res;
+}
+
+void chunk_column::editBlock(glm::vec3 pos, GLboolean is_abs, Blocks block, std::vector<Chunk*> subs) {
+	pos = glm::round(pos);
+	if (is_abs) {
+		pos -= glm::vec3(this->pos.x, 0, this->pos.y);
+	}
+	Chunk* sub = getSubchunk_unsafe(pos.y);
+	sub->editBlock(pos, block, subs);
 }
 
 Face Tuple::toFace() {

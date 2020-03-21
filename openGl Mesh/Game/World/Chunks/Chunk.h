@@ -23,7 +23,7 @@ public:
 	void createMesh(std::vector<Chunk*> chunks);
 	void createBlocksFlat(Blocks block);
 	void createBlocks(HeightMapChunk hightMap);
-	Blocks getBlock_unsafe(glm::ivec3 pos);
+	Blocks& getBlock_unsafe(glm::ivec3 pos, GLboolean& error);
 	Blocks& getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks);
 	GLboolean isNull();
 	void editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks);

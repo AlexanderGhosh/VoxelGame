@@ -26,7 +26,7 @@ int main() {
 	}
 	createBlocks();
 
-	Game game = Game(1, 0);
+	Game game = Game(0, 1);
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far

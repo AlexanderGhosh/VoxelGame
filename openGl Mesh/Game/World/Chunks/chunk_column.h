@@ -21,10 +21,11 @@ public:
 	void createMesh(std::vector<Chunk*> chunks, GLboolean create = 1);
 	ChunkPosition& getPosition();
 	Blocks& getBlock(glm::ivec3 blockPos);
-	Chunk* getSubchunk_unsafe(GLuint yPos);
+	Chunk* getSubchunk_unsafe(GLint yPos);
 	void save(std::string name, GLuint seed);
 	void destroy();
 	std::vector<Chunk*> getSubChunkPointers();
+	void editBlock(glm::vec3 pos, GLboolean is_abs, Blocks block, std::vector<Chunk*> subs);
 	bool operator ==(chunk_column chunk2);
 	bool operator !=(chunk_column chunk2);
 	bool operator ==(glm::vec2 pos2);

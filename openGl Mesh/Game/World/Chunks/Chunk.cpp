@@ -75,16 +75,17 @@ std::vector<Face*> Chunk::getMeshes() {
 	}
 	return res;
 }
-Blocks Chunk::getBlock_unsafe(glm::ivec3 pos) {
-	auto p = pos;
-	while (pos.x%CHUNK_SIZE != 0 && !(std::abs(pos.x) > CHUNK_SIZE || std::abs(pos.x) < CHUNK_SIZE)) {
+Blocks& Chunk::getBlock_unsafe(glm::ivec3 pos, GLboolean& error) {
+	auto air = Blocks::AIR;
+	/*while (pos.x%CHUNK_SIZE != 0 && !(std::abs(pos.x) > CHUNK_SIZE || std::abs(pos.x) < CHUNK_SIZE)) {
 		pos -= glm::ivec3(CHUNK_SIZE);
-	}
+	}*/
 	try {
 		return blocks.at(getBlockIndex(pos));
 	}
 	catch (std::exception e) {
-		return Blocks::AIR;
+		error = 1;
+		return air;
 	}
 }
 Blocks& Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks) {
@@ -126,7 +127,10 @@ void Chunk::addBlock(Blocks block, std::vector<Chunk*>& chunks, glm::vec3 absPos
 
 void Chunk::editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks) {
 	std::vector<Face> victims;
-	if (!this) return;
+	if (!this) return; 
+	GLboolean error = 0;
+	Blocks& b = getBlock_unsafe(pos - position, error);
+	if (error) return;
 	if (block == Blocks::AIR) {
 		// break block
 		for (GLuint i = 0; i < meshes.size(); i++) {
@@ -150,8 +154,9 @@ void Chunk::editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks) {
 			auto& delta = deltas[i];
 			auto p = pos + delta;
 			Chunk* chunk = this;
-			block = getBlock_safe(p - position, chunks, chunk);
-			if (block == Blocks::AIR) continue;
+			GLboolean error = 0;
+			Blocks block_ = getBlock_unsafe(p - position, error);
+			if (error || block_ == Blocks::AIR) continue;
 			GLubyte tex = (GLuint)getTexture(block);
 			Face face = { FACES[i], TEXTURES[tex], p };
 			chunk->meshes.push_back(face);
@@ -168,8 +173,9 @@ void Chunk::editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks) {
 		for (GLubyte i = 0; i < 6; i++) {
 			glm::vec3 delta = deltas[i];
 			Chunk* chunk = this;
-			Blocks b = getBlock_safe((pos + delta) - position, chunks, chunk);
-			if (!chunk || b == Blocks::AIR) continue;
+			GLboolean error = 0;
+			Blocks blk = getBlock_unsafe((pos + delta) - position, error);
+			if (!chunk || error || blk == Blocks::AIR) continue;
 			std::vector<Face>& meshs = chunk->meshes;
 			for (auto& face : meshs) {
 				GLubyte b = std::get<0>(face)->type;
@@ -187,11 +193,9 @@ void Chunk::editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks) {
 			auto found = std::find(meshs.begin(), meshs.end(), victim);
 			meshs.erase(found);
 		}
-
-		
-		addBlock(block, chunks, pos, 1);
-		getBlock_safe(pos - position, chunks) = block;
+		addBlock(block, chunks, pos);
 	}
+	b = block;
 }
 std::vector<Face*> Chunk::getPointerMesh() {
 	std::vector<Face*> res;
@@ -209,26 +213,33 @@ Blocks& Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*
 			return blocks[x];
 		}
 	}
-	glm::vec3 toLookAt = inChunkPosition;
+
 	glm::vec3 chunkPositionToLookAt = position;
-
-	glm::vec3 delta = inChunkPosition + glm::vec3(CHUNK_SIZE);
-	glm::bvec3 comp = glm::lessThan(inChunkPosition, glm::vec3(0));
-	delta *= comp;
-
-	for (GLuint i = 0; i < 3; i++) {
-		if (delta[i] != 0) {
-			toLookAt[i] = delta[i];
-		}
+	glm::vec3 toLookAt = inChunkPosition;
+	// maps toLookAt to the correct range
+	toLookAt = glm::abs(toLookAt) - 16.0f * glm::floor(glm::abs(toLookAt) / 16.0f);
+	
+	// if acceeds add 16 
+	if (inChunkPosition.x >= CHUNK_SIZE) {
+		chunkPositionToLookAt.x += CHUNK_SIZE;
 	}
-
-	chunkPositionToLookAt -= glm::vec3(CHUNK_SIZE) * (glm::vec3)comp;
-
-	auto t = glm::greaterThan(inChunkPosition, glm::vec3(CHUNK_SIZE - 1));
-	comp = glm::not_(comp) && t;
-	delta = glm::vec3(CHUNK_SIZE);
-	toLookAt -= delta * (glm::vec3)comp;
-	chunkPositionToLookAt += delta * (glm::vec3)comp;
+	if (inChunkPosition.y >= CHUNK_SIZE) {
+		chunkPositionToLookAt.y += CHUNK_SIZE;
+	}
+	if (inChunkPosition.z >= CHUNK_SIZE) {
+		chunkPositionToLookAt.z += CHUNK_SIZE;
+	}
+	// if bellow subtract 16
+	if (inChunkPosition.x < 0) {
+		chunkPositionToLookAt.x -= CHUNK_SIZE;
+	}					  
+	if (inChunkPosition.y < 0) {
+		chunkPositionToLookAt.y -= CHUNK_SIZE;
+	}					  
+	if (inChunkPosition.z < 0) {
+		chunkPositionToLookAt.z -= CHUNK_SIZE;
+	}
+	
 
 	int index = getBlockIndex(toLookAt);
 

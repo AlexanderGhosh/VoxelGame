@@ -20,9 +20,6 @@ public:
 	void render(Camera& c, glm::mat4 projection);
 	void updatePlayerPos(glm::vec3 pos);
 
-	void createChunk(ChunkPosition position, GLboolean updateMesh = 1);
-	void removeChunk(ChunkPosition position);
-
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block);
 
@@ -32,6 +29,8 @@ public:
 
 	std::vector<chunk_column*> getChunks();
 	std::vector<Chunk*> getSubChunks();
+
+	void save();
 
 private:
 	GLuint seed;
@@ -56,6 +55,7 @@ private:
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
 
 	Blocks& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
+	std::tuple<glm::vec3, FACES_NAMES> getIntersected(chunk_column* chunkOcc, glm::vec2 in_chunkPos, Ray ray);
 
 	std::vector<chunk_column> createChunks(std::vector<ChunkPosition> positions, std::vector<ChunkPosition> activeChunks,
 		std::vector<ChunkPosition> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<Chunk*> subChunks);

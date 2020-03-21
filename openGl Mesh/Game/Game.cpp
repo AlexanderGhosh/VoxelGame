@@ -134,6 +134,7 @@ void Game::setupPlayer() {
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+		world.save();
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (key >= 0 && key < 1024) {
@@ -255,27 +256,6 @@ void Game::processKeys() {
 		if (k[GLFW_KEY_LEFT_SHIFT]) {
 			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
-	}
-	if (k[GLFW_KEY_F1]) {
-		auto start = std::chrono::high_resolution_clock::now();
-		world.createChunk({ 32, 16 });
-		auto stop = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-		std::cout << "made in: " << duration.count() << " microsecconds\n";
-	}
-	if (k[GLFW_KEY_F2]) {
-		auto start = std::chrono::high_resolution_clock::now();
-		world.removeChunk({ 32, 16 });
-		auto stop = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-		std::cout << "removed in: " << duration.count() << " microsecconds\n";
-	}
-	if (k[GLFW_KEY_F4]) {
-		auto start = std::chrono::high_resolution_clock::now();
-		world.getChunks()[0]->save("chunk:-1", CHUNK_SIZE * 2);
-		auto stop = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-		std::cout << "saved in: " << duration.count() << " microsecconds\n";
 	}
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	world.updatePlayerPos(cam.GetPosition());
