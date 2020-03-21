@@ -211,12 +211,57 @@ void World::removeChunk(ChunkPosition position) {
 		}
 	}
 }
-
+bool operator == (chunk_column * chunk, glm::vec2 pos) {
+	return chunk->getPosition() == pos;
+}
 void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	Ray ray = Ray(pos, front, PLAYER_REACH);
 	chunk_column* chunkOcc = getChunkOccupied(pos);
-	auto meshes = chunkOcc->getMesh(0);
+	glm::vec2 in_chunkPos = glm::round(glm::vec2(pos.x, pos.z)) - chunkOcc->getPosition();
 	
+	std::vector<glm::vec2> positions;
+	positions.push_back(chunkOcc->getPosition());
+	glm::bvec2 close = glm::lessThan(in_chunkPos - glm::vec2(PLAYER_REACH), { 0, 0 });
+	glm::bvec2 far = glm::greaterThan(in_chunkPos + glm::vec2(PLAYER_REACH), { CHUNK_SIZE - 1, CHUNK_SIZE - 1 });
+
+	glm::vec2 f(front.x, front.z);
+	f = glm::round(f);
+
+	glm::vec2 delta(-CHUNK_SIZE);
+	if (close.x) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(1, 0));
+	}
+	if (close.y) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(0, 1));
+	}
+	if (glm::all(close)) {
+		positions.push_back(chunkOcc->getPosition() + delta * (glm::vec2)close);
+	}
+
+	delta *= -1;
+	if (far.x) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(1, 0));
+	}
+	if (far.y) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(0, 1));
+	}
+	if (glm::all(far)) {
+		positions.push_back(chunkOcc->getPosition() + delta * (glm::vec2)far);
+	}
+
+	if (close.x && far.y) positions.push_back(chunkOcc->getPosition() + glm::vec2(-CHUNK_SIZE, CHUNK_SIZE));
+	if (close.y && far.x) positions.push_back(chunkOcc->getPosition() + glm::vec2(CHUNK_SIZE, -CHUNK_SIZE));
+
+
+	std::vector<chunk_column*> chunks;
+	Faces meshes;
+	for (glm::vec2 pos : positions) {
+		std::vector <chunk_column>::iterator found = std::find(this->chunks.begin(), this->chunks.end(), pos);
+		if (found == this->chunks.end()) continue;
+		auto mes = (*found).getMesh();
+		meshes.insert(meshes.end(), mes.begin(), mes.end());
+	}
+
 	glm::vec3 p(0);
 	GLfloat shortestDistance = 1000;
 
@@ -232,8 +277,8 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	}
 	Blocks& block = getBlock(p, chunkOcc);
 	auto all = getSubChunks();
-	auto chunks = getSubChunkOccupied(p, chunkOcc);
-	chunks->editBlock(p, Blocks::AIR, all);
+	Chunk* sub = getSubChunkOccupied(p, chunkOcc);
+	sub->editBlock(p, Blocks::AIR, all);
 	block = Blocks::AIR;
 	if (chunkOcc) {
 		chunkOcc->createMesh({}, 0);
@@ -265,47 +310,103 @@ chunk_column* World::getChunkOccupied(glm::vec3 position) {
 	}
 }
 void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
-	std::array<glm::ivec3, 6> dirs = {
-		glm::ivec3(1, 0, 0), glm::ivec3(-1, 0, 0),
-		glm::ivec3(0, 1, 0), glm::ivec3(0, -1, 0),
-		glm::ivec3(0, 0, 1), glm::ivec3(0, 0, -1)
-	};
-	// std::cout << "__________________________________________________________________ " << std::endl;
-	// pos.y += 0.5f;
-	GLboolean changed = 0;
-	chunk_column* chunk = nullptr;
-	glm::vec3 lookPos = pos + front * (GLfloat)(PLAYER_REACH - 1);
-	glm::vec3 blockPos(0);
-	for (GLubyte i = 0; i < PLAYER_REACH; i++) {
-		lookPos -= front;
-		blockPos = glm::round(lookPos);
-		// std::cout << "looking at: " << glm::to_string(blockPos) << std::endl;
-		Blocks& block = getBlock(blockPos, chunk);
-		// std::cout << "block: " << (int)block << std::endl;
-		if (block == Blocks::AIR) {
-			for (auto& dir : dirs) {
-				glm::vec3 bp = blockPos + (glm::vec3)dir;
-				auto& newBlock = getBlock(bp, chunk);
-				if (newBlock != Blocks::AIR) {
-					changed = 1;
-					break;
-				}
-			}
-			if (changed)break;
+	Ray ray = Ray(pos, front, PLAYER_REACH);
+	chunk_column* chunkOcc = getChunkOccupied(pos);
+	glm::vec2 in_chunkPos = glm::round(glm::vec2(pos.x, pos.z)) - chunkOcc->getPosition();
+
+	std::vector<glm::vec2> positions;
+	positions.push_back(chunkOcc->getPosition());
+	glm::bvec2 close = glm::lessThan(in_chunkPos - glm::vec2(PLAYER_REACH), { 0, 0 });
+	glm::bvec2 far = glm::greaterThan(in_chunkPos + glm::vec2(PLAYER_REACH), { CHUNK_SIZE - 1, CHUNK_SIZE - 1 });
+
+	glm::vec2 f(front.x, front.z);
+	f = glm::round(f);
+
+	glm::vec2 delta(-CHUNK_SIZE);
+	if (close.x) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(1, 0));
+	}
+	if (close.y) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(0, 1));
+	}
+	if (glm::all(close)) {
+		positions.push_back(chunkOcc->getPosition() + delta * (glm::vec2)close);
+	}
+
+	delta *= -1;
+	if (far.x) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(1, 0));
+	}
+	if (far.y) {
+		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(0, 1));
+	}
+	if (glm::all(far)) {
+		positions.push_back(chunkOcc->getPosition() + delta * (glm::vec2)far);
+	}
+
+	if (close.x && far.y) positions.push_back(chunkOcc->getPosition() + glm::vec2(-CHUNK_SIZE, CHUNK_SIZE));
+	if (close.y && far.x) positions.push_back(chunkOcc->getPosition() + glm::vec2(CHUNK_SIZE, -CHUNK_SIZE));
+
+
+	std::vector<chunk_column*> chunks;
+	Faces meshes;
+	for (glm::vec2 pos : positions) {
+		std::vector <chunk_column>::iterator found = std::find(this->chunks.begin(), this->chunks.end(), pos);
+		if (found == this->chunks.end()) continue;
+		auto mes = (*found).getMesh();
+		meshes.insert(meshes.end(), mes.begin(), mes.end());
+	}
+
+	glm::vec3 p(0);
+	FACES_NAMES face = NULL_;
+	GLfloat shortestDistance = 1000;
+
+	for (auto& mesh : meshes) {
+		FACES_NAMES& face_ = std::get<0>(*mesh)->type;
+		glm::vec3& pos = std::get<2>(*mesh);
+		auto dist = ray.checkIntercesction_Block(pos, face_);
+		if (dist == -1) continue;
+		if (dist < shortestDistance) {
+			shortestDistance = dist;
+			p = pos;
+			face = face_;
 		}
 	}
-	if (changed) {
-		auto all = getSubChunks();
-		chunk_column* chunkOcc = nullptr;
-		auto chunks = getSubChunkOccupied(blockPos, chunkOcc);
-		chunks->editBlock(blockPos, block, all);
-		if (chunkOcc) {
-			chunkOcc->createMesh({}, 0);
-			chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
-		}
-		genWorldMesh(1);
-		drawable.setUp(worldMesh);
+
+	switch (face)
+	{
+	case FRONT:
+		p.z++;
+		break;
+	case BACK:
+		p.z--;
+		break;
+	case LEFT:
+		p.x--;
+		break;
+	case RIGHT:
+		p.x++;
+		break;
+	case TOP:
+		p.y++;
+		break;
+	case BOTTOM:
+		p.y--;
+		break;
+	case NULL_:
+		return;
 	}
+
+	// Blocks& block = getBlock(p, chunkOcc);
+	auto all = getSubChunks();
+	Chunk* sub = getSubChunkOccupied(p, chunkOcc);
+	sub->editBlock(p, block, all);
+	if (chunkOcc) {
+		chunkOcc->createMesh({}, 0);
+		chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
+	}
+	genWorldMesh(1);
+	drawable.setUp(worldMesh);
 }
 
 Chunk* World::getSubChunkOccupied(glm::ivec3 pos, chunk_column*& chunkOcc) {
