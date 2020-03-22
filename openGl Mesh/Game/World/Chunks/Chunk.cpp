@@ -157,7 +157,7 @@ void Chunk::editBlock(glm::vec3 pos, Blocks block, std::vector<Chunk*> chunks) {
 			GLboolean error = 0;
 			Blocks block_ = getBlock_unsafe(p - position, error);
 			if (error || block_ == Blocks::AIR) continue;
-			GLubyte tex = (GLuint)getTexture(block);
+			GLubyte tex = (GLuint)getTexture(block_);
 			Face face = { FACES[i], TEXTURES[tex], p };
 			chunk->meshes.push_back(face);
 		}
@@ -206,7 +206,7 @@ std::vector<Face*> Chunk::getPointerMesh() {
 }
 
 Blocks& Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks, Chunk*& chunk_) {
-	auto air = Blocks::AIR;
+	/*auto air = Blocks::AIR;
 	if (glm::all(glm::greaterThanEqual(inChunkPosition, glm::vec3(0)))) {
 		if (glm::all(glm::lessThan(inChunkPosition, glm::vec3(CHUNK_SIZE)))) {
 			auto x = getBlockIndex(inChunkPosition);
@@ -247,6 +247,50 @@ Blocks& Chunk::getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*
 	for (auto& chunk : chunks) {
 		if (chunk->position == chunkPositionToLookAt) {
 			chunk_ = chunk;
+			return chunk->blocks[index];
+		}
+	}
+	return air;*/
+	Blocks air = Blocks::AIR;
+	if (inChunkPosition.x >= 0 && inChunkPosition.y >= 0 && inChunkPosition.z >= 0) {
+		if (inChunkPosition.x < CHUNK_SIZE && inChunkPosition.y < CHUNK_SIZE && inChunkPosition.z < CHUNK_SIZE) {
+			return blocks[getBlockIndex(inChunkPosition)];
+		}
+	}
+	glm::vec3 toLookAt = inChunkPosition;
+	glm::vec3 chunkPositionToLookAt = position;
+	if (inChunkPosition.x < 0) {
+		toLookAt.x = CHUNK_SIZE + inChunkPosition.x;
+		chunkPositionToLookAt.x -= CHUNK_SIZE;
+	}
+	else if (inChunkPosition.x > CHUNK_SIZE - 1) {
+		toLookAt.x -= CHUNK_SIZE;
+		chunkPositionToLookAt.x += CHUNK_SIZE;
+	}
+
+	if (inChunkPosition.y < 0) {
+		toLookAt.y = CHUNK_SIZE + inChunkPosition.y;
+		chunkPositionToLookAt.y -= CHUNK_SIZE;
+	}
+	else if (inChunkPosition.y > CHUNK_SIZE - 1) {
+		toLookAt.y -= CHUNK_SIZE;
+		chunkPositionToLookAt.y += CHUNK_SIZE;
+	}
+
+	if (inChunkPosition.z < 0) {
+		toLookAt.z = CHUNK_SIZE + inChunkPosition.z;
+		chunkPositionToLookAt.z -= CHUNK_SIZE;
+	}
+	else if (inChunkPosition.z > CHUNK_SIZE - 1) {
+		toLookAt.z -= CHUNK_SIZE;
+		chunkPositionToLookAt.z += CHUNK_SIZE;
+	}
+
+	int index = getBlockIndex(toLookAt);
+
+	if (index < 0) return air;
+	for (auto& chunk : chunks) {
+		if (chunk->position == chunkPositionToLookAt) {
 			return chunk->blocks[index];
 		}
 	}

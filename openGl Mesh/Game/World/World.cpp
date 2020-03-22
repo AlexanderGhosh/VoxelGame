@@ -89,7 +89,7 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions) {
 			chunk.createMesh({}, 0);
 		}
 		else {
-			chunk.createMesh(subChunks);
+			chunk.createMesh(subChunks, 1);
 		}
 	}
  	genWorldMesh(0);
@@ -203,12 +203,13 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 
 	// Blocks& block = getBlock(p, chunkOcc);
 	auto all = getSubChunks();
+	chunkOcc = nullptr;
 	Chunk* sub = getSubChunkOccupied(p, chunkOcc);
 	sub->editBlock(p, Blocks::AIR, all);
 	// block = Blocks::AIR;
 	if (chunkOcc) {
 		chunkOcc->createMesh({}, 0);
-		chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
+		// chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
 	}
 	genWorldMesh(0);
 	drawable.setUp(worldMesh);
@@ -254,7 +255,7 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
 
 	if (chunkOcc) {
 		chunkOcc->createMesh({}, 0);
-		chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
+		// chunkOcc->save("chunk" + std::to_string((int)chunkOcc->getPosition().x) + "," + std::to_string((int)chunkOcc->getPosition().y), seed);
 	}
 	genWorldMesh(0);
 	drawable.setUp(worldMesh);

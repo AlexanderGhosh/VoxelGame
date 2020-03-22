@@ -42,9 +42,11 @@ chunk_column::chunk_column(std::string fileName) {
 	in.close();
 
 
-	chunks[4].meshes.clear();
+	for (auto& chunk : chunks) {
+		chunk.meshes.clear();
+	}
 	for (auto& element : elements) {
-		chunks[4].meshes.push_back(element.toFace());
+		getSubchunk_unsafe(element.y)->meshes.push_back(element.toFace());
 	}
 	for (GLuint i = 0; i < chunks.size(); i++) {
 		chunks[i].blocks.empty();
@@ -234,6 +236,10 @@ void chunk_column::save(std::string name, GLuint seed) {
 	} // convert to useable data
 	unsigned size = meshes.size();
 	out.write(reinterpret_cast<char*>(&size), sizeof(unsigned)); // size of mesh
+	if (meshes.size() == 0) {
+		out.close();
+		return;
+	}
 	out.write(reinterpret_cast<char*>(&meshes[0]), meshes.size() * sizeof(Tuple)); // mesh data
 	out.close();
 }
