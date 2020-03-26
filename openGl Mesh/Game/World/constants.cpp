@@ -158,6 +158,18 @@ glm::vec3 getTranslation(glm::mat4 matrix) {
 	return { matrix[3][0], matrix[3][1], matrix[3][2] };
 }
 
+std::vector<Face> toFaces(FaceB_p face)
+{
+	std::vector<Face> res;
+	Buffer* b = std::get<0>(face);
+	Texture* t = std::get<1>(face);
+	std::vector<glm::mat4>& models = std::get<2>(face);
+	for (glm::mat4& model : models) {
+		res.push_back({ b, t, getTranslation(model) });
+	}
+	return res;
+}
+
 glm::vec3 operator+(glm::vec3 p1, glm::vec2 p2)
 {
 	return p1 + glm::vec3(p2.x, 0, p2.y);

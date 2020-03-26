@@ -7,9 +7,7 @@
 
 #include "Chunks/Chunk.h"
 #include "constants.h"
-#include "../../Renders/chunkRender.h"
 #include "../../Drawable.h"
-#include "Chunks/chunk_column.h"
 #include "../../Ray.h"
 #include "../../ChunkColumn.h"
 
@@ -24,25 +22,19 @@ public:
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block);
 
-	Chunk* getSubChunkOccupied(glm::ivec3 pos, chunk_column*& chunkOcc);
-	std::vector<Chunk*> getSubChunkOccupied(glm::ivec3 pos, GLboolean surrounding);
-	// chunk_column* getChunkOccupied(glm::vec3 position);
-	ChunkColumn* getChunkOccupied(glm::vec3 position);
-
-	std::vector<chunk_column*> getChunks();
-	std::vector<Chunk*> getSubChunks();
-
+	ChunkColumn* getChunkOccupied(glm::vec3 position); 
+	std::unordered_map<GLuint, FaceB_p>& getWorldMesh();
+	std::vector<ChunkColumn*> getAdjacentChunks(glm::vec3 worldPosition);
+	
 	void save();
-
 private:
 	GLuint seed;
-	std::vector<chunk_column> chunks;
 	std::vector<ChunkColumn> chunks2;
 	std::unordered_map<GLuint, FaceB_p> worldMesh;
 	Drawable drawable;
 	GLboolean isDynamic;
 	GLboolean reDraw;
-	ChunkPosition prevChunkPos;
+	glm::vec2 prevChunkPos;
 
 	void getNewChunkPositions(GLboolean flat);
 	std::vector<glm::vec2> getNewChunkPositions(glm::vec2 origin, GLint renderDist = INITALL_VIEW);
@@ -57,9 +49,8 @@ private:
 	void renderChunksStatic(Camera& c, glm::mat4 projection);
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
 
-	Blocks& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
 	std::tuple<glm::vec3, FACES_NAMES> getIntersected(ChunkColumn*& chunkOcc, glm::vec2 in_chunkPos, Ray ray);
 
-	std::vector<ChunkColumn> createChunks(std::vector<ChunkPosition> positions, std::vector<ChunkPosition> activeChunks,
-		std::vector<ChunkPosition> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<ChunkColumn>* subChunks);
+	std::vector<ChunkColumn> createChunks(std::vector<glm::vec2> positions, std::vector<glm::vec2> activeChunks,
+		std::vector<glm::vec2> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<ChunkColumn>* subChunks);
 };

@@ -92,6 +92,8 @@ Blocks toBlock(GLubyte number);
 std::string getName(Blocks block);
 glm::vec3 getTranslation(glm::mat4 matrix);
 
+std::vector<Face> toFaces(FaceB_p face);
+
 glm::vec3 operator+(glm::vec3 p1, glm::vec2 p2);
 glm::vec3 operator+(glm::vec2 p1, glm::vec3 p2);
 glm::vec3 operator-(glm::vec3 p1, glm::vec2 p2);

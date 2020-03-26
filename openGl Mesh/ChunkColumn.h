@@ -1,4 +1,5 @@
 #pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 #include "gtx/hash.hpp"
 #include "Game/World/constants.h"
 #include "Game/World/world_generation.h"

@@ -234,16 +234,33 @@ glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 	if (rounded == glm::ivec3(0, -1, 1)) {
 		int g = 0;
 	}
-	Faces_P mesh;
-	std::vector<Chunk*> chunks = world.getSubChunkOccupied(rounded, 1);
+	auto chunks = world.getAdjacentChunks(pos);
+	std::unordered_map<GLuint, FaceB_p> worldMesh;
 	for (auto& chunk : chunks) {
-		if (!chunk) continue;
-		auto t = chunk->getMeshes();
+		std::unordered_map<GLuint, FaceB_p>& mesh = chunk->getMesh();
+		for (auto& m : mesh) {
+			const GLuint key = m.first;
+			FaceB_p& faces = m.second;
+			try {
+				FaceB_p& faces2 = worldMesh.at(key);
+				std::vector<glm::mat4>& models = std::get<2>(faces);
+				std::get<2>(faces2).insert(std::get<2>(faces2).end(), models.begin(), models.end());
+			}
+			catch (std::exception e) {
+				worldMesh.insert({ key, faces });
+			}
+		}
+	}
+	if (worldMesh.size() == 0) return res;
+	Faces mesh;
+
+	for (auto& m : worldMesh) {
+		auto t = toFaces(m.second);
 		mesh.insert(mesh.end(), t.begin(), t.end());
 	}
 	BoxCollider boxColl = BoxCollider(glm::vec3(1.0f), glm::vec3(0));
 	for (auto& face : mesh) {
-		boxColl.setPosition(std::get<2>(*face)); // COMMENT WHEN TESTING
+		boxColl.setPosition(std::get<2>(face));
 		for (GLubyte i = 0; i < 3; i++) {
 			GLfloat& component = deltaV[i];
 			if (component == 0) continue;

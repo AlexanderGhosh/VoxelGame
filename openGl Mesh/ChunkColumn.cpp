@@ -522,7 +522,6 @@ bool operator==(ChunkColumn* chunk, glm::vec2 pos)
 {
 	return *chunk == pos;
 }
-
 FaceB_p Tuple_::toFace() {
 	Texture* tex = nullptr;
 	for (auto& t : TEXTURES) {

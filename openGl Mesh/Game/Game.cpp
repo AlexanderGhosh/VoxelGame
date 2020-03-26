@@ -129,7 +129,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ 0.0f, 5.0f, 0.0f }, { 0.0f, 1.25f, 0.0f } /*{ -0.5f, 0.25f, 3.0f }*/);
+	player = Player({ 1.0f, 260.0f, 1.0f }, { 0.0f, 1.25f, 0.0f });
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
