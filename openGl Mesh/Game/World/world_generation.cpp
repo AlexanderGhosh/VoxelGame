@@ -24,20 +24,20 @@ GLubyte world_generation::heightAtPositon(glm::vec2 pos) {
 	GLfloat sum = 0.0f;
 	for (GLubyte i = 0; i < octaves; i++) {
 		GLfloat raw = noise(inp * frequencies[i]);
-		// raw += 1.0f; // range 0 - 2
-		// raw /= 2.0f; // range 0 - 1
-		// raw *= CHUNK_SIZE; // range 0 - CHUNK_SIZE
+		raw += 1.0f; // range 0 - 2
+		raw /= 2.0f; // range 0 - 1
+		raw *= WORLD_HEIGHT/octaves; // range 0 - CHUNK_SIZE
+		raw += 75;
 		sum += mult * raw;
 		mult /= 2.0f;
 	}
 	sum = std::pow(sum, redistribution);
-	/*sum = std::lround(sum);
-	if (sum >= CHUNK_SIZE) sum = CHUNK_SIZE - 1;
-	if (sum < 0) sum++;*/
-	sum *= 10;
+	sum = std::floorl(sum);
+	if (sum >= WORLD_HEIGHT) sum = WORLD_HEIGHT - 1;
+	if (sum < 0) sum = 0;
+/*	sum *= 10;
 	sum = std::abs(sum);
-	if (sum > CHUNK_SIZE) sum = CHUNK_SIZE - 1;
-	sum = std::lround(sum);
+	if (sum > CHUNK_SIZE) sum = CHUNK_SIZE - 1;*/
 	return sum;
 }
 GLubyte world_generation::heightAtPositon(GLfloat x, GLfloat y) {
@@ -49,7 +49,7 @@ GLfloat world_generation::noise(glm::vec2 pos) {
 GLfloat world_generation::noise(GLfloat x, GLfloat y) {
 	return glm::perlin(glm::vec2(x, y));
 }
-ChunkHeightMap world_generation::genHeightMap(glm::vec3 chunkPos) {
+/*ChunkHeightMap world_generation::genHeightMap(glm::vec3 chunkPos) {
 	ChunkHeightMap res;
 	for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
 		for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
@@ -60,9 +60,9 @@ ChunkHeightMap world_generation::genHeightMap(glm::vec3 chunkPos) {
 		}
 	}
 	return res;
-}
-HeightMap world_generation::createHeightMap(glm::vec3 chunkPos, GLboolean hasCaves) {
-	HeightMap res;
+}*/
+/*HeightMap world_generation::createHeightMap(glm::vec3 chunkPos, GLboolean hasCaves) {
+	HeightMap res{};
 	if (hasCaves) {
 		// make caves
 	}
@@ -72,8 +72,34 @@ HeightMap world_generation::createHeightMap(glm::vec3 chunkPos, GLboolean hasCav
 				glm::vec2 pos(x, z);
 				pos.x += chunkPos.x;
 				pos.y += chunkPos.z;
-				res[x][z].push_back({ 1, heightAtPositon(pos) });
+				// res[x][z].push_back({ 1, heightAtPositon(pos) });
 			}
+		}
+	}
+	return res;
+}*/
+HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLboolean hasCaves) {
+	// doesn't generate caves
+	HeightMap res;
+	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
+	{
+		for (GLubyte y = 0; y < CHUNK_SIZE; y++)
+		{
+			std::vector<Block_Count>& encoded = res[x][y];
+			glm::vec2 worldPos = { x, y };
+			worldPos += chunkPos;
+			GLuint height = heightAtPositon(worldPos);
+			if (height < 2) {
+				encoded.push_back({ Blocks::WATER, height + 1 });
+				break;
+			}
+			if (height - 3 > 0) {
+				encoded.push_back({ Blocks::STONE, height -= 3 });
+			}
+			if (height - 2 > 0) {
+				encoded.push_back({ Blocks::DIRT, 2 });
+			}
+			encoded.push_back({ Blocks::GRASS, 1 });
 		}
 	}
 	return res;

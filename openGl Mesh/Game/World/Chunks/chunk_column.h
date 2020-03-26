@@ -3,7 +3,7 @@
 #include "Chunk.h"
 #include "../world_generation.h"
 using ChunkPosition = glm::vec2;
-using Faces = std::vector<Face*>;
+using Faces_P = std::vector<Face*>;
 class chunk_column
 {
 public:
@@ -11,10 +11,10 @@ public:
 	chunk_column();
 	chunk_column(GLboolean gen);
 	chunk_column(ChunkPosition pos, GLboolean isFlat = 0);
-	chunk_column(ChunkPosition pos, ChunkHeightMap hm);
+	// chunk_column(ChunkPosition pos, ChunkHeightMap hm);
 	chunk_column(std::string fileName);
 	~chunk_column();
-	Faces getMesh(GLboolean reGen =0);
+	Faces_P getMesh(GLboolean reGen =0);
 	void addChunk(Chunk chunk, GLboolean sort = 0);
 	void addChunks(std::vector<Chunk> chunks, GLboolean sort = 0);
 	void createMesh(std::vector<chunk_column*> columns);
@@ -32,8 +32,8 @@ public:
 	bool operator !=(glm::vec2 pos2);
 private:
 	ChunkPosition pos;
-	ChunkHeightMap heightMap;
-	Faces faces;
+	// ChunkHeightMap heightMap;
+	Faces_P faces;
 	GLboolean hasCaves;
 	void genHeightMap(GLboolean isFlat);
 	void applyHeightMap();

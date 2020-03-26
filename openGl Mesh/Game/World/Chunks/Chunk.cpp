@@ -26,7 +26,7 @@ void Chunk::createBlocksFlat(Blocks block) {
 		blocks[getBlockIndex({ 0, -1, 1 })] = Blocks::AIR;
 	}
 }
-void Chunk::createBlocks(HeightMapChunk heightMap) {
+/*void Chunk::createBlocks(HeightMapChunk heightMap) {
 	blocks.fill(Blocks::AIR);
 	for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
 		for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
@@ -48,7 +48,7 @@ void Chunk::createBlocks(HeightMapChunk heightMap) {
 			}
 		}
 	}
-}
+}*/
 void Chunk::createMesh(std::vector<Chunk*> chunks) {
 	meshes.clear();
 	for (GLint x = 0; x < CHUNK_SIZE; x++) {

@@ -2,18 +2,18 @@
 Drawable::Drawable() {
 
 }
-Drawable::Drawable(std::vector<Face*>& sortedMeshes) {
-	setUp(sortedMeshes);
-	meshes = sortedMeshes;
+Drawable::Drawable(Faces* sortedMeshes) {
+	// setUp(sortedMeshes);
 }
-void Drawable::setUp(std::vector<Face*> meshes) {
+void Drawable::setUp(std::unordered_map<GLuint, FaceB_p>& mesh) {
+	/*Faces& meshes = *mesh;
 	if (meshes.size() == 0) return;
 	buffers.clear();
 	std::map<GLuint, std::vector<glm::mat4>> positions;
 	for (auto& mesh : meshes) {
-		Buffer* b = std::get<0>(*mesh);
-		Texture* t = std::get<1>(*mesh);
-		glm::vec3 p = std::get<2>(*mesh);
+		Buffer* b = std::get<0>(mesh);
+		Texture* t = std::get<1>(mesh);
+		glm::vec3 p = std::get<2>(mesh);
 		GLuint key = std::pow(b->type+1, 2) * t->getTexMap();
 		glm::mat4 model(1);
 		model = glm::translate(model, p);
@@ -26,12 +26,30 @@ void Drawable::setUp(std::vector<Face*> meshes) {
 			buffers.insert({ key, { *b, t, 1 } });
 			positions.insert({ key, { model } });
 		}
+	}*/
+	buffers.clear();
+	std::map<GLuint, std::vector<glm::mat4>> positions;
+	for (auto& pair : mesh) {
+		const GLuint key = pair.first;
+		FaceB_p& faces = pair.second;
+		try {
+			std::vector<glm::mat4>& poss = std::get<2>(faces);
+			positions.at(key).insert(positions[key].end(), poss.begin(), poss.end());
+			std::get<2>(buffers.at(key)) += poss.size();
+		}
+		catch (std::exception e) {
+			Buffer* buffer = std::get<0>(faces);
+			Texture* texture = std::get<1>(faces);
+			std::vector<glm::mat4>& poss = std::get<2>(faces);
+
+			positions.insert({ key, poss });
+			buffers.insert({ key, { *buffer, texture, poss.size() } });
+		}
 	}
-	Buffer* front = FACES[FRONT];
 	for (auto& b : buffers) {
-		auto& key = std::get<0>(b);
-		auto& buff = std::get<1>(b);
-		auto& buf = std::get<0>(buff);
+		const GLuint key = b.first;
+		FaceB& buff = b.second;
+		Buffer& buf = std::get<0>(buff);
 		buf.resetData();
 		buf.addPositions(positions[key]);
 	}

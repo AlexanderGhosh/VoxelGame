@@ -31,7 +31,8 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("skybox", ""),
 	new Texture("stone", ""),
 	new Texture("dirt", ""),
-	new Texture("water", "")
+	new Texture("water", ""),
+	new Texture("error", "")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),
@@ -55,11 +56,11 @@ const std::vector<Blocks> AllBlocks = {
 	Blocks::WATER
 };
 GLint getBlockIndex(glm::vec3 position) {
-	position.y = std::abs(position.y);
 	int index = position.x + position.z * CHUNK_SIZE + position.y * CHUNK_AREA;
 	if (index >= CHUNK_VOLUME) index *= -1;
 	return index;
 }
+
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload) {
 	while (victim.x % multiple != 0) {
 		victim.x -= 1;
@@ -99,7 +100,7 @@ GLint reduceToMultiple(GLfloat victim, GLuint multiple) {
 	return victim;
 }
 Texture_Names getTexture(Blocks block) {
-	Texture_Names res = Texture_Names::GRASS;
+	Texture_Names res = Texture_Names::ERROR;
 	switch (block)
 	{
 	case Blocks::AIR:
@@ -115,9 +116,6 @@ Texture_Names getTexture(Blocks block) {
 		break;
 	case Blocks::WATER:
 		res = Texture_Names::WATER;
-		break;
-	default:
-		res = Texture_Names::SKYBOX;
 		break;
 	}
 	return res;
@@ -155,4 +153,26 @@ std::string getName(Blocks block) {
 		break;
 	}
 	return name;
+}
+glm::vec3 getTranslation(glm::mat4 matrix) {
+	return { matrix[3][0], matrix[3][1], matrix[3][2] };
+}
+
+glm::vec3 operator+(glm::vec3 p1, glm::vec2 p2)
+{
+	return p1 + glm::vec3(p2.x, 0, p2.y);
+}
+
+glm::vec3 operator+(glm::vec2 p1, glm::vec3 p2)
+{
+	return p2 + glm::vec3(p1.x, 0, p1.y);
+}
+
+glm::vec3 operator-(glm::vec3 p1, glm::vec2 p2)
+{
+	return p1 - glm::vec3(p2.x, 0, p2.y);
+}
+glm::vec3 operator-(glm::vec2 p1, glm::vec3 p2)
+{
+	return glm::vec3(p1.x, 0, p1.y) - p2;
 }

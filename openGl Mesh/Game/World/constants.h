@@ -1,22 +1,37 @@
 #pragma once
 #include <string>
 #include <sstream>
+#include <unordered_map>
 #include "../../Shaders/Shader.h"
 #include "../../Mesh.h"
 
+class ChunkColumn;
+
 #define RENDER_DISTANCE 3
 #define PLAYER_REACH 5
-#define RAY_INCREMENT 0.1f
+#define WORLD_HEIGHT 256
 
 #define INITALL_VIEW 4
 #define INITALL_VIEW_AREA INITALL_VIEW * INITALL_VIEW
 #define INITALL_VIEW_VOLUME INITALL_VIEW * INITALL_VIEW * INITALL_VIEW
+
 #define CHUNK_SIZE 16
 #define CHUNK_AREA CHUNK_SIZE * CHUNK_SIZE
-#define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
+#define CHUNK_VOLUME CHUNK_SIZE * CHUNK_SIZE * WORLD_HEIGHT
 
 #define GRAVITY 10
 #define PLAYER_SPEED 2.0
+
+enum class Blocks : uint8_t;
+
+using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
+using Faces = std::vector<Face>;
+using Faces_P = std::vector<Face*>;
+using Block_Count = std::pair<Blocks, GLuint>;
+using HeightMap = std::array<std::array<std::vector<Block_Count>, CHUNK_SIZE>, CHUNK_SIZE>;
+using Chunks = std::vector<ChunkColumn>;
+using FaceB = std::tuple<Buffer, Texture*, GLuint>;
+using FaceB_p = std::tuple<Buffer*, Texture*, std::vector<glm::mat4>>;
 
 using namespace Mesh; 
 struct BlockDet {
@@ -31,7 +46,8 @@ enum class Texture_Names {
 	SKYBOX,
 	STONE,
 	DIRT,
-	WATER
+	WATER,
+	ERROR
 };
 enum SHADER_NAMES {
 	BLOCK2,
@@ -74,3 +90,9 @@ GLubyte toIndex(Texture_Names tex);
 GLubyte toIndex(Blocks block);
 Blocks toBlock(GLubyte number);
 std::string getName(Blocks block);
+glm::vec3 getTranslation(glm::mat4 matrix);
+
+glm::vec3 operator+(glm::vec3 p1, glm::vec2 p2);
+glm::vec3 operator+(glm::vec2 p1, glm::vec3 p2);
+glm::vec3 operator-(glm::vec3 p1, glm::vec2 p2);
+glm::vec3 operator-(glm::vec2 p1, glm::vec3 p2);

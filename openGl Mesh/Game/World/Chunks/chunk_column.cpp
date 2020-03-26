@@ -10,12 +10,12 @@ chunk_column::chunk_column(ChunkPosition pos, GLboolean isFlat) : hasCaves(0) {
 	createChunks();
 	genHeightMap(isFlat);
 }
-chunk_column::chunk_column(ChunkPosition pos, ChunkHeightMap hm) : hasCaves(0) {
+/*chunk_column::chunk_column(ChunkPosition pos, ChunkHeightMap hm) : hasCaves(0) {
 	this->pos = pos;
 	this->heightMap = hm;
 	createChunks();
 	applyHeightMap();
-}
+}*/
 chunk_column::chunk_column(std::string fileName) {
 	fileName = "Chunks/" + fileName + ".dat";
 	Savable s;
@@ -71,7 +71,7 @@ void chunk_column::genHeightMap(GLboolean isFlat) {
 		}
 	}
 	else {
-		heightMap = world_generation::genHeightMap(chunks[0].position);
+		// heightMap = world_generation::genHeightMap(chunks[0].position);
 		applyHeightMap();
 	}
 }
@@ -84,7 +84,7 @@ std::vector<Chunk*> getChunks(std::vector<Chunk>& chunks) {
 }
 void chunk_column::createMesh(std::vector<chunk_column*> columns) {
 	std::vector<Chunk*> chunks;
-	Faces before;
+	Faces_P before;
 	faces.clear();
 	for (auto& column : columns) {
 		std::vector<Chunk*> subChunks = getChunks(column->chunks);
@@ -117,7 +117,7 @@ void chunk_column::applyHeightMap() {
 		for (GLubyte i = 0; i < chunks.size(); i++) {
 			auto& chunk = chunks[i];
 			if (i == 4) {
-				chunk.createBlocks(heightMap);
+				// chunk.createBlocks(heightMap);
 			}
 			else if (i < 4){
 				chunk.createBlocksFlat(Blocks::AIR);
@@ -156,15 +156,15 @@ std::pair<GLushort, GLushort> chunk_column::getHeightRange() {
 				// deal with caves
 			}
 			else {
-				Height height = heightMap[x][z];
+				/*GLfloat height = heightMap[x][z];
 				if (height > largest) largest = height;
-				else if (height < smallest) smallest = height;
+				else if (height < smallest) smallest = height;*/
 			}
 		}
 	}
 	return { largest, smallest };
 }
-Faces chunk_column::getMesh(GLboolean reGen) {
+Faces_P chunk_column::getMesh(GLboolean reGen) {
 	if(!reGen) return faces;
 	faces.clear();
 	for (auto& chunk : chunks) {
@@ -248,8 +248,8 @@ void chunk_column::destroy() {
 	pos = { 0, 0 };
 	hasCaves = 0;
 	// delete[] heightMap.data();
-	heightMap.empty();
-	heightMap = {};
+	// heightMap.empty();
+	// heightMap = {};
 	/*for (Face*& face : faces) {
 		delete face;
 	}*/

@@ -62,6 +62,7 @@ GLfloat sumVec(glm::vec3 vec) {
 	return vec.x + vec.y + vec.z;
 }
 GLfloat Ray::checkIntercesction_Block(glm::vec3 blockPos_abs, FACES_NAMES face) {
+	if (glm::distance(origin, blockPos_abs) > maxLen) return -1;
 	std::map<FACES_NAMES, glm::vec3> normals = {
 		{ TOP, {0, 1, 0} },
 		{ BOTTOM, {0, 1, 0} },

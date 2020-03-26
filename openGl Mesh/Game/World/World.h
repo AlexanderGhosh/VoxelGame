@@ -11,6 +11,7 @@
 #include "../../Drawable.h"
 #include "Chunks/chunk_column.h"
 #include "../../Ray.h"
+#include "../../ChunkColumn.h"
 
 class World
 {
@@ -25,7 +26,8 @@ public:
 
 	Chunk* getSubChunkOccupied(glm::ivec3 pos, chunk_column*& chunkOcc);
 	std::vector<Chunk*> getSubChunkOccupied(glm::ivec3 pos, GLboolean surrounding);
-	chunk_column* getChunkOccupied(glm::vec3 position);
+	// chunk_column* getChunkOccupied(glm::vec3 position);
+	ChunkColumn* getChunkOccupied(glm::vec3 position);
 
 	std::vector<chunk_column*> getChunks();
 	std::vector<Chunk*> getSubChunks();
@@ -35,7 +37,8 @@ public:
 private:
 	GLuint seed;
 	std::vector<chunk_column> chunks;
-	std::vector<Face*> worldMesh;
+	std::vector<ChunkColumn> chunks2;
+	std::unordered_map<GLuint, FaceB_p> worldMesh;
 	Drawable drawable;
 	GLboolean isDynamic;
 	GLboolean reDraw;
@@ -55,8 +58,8 @@ private:
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
 
 	Blocks& getBlock(glm::ivec3 blockPos, chunk_column*& chunk_); // uses absolute block position
-	std::tuple<glm::vec3, FACES_NAMES> getIntersected(chunk_column* chunkOcc, glm::vec2 in_chunkPos, Ray ray);
+	std::tuple<glm::vec3, FACES_NAMES> getIntersected(ChunkColumn*& chunkOcc, glm::vec2 in_chunkPos, Ray ray);
 
-	std::vector<chunk_column> createChunks(std::vector<ChunkPosition> positions, std::vector<ChunkPosition> activeChunks,
-		std::vector<ChunkPosition> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<Chunk*> subChunks);
+	std::vector<ChunkColumn> createChunks(std::vector<ChunkPosition> positions, std::vector<ChunkPosition> activeChunks,
+		std::vector<ChunkPosition> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<ChunkColumn>* subChunks);
 };

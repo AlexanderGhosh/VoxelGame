@@ -6,9 +6,6 @@
 
 #include <map>
 using namespace Mesh;
-using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
-using HeightMapChunk = std::array<std::array<GLubyte, CHUNK_SIZE>, CHUNK_SIZE>;
-using HeightMapWorld = std::array<std::pair<HeightMapChunk, GLuint>, INITALL_VIEW_AREA>;
 class Chunk
 {
 public:
@@ -22,7 +19,7 @@ public:
 	void cleanUp(); 
 	void createMesh(std::vector<Chunk*> chunks);
 	void createBlocksFlat(Blocks block);
-	void createBlocks(HeightMapChunk hightMap);
+	// void createBlocks(HeightMapChunk hightMap);
 	Blocks& getBlock_unsafe(glm::ivec3 pos, GLboolean& error);
 	Blocks& getBlock_safe(const glm::vec3 inChunkPosition, std::vector<Chunk*> chunks);
 	GLboolean isNull();

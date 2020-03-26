@@ -234,7 +234,7 @@ glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 	if (rounded == glm::ivec3(0, -1, 1)) {
 		int g = 0;
 	}
-	Faces mesh;
+	Faces_P mesh;
 	std::vector<Chunk*> chunks = world.getSubChunkOccupied(rounded, 1);
 	for (auto& chunk : chunks) {
 		if (!chunk) continue;
