@@ -98,13 +98,13 @@ void ChunkColumn::createMesh(Chunks* adjacentCunks)
 			for (Block_Count& encoded : encodes) {
 				for (GLuint i = 0; i < encoded.second; i++) {
 					height++;
-					if (height >= maxHeigh - 6) {
+					if (height >= maxHeigh - 11) {
 						blks.insert(blks.begin(), (encoded.first));
 					}
 				}
 			}
 			y = height - 1;
-			for (GLubyte i = 0; i < 5; i++) {
+			for (GLubyte i = 0; i < 10; i++) {
 				block = blks[i];
 				addBlock({ x, y - i, z }, 0, block, adjacentCunks);
 			}

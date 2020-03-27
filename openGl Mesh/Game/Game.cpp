@@ -48,7 +48,7 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
-	mainCamera->setPosition({ 0.0f, 260.0f, 1.0f });
+	mainCamera->setPosition({ 0.0f, 120.0f, 1.0f });
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();

@@ -54,7 +54,7 @@ void World::generateFlatChunks(std::vector<glm::vec2> chunkPositions) {
 void World::generateTerrain(std::vector<glm::vec2> chunkPositions) {
 	std::cout << "Started\n";
 
-	world_generation wg(seed, 3, 1, { {1.5f, 1.5f}, {0.75f, 0.75f}, {0.325f, 0.325f} });
+	world_generation wg(seed, 3, 0.75f, { {1.0f, 1.0f}, {2.0f, 2.0f}, {4.0f, 4.0f} });
 	std::vector<glm::vec2> victims;
 
 	for (glm::vec2& pos : chunkPositions) {
@@ -78,7 +78,7 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions) {
 	for (ChunkColumn& chunk : chunks2) {
 		if (std::find(chunkPositions.begin(), chunkPositions.end(), chunk.getPosition()) != chunkPositions.end()) {
 			chunk.createMesh(&chunks2); // uses a short cut only looks at the top 6 blocks
-			chunk.save(seed); // neglagble
+			// chunk.save(seed); // neglagble
 		}
 	}
  	genWorldMesh();
@@ -411,6 +411,7 @@ std::vector<glm::vec2> World::centeredPositions(glm::vec2 origin, std::vector<gl
 }
 
 void World::save() {
+	return;
 	for (auto& chunk : chunks2) {
 		chunk.save(seed);
 	}
