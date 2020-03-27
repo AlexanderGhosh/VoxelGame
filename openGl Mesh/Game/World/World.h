@@ -8,7 +8,7 @@
 #include "constants.h"
 #include "../../Drawable.h"
 #include "../../Ray.h"
-#include "../../ChunkColumn.h"
+#include "Chunks/ChunkColumn.h"
 
 class World
 {

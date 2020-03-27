@@ -75,9 +75,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), hi
 	// blocks.fill(Blocks::AIR);
 }
 #pragma endregion
-long totalTime_try = 0;
-long totalTime_com = 0;
-long count = 0;
+
 #pragma region Creation
 void ChunkColumn::createMesh(Chunks* adjacentCunks)
 {
@@ -89,7 +87,29 @@ void ChunkColumn::createMesh(Chunks* adjacentCunks)
 		{
 			std::vector<Block_Count>& encodes = heightMap[x][z];
 			GLuint y = 0;
+			GLuint height = 0;
+			Blocks block = Blocks::AIR;
+			std::vector<Blocks> blks;
 			for (Block_Count& encoded : encodes) {
+				height += encoded.second;
+			}
+			GLuint maxHeigh = height-1;
+			height = 0;
+			for (Block_Count& encoded : encodes) {
+				for (GLuint i = 0; i < encoded.second; i++) {
+					height++;
+					if (height >= maxHeigh - 6) {
+						blks.insert(blks.begin(), (encoded.first));
+					}
+				}
+			}
+			y = height - 1;
+			for (GLubyte i = 0; i < 5; i++) {
+				block = blks[i];
+				addBlock({ x, y - i, z }, 0, block, adjacentCunks);
+			}
+
+			/*for (Block_Count& encoded : encodes) {
 				auto start = std::chrono::high_resolution_clock::now();
 
 				Blocks& block = encoded.first;
@@ -104,12 +124,8 @@ void ChunkColumn::createMesh(Chunks* adjacentCunks)
 				auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 				time_ += duration.count();
 				counter++;
-			}
+			}*/
 		}
-	}
-	if (count != 0) {
-		// std::cout << "try average: " << std::to_string(totalTime_try / count) << " count: " << count << std::endl;
-		std::cout << "com average: " << std::to_string(totalTime_com / count) << " count: " << count << std::endl;
 	}
 }
 

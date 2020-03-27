@@ -72,7 +72,7 @@
     <ClCompile Include="Ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChunkColumn.cpp">
+    <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -194,7 +194,7 @@
     <ClInclude Include="Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChunkColumn.h">
+    <ClInclude Include="Game\World\Chunks\ChunkColumn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

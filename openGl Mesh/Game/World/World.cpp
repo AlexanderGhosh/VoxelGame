@@ -75,26 +75,14 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions) {
 		if (found == chunkPositions.end()) continue;
 		chunkPositions.erase(found);
 	}
-
-	int time_ = 0;
-	int counter = 0;
 	for (ChunkColumn& chunk : chunks2) {
 		if (std::find(chunkPositions.begin(), chunkPositions.end(), chunk.getPosition()) != chunkPositions.end()) {
-			Timer t;
-			t.start();
-			chunk.createMesh(&chunks2); // NEEDS SPEEDING UP  4 secconds
-			t.stop();
-			t.showTime("Chunk Creation");
+			chunk.createMesh(&chunks2); // uses a short cut only looks at the top 6 blocks
 			chunk.save(seed); // neglagble
-
-
-			// 4 per
 		}
 	}
  	genWorldMesh();
 	drawable.setUp(worldMesh);
-
-
 }
 
 void World::render(Camera& c, glm::mat4 projection) {
