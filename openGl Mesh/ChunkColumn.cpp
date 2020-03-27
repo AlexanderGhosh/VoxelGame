@@ -75,10 +75,14 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), hi
 	// blocks.fill(Blocks::AIR);
 }
 #pragma endregion
-
+long totalTime_try = 0;
+long totalTime_com = 0;
+long count = 0;
 #pragma region Creation
 void ChunkColumn::createMesh(Chunks* adjacentCunks)
 {
+	int time_ = 0;
+	int counter = 0;
 	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (GLubyte z = 0; z < CHUNK_SIZE; z++)
@@ -86,6 +90,8 @@ void ChunkColumn::createMesh(Chunks* adjacentCunks)
 			std::vector<Block_Count>& encodes = heightMap[x][z];
 			GLuint y = 0;
 			for (Block_Count& encoded : encodes) {
+				auto start = std::chrono::high_resolution_clock::now();
+
 				Blocks& block = encoded.first;
 				if (block == Blocks::AIR) continue;
 				GLuint& count = encoded.second;
@@ -93,8 +99,17 @@ void ChunkColumn::createMesh(Chunks* adjacentCunks)
 				for (GLuint height = 0; height < count; height++, y++) {
 					addBlock({ x, y, z }, 0, block, adjacentCunks);
 				}
+
+				auto end = std::chrono::high_resolution_clock::now();
+				auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+				time_ += duration.count();
+				counter++;
 			}
 		}
+	}
+	if (count != 0) {
+		// std::cout << "try average: " << std::to_string(totalTime_try / count) << " count: " << count << std::endl;
+		std::cout << "com average: " << std::to_string(totalTime_com / count) << " count: " << count << std::endl;
 	}
 }
 
@@ -145,24 +160,24 @@ Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos)
 {
 	glm::vec3 relativePos = worldPos ? getRelativePosition(pos) : pos;
 	// check changed blocks
-	try {
-		return blocksEdited.at(relativePos);
+	GLuint size = blocksEdited.size();
+	Blocks t = blocksEdited[relativePos];
+	if (blocksEdited.size() > size) {
+		blocksEdited.erase(relativePos);
 	}
-	catch (std::exception e) {
+	else {
+		return t;
+	}
 
-	}
 	// get from height map
-	GLfloat y = relativePos.y;
 	std::vector<Block_Count> encodes;
-	try {
-		encodes = heightMap.at(relativePos.x).at(relativePos.z);
-	}
-	catch (std::exception e) {
-
+	glm::vec2 hPos(relativePos.x, relativePos.z);
+	if (glm::all(glm::lessThan(hPos, glm::vec2(CHUNK_SIZE)) && glm::greaterThanEqual(hPos, { 0, 0 }))) {
+		encodes = heightMap[hPos.x][hPos.y];
 	}
 	for (Block_Count&  encoded : encodes) {
-		y -= encoded.second;
-		if (y < 0) {
+		relativePos.y -= encoded.second;
+		if (relativePos.y < 0) {
 			return encoded.first;
 		}
 	}
@@ -432,50 +447,71 @@ void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block,
 	glm::vec3 worldPosition = getWorldPosition(relativePos);
 	auto addToMesh = [](Buffer* buffer, Texture* texture, glm::vec3 position, std::unordered_map<GLuint, FaceB_p>& mesh) {
 		GLuint key = (int)buffer * (int)texture;
-		glm::mat4 model = glm::translate(glm::mat4(1), position);
-		try {
-			std::get<2>(mesh.at(key)).push_back(model);
+		glm::mat4 model = translate(glm::mat4(1), position);
+		auto& faces = mesh[key];
+		if (std::get<0>(faces) == nullptr) {
+			faces = { buffer, texture, { model } };
 		}
-		catch (std::exception e) {
-			mesh.insert({ key, { buffer, texture, { model } } });
+		else {
+			std::get<2>(faces).push_back(model);
 		}
+
 	};
 
 	GLuint tex_index = (GLuint)getTexture(block);
+
+	glm::vec3 delta(1);
+	Buffer* faces[] = { 
+		FACES[RIGHT],
+		FACES[TOP],
+		FACES[FRONT],
+		FACES[LEFT],
+		FACES[BOTTOM],
+		FACES[BACK]
+	};
+	for (GLubyte i = 0; i < 6; i++) {
+		glm::vec3 lookingAt = relativePos;
+		Buffer* face = faces[i];
+		if (i > 2) {
+			lookingAt[i - 3] -= delta[i - 3];
+		}
+		else {
+			lookingAt[i] += delta[i];
+		}
+		if (!(int)getBlock(lookingAt, 0, 1, adjacentCunks)) {
+			addToMesh(face, TEXTURES[tex_index], worldPosition, mesh);
+		}
+	}
+	/*
 	// x
 	if (getBlock({ x - 1, y, z }, 0, 1, adjacentCunks) == Blocks::AIR) {
 		addToMesh(FACES[LEFT], TEXTURES[tex_index], worldPosition, mesh);
-		//mesh.push_back({ FACES[LEFT], TEXTURES[tex_index], worldPosition });
 	}
 	if (getBlock({ x + 1, y, z }, 0, 1, adjacentCunks) == Blocks::AIR) {
 		addToMesh(FACES[RIGHT], TEXTURES[tex_index], worldPosition, mesh);
-		//mesh.push_back({ FACES[RIGHT], TEXTURES[tex_index], worldPosition });
 	}
 
 	// y
 	if (getBlock({ x, y - 1, z }, 0, 1, adjacentCunks) == Blocks::AIR) {
 		addToMesh(FACES[BOTTOM], TEXTURES[tex_index], worldPosition, mesh);
-		//mesh.push_back({ FACES[BOTTOM], TEXTURES[tex_index], worldPosition });
 	}
 	if (getBlock({ x, y + 1, z }, 0, 1, adjacentCunks) == Blocks::AIR) {
 		addToMesh(FACES[TOP], TEXTURES[tex_index], worldPosition, mesh);
-		//mesh.push_back({ FACES[TOP], TEXTURES[tex_index], worldPosition });
 	}
 
 	// z
 	if (getBlock({ x, y, z - 1 }, 0, 1, adjacentCunks) == Blocks::AIR) {
 		addToMesh(FACES[BACK], TEXTURES[tex_index], worldPosition, mesh);
-		//mesh.push_back({ FACES[BACK], TEXTURES[tex_index], worldPosition });
 	}
 	if (getBlock({ x, y, z + 1 }, 0, 1, adjacentCunks) == Blocks::AIR) {
 		addToMesh(FACES[FRONT], TEXTURES[tex_index], worldPosition, mesh);
-		//mesh.push_back({ FACES[FRONT], TEXTURES[tex_index], worldPosition });
-	}
+	}*/
 }
 
 // getters
 Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, Chunks* ajacentChunks) {
 	glm::vec3 relativePostion = worldPos ? getRelativePosition(pos) : pos;
+
 	if (glm::all(glm::greaterThanEqual(relativePostion, { 0, 0, 0 }))) {
 		if (glm::all(glm::lessThan(relativePostion, { CHUNK_SIZE, WORLD_HEIGHT, CHUNK_SIZE }))) {
 			if (isFlat) return Blocks::GRASS;
@@ -485,32 +521,31 @@ Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, 
 	if (!safe) return Blocks::STONE;
 	// safe
 
-	glm::vec3 toLookAt = relativePostion;
 	glm::vec2 chunkPositionToLookAt = position;
 	if (relativePostion.x < 0) {
-		toLookAt.x = CHUNK_SIZE + relativePostion.x;
+		relativePostion.x += CHUNK_SIZE;
 		chunkPositionToLookAt.x -= CHUNK_SIZE;
 	}
 	else if (relativePostion.x > CHUNK_SIZE - 1) {
-		toLookAt.x -= CHUNK_SIZE;
+		relativePostion.x -= CHUNK_SIZE;
 		chunkPositionToLookAt.x += CHUNK_SIZE;
 	}
 
 	if (relativePostion.z < 0) {
-		toLookAt.z = CHUNK_SIZE + relativePostion.z;
+		relativePostion.z += CHUNK_SIZE;
 		chunkPositionToLookAt.y -= CHUNK_SIZE;
 	}
 	else if (relativePostion.z > CHUNK_SIZE - 1) {
-		toLookAt.z -= CHUNK_SIZE;
+		relativePostion.z -= CHUNK_SIZE;
 		chunkPositionToLookAt.y += CHUNK_SIZE;
 	}
 	
 	Chunks::iterator found = std::find((*ajacentChunks).begin(), (*ajacentChunks).end(), chunkPositionToLookAt);
 	if (found != (*ajacentChunks).end()) {
-		if (isFlat) return Blocks::GRASS;
-		return (*found).getBlock(toLookAt, 0);
+		if (isFlat) return Blocks::AIR;
+		return (*found).getBlock(relativePostion, 0);
 	}
-	return Blocks::STONE;
+	return isFlat ? Blocks::AIR : Blocks::STONE;
 }
 std::string ChunkColumn::getFileName()
 {

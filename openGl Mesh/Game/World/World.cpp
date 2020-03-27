@@ -76,14 +76,25 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions) {
 		chunkPositions.erase(found);
 	}
 
+	int time_ = 0;
+	int counter = 0;
 	for (ChunkColumn& chunk : chunks2) {
 		if (std::find(chunkPositions.begin(), chunkPositions.end(), chunk.getPosition()) != chunkPositions.end()) {
-			chunk.createMesh(&chunks2); // NEEDS SPEEDING UP
-			chunk.save(seed);
+			Timer t;
+			t.start();
+			chunk.createMesh(&chunks2); // NEEDS SPEEDING UP  4 secconds
+			t.stop();
+			t.showTime("Chunk Creation");
+			chunk.save(seed); // neglagble
+
+
+			// 4 per
 		}
 	}
  	genWorldMesh();
 	drawable.setUp(worldMesh);
+
+
 }
 
 void World::render(Camera& c, glm::mat4 projection) {
@@ -124,7 +135,7 @@ void World::renderChunksDynamic(Camera& c, glm::mat4 projection) {
 	first = 0;
 }
 
-void World::genWorldMesh(GLboolean gen) {
+void World::genWorldMesh() {
 	worldMesh.clear();
 	for(auto & chunk : chunks2) {
 		std::unordered_map<GLuint, FaceB_p>& mesh = chunk.getMesh();
@@ -142,26 +153,6 @@ void World::genWorldMesh(GLboolean gen) {
 		}
 	}
 }
-std::vector<Face*> World::genWorldMesh(std::vector<Chunk*> chunks) {
-	std::map<Buffer*, std::vector<Face*>> seperated;
-	std::vector<Face*> sorted;
-	for (auto& chunk : chunks) {
-		for (auto& mesh : chunk->getMeshes()) {
-			try {
-				seperated[std::get<0>(*mesh)].push_back(mesh);
-			}
-			catch (std::exception e) {
-				seperated.insert({ std::get<0>(*mesh), { mesh } });
-			}
-		}
-	}
-	for (auto& pair : seperated) {
-		sorted.insert(sorted.end(), pair.second.begin(), pair.second.end());
-	}
-	return sorted;
-}
-
-
 
 void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	auto start = std::chrono::high_resolution_clock::now();

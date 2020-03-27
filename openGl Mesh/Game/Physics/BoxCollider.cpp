@@ -16,23 +16,6 @@ GLboolean BoxCollider::isColliding(BoxCollider& collider) {
 			int g = 0;
 		}
 	}
-	glm::ivec3 res(0);
-	/*if ((a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.y <= b.max.y && a.max.y >= b.min.y) && (a.min.z <= b.max.z && a.max.z >= b.min.z) == 0) {
-		return res;
-	}
-	// if (!(a.min.x <= b.max.x) && a.max.x >= b.min.x) res.x = 0;
-	if (a.min.x <= b.max.x) res.x = -1; 
-	else if (a.max.x >= b.min.x) res.x = 1;
-
-	if (!(a.min.y <= b.max.y) && a.max.y >= b.min.y) res.y = 0;
-	else if (a.min.y <= b.max.y) res.y = -1; 
-	else if (a.max.y >= b.min.y) res.y = 1;
-
-	// if (!(a.min.z <= b.max.z) && a.max.z >= b.min.z) res.z = 0;
-	if (a.min.z <= b.max.z) res.z = -1; 
-	else if (a.max.z >= b.min.z) res.z = 1;
-
-	return res;*/
 
 	return (a.min.x <= b.max.x && a.max.x >= b.min.x) &&
 			 (a.min.y <= b.max.y && a.max.y >= b.min.y) &&

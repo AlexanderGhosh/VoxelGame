@@ -157,11 +157,9 @@
     <ClCompile Include="ChunkColumn.cpp" />
     <ClCompile Include="Game\Physics\BoxCollider.cpp" />
     <ClCompile Include="Buffer.cpp" />
-    <ClCompile Include="Game\World\Chunks\chunk_column.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Game\Player\Entity.cpp" />
     <ClCompile Include="Game\Game.cpp" />
-    <ClCompile Include="Game\World\Chunks\Chunk.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Ray.cpp" />
@@ -202,12 +200,10 @@
     <ClInclude Include="ChunkColumn.h" />
     <ClInclude Include="Game\Physics\BoxCollider.h" />
     <ClInclude Include="Buffer.h" />
-    <ClInclude Include="Game\World\Chunks\chunk_column.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="Game\Player\Entity.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\Player\Camera.h" />
-    <ClInclude Include="Game\World\Chunks\Chunk.h" />
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Ray.h" />

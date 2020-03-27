@@ -66,12 +66,6 @@
     <ClCompile Include="Game\World\world_generation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\World\Chunks\Chunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\World\Chunks\chunk_column.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Physics\BoxCollider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -192,12 +186,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\World\world_generation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\World\Chunks\Chunk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\World\Chunks\chunk_column.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Physics\BoxCollider.h">

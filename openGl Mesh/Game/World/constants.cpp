@@ -158,6 +158,18 @@ glm::vec3 getTranslation(glm::mat4 matrix) {
 	return { matrix[3][0], matrix[3][1], matrix[3][2] };
 }
 
+glm::mat4 translate(glm::mat4 mat, glm::vec3 vec) {
+	for (unsigned char i = 0; i < 3; i++) {
+		mat[3][i] = vec[i];
+	}
+	return mat;
+}
+void translate(glm::mat4& mat, glm::vec3 vec) {
+	for (unsigned char i = 0; i < 3; i++) {
+		mat[3][i] = vec[i];
+	}
+}
+
 std::vector<Face> toFaces(FaceB_p face)
 {
 	std::vector<Face> res;
@@ -187,4 +199,24 @@ glm::vec3 operator-(glm::vec3 p1, glm::vec2 p2)
 glm::vec3 operator-(glm::vec2 p1, glm::vec3 p2)
 {
 	return glm::vec3(p1.x, 0, p1.y) - p2;
+}
+
+void Timer::start()
+{
+	start_ = std::chrono::high_resolution_clock::now();
+}
+
+void Timer::stop()
+{
+	stop_ = std::chrono::high_resolution_clock::now();
+}
+
+GLulong Timer::getTime()
+{
+	return std::chrono::duration_cast<std::chrono::microseconds>(stop_ - start_).count();
+}
+
+void Timer::showTime(std::string name)
+{
+	std::cout << "Timer " << name << ": " << std::to_string(getTime()) << " microsecconds" << std::endl;
 }

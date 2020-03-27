@@ -5,7 +5,6 @@
 #include <chrono>
 #include <gtc/noise.hpp>
 
-#include "Chunks/Chunk.h"
 #include "constants.h"
 #include "../../Drawable.h"
 #include "../../Ray.h"
@@ -43,8 +42,7 @@ private:
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
 	void generateTerrain(std::vector<glm::vec2> chunkPositions);
 
-	void genWorldMesh(GLboolean gen = 0);
-	std::vector<Face*> genWorldMesh(std::vector<Chunk*> chunks);
+	void genWorldMesh();
 
 	void renderChunksStatic(Camera& c, glm::mat4 projection);
 	void renderChunksDynamic(Camera& c, glm::mat4 projection);
