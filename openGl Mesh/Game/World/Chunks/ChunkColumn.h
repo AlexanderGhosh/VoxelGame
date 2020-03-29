@@ -22,20 +22,20 @@ public: // functions
 	ChunkColumn(glm::vec2 pos, HeightMap heightMap);
 
 	// creators
-	void createMesh(Chunks* adjacentCunks);
-	void createMesh(Chunks* adjacentCunks, HeightMap heighMap);
-	void createMesh_flat(Chunks* adjacentCunks);
+	void createMesh(AdjacentMap& adjacentCunks);
+	void createMesh(AdjacentMap& adjacentCunks, HeightMap heighMap);
+	void createMesh_flat(AdjacentMap& adjacentCunks);
 
 	// getters
 	std::unordered_map<GLuint, FaceB_p>& getMesh();
 	glm::vec2 getPosition();
-	std::pair<Blocks, ChunkColumn*> getBlock_ChunkPos(glm::vec3 worldPosition, Chunks* allChunks);
+	std::pair<Blocks, ChunkColumn*> getBlock_ChunkPos(glm::vec3 worldPosition, AdjacentMap_p& allChunks);
 	Blocks getBlock(glm::vec3 pos, GLboolean worldPos = 1);
 	glm::vec3 getRelativePosition(glm::vec3 worldPos);
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
 
 	// opertations
-	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Chunks* adjacentCunks);
+	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, AdjacentMap_p& adjacentCunks);
 	void save(std::string name, GLuint seed);
 	void save(GLuint seed);
 	void addToMesh(Face face);
@@ -47,10 +47,10 @@ public: // functions
 
 private: // functions
 	// editors
-	void addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, Chunks* adjacentCunks);
+	void addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, AdjacentMap& adjacentCunks);
 
 	// getters
-	Blocks getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, Chunks* ajacentChunks = nullptr);
+	Blocks getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, AdjacentMap& ajacentChunks);
 	std::string getFileName();
 };
 bool operator==(ChunkColumn* chunk, glm::vec2 pos);

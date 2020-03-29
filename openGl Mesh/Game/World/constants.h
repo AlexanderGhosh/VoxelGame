@@ -34,6 +34,9 @@ using HeightMap = std::array<std::array<std::vector<Block_Count>, CHUNK_SIZE>, C
 using Chunks = std::vector<ChunkColumn>;
 using FaceB = std::tuple<Buffer, Texture*, GLuint>;
 using FaceB_p = std::tuple<Buffer*, Texture*, std::vector<glm::mat4>>;
+using AdjacentMap = std::unordered_map<glm::vec2, ChunkColumn>;
+
+using AdjacentMap_p = std::unordered_map<glm::vec2, ChunkColumn*>;
 
 using namespace Mesh; 
 struct BlockDet {
@@ -112,6 +115,7 @@ private:
 public:
 	void start();
 	void stop();
+	void end();
 	GLulong getTime();
 	void showTime(std::string name = "");
 };

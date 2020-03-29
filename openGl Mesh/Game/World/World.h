@@ -1,6 +1,7 @@
 #pragma once
 #include <tuple>
 #include <thread>
+#include <future>
 #include <vector>
 #include <chrono>
 #include <gtc/noise.hpp>
@@ -24,23 +25,29 @@ public:
 	ChunkColumn* getChunkOccupied(glm::vec3 position); 
 	std::unordered_map<GLuint, FaceB_p>& getWorldMesh();
 	std::vector<ChunkColumn*> getAdjacentChunks(glm::vec3 worldPosition);
+	AdjacentMap getAdjacentMap(glm::vec3 worldPos, GLuint range = RENDER_DISTANCE);
+	AdjacentMap_p getAdjacentMapPointers(glm::vec3 worldPos, GLuint range = RENDER_DISTANCE);
 	
 	void save();
-private:
+
+
+	Chunks activeBuffer;
 	GLuint seed;
-	std::vector<ChunkColumn> chunks2;
+	Chunks chunks2;
+	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
+private:
 	std::unordered_map<GLuint, FaceB_p> worldMesh;
 	Drawable drawable;
 	GLboolean isDynamic;
 	GLboolean reDraw;
-	glm::vec2 prevChunkPos;
+	glm::vec2 chunkOccupiedPosition;
+
 
 	void getNewChunkPositions(GLboolean flat);
 	std::vector<glm::vec2> getNewChunkPositions(glm::vec2 origin, GLint renderDist = INITALL_VIEW);
-	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
 
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
-	void generateTerrain(std::vector<glm::vec2> chunkPositions);
+	void generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap adjacent);
 
 	void genWorldMesh();
 

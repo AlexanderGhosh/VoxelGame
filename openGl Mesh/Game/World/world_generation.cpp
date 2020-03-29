@@ -27,12 +27,12 @@ GLubyte world_generation::heightAtPositon(glm::vec2 pos) {
 		raw += 1.0f; // range 0 - 2
 		raw /= 2.0f; // range 0 - 1
 		raw *= WORLD_HEIGHT/octaves; // range 0 - CHUNK_SIZE
-		raw += 200; // translate up
 		sum += mult * raw;
 		mult /= 2.0f;
 	}
 	sum = std::pow(sum, redistribution);
 	sum = std::floorl(sum);
+	sum += 35; // translate up
 	if (sum >= WORLD_HEIGHT) sum = WORLD_HEIGHT - 1;
 	if (sum < 0) sum = 0;
 	return sum;

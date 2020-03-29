@@ -48,7 +48,7 @@ void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
-	mainCamera->setPosition({ 0.0f, 120.0f, 1.0f });
+	mainCamera->setPosition({ 8.0f, 70.0f, 8.0f });
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -57,6 +57,10 @@ void Game::doLoop(glm::mat4 projection) {
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		if (world.activeBuffer.size() == 16) {
+			int t = 0;
+		}
 
 		showStuff();
 		showFPS();

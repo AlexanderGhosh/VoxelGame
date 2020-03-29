@@ -170,6 +170,7 @@ void translate(glm::mat4& mat, glm::vec3 vec) {
 	}
 }
 
+
 std::vector<Face> toFaces(FaceB_p face)
 {
 	std::vector<Face> res;
@@ -211,6 +212,10 @@ void Timer::stop()
 	stop_ = std::chrono::high_resolution_clock::now();
 }
 
+void Timer::end() {
+	stop();
+}
+
 GLulong Timer::getTime()
 {
 	return std::chrono::duration_cast<std::chrono::microseconds>(stop_ - start_).count();
@@ -218,5 +223,5 @@ GLulong Timer::getTime()
 
 void Timer::showTime(std::string name)
 {
-	std::cout << "Timer " << name << ": " << std::to_string(getTime()) << " microsecconds" << std::endl;
+	std::cout << "Timer " << name << ": " << std::to_string((GLfloat)getTime()/1000000.0f) << " secconds" << std::endl;
 }
