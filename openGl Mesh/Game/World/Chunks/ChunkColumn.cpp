@@ -79,8 +79,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), hi
 #pragma region Creation
 void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 {
-	int c = 0;
-	GLubyte lookDepth = 5;
+	GLubyte lookDepth = 3;
 	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (GLubyte z = 0; z < CHUNK_SIZE; z++)
@@ -107,12 +106,9 @@ void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 			for (GLubyte i = 0; i < lookDepth; i++) {
 				block = blks[i];
 				addBlock({ x, y - i, z }, 0, block, adjacentCunks);
-				c++;
 			}
 		}
 	}
-	int y = 0;
-	// 1280
 }
 
 void ChunkColumn::createMesh(AdjacentMap& adjacentCunks, HeightMap heighMap)
