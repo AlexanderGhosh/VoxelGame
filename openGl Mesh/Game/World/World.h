@@ -30,7 +30,10 @@ public:
 	
 	void save();
 
+	void advanceGeneration();
 
+
+	std::vector<ChunkColumn*> generationStack;
 	Chunks activeBuffer;
 	GLuint seed;
 	Chunks chunks2;

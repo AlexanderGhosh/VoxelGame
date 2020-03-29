@@ -107,12 +107,13 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap a
 	t.start();
 	for (ChunkColumn& chunk : chunks2) {
 		if (std::find(chunkPositions.begin(), chunkPositions.end(), chunk.getPosition()) != chunkPositions.end()) {
-			Timer timer;
-			timer.start();
-			chunk.createMesh(adjacent); // uses a short cut only looks at the top 6 blocks
-			chunk.save(seed); // neglagble
-			timer.stop();
-			timer.showTime("Chunk Creation");
+			// Timer timer;
+			// timer.start();
+			// chunk.createMesh(adjacent); // uses a short cut only looks at the top 6 blocks
+			// chunk.save(seed); // neglagble
+			// timer.stop();
+			// timer.showTime("Chunk Creation");
+			generationStack.push_back(&chunk);
 		}
 	}
 	t.end();
@@ -143,25 +144,10 @@ void World::renderChunksDynamic(Camera& c, glm::mat4 projection) {
 
 		chunks2 = activeBuffer;
 		activeBuffer.clear();
-		/*std::vector<glm::vec2> chunkPositions_lazy = centeredPositions(chunkOccupiedPosition, chunkPositions_active, RENDER_DISTANCE + 1);
-
-		std::vector<glm::vec2> chunkPositions = chunkPositions_active;
-		chunkPositions.insert(chunkPositions.begin(), chunkPositions_lazy.begin(), chunkPositions_lazy.end());
-
-		std::vector<ChunkColumn> newChunks = createChunks(chunkPositions, chunkPositions_active, chunkPositions_lazy, 1, 1, &chunks2); // most costly
-		this->chunks2.insert(this->chunks2.begin(), newChunks.begin(), newChunks.end());*/
 
 		// re-draw the world
 		genWorldMesh();
 		drawable.setUp(worldMesh);
-
-
-		/*std::vector<glm::vec2> chunkPositions_active_buffer = centeredPositions(chunkOccupiedPosition, chunkPositions_active, RENDER_DISTANCE + 2);
-		for (glm::vec2& pos : chunkPositions_active_buffer) {
-			HeightMap heightMap = world_generation::createHeightMap(pos, 0);
-			activeBuffer.push_back({ pos, heightMap });
-			activeBuffer.back().createMesh(&chunks2);
-		}*/
 	}
 	drawable.render(c, projection);
 	reDraw = 0;
@@ -473,4 +459,17 @@ void World::save() {
 	for (auto& chunk : chunks2) {
 		chunk.save(seed);
 	}
+}
+int c = 300;
+void World::advanceGeneration()
+{
+	if (generationStack.size() == 0 || c-- > 0) return;
+	c = 30;
+	std::cout << "go" << std::endl;
+	AdjacentMap adjacent = getAdjacentMap({ 0, 0, 0 }, RENDER_DISTANCE + 2);
+	generationStack.back()->createMesh(adjacent);
+	generationStack.pop_back();
+
+	genWorldMesh();
+	drawable.setUp(worldMesh);
 }

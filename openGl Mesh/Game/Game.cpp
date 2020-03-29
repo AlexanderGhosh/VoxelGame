@@ -58,9 +58,7 @@ void Game::doLoop(glm::mat4 projection) {
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (world.activeBuffer.size() == 16) {
-			int t = 0;
-		}
+		world.advanceGeneration();
 
 		showStuff();
 		showFPS();
