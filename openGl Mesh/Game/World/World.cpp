@@ -96,7 +96,7 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap a
 		// th = std::thread(func, bufferRing, this);
 	}
 	// adjacent
-	adjacent = getAdjacentMap({ 0, 0, 0 }, RENDER_DISTANCE + 2);
+	adjacesntMapGeneration = getAdjacentMap({ 0, 0, 0 }, RENDER_DISTANCE + 2);
 
 	for (auto& victim : victims) {
 		auto found = std::find(chunkPositions.begin(), chunkPositions.end(), victim);
@@ -464,12 +464,10 @@ int c = 300;
 void World::advanceGeneration()
 {
 	if (generationStack.size() == 0 || c-- > 0) return;
-	c = 30;
-	std::cout << "go" << std::endl;
-	AdjacentMap adjacent = getAdjacentMap({ 0, 0, 0 }, RENDER_DISTANCE + 2);
-	generationStack.back()->createMesh(adjacent);
-	generationStack.pop_back();
-
-	genWorldMesh();
-	drawable.setUp(worldMesh);
+	generationStack.back()->createMesh(adjacesntMapGeneration);
+	if (generationStack.back()->stage >= 8) {
+		generationStack.pop_back();
+		genWorldMesh();
+		drawable.setUp(worldMesh);
+	}
 }

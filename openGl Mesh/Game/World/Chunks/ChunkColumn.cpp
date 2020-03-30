@@ -7,7 +7,7 @@ ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), hei
 	// blocks.fill(Blocks::AIR);
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), heightMap(), isFlat(0)
+ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), heightMap(), isFlat(0), stage(0)
 {
 	// blocks.fill(Blocks::GRASS);
 }
@@ -79,10 +79,13 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), hi
 #pragma region Creation
 void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 {
+	if (stage > 8) stage = 0;
+	GLubyte start = 2 * stage++;
+
 	GLubyte lookDepth = 3;
-	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
+	for (GLubyte x = start; x < CHUNK_SIZE; x++)
 	{
-		for (GLubyte z = 0; z < CHUNK_SIZE; z++)
+		for (GLubyte z = start; z < CHUNK_SIZE; z++)
 		{
 			std::vector<Block_Count>& encodes = heightMap[x][z];
 			GLuint y = 0;

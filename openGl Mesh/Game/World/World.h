@@ -32,7 +32,7 @@ public:
 
 	void advanceGeneration();
 
-
+	AdjacentMap adjacesntMapGeneration;
 	std::vector<ChunkColumn*> generationStack;
 	Chunks activeBuffer;
 	GLuint seed;

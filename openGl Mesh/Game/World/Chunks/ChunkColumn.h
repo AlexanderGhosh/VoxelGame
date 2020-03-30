@@ -15,6 +15,10 @@ private: // properties
 	GLboolean isFlat;
 
 public: // functions
+
+	GLubyte stage;
+
+
    // constructors
 	ChunkColumn();
 	ChunkColumn(glm::vec2 pos);
