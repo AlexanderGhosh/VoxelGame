@@ -6,28 +6,8 @@ Drawable::Drawable(Faces* sortedMeshes) {
 	// setUp(sortedMeshes);
 }
 void Drawable::setUp(std::unordered_map<GLuint, FaceB_p>& mesh) {
-	/*Faces& meshes = *mesh;
-	if (meshes.size() == 0) return;
-	buffers.clear();
-	std::map<GLuint, std::vector<glm::mat4>> positions;
-	for (auto& mesh : meshes) {
-		Buffer* b = std::get<0>(mesh);
-		Texture* t = std::get<1>(mesh);
-		glm::vec3 p = std::get<2>(mesh);
-		GLuint key = std::pow(b->type+1, 2) * t->getTexMap();
-		glm::mat4 model(1);
-		model = glm::translate(model, p);
-		try {
-			auto& face = buffers.at(key);
-			std::get<2>(face)++;
-			positions[key].push_back(model);
-		}
-		catch (std::exception e) {
-			buffers.insert({ key, { *b, t, 1 } });
-			positions.insert({ key, { model } });
-		}
-	}*/
-	buffers.clear();
+	
+	clear();
 	std::map<GLuint, std::vector<glm::mat4>> positions;
 	for (auto& pair : mesh) {
 		const GLuint key = pair.first;
@@ -79,4 +59,12 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 		t->unBind();
 	}
 	shader->unBind();
+}
+
+void Drawable::clear() {
+	for (auto& buffer : buffers) {
+		FaceB& faces = buffer.second;
+		std::get<0>(faces).destroy();
+	}
+	buffers.clear();
 }

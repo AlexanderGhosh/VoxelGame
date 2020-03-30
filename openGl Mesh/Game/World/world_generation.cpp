@@ -32,7 +32,7 @@ GLubyte world_generation::heightAtPositon(glm::vec2 pos) {
 	}
 	sum = std::pow(sum, redistribution);
 	sum = std::floorl(sum);
-	sum += 35; // translate up
+	sum += 45; // translate up
 	if (sum >= WORLD_HEIGHT) sum = WORLD_HEIGHT - 1;
 	if (sum < 0) sum = 0;
 	return sum;
@@ -46,35 +46,8 @@ GLfloat world_generation::noise(glm::vec2 pos) {
 GLfloat world_generation::noise(GLfloat x, GLfloat y) {
 	return glm::perlin(glm::vec2(x, y));
 }
-/*ChunkHeightMap world_generation::genHeightMap(glm::vec3 chunkPos) {
-	ChunkHeightMap res;
-	for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
-		for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
-			glm::vec2 pos(x, z);
-			pos.x += chunkPos.x;
-			pos.y += chunkPos.z;
-			res[x][z] = heightAtPositon(pos);
-		}
-	}
-	return res;
-}*/
-/*HeightMap world_generation::createHeightMap(glm::vec3 chunkPos, GLboolean hasCaves) {
-	HeightMap res{};
-	if (hasCaves) {
-		// make caves
-	}
-	else {
-		for (GLubyte x = 0; x < CHUNK_SIZE; x++) {
-			for (GLubyte z = 0; z < CHUNK_SIZE; z++) {
-				glm::vec2 pos(x, z);
-				pos.x += chunkPos.x;
-				pos.y += chunkPos.z;
-				// res[x][z].push_back({ 1, heightAtPositon(pos) });
-			}
-		}
-	}
-	return res;
-}*/
+
+
 HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLboolean hasCaves) {
 	// doesn't generate caves
 	HeightMap res;

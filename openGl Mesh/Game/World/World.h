@@ -34,7 +34,6 @@ public:
 
 	AdjacentMap adjacesntMapGeneration;
 	std::vector<ChunkColumn*> generationStack;
-	Chunks activeBuffer;
 	GLuint seed;
 	Chunks chunks2;
 	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
@@ -47,15 +46,11 @@ private:
 
 
 	void getNewChunkPositions(GLboolean flat);
-	std::vector<glm::vec2> getNewChunkPositions(glm::vec2 origin, GLint renderDist = INITALL_VIEW);
 
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
 	void generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap adjacent);
 
 	void genWorldMesh();
-
-	void renderChunksStatic(Camera& c, glm::mat4 projection);
-	void renderChunksDynamic(Camera& c, glm::mat4 projection);
 
 	std::tuple<glm::vec3, FACES_NAMES> getIntersected(ChunkColumn*& chunkOcc, glm::vec2 in_chunkPos, Ray ray);
 

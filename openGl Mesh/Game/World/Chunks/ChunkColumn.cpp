@@ -79,13 +79,29 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), hi
 #pragma region Creation
 void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 {
-	if (stage > 8) stage = 0;
-	GLubyte start = 2 * stage++;
+	try {
+		if (stage >= 10) stage = 0;
+	}
+	catch (std::exception e) {
+		return;
+	}
+	GLubyte startX[] = {
+		0, 8, 0, 8
+	};
+	GLubyte startZ[] = {
+		0, 8, 8, 0
+	};
+	GLubyte endX[] = {
+		8, 16, 8, 16
+	};
+	GLubyte endZ[] = {
+		8, 16, 16, 8
+	};
 
 	GLubyte lookDepth = 3;
-	for (GLubyte x = start; x < CHUNK_SIZE; x++)
+	for (GLubyte x = startX[stage]; x < endX[stage]; x++)
 	{
-		for (GLubyte z = start; z < CHUNK_SIZE; z++)
+		for (GLubyte z = startZ[stage]; z < endZ[stage]; z++)
 		{
 			std::vector<Block_Count>& encodes = heightMap[x][z];
 			GLuint y = 0;
@@ -112,6 +128,7 @@ void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 			}
 		}
 	}
+	stage++;
 }
 
 void ChunkColumn::createMesh(AdjacentMap& adjacentCunks, HeightMap heighMap)
@@ -527,12 +544,6 @@ Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, 
 	if (ajacentChunks.size() > 0) {
 		
 		return ajacentChunks[chunkPositionToLookAt].getBlock(relativePostion, 0);
-		
-		/*Chunks::iterator found = std::find((ajacentChunks).begin(), (ajacentChunks).end(), chunkPositionToLookAt); 
-		if (found != (ajacentChunks).end()) {
-			if (isFlat) return Blocks::AIR;
-			return (*found).getBlock(relativePostion, 0);
-		}*/
 	}
 	return Blocks::STONE;
 }

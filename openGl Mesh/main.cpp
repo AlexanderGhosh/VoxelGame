@@ -26,7 +26,7 @@ int main() {
 	}
 	createBlocks();
 
-	Game game = Game(1, 1);
+	Game game = Game(0, 1);
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
@@ -81,9 +81,6 @@ GLFWwindow* createWindow() {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport
-
-	 //glEnable(GL_CULL_FACE); // face culling
-	 //glFrontFace(GL_CCW);
 
 	return window;
 }

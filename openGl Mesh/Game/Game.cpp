@@ -42,13 +42,13 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 0);
+	world = World(1, 1, 1);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
-	mainCamera->setPosition({ 8.0f, 70.0f, 8.0f });
+	mainCamera->setPosition({ 8, 65, 8 });
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();

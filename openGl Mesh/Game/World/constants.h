@@ -9,7 +9,7 @@
 
 class ChunkColumn;
 
-#define RENDER_DISTANCE 16
+#define RENDER_DISTANCE 4
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 

@@ -12,4 +12,5 @@ public:
 	void setUp(std::unordered_map<GLuint, FaceB_p>& meshes);
 private:
 	std::unordered_map<GLuint, FaceB> buffers;
+	void clear();
 };
