@@ -113,7 +113,12 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap a
 			// chunk.save(seed); // neglagble
 			// timer.stop();
 			// timer.showTime("Chunk Creation");
-			generationStack.push_back(&chunk);
+			if (chunk.getPosition() != glm::vec2(0)) {
+				generationStack.insert(generationStack.begin(), &chunk);
+			}
+			else {
+				generationStack.push_back(&chunk);
+			}
 		}
 	}
 	t.end();
@@ -460,10 +465,9 @@ void World::save() {
 		chunk.save(seed);
 	}
 }
-int c = 300;
 void World::advanceGeneration()
 {
-	if (generationStack.size() == 0 || c-- > 0) return;
+	if (generationStack.size() == 0) return;
 	generationStack.back()->createMesh(adjacesntMapGeneration);
 	if (generationStack.back()->stage >= 8) {
 		generationStack.pop_back();
