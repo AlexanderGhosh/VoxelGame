@@ -34,7 +34,9 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("water", ""),
 	new Texture("error", ""),
 	new Texture("log", ""),
-	new Texture("leaf", "")
+	new Texture("leaf", ""),
+	new Texture("vampire/bottom"),
+	new Texture("vampire/top")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),

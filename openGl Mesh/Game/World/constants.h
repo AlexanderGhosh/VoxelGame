@@ -54,7 +54,9 @@ enum class Texture_Names {
 	WATER,
 	ERROR,
 	LOG,
-	LEAF
+	LEAF,
+	VAMPIRE_BOTTOM,
+	VAMPIRE_TOP
 };
 enum SHADER_NAMES {
 	BLOCK2,
