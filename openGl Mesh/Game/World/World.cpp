@@ -63,7 +63,11 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap a
 		}
 	} 
 	// adjacent
-	adjacesntMapGeneration = getAdjacentMap({ 0, 0, 0 }, RENDER_DISTANCE + 2);
+	adjacesntMapGenerationPtr = getAdjacentMapPointers({ 0, 0, 0 }, RENDER_DISTANCE + 2);
+	adjacesntMapGeneration = getAdjacentMap({ chunkOccupiedPosition.x, 0, chunkOccupiedPosition.y }, RENDER_DISTANCE + 2);
+	for (auto& chunk : chunks2) {
+		chunk.addTrees(adjacesntMapGenerationPtr);
+	}
 
 	for (auto& victim : victims) {
 		auto found = std::find(chunkPositions.begin(), chunkPositions.end(), victim);
@@ -204,13 +208,15 @@ void World::updatePlayerPos(glm::vec3 pos) {
 				HeightMap hm = world_generation::createHeightMap(pos, 0);
 				chunks2.push_back({ pos, hm });
 			} // add some
+			adjacesntMapGenerationPtr = getAdjacentMapPointers({ chunkOccupiedPosition.x, 0, chunkOccupiedPosition.y }, RENDER_DISTANCE + 2);
 			for (GLubyte i = chunks2.size() - newPositions.size(); i < chunks2.size(); i++)
 			{
 				if (chunks2[i].getMesh().size() > 0) continue;
+				chunks2[i].addTrees(adjacesntMapGenerationPtr);
 				generationStack.insert(generationStack.begin(), &chunks2[i]);
 			} // add to stack
 
-			adjacesntMapGeneration = getAdjacentMap({ chunkOccupiedPosition.x, 0, chunkOccupiedPosition.y });
+			adjacesntMapGeneration = getAdjacentMap({ chunkOccupiedPosition.x, 0, chunkOccupiedPosition.y }, RENDER_DISTANCE + 2);
 		}
 	}
 }

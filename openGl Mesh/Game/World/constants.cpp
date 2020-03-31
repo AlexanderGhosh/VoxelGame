@@ -32,7 +32,9 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("stone", ""),
 	new Texture("dirt", ""),
 	new Texture("water", ""),
-	new Texture("error", "")
+	new Texture("error", ""),
+	new Texture("log", ""),
+	new Texture("leaf", "")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),
@@ -46,14 +48,18 @@ std::map<Blocks, BlockDet> BLOCKS = {
 	{ Blocks::GRASS, {} },
 	{ Blocks::DIRT, {} },
 	{ Blocks::STONE, {} },
-	{ Blocks::WATER, {} }
+	{ Blocks::WATER, {} },
+	{ Blocks::LOG, { } },
+	{ Blocks::LEAF, { } }
 };
 const std::vector<Blocks> AllBlocks = {
 	Blocks::AIR,
 	Blocks::GRASS,
 	Blocks::DIRT,
 	Blocks::STONE,
-	Blocks::WATER
+	Blocks::WATER,
+	Blocks::LOG,
+	Blocks::LEAF
 };
 GLint getBlockIndex(glm::vec3 position) {
 	int index = position.x + position.z * CHUNK_SIZE + position.y * CHUNK_AREA;
@@ -117,6 +123,12 @@ Texture_Names getTexture(Blocks block) {
 	case Blocks::WATER:
 		res = Texture_Names::WATER;
 		break;
+	case Blocks::LOG:
+		res = Texture_Names::LOG;
+		break;
+	case Blocks::LEAF:
+		res = Texture_Names::LEAF;
+		break;
 	}
 	return res;
 }
@@ -150,6 +162,12 @@ std::string getName(Blocks block) {
 		break;
 	case Blocks::WATER:
 		name = "water";
+		break;
+	case Blocks::LOG:
+		name = "log";
+		break;
+	case Blocks::LEAF:
+		name = "leaf";
 		break;
 	}
 	return name;

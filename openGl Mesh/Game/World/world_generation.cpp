@@ -3,6 +3,7 @@ GLuint world_generation::seed = 0;
 GLubyte world_generation::octaves = 1;
 std::vector<glm::vec2> world_generation::frequencies = { glm::vec2(1.0f) };
 GLfloat world_generation::redistribution = 1.0f;
+glm::ivec2 world_generation::treeCooldown(4);
 world_generation::world_generation() {
 	seed = 1;
 	octaves = 1;
@@ -17,6 +18,7 @@ world_generation::world_generation(GLuint seed, GLubyte octaves, GLfloat redist,
 	if (frequencies.size() < this->octaves) {
 		frequencies.push_back(glm::vec2(1.0f));
 	}
+	srand(seed);
 }
 GLubyte world_generation::heightAtPositon(glm::vec2 pos) {
 	glm::vec2 inp = pos / (GLfloat)seed - 0.5f;
@@ -51,6 +53,7 @@ GLfloat world_generation::noise(GLfloat x, GLfloat y) {
 HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLboolean hasCaves) {
 	// doesn't generate caves
 	HeightMap res;
+
 	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (GLubyte y = 0; y < CHUNK_SIZE; y++)
@@ -73,4 +76,24 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLboolean hasCav
 		}
 	}
 	return res;
+}
+
+std::vector<glm::vec2> world_generation::getTreePositions(glm::vec2 chunkPos)
+{
+	std::vector <glm::vec2> trees;
+
+	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
+	{
+		for (GLubyte y = 0; y < CHUNK_SIZE; y++)
+		{
+			if (rand() / double(RAND_MAX) < 0.05 && glm::all(glm::lessThanEqual(treeCooldown, glm::ivec2(0)))) {
+				// place tree at
+				trees.push_back({ x, y });
+				treeCooldown = { 4, 4 };
+			}
+			treeCooldown.y--;
+		}
+		treeCooldown.x--;
+	}
+	return trees;
 }

@@ -52,7 +52,9 @@ enum class Texture_Names {
 	STONE,
 	DIRT,
 	WATER,
-	ERROR
+	ERROR,
+	LOG,
+	LEAF
 };
 enum SHADER_NAMES {
 	BLOCK2,
@@ -77,7 +79,9 @@ enum class Blocks : uint8_t {
 	DIRT,
 	STONE,
 	WATER,
-	ERROR
+	ERROR,
+	LOG,
+	LEAF
 };
 extern const std::array<Buffer*, 6> FACES;
 extern const std::vector<Texture*> TEXTURES;

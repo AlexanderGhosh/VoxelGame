@@ -13,6 +13,8 @@ vec3 lightPos = vec3( 5, 3, -2);
 
 void main()
 {    
+    if(texture(skybox, TexCoords).a < 0.1)
+        discard;
     vec3 result = vec3(0);
     float amb_k = 0.6f;
     vec3 ambient = amb_k * vec3(texture(skybox, TexCoords));

@@ -14,6 +14,8 @@ private: // properties
 	GLubyte highest_natural_point;
 	GLboolean isFlat;
 
+	GLboolean breaking;
+
 public: // functions
 
 	GLubyte stage;
@@ -29,6 +31,7 @@ public: // functions
 	void createMesh(AdjacentMap& adjacentCunks);
 	void createMesh(AdjacentMap& adjacentCunks, HeightMap heighMap);
 	void createMesh_flat(AdjacentMap& adjacentCunks);
+	void addTrees(AdjacentMap_p& adjacent);
 
 	// getters
 	std::unordered_map<GLuint, FaceB_p>& getMesh();
@@ -37,6 +40,7 @@ public: // functions
 	Blocks getBlock(glm::vec3 pos, GLboolean worldPos = 1);
 	glm::vec3 getRelativePosition(glm::vec3 worldPos);
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
+	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent);
 
 	// opertations
 	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, AdjacentMap_p& adjacentCunks);

@@ -14,7 +14,9 @@ public:
 	static GLubyte heightAtPositon(const glm::vec2 pos);
 	// static ChunkHeightMap genHeightMap(glm::vec3 chunkPos);
 	static HeightMap createHeightMap(glm::vec2 chunkPos, GLboolean hasCaves = 0);
+	static std::vector<glm::vec2> getTreePositions(glm::vec2 chunkPos);
 private:
+	static glm::ivec2 treeCooldown;
 	static GLfloat noise(glm::vec2 pos);
 	static GLfloat noise(GLfloat x, GLfloat y);
 };
