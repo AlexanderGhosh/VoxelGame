@@ -42,7 +42,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 1);
+	world = World(1, 1, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -131,7 +131,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ 1.0f, 260.0f, 1.0f }, { 0.0f, 1.25f, 0.0f });
+	player = Player({ 1.0f, 260.0f, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1);
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {

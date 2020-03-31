@@ -8,7 +8,7 @@ using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 class Entity
 {
 public:
-	Entity(GLboolean init = GL_FALSE);
+	Entity(GLboolean init = GL_FALSE, glm::vec3 dimentions = glm::vec3(1.0f));
 	glm::vec3& getPosition();
 	glm::vec3& getVelocity();
 	glm::vec3& getAcceleration();

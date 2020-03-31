@@ -1,5 +1,5 @@
 #include "Entity.h"
-Entity::Entity(GLboolean init) {
+Entity::Entity(GLboolean init, glm::vec3 dimentions) {
 	pos = { 0, 0, 0 };
 	vel = { 0, 0, 0 };
 	acc = { 0, 0, 0 };
@@ -9,7 +9,7 @@ Entity::Entity(GLboolean init) {
 	jumpForce = 5;
 	grounded = 0;
 	hasBody = GL_FALSE;
-	collider = BoxCollider(glm::vec3(1.0f), this->pos);
+	collider = BoxCollider(dimentions, this->pos);
 	if (init) {
 		renderer = Render::ChunkMeshRender(true, "");
 	}
@@ -56,6 +56,9 @@ void Entity::updatePosition(GLfloat deltaTime, World& world, std::string& collis
 	collision = glm::to_string(collisions);
 	if (collisions.y == -1) {
 		grounded = 1;
+		vel.y = 0;
+	}
+	if (collisions.y == 1) {
 		vel.y = 0;
 	}
 	if (collisions.x == -1) {

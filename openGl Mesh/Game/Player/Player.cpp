@@ -1,5 +1,5 @@
 #include "Player.h"
-Player::Player() : Entity(false) {
+Player::Player() : Entity(false, { 1, 2, 1 }) {
 	movementSpeed = PLAYER_SPEED;
 	cam.setPosition({ 0, 1.25, -0.75 });
 	renderer = Render::ChunkMeshRender(false, "");
@@ -10,6 +10,7 @@ Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLbool
 	cam.setPosition(camOff);
 	pos = position;
 	collider = BoxCollider(glm::vec3(0.85f), pos);
+	collider.setDimentions(glm::vec3(0.85f), glm::vec3(0.85f, 2.55f, 0.85f));
 	this->attachCam = attachCam;
 	this->canRender = render;
 	invBar = {
