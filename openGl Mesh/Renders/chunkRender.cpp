@@ -60,8 +60,15 @@ namespace Render {
 		//buffer.destroy();
 	}
 	void ChunkMeshRender::setPosition(glm::vec3 position) {
-		for (auto& face : *meshes) {
+		/*for (auto& face : *meshes) {
 			std::get<2>(face) = position;
+		}*/
+		for (GLubyte i = 0; i < (*meshes).size(); i++) {
+			glm::vec3 relativePos(0);
+			if (relativePositions.size() >= i) {
+				relativePos = relativePositions[i];
+			}
+			std::get<2>((*meshes)[i]) = position + relativePos;
 		}
 	}
 	void ChunkMeshRender::setShader(std::string name) {
@@ -69,6 +76,10 @@ namespace Render {
 	}
 	void ChunkMeshRender::setShader(Shader* shader) {
 		this->shader = shader;
+	}
+	void ChunkMeshRender::setRelativePositions(std::vector<glm::vec3>& rel)
+	{
+		relativePositions = rel;
 	}
 	void ChunkMeshRender::addPosition(glm::vec3 positon) {
 		for (auto& face : *meshes) {

@@ -14,7 +14,9 @@ public:
 	glm::vec3& getAcceleration();
 	glm::vec3 getCenter();
 	glm::vec3 getCenter(glm::vec3 pos);
+	BoxCollider& getCollider();
 	
+	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
 	void setVelocity(const GLfloat& vel);
 	void setAcceleration(const glm::vec3& acc);
@@ -26,6 +28,7 @@ public:
 	void updatePosition(GLfloat deltaTime, World& world, std::string& collision);
 
 	void move(Move_Dir dir);
+	void create(Texture_Names texB, Texture_Names texT);
 
 	void render(glm::mat4 projection, Camera* cam = nullptr);
 protected:

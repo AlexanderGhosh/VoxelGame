@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EntityHander.cpp" />
     <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp" />
     <ClCompile Include="Game\Physics\BoxCollider.cpp" />
     <ClCompile Include="Buffer.cpp" />
@@ -197,6 +198,7 @@
     <None Include="Shaders\skybox_v.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EntityHander.h" />
     <ClInclude Include="Game\World\Chunks\ChunkColumn.h" />
     <ClInclude Include="Game\Physics\BoxCollider.h" />
     <ClInclude Include="Buffer.h" />

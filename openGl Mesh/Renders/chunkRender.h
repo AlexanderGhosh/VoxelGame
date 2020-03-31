@@ -21,11 +21,13 @@ namespace Render {
 		void setPosition(glm::vec3 position);
 		void setShader(std::string name);
 		void setShader(Shader* shader);
+		void setRelativePositions(std::vector<glm::vec3>& rel);
 		void addPosition(glm::vec3 positon);
 		void cleanUp();
 	private:
 		Shader* shader;
 		std::vector<Face>* meshes;
+		std::vector<glm::vec3> relativePositions;
 		GLboolean canRender;
 	};
 };

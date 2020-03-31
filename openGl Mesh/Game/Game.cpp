@@ -42,13 +42,19 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 1);
+	world = World(1, 1, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
 	mainCamera->setPosition({ 8, 65, 8 });
+
+	// temp vampire
+	Entity vampire(1);
+	vampire.getCollider().setDimentions({ 0.85, 0.85, 0.85 }, { 0.85, 2.55, 0.85 });
+	vampire.setPosition({ 5, 100, 0 });
+	vampire.create(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -59,8 +65,13 @@ void Game::doLoop(glm::mat4 projection) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		world.advanceGeneration();
+
+		std::string t = "";
+		vampire.updatePosition(deltaTime, world, t);
+
+		vampire.render(projection, mainCamera);
+
 		showStuff();
-		ray.render(player.getCamera(), projection);
 		showFPS();
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;

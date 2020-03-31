@@ -27,6 +27,10 @@ glm::vec3& Entity::getAcceleration() {
 	return acc;
 }
 
+void Entity::setPosition(const glm::vec3& pos) {
+	this->pos = pos;
+}
+
 void Entity::setVelocity(const glm::vec3& vel) {
 	this->vel = vel;
 }
@@ -104,6 +108,50 @@ void Entity::move(Move_Dir dir) {
 		break;
 	}
 }
+void Entity::create(Texture_Names texB, Texture_Names texT) {
+	hasBody = 1;
+	std::vector<glm::vec3> relativePositions;
+	for (GLuint i = 0; i < 2; i++) {
+		glm::vec3 rel(0);
+		if (i) {
+			rel.y = 0.8;
+		}
+		pos.y += i;
+		std::string tex = "player/";
+		tex += !i ? "bottom" : "top";
+
+		Texture_Names name = !i ? texB : texT;
+		auto texture = toIndex(name);
+		Face face = { FACES[FRONT], TEXTURES[texture], pos };
+		body.push_back(face);
+		relativePositions.push_back(rel);
+
+		face = { FACES[BACK], TEXTURES[texture], pos };
+		body.push_back(face);
+		relativePositions.push_back(rel);
+
+		if (i != 0) {
+			face = { FACES[TOP], TEXTURES[texture], pos };
+			body.push_back(face);
+			relativePositions.push_back(rel);
+		}
+		if (i == 0) {
+			face = { FACES[BOTTOM], TEXTURES[texture], pos };
+			body.push_back(face);
+			relativePositions.push_back(rel);
+		}
+		face = { FACES[RIGHT], TEXTURES[texture], pos };
+		body.push_back(face);
+		relativePositions.push_back(rel);
+
+		face = { FACES[LEFT], TEXTURES[texture], pos };
+		body.push_back(face);
+		relativePositions.push_back(rel);
+	}
+	renderer.setRelativePositions(relativePositions);
+	renderer.loadMeshes(&body);
+}
+
 
 void Entity::render(glm::mat4 projection, Camera* cam) {
 	if (!hasBody) return;
@@ -284,4 +332,9 @@ glm::vec3 Entity::getCenter() {
 }
 glm::vec3 Entity::getCenter(glm::vec3 pos) {
 	return pos;
+}
+
+BoxCollider& Entity::getCollider()
+{
+	return collider;
 }

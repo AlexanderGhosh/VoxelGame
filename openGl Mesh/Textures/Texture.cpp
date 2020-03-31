@@ -28,7 +28,9 @@ GLboolean Texture::load2D(std::string& name) {
 	glGenTextures(1, &texMap);
 	// diffuse
 	unsigned char* image = SOIL_load_image(name.c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
-	if (!image) std::cout << "texture error" << std::endl;
+	if (!image) {
+		std::cout << "texture error" << std::endl;
+	}
 	glBindTexture(GL_TEXTURE_2D, texMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dimentions.x, dimentions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);

@@ -75,6 +75,9 @@
     <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EntityHander.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -195,6 +198,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\World\Chunks\ChunkColumn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityHander.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
