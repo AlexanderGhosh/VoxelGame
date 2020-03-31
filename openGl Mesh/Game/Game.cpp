@@ -59,8 +59,8 @@ void Game::doLoop(glm::mat4 projection) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		world.advanceGeneration();
-
 		showStuff();
+		ray.render(player.getCamera(), projection);
 		showFPS();
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
@@ -131,7 +131,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ 1.0f, 260.0f, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1);
+	player = Player({ 1.0f, 100.0f, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1);
 	player.create();
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {

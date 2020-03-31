@@ -257,7 +257,18 @@ std::tuple<glm::vec3, FACES_NAMES> World::getIntersected(ChunkColumn*& chunkOcc,
 		meshes.push_back({ &chunk, chunk.getMesh() });
 	}
 	
-
+	auto isSameDirection = [](glm::vec3 pos, Ray ray) -> GLboolean {
+		glm::vec3 diff = glm::normalize(glm::round(pos - ray.getOrigin()));
+		glm::vec3 direction = ray.getDirection();
+		for (GLubyte i = 0; i < 3; i++) {
+			if (diff[i] >= 0 && direction[i] >= 0 || diff[i] <= 0 && direction[i] <= 0) {
+			}
+			else {
+				return 0;
+			}
+		}
+		return 1;
+	};
 	glm::vec3 p(0);
 	FACES_NAMES face = NULL_;
 	GLfloat shortestDistance = 1000;
@@ -267,6 +278,7 @@ std::tuple<glm::vec3, FACES_NAMES> World::getIntersected(ChunkColumn*& chunkOcc,
 			FACES_NAMES& face_ = std::get<0>(faces_.second)->type;
 			for (auto& model : std::get<2>(faces_.second)) {
 				glm::vec3 pos = getTranslation(model);
+				if (!isSameDirection(pos, ray)) continue;
 				auto dist = ray.checkIntercesction_Block(pos, face_);
 				if (dist == -1) {
 					continue;

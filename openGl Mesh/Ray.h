@@ -5,6 +5,10 @@ class Ray
 public:
 	Ray();
 	Ray(glm::vec3 origin, glm::vec3 dir, GLfloat max, GLboolean visable = 0);
+	glm::vec3& getDirection();
+	glm::vec3& getOrigin();
+
+
 	void setVisable(const GLboolean visable);
 	void setMax(const GLfloat max);
 	void setOrigin(const glm::vec3 origin);

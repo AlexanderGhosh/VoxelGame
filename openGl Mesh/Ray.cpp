@@ -3,6 +3,14 @@ Ray::Ray() : maxLen(-1), origin(0), direction(0), visable(0), end(0), VAO(0) { }
 Ray::Ray(glm::vec3 origin, glm::vec3 dir, GLfloat max, GLboolean visable) : origin(origin), direction(dir), maxLen(max), visable(visable), end(0), VAO(0) {
 	calcEnd();
 }
+glm::vec3& Ray::getDirection()
+{
+	return direction;
+}
+glm::vec3& Ray::getOrigin()
+{
+	return origin;
+}
 void Ray::setMax(const GLfloat max) {
 	maxLen = max;
 }
