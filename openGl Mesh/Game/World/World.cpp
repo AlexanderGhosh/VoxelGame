@@ -315,6 +315,7 @@ std::vector<ChunkColumn*> World::getAdjacentChunks(glm::vec3 worldPosition)
 	std::vector<glm::vec2> chunksToFind;
 	std::vector<ChunkColumn*> res;
 	res.push_back(getChunkOccupied(worldPosition));
+	if (!res.back()) return { };
 	glm::vec2 centerd = res.back()->getPosition();
 	worldPosition.x -= centerd.x;
 	worldPosition.z -= centerd.y;

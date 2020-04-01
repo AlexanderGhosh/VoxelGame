@@ -474,7 +474,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Adj
 		GLubyte tex_index = (GLubyte)getTexture(block);
 		#pragma region Checking adjacent blocks
 		Blocks found = getBlock({ x - 1, y, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF) {
+		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
 			addToMesh({ FACES[LEFT], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -484,7 +484,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Adj
 		}
 
 		found = getBlock({ x + 1, y, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF) {
+		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
 			addToMesh({ FACES[RIGHT], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -495,7 +495,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Adj
 
 		// y
 		found = getBlock({ x, y - 1, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF) {
+		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
 			addToMesh({ FACES[BOTTOM], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -505,7 +505,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Adj
 		}
 
 		found = getBlock({ x, y + 1, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF) {
+		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
 			addToMesh({ FACES[TOP], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -516,7 +516,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Adj
 
 		// z
 		found = getBlock({ x, y, z - 1 }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF) {
+		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
 			addToMesh({ FACES[BACK], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -526,7 +526,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Adj
 		}
 
 		found = getBlock({ x, y, z + 1 }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF) {
+		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
 			addToMesh({ FACES[FRONT], TEXTURES[tex_index], worldPosition });
 		}
 		else {

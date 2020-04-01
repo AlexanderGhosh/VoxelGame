@@ -10,7 +10,13 @@ public: // functions
 
 	// operations
 	void render(Camera& cam, glm::mat4 projection);
-	void addEntity(Entity entity);
-	void updatePositions(GLfloat deltaTime, World& world, std::string& collision);
+	void addEntity(Entity& entity);
+	void updatePositions(GLfloat deltaTime, World& world);
+	void create();
+
+	// ai
+	void setTarget(glm::vec3 target);
+	void getNewTarget();
+	void moveToTarget();
 };
 

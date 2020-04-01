@@ -22,6 +22,8 @@ namespace Render {
 		void setShader(std::string name);
 		void setShader(Shader* shader);
 		void setRelativePositions(std::vector<glm::vec3>& rel);
+		void setRotation(glm::vec3 rotAxis, GLfloat rotAngle);
+
 		void addPosition(glm::vec3 positon);
 		void cleanUp();
 	private:
@@ -29,5 +31,7 @@ namespace Render {
 		std::vector<Face>* meshes;
 		std::vector<glm::vec3> relativePositions;
 		GLboolean canRender;
+		GLfloat angle;
+		glm::vec3 axis;
 	};
 };

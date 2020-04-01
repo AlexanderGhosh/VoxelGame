@@ -18,8 +18,8 @@ Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLbool
 		Blocks::DIRT,
 		Blocks::STONE,
 		Blocks::WATER,
-		Blocks::AIR,
-		Blocks::AIR,
+		Blocks::LOG,
+		Blocks::LEAF,
 		Blocks::AIR,
 		Blocks::AIR,
 		Blocks::AIR
@@ -40,7 +40,9 @@ std::string Player::updatePosition(GLfloat deltaTime, World& world) {
 }
 void Player::create() {
 	// Entity(true);
-	for(GLuint i = 0; i < 2; i++){
+	setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
+	Entity::create();
+	/*for(GLuint i = 0; i < 2; i++){
 		pos.y += i;
 		std::string tex = "player/";
 		tex += i == 0 ? "bottom" : "top";
@@ -68,7 +70,7 @@ void Player::create() {
 		body.push_back(face);
 	}
 
-	renderer.loadMeshes(&body);
+	renderer.loadMeshes(&body);*/
 }
 void Player::render(glm::mat4 projection, Camera* cam) {
 	if (!canRender) return;

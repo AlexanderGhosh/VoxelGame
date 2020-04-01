@@ -36,15 +36,17 @@ namespace Render {
 
 			
 
-			auto createModel = [](glm::vec3 position, glm::vec3 rotation, Camera& p1, Shader* shader) {
+			auto createModel = [](glm::vec3 position, GLfloat angle, glm::vec3 axis, Camera& p1, Shader* shader) {
 				glm::mat4 model(1);
 				model = glm::translate(model, position);
+				model = glm::rotate(model, glm::radians(angle), axis);
+
 				model = glm::scale(model, glm::vec3(0.8f));
 				shader->setValue("model", model);
 			};
 
 			for (auto& mesh : *meshes) {
-				createModel(std::get<2>(mesh), { 0, 0, 0 }, p1, shader);
+				createModel(std::get<2>(mesh), angle, axis, p1, shader);
 				std::get<1>(mesh)->bind();
 				std::get<0>(mesh)->render();
 			}
@@ -80,6 +82,10 @@ namespace Render {
 	void ChunkMeshRender::setRelativePositions(std::vector<glm::vec3>& rel)
 	{
 		relativePositions = rel;
+	}
+	void ChunkMeshRender::setRotation(glm::vec3 rotAxis, GLfloat rotAngle) {
+		angle = rotAngle;
+		axis = rotAxis;
 	}
 	void ChunkMeshRender::addPosition(glm::vec3 positon) {
 		for (auto& face : *meshes) {

@@ -14,6 +14,7 @@
 #include FT_FREETYPE_H
 #include <time.h>
 
+#include "../EntityHander.h"
 #include "Player/Player.h"
 #include "World/World.h"
 struct Character {
@@ -56,6 +57,7 @@ private:
 	static World world;
 	static GLboolean hasPlayer;
 	static Player player;
+	static EntityHander entityHander;
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;
 	glm::mat4 projection;

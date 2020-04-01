@@ -14,6 +14,7 @@ std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
 Player Game::player = Player();
 GLboolean Game::hasPlayer = GL_FALSE;
 World Game::world = World(0);
+EntityHander Game::entityHander = EntityHander();
 #pragma endregion
 
 
@@ -53,8 +54,11 @@ void Game::doLoop(glm::mat4 projection) {
 	// temp vampire
 	Entity vampire(1);
 	vampire.getCollider().setDimentions({ 0.85, 0.85, 0.85 }, { 0.85, 2.55, 0.85 });
-	vampire.setPosition({ 5, 100, 0 });
-	vampire.create(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
+	vampire.setPosition({ 5, 60, 0 });
+	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
+	
+	entityHander.addEntity(vampire);
+
 	while (gameRunning) {
 		calcTimes();
 		lockFPS();
@@ -66,10 +70,9 @@ void Game::doLoop(glm::mat4 projection) {
 
 		world.advanceGeneration();
 
-		std::string t = "";
-		vampire.updatePosition(deltaTime, world, t);
-
-		vampire.render(projection, mainCamera);
+		entityHander.moveToTarget();
+		entityHander.updatePositions(deltaTime, world);
+		entityHander.render(*mainCamera, projection);
 
 		showStuff();
 		showFPS();
@@ -185,7 +188,8 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
-		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player.getInvBar()[player.getSlot()]);
+		// Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player.getInvBar()[player.getSlot()]);
+		entityHander.setTarget(cam.GetPosition());
 	}
 }
 void Game::setupEventCB(GLFWwindow* window) {
@@ -428,8 +432,8 @@ void Game::showGUI() {
 		Blocks::DIRT,
 		Blocks::STONE,
 		Blocks::WATER,
-		Blocks::AIR,
-		Blocks::AIR,
+		Blocks::LOG,
+		Blocks::LEAF,
 		Blocks::AIR,
 		Blocks::AIR,
 		Blocks::AIR

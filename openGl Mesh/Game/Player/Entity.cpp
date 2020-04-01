@@ -9,13 +9,19 @@ Entity::Entity(GLboolean init, glm::vec3 dimentions) {
 	jumpForce = 5;
 	grounded = 0;
 	hasBody = GL_FALSE;
+	textures[0] = Texture_Names::ERROR;
+	textures[1] = Texture_Names::ERROR;
 	collider = BoxCollider(dimentions, this->pos);
 	if (init) {
 		renderer = Render::ChunkMeshRender(true, "");
+		renderer.setRotation({ 0, 1, 0 }, 0);
 	}
 	else {
 		renderer = Render::ChunkMeshRender(false, "");
 	}
+
+	targetPosition = glm::vec3(0);
+	hasTarget = 0;
 }
 glm::vec3& Entity::getPosition() {
 	return pos;
@@ -44,6 +50,61 @@ void Entity::setMovementSpeed(const GLfloat& speed) {
 	movementSpeed = speed;
 }
 
+void Entity::setTextues(Texture_Names texB, Texture_Names texT)
+{
+	textures[0] = texB;
+	textures[1] = texT;
+}
+
+void Entity::setTarget(glm::vec3 targ)	{
+	stage = 0;
+	movementPath.clear();
+	hasTarget = 1;
+	targetPosition = targ;
+	prevBlock = glm::round(pos);
+	calcMovementPath();
+	nxtBlock = prevBlock;
+	switch (movementPath[stage])
+	{
+	case Move_Dir::FORWARD:
+		nxtBlock.z--;
+		break;
+	case Move_Dir::BACKWARD:
+		nxtBlock.z++;
+		break;
+	case Move_Dir::LEFT:
+		nxtBlock.x--;
+		break;
+	case Move_Dir::RIGHT:
+		nxtBlock.x++;
+		break;
+	}
+}
+
+void Entity::getNewTarget() {
+	stage = 0;
+	hasTarget = !hasTarget;
+	targetPosition = glm::vec3(0, 50, 10);
+	prevBlock = glm::round(pos);
+	calcMovementPath();
+	nxtBlock = prevBlock;
+	switch (movementPath[stage])
+	{
+	case Move_Dir::FORWARD:
+		nxtBlock.z++;
+		break;
+	case Move_Dir::BACKWARD:
+		nxtBlock.z--;
+		break;
+	case Move_Dir::LEFT:
+		nxtBlock.x--;
+		break;
+	case Move_Dir::RIGHT:
+		nxtBlock.x++;
+		break;
+	}
+}
+
 void Entity::addVelocity(const glm::vec3& vel) {
 	this->vel += vel;
 }
@@ -66,16 +127,24 @@ void Entity::updatePosition(GLfloat deltaTime, World& world, std::string& collis
 		vel.y = 0;
 	}
 	if (collisions.x == -1) {
-		vel.x = 0;
+		vel.x = 0; if (hasTarget) {
+			move(Move_Dir::UP);
+		}
 	}
 	if (collisions.x == 1) {
-		vel.x = 0;
+		vel.x = 0; if (hasTarget) {
+			move(Move_Dir::UP);
+		}
 	}
 	if (collisions.z == -1) {
-		vel.z = 0;
+		vel.z = 0; if (hasTarget) {
+			move(Move_Dir::UP);
+		}
 	}
 	if (collisions.z == 1) {
-		vel.z = 0;
+		vel.z = 0; if (hasTarget) {
+			move(Move_Dir::UP);
+		}
 	}
 
 	/*if (!grounded) vel.y -= GRAVITY * deltaTime;
@@ -85,7 +154,6 @@ void Entity::updatePosition(GLfloat deltaTime, World& world, std::string& collis
 }
 
 void Entity::move(Move_Dir dir) {
-	prevVel = vel;
 	switch (dir)
 	{
 	case Move_Dir::FORWARD:
@@ -108,7 +176,11 @@ void Entity::move(Move_Dir dir) {
 		break;
 	}
 }
-void Entity::create(Texture_Names texB, Texture_Names texT) {
+void Entity::moveToTarget() {
+	if (vel.y > 0 || !hasTarget) return;
+	moveBlock(movementPath[stage]);
+}
+void Entity::create() {
 	hasBody = 1;
 	std::vector<glm::vec3> relativePositions;
 	for (GLuint i = 0; i < 2; i++) {
@@ -120,7 +192,7 @@ void Entity::create(Texture_Names texB, Texture_Names texT) {
 		std::string tex = "player/";
 		tex += !i ? "bottom" : "top";
 
-		Texture_Names name = !i ? texB : texT;
+		Texture_Names name = textures[i];
 		auto texture = toIndex(name);
 		Face face = { FACES[FRONT], TEXTURES[texture], pos };
 		body.push_back(face);
@@ -326,6 +398,75 @@ glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
 		}
 	}
 	return res;
+}
+void Entity::calcMovementPath() {
+	if (!hasTarget) return;
+	/*if (glm::distance(targetPosition, pos) > 32) {
+		getNewTarget();
+		return;
+	}*/
+	glm::vec3 targ = glm::round(targetPosition);
+	glm::vec3 diff = glm::round(targetPosition - pos);
+	for (GLuint x = 0; x < std::abs(diff.x); x++) {
+		movementPath.push_back(diff.x < 0 ? Move_Dir::LEFT : Move_Dir::RIGHT);
+	}
+	for (GLuint z = 0; z < std::abs(diff.z); z++) {
+		movementPath.push_back(diff.z < 0 ? Move_Dir::FORWARD : Move_Dir::BACKWARD);
+	}
+}
+void Entity::moveBlock(Move_Dir dir) {
+	glm::vec2 comp = { pos.x, pos.z };
+	comp = glm::round(comp);
+	if (comp == glm::vec2(nxtBlock.x, nxtBlock.z)) {
+		prevBlock = nxtBlock;
+		stage++;
+		vel = { 0, 0, 0 };
+		nxtBlock = prevBlock;
+
+		if (stage >= movementPath.size()) {
+			hasTarget = 0;
+			return;
+		}
+		lookAt(movementPath[stage]);
+		switch (movementPath[stage])
+		{
+		case Move_Dir::FORWARD:
+			nxtBlock.z--;
+			break;
+		case Move_Dir::BACKWARD:
+			nxtBlock.z++;
+			break;
+		case Move_Dir::LEFT:
+			nxtBlock.x--;
+			break;
+		case Move_Dir::RIGHT:
+			nxtBlock.x++;
+			break;
+		}
+		return;
+	}
+
+	move(dir);
+}
+void Entity::lookAt(Move_Dir dir) {
+	if (!hasBody) return;
+	GLfloat angle = 90;
+	switch (dir)
+	{
+	case Move_Dir::FORWARD:
+		angle = 180;
+		break;
+	case Move_Dir::BACKWARD:
+		angle = 0;
+		break;
+	case Move_Dir::LEFT:
+		angle = 270;
+		break;
+	case Move_Dir::RIGHT:
+		angle = 90;
+		break;
+	}
+	renderer.setRotation({ 0, 1, 0 }, angle);
 }
 glm::vec3 Entity::getCenter() {
 	return getCenter(pos);
