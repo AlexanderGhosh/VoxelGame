@@ -83,4 +83,5 @@ private:
 	void showText(std::string text, glm::vec2 position, GLfloat scale = 1.0f, glm::vec3 colour = glm::vec3(0));
 	void createGUI();
 	void showGUI();
+
 };

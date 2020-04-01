@@ -129,9 +129,8 @@ void World::genWorldMesh() {
 void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	Ray ray = Ray(pos, front, PLAYER_REACH);
 	ChunkColumn* chunkOcc = getChunkOccupied(pos);
-	glm::vec2 in_chunkPos = glm::round(glm::vec2(pos.x, pos.z)) - chunkOcc->getPosition();
 	
-	std::tuple<glm::vec3, FACES_NAMES> intersect = getIntersected(chunkOcc, in_chunkPos, ray);
+	std::tuple<glm::vec3, FACES_NAMES> intersect = getIntersectedBlock(chunkOcc, ray);
 	glm::vec3 p = std::get<0>(intersect);
 
 	auto t = getAdjacentMapPointers(pos, RENDER_DISTANCE + 2);
@@ -144,9 +143,8 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
 	
 	Ray ray = Ray(pos, front, PLAYER_REACH);
 	ChunkColumn* chunkOcc = getChunkOccupied(pos);
-	glm::vec2 in_chunkPos = glm::round(glm::vec2(pos.x, pos.z)) - chunkOcc->getPosition();
 
-	std::tuple<glm::vec3, FACES_NAMES> intersect = getIntersected(chunkOcc, in_chunkPos, ray);
+	std::tuple<glm::vec3, FACES_NAMES> intersect = getIntersectedBlock(chunkOcc, ray);
 	auto p = std::get<0>(intersect);
 	auto face = std::get<1>(intersect);
 
@@ -221,36 +219,7 @@ void World::updatePlayerPos(glm::vec3 pos) {
 	}
 }
 
-std::tuple<glm::vec3, FACES_NAMES> World::getIntersected(ChunkColumn*& chunkOcc, glm::vec2 in_chunkPos, Ray ray) {
-	/*std::vector<glm::vec2> positions;
-	positions.push_back(chunkOcc->getPosition());
-	/*glm::bvec2 close = glm::lessThan(in_chunkPos - glm::vec2(PLAYER_REACH), { 0, 0 });
-	glm::bvec2 far = glm::greaterThan(in_chunkPos + glm::vec2(PLAYER_REACH), { CHUNK_SIZE - 1, CHUNK_SIZE - 1 });
-
-	glm::vec2 delta(-CHUNK_SIZE);
-	if (close.x) {
-		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(1, 0));
-	}
-	if (close.y) {
-		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(0, 1));
-	}
-	if (glm::all(close)) {
-		positions.push_back(chunkOcc->getPosition() + delta * (glm::vec2)close);
-	}
-
-	delta *= -1;
-	if (far.x) {
-		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(1, 0));
-	}
-	if (far.y) {
-		positions.push_back(chunkOcc->getPosition() + delta * glm::vec2(0, 1));
-	}
-	if (glm::all(far)) {
-		positions.push_back(chunkOcc->getPosition() + delta * (glm::vec2)far);
-	}
-
-	if (close.x && far.y) positions.push_back(chunkOcc->getPosition() + glm::vec2(-CHUNK_SIZE, CHUNK_SIZE));
-	if (close.y && far.x) positions.push_back(chunkOcc->getPosition() + glm::vec2(CHUNK_SIZE, -CHUNK_SIZE));*/
+std::tuple<glm::vec3, FACES_NAMES> World::getIntersectedBlock(ChunkColumn*& chunkOcc, Ray ray) {
 	std::vector<ChunkColumn*> chunks;
 	std::vector<std::tuple<ChunkColumn*, std::unordered_map<GLuint, FaceB_p>>> meshes;
 	for (auto& chunk : chunks2) {
@@ -294,6 +263,43 @@ std::tuple<glm::vec3, FACES_NAMES> World::getIntersected(ChunkColumn*& chunkOcc,
 	}
 	return { p, face };
 }
+/*Entity* World::getIntersectedEntity(EntityHander& handler, Ray ray)
+{
+	std::vector<Entity>& entitys = handler.getEntitys();
+	auto isSameDirection = [](glm::vec3 pos, Ray ray) -> GLboolean {
+		glm::vec3 diff = glm::normalize(glm::round(pos - ray.getOrigin()));
+		glm::vec3 direction = ray.getDirection();
+		for (GLubyte i = 0; i < 3; i++) {
+			if (diff[i] >= 0 && direction[i] >= 0 || diff[i] <= 0 && direction[i] <= 0) {
+			}
+			else {
+				return 0;
+			}
+		}
+		return 1;
+	};
+	Entity* entity = nullptr;
+	FACES_NAMES face = NULL_;
+	GLfloat shortestDistance = 1000;
+	for (auto& en : entitys) {
+		Entity* e = &en;
+		if (!isSameDirection(e->getPosition(), ray)) continue;
+		for (auto& face : en.getBody()) {
+			FACES_NAMES& faceType = std::get<0>(face)->type;
+			glm::vec3& pos = std::get<2>(face);
+			if (!isSameDirection(pos, ray)) continue;
+			auto dist = ray.checkIntercesction_Block(pos, faceType);
+			if (dist == -1) {
+				continue;
+			}
+			if (dist < shortestDistance) {
+				shortestDistance = dist;
+				entity = e;
+			}
+		}
+	}
+	return entity;
+}*/
 ChunkColumn* World::getChunkOccupied(glm::vec3 position) {
 	position = glm::floor(position);
 	position = reduceToMultiple(position, CHUNK_SIZE);

@@ -10,7 +10,7 @@ public: // functions
 
 	// operations
 	void render(Camera& cam, glm::mat4 projection, World& world);
-	void addEntity(Entity& entity);
+	void addEntity(Entity& entity, GLboolean create = 1);
 	void updatePositions(GLfloat deltaTime, World& world);
 	void create();
 

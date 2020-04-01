@@ -64,6 +64,10 @@ void Entity::setTarget(glm::vec3 targ)	{
 	prevBlock = glm::round(pos);
 	calcMovementPath();
 	nxtBlock = prevBlock;
+	if (movementPath.size() == 0) {
+		hasTarget = 0;
+		return;
+	}
 	switch (movementPath[stage])
 	{
 	case Move_Dir::FORWARD:
@@ -150,6 +154,7 @@ void Entity::updatePosition(GLfloat deltaTime, World& world, std::string& collis
 	/*if (!grounded) vel.y -= GRAVITY * deltaTime;
 	else if (vel.y < 0) vel.y = 0;*/
 	pos += vel * deltaTime;
+	if (!hasBody) return;
 	renderer.setPosition(pos);
 }
 

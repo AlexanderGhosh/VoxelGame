@@ -7,12 +7,12 @@ Player::Player() : Entity(false, { 1, 2, 1 }) {
 Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLboolean render) : Entity(true) {
 	movementSpeed = PLAYER_SPEED;
 	camera_offset = camOff;
-	cam.setPosition(camOff);
+	cam.setPosition(camOff + position);
 	pos = position;
 	collider = BoxCollider(glm::vec3(0.85f), pos);
 	collider.setDimentions(glm::vec3(0.85f), glm::vec3(0.85f, 2.55f, 0.85f));
 	this->attachCam = attachCam;
-	this->canRender = render;
+	this->hasBody = render;
 	invBar = {
 		Blocks::GRASS,
 		Blocks::DIRT,

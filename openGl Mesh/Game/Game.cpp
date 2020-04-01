@@ -72,7 +72,9 @@ void Game::doLoop(glm::mat4 projection) {
 
 		entityHander.moveToTarget();
 		entityHander.updatePositions(deltaTime, world);
-		entityHander.render(*mainCamera, projection, world);
+		player.updatePosition(deltaTime, world);
+		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+		entityHander.render(cam	, projection, world);
 
 		showStuff();
 		showFPS();
@@ -111,7 +113,7 @@ void Game::lockFPS() {
 void Game::showStuff() {
 	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
 	if (hasPlayer) {
-		player.render(projection);
+		// player.render(projection);
 	}
 	world.render(cam, projection);
 	if (hasSkybox) {
@@ -145,13 +147,26 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ 1.0f, 100.0f, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1);
-	player.create();
+	if (!hasPlayer) return;
+	player = Player({ 1.0f, 100.0f, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1, 0);
+	player.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
+	entityHander.addEntity(player, 0);
+
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
 		world.save();
 		glfwSetWindowShouldClose(window, true);
+	}
+	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
+		Ray ray = Ray(mainCamera->GetPosition(), mainCamera->GetFront(), PLAYER_REACH);
+		/*auto e = world.getIntersectedEntity(entityHander, ray);
+		if (!e) {
+			std::cout << "No Entity found" << std::endl;
+		}
+		else {
+			std::cout << "Entity found at: " << glm::to_string(e->getPosition()) << std::endl;
+		}*/
 	}
 	if (key >= 0 && key < 1024) {
 		if (action == GLFW_PRESS || action == GLFW_RELEASE) {
@@ -252,7 +267,7 @@ void Game::processKeys() {
 			}
 		}
 
-		m = "Collison: " + player.updatePosition(Game::deltaTime, world);
+		// m = "Collison: " + player.updatePosition(Game::deltaTime, world);
 	}
 	else {
 		if (k[GLFW_KEY_W]) {

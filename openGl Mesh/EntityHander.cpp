@@ -10,9 +10,9 @@ void EntityHander::render(Camera& cam, glm::mat4 projection, World& world) {
 	}
 }
 
-void EntityHander::addEntity(Entity& entity) {
+void EntityHander::addEntity(Entity& entity, GLboolean create) {
 	entitys.push_back(entity);
-	entitys.back().create();
+	if(create) entitys.back().create();
 }
 
 void EntityHander::updatePositions(GLfloat deltaTime, World& world) {

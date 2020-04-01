@@ -10,6 +10,7 @@
 #include "../../Drawable.h"
 #include "../../Ray.h"
 #include "Chunks/ChunkColumn.h"
+// #include "../../EntityHander.h"
 
 class World
 {
@@ -38,6 +39,9 @@ public:
 	GLuint seed;
 	Chunks chunks2;
 	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
+
+
+	// Entity* getIntersectedEntity(EntityHander& handler, Ray ray);
 private:
 	std::unordered_map<GLuint, FaceB_p> worldMesh;
 	Drawable drawable;
@@ -53,7 +57,8 @@ private:
 
 	void genWorldMesh();
 
-	std::tuple<glm::vec3, FACES_NAMES> getIntersected(ChunkColumn*& chunkOcc, glm::vec2 in_chunkPos, Ray ray);
+	std::tuple<glm::vec3, FACES_NAMES> getIntersectedBlock(ChunkColumn*& chunkOcc, Ray ray);
+
 
 	std::vector<ChunkColumn> createChunks(std::vector<glm::vec2> positions, std::vector<glm::vec2> activeChunks,
 		std::vector<glm::vec2> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<ChunkColumn>* subChunks);
