@@ -263,7 +263,7 @@ std::tuple<glm::vec3, FACES_NAMES> World::getIntersectedBlock(ChunkColumn*& chun
 	}
 	return { p, face };
 }
-/*Entity* World::getIntersectedEntity(EntityHander& handler, Ray ray)
+Entity* World::getIntersectedEntity(EntityHander& handler, Ray ray)
 {
 	std::vector<Entity>& entitys = handler.getEntitys();
 	auto isSameDirection = [](glm::vec3 pos, Ray ray) -> GLboolean {
@@ -299,7 +299,7 @@ std::tuple<glm::vec3, FACES_NAMES> World::getIntersectedBlock(ChunkColumn*& chun
 		}
 	}
 	return entity;
-}*/
+}
 ChunkColumn* World::getChunkOccupied(glm::vec3 position) {
 	position = glm::floor(position);
 	position = reduceToMultiple(position, CHUNK_SIZE);

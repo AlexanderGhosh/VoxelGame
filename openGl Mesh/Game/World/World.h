@@ -10,7 +10,7 @@
 #include "../../Drawable.h"
 #include "../../Ray.h"
 #include "Chunks/ChunkColumn.h"
-// #include "../../EntityHander.h"
+#include "../../EntityHander.h"
 
 class World
 {
@@ -41,7 +41,7 @@ public:
 	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
 
 
-	// Entity* getIntersectedEntity(EntityHander& handler, Ray ray);
+	Entity* getIntersectedEntity(EntityHander& handler, Ray ray);
 private:
 	std::unordered_map<GLuint, FaceB_p> worldMesh;
 	Drawable drawable;

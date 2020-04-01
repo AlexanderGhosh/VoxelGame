@@ -1,9 +1,10 @@
 #pragma once
 #include <gtx/string_cast.hpp>
 #include <algorithm>
-#include "../World/World.h"
+// #include "../World/World.h"
 #include "../../Renders/chunkRender.h"
 #include "../Physics/BoxCollider.h"
+#include "../World/Chunks/ChunkColumn.h"
 using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 class Entity
 {
@@ -15,6 +16,7 @@ public:
 	glm::vec3 getCenter();
 	glm::vec3 getCenter(glm::vec3 pos);
 	BoxCollider& getCollider();
+	Faces& getBody();
 	
 	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
@@ -28,7 +30,7 @@ public:
 	void addVelocity(const glm::vec3& vel);
 	void addAcceleration(const glm::vec3& acc);
 
-	void updatePosition(GLfloat deltaTime, World& world, std::string& collision);
+	void updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, std::string& collision);
 
 	void move(Move_Dir dir);
 	void moveToTarget();
@@ -36,7 +38,7 @@ public:
 
 	void render(glm::mat4 projection, Camera* cam = nullptr);
 protected:
-	glm::ivec3 determinCollision(World& world, glm::vec3 deltaV);
+	glm::ivec3 determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV);
 	void calcMovementPath();
 	void moveBlock(Move_Dir dir);
 	void lookAt(Move_Dir dir);

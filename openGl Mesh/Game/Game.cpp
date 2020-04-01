@@ -70,11 +70,29 @@ void Game::doLoop(glm::mat4 projection) {
 
 		world.advanceGeneration();
 
+
+
 		entityHander.moveToTarget();
-		entityHander.updatePositions(deltaTime, world);
-		player.updatePosition(deltaTime, world);
+
+		std::vector<std::vector<ChunkColumn*>> adjacentChunkss;
+		std::vector<ChunkColumn*> occuped;
+		for (auto& e : entityHander.getEntitys()) {
+			glm::vec3& p = e.getPosition();
+			adjacentChunkss.push_back(world.getAdjacentChunks(p));
+			occuped.push_back(world.getChunkOccupied(p));
+		}
+
+
 		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
-		entityHander.render(cam	, projection, world);
+		entityHander.render(cam, projection, occuped);
+
+
+		entityHander.updatePositions(deltaTime, occuped, adjacentChunkss);
+		std::vector<ChunkColumn*> adjacentChunks;
+		if (hasPlayer) {
+			adjacentChunks = world.getAdjacentChunks(player.getPosition());
+			player.updatePosition(deltaTime, adjacentChunks);
+		}
 
 		showStuff();
 		showFPS();
@@ -97,7 +115,7 @@ void Game::showFPS() {
 	}
 }
 std::string m;
-GLboolean alt = 0;
+GLboolean alt = 1;
 void Game::proccesEvents() {
 	glfwPollEvents();
 }
@@ -159,14 +177,15 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
-		Ray ray = Ray(mainCamera->GetPosition(), mainCamera->GetFront(), PLAYER_REACH);
-		/*auto e = world.getIntersectedEntity(entityHander, ray);
+		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+		Ray ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH);
+		auto e = world.getIntersectedEntity(entityHander, ray);
 		if (!e) {
 			std::cout << "No Entity found" << std::endl;
 		}
 		else {
 			std::cout << "Entity found at: " << glm::to_string(e->getPosition()) << std::endl;
-		}*/
+		}
 	}
 	if (key >= 0 && key < 1024) {
 		if (action == GLFW_PRESS || action == GLFW_RELEASE) {

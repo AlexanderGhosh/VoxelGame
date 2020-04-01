@@ -116,12 +116,12 @@ void Entity::addAcceleration(const glm::vec3& acc) {
 	this->acc += acc;
 }
 
-void Entity::updatePosition(GLfloat deltaTime, World& world, std::string& collision) {
+void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, std::string& collision) {
 	deltaTime = 1.0f / 60.0f;
 	grounded = 0;
 	vel += acc * deltaTime;
 	vel.y -= GRAVITY * deltaTime;
-	glm::ivec3 collisions = determinCollision(world, vel * deltaTime);
+	glm::ivec3 collisions = determinCollision(adjacesnt, vel * deltaTime);
 	collision = glm::to_string(collisions);
 	if (collisions.y == -1) {
 		grounded = 1;
@@ -355,16 +355,15 @@ GLboolean isBehind(glm::vec3 behind, glm::vec3 front, GLboolean isCube = 1) {
 	return 0;
 }
 
-glm::ivec3 Entity::determinCollision(World& world, glm::vec3 deltaV) {
+glm::ivec3 Entity::determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV) {
 	glm::ivec3 res(0);
 	if (glm::all(glm::equal(deltaV, glm::vec3(0)))) return res; 
 	glm::ivec3 rounded = glm::round(pos + deltaV);
 	if (rounded == glm::ivec3(0, -1, 1)) {
 		int g = 0;
 	}
-	auto chunks = world.getAdjacentChunks(pos);
 	std::unordered_map<GLuint, FaceB_p> worldMesh;
-	for (auto& chunk : chunks) {
+	for (auto& chunk : adjacesnt) {
 		std::unordered_map<GLuint, FaceB_p>& mesh = chunk->getMesh();
 		for (auto& m : mesh) {
 			const GLuint key = m.first;
@@ -423,9 +422,11 @@ void Entity::moveBlock(Move_Dir dir) {
 	glm::vec2 comp = { pos.x, pos.z };
 	comp = glm::round(comp);
 	if (comp == glm::vec2(nxtBlock.x, nxtBlock.z)) {
+		vel.x = 0; 
+		vel.z = 0;
+		if (!grounded) return;
 		prevBlock = nxtBlock;
 		stage++;
-		vel = { 0, 0, 0 };
 		nxtBlock = prevBlock;
 
 		if (stage >= movementPath.size()) {
@@ -483,4 +484,9 @@ glm::vec3 Entity::getCenter(glm::vec3 pos) {
 BoxCollider& Entity::getCollider()
 {
 	return collider;
+}
+
+Faces& Entity::getBody()
+{
+	return body;
 }

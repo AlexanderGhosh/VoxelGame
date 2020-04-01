@@ -32,9 +32,9 @@ Camera& Player::getCamera() {
 glm::vec3 Player::getPosition() {
 	return pos;
 }
-std::string Player::updatePosition(GLfloat deltaTime, World& world) {
+std::string Player::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacentChunks) {
 	std::string res = "";
-	Entity::updatePosition(deltaTime, world, res);
+	Entity::updatePosition(deltaTime, adjacentChunks, res);
 	if(attachCam) cam.setPosition(pos + camera_offset);
 	return res;
 }
