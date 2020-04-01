@@ -3,9 +3,10 @@
 EntityHander::EntityHander() {
 }
 
-void EntityHander::render(Camera& cam, glm::mat4 projection) {
-	for (auto& entiy : entitys) {
-		entiy.render(projection, &cam);
+void EntityHander::render(Camera& cam, glm::mat4 projection, World& world) {
+	for (auto& e : entitys) {
+		if (!world.getChunkOccupied(e.getPosition())) continue;
+		e.render(projection, &cam);
 	}
 }
 
@@ -17,6 +18,7 @@ void EntityHander::addEntity(Entity& entity) {
 void EntityHander::updatePositions(GLfloat deltaTime, World& world) {
 	std::string collision = "";
 	for (auto& e : entitys) {
+		if (!world.getChunkOccupied(e.getPosition())) continue;
 		e.updatePosition(deltaTime, world, collision);
 	}
 }
@@ -43,5 +45,3 @@ void EntityHander::moveToTarget() {
 		e.moveToTarget();
 	}
 }
-
-

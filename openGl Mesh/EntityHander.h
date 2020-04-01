@@ -9,7 +9,7 @@ public: // functions
 	EntityHander();
 
 	// operations
-	void render(Camera& cam, glm::mat4 projection);
+	void render(Camera& cam, glm::mat4 projection, World& world);
 	void addEntity(Entity& entity);
 	void updatePositions(GLfloat deltaTime, World& world);
 	void create();

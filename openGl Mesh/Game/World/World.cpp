@@ -55,7 +55,7 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap a
 		if (FILE* file = fopen(("Chunks/" + name + ".dat").c_str(), "r")) {
 			fclose(file);
 			chunks2.push_back({ name });
-			victims.push_back(pos);
+			if(chunks2.back().getMesh().size() > 0) victims.push_back(pos);
 		}
 		else {
 			HeightMap heightMap = wg.createHeightMap(pos, 0);
@@ -469,7 +469,11 @@ void World::advanceGeneration()
 		fclose(file);
 		auto found = std::find(chunks2.begin(), chunks2.end(), pos);
 		*found = ChunkColumn(name);
-		generationStack.back()->stage = 100;
+		if ((*found).getMesh().size() == 0) {
+			generationStack.back() = &*found;
+		}else{
+			generationStack.back()->stage = 100;
+		}
 	}
 	else {
 		generationStack.back()->createMesh(adjacesntMapGeneration);

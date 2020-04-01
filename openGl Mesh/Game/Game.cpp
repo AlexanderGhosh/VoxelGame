@@ -43,7 +43,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 0);
+	world = World(1, 1, 1);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -54,7 +54,7 @@ void Game::doLoop(glm::mat4 projection) {
 	// temp vampire
 	Entity vampire(1);
 	vampire.getCollider().setDimentions({ 0.85, 0.85, 0.85 }, { 0.85, 2.55, 0.85 });
-	vampire.setPosition({ 5, 60, 0 });
+	vampire.setPosition({ 5, 80, 0 });
 	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
 	entityHander.addEntity(vampire);
@@ -72,7 +72,7 @@ void Game::doLoop(glm::mat4 projection) {
 
 		entityHander.moveToTarget();
 		entityHander.updatePositions(deltaTime, world);
-		entityHander.render(*mainCamera, projection);
+		entityHander.render(*mainCamera, projection, world);
 
 		showStuff();
 		showFPS();

@@ -82,13 +82,13 @@ std::vector<glm::vec2> world_generation::getTreePositions(glm::vec2 chunkPos)
 {
 	std::vector <glm::vec2> trees;
 
-	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
+	for (GLubyte x = 2; x < CHUNK_SIZE-2; x++)
 	{
-		for (GLubyte y = 0; y < CHUNK_SIZE; y++)
+		for (GLubyte z = 2; z < CHUNK_SIZE-2; z++)
 		{
 			if (rand() / double(RAND_MAX) < 0.05 && glm::all(glm::lessThanEqual(treeCooldown, glm::ivec2(0)))) {
 				// place tree at
-				trees.push_back({ x, y });
+				trees.push_back({ x, z });
 				treeCooldown = { 4, 4 };
 			}
 			treeCooldown.y--;
