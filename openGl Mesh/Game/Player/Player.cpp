@@ -91,3 +91,7 @@ std::array<Blocks, 9> Player::getInvBar() {
 void Player::setInvSlot(GLubyte slot) {
 	invSlot = slot;
 }
+
+void Player::attack(Entity& e) {
+	e.takeDamage(attackDmg);
+}

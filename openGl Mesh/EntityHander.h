@@ -13,6 +13,7 @@ public: // functions
 	void addEntity(Entity& entity, GLboolean create = 1);
 	void updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> occupied, std::vector<std::vector<ChunkColumn*>> adjacentChunks);
 	void create();
+	void update();
 
 	// ai
 	void setTarget(glm::vec3 target);

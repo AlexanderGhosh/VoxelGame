@@ -43,7 +43,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 1);
+	world = World(1, 1, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -71,7 +71,7 @@ void Game::doLoop(glm::mat4 projection) {
 		world.advanceGeneration();
 
 
-
+		entityHander.update();
 		entityHander.moveToTarget();
 
 		std::vector<std::vector<ChunkColumn*>> adjacentChunkss;
@@ -185,7 +185,9 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		}
 		else {
 			std::cout << "Entity found at: " << glm::to_string(e->getPosition()) << std::endl;
+			e->takeDamage(50);
 		}
+
 	}
 	if (key >= 0 && key < 1024) {
 		if (action == GLFW_PRESS || action == GLFW_RELEASE) {

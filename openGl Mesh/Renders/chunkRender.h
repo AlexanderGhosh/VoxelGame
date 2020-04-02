@@ -26,6 +26,9 @@ namespace Render {
 
 		void addPosition(glm::vec3 positon);
 		void cleanUp();
+
+		// getters
+		Shader& getShader();
 	private:
 		Shader* shader;
 		std::vector<Face>* meshes;

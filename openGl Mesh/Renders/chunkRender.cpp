@@ -97,4 +97,7 @@ namespace Render {
 		canRender = false;
 		meshes = new std::vector<Face>();
 	}
+	Shader& ChunkMeshRender::getShader() {
+		return *shader;
+	}
 };

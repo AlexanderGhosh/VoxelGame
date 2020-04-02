@@ -22,6 +22,8 @@ public:
 	GLubyte getSlot();
 	std::array<Blocks, 9> getInvBar();
 	void setInvSlot(GLubyte slot);
+
+	void attack(Entity& e);
 private:
 	Camera cam;
 	glm::vec3 camera_offset;

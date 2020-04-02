@@ -5,6 +5,7 @@
 #include "../../Renders/chunkRender.h"
 #include "../Physics/BoxCollider.h"
 #include "../World/Chunks/ChunkColumn.h"
+// #include "../World/World.h"
 using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 class Entity
 {
@@ -37,11 +38,17 @@ public:
 	void create();
 
 	void render(glm::mat4 projection, Camera* cam = nullptr);
+
+	void takeDamage(GLuint dmgTaken);
+	void update();
+	GLboolean isDead;
 protected:
 	glm::ivec3 determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV);
 	void calcMovementPath();
 	void moveBlock(Move_Dir dir);
 	void lookAt(Move_Dir dir);
+	void toggleShowDamage();
+	void checkDead();
 
 	glm::vec3 pos, vel, acc;
 	glm::vec3 forward, right;
@@ -58,5 +65,15 @@ protected:
 	GLboolean hasTarget;
 	GLuint stage;
 	std::vector<Move_Dir> movementPath;
+
+	GLboolean showDmg;
+	/*const*/ GLubyte dmgCooldown; // in frames
+	GLubyte dmgTimer;
+	GLboolean invunrable;
+	GLubyte invunrableTimer;
+	/*const*/ GLubyte invunrableCooldown; // in frames
+
+	GLint health;
+	GLuint attackDmg;
 };
 

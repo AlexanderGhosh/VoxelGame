@@ -1,5 +1,5 @@
 #include "Entity.h"
-Entity::Entity(GLboolean init, glm::vec3 dimentions) {
+Entity::Entity(GLboolean init, glm::vec3 dimentions) : dmgCooldown(30), invunrableCooldown(30) {
 	pos = { 0, 0, 0 };
 	vel = { 0, 0, 0 };
 	acc = { 0, 0, 0 };
@@ -22,6 +22,15 @@ Entity::Entity(GLboolean init, glm::vec3 dimentions) {
 
 	targetPosition = glm::vec3(0);
 	hasTarget = 0;
+	dmgTimer = 0;
+	showDmg = 0;
+
+	invunrableTimer = 15;
+	invunrable = 0;
+
+	isDead = 0;
+	health = 100;
+	attackDmg = 10;
 }
 glm::vec3& Entity::getPosition() {
 	return pos;
@@ -233,6 +242,25 @@ void Entity::create() {
 void Entity::render(glm::mat4 projection, Camera* cam) {
 	if (!hasBody) return;
 	renderer.render(*cam, projection);
+}
+void Entity::takeDamage(GLuint dmgTaken) {
+	if (!invunrable) {
+		invunrable = 1;
+		invunrableTimer = 0;
+		health -= dmgTaken;
+		toggleShowDamage();
+		std::cout << "entity at position: " << glm::to_string(pos) << " health: " << std::to_string(health) << std::endl;
+	}
+}
+void Entity::update() {
+	if (invunrable) {
+		invunrableTimer++;
+		if (invunrableTimer >= invunrableCooldown) {
+			invunrable = 0;
+			toggleShowDamage();
+		}
+	}
+	checkDead();
 }
 GLboolean isAbove(glm::vec3 above, glm::vec3 bellow, GLboolean isCube = 1) {
 	if (isCube) {
@@ -474,6 +502,21 @@ void Entity::lookAt(Move_Dir dir) {
 	}
 	renderer.setRotation({ 0, 1, 0 }, angle);
 }
+void Entity::toggleShowDamage()
+{
+	showDmg = !showDmg;
+	Shader& shader = renderer.getShader();
+	shader.bind();
+	shader.setValue("isDamaged", showDmg);
+}
+
+void Entity::checkDead() {
+	if (health <= 0) {
+		isDead = 1;
+		std::cout << "entity at position: " << glm::to_string(pos) << " is dead\n";
+	}
+}
+
 glm::vec3 Entity::getCenter() {
 	return getCenter(pos);
 }

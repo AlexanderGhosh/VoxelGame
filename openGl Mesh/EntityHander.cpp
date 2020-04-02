@@ -32,6 +32,23 @@ void EntityHander::create() {
 	}
 }
 
+void EntityHander::update() {
+	std::vector<GLuint> victimIndex;
+	int i = 0;
+	for (Entity& e : entitys) {
+		e.update();
+		if (e.isDead) {
+			victimIndex.push_back(i);
+		}
+		i++;
+	}
+	i = 0;
+	for (GLuint& index : victimIndex) {
+		entitys.erase(entitys.begin() + index - i);
+		i++;
+	}
+}
+
 void EntityHander::setTarget(glm::vec3 target) {
 	for (Entity& e : entitys) {
 		e.setTarget(target);

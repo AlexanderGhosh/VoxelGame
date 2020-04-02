@@ -7,6 +7,7 @@ in vec3 TexCoords;
 
 uniform samplerCube skybox;
 uniform vec3 viewPos;
+uniform bool isDamaged;
 
 vec3 lightCol = vec3(1);
 vec3 lightPos = vec3( 50, 50, 50);
@@ -33,5 +34,7 @@ void main()
 
     result = (ambient + diffuse + specular) * lightCol;
     result == vec3(0);
+    if(isDamaged)
+        result.r = 200;
     color = vec4(result, 1.0f);
 }
