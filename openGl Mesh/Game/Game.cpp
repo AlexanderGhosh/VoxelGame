@@ -11,7 +11,7 @@ GLuint GameConfig::FPSlock = 0;
 Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
 glm::vec3 Game::mouseData(0);
 std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
-Player Game::player = Player();
+Entity Game::player = Entity();
 World Game::world = World(0);
 EntityHander Game::entityHander = EntityHander();
 #pragma endregion
@@ -69,7 +69,6 @@ void Game::doLoop(glm::mat4 projection) {
 
 		world.advanceGeneration();
 
-
 		entityHander.update();
 		entityHander.moveToTarget();
 
@@ -86,7 +85,7 @@ void Game::doLoop(glm::mat4 projection) {
 		entityHander.render(cam, projection, occuped);
 
 		entityHander.updatePositions(deltaTime, occuped, adjacentChunkss);
-		entityHander.attackPlayer();
+		entityHander.attackPlayer(player);
 		// player = entityHander.getEntitys().front();
 		std::vector<ChunkColumn*> adjacentChunks = world.getAdjacentChunks(player.getPosition());
 
@@ -155,10 +154,10 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Player({ 1.0f, 60, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1, 0, 1, 0);
+	player = Entity({ 0.0f, 1.25f, 0.0f }, 1, 0);
+	player.setPosition({ 0, 60, 0 });
 	player.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	entityHander.addEntity(player, 0);
-
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
@@ -210,7 +209,7 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		Camera& cam = player.getCamera();
-		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player.getInvBar()[player.getSlot()]);
+		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), Blocks::LOG);
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 		Camera& cam = player.getCamera();
@@ -233,7 +232,7 @@ void Game::processKeys() {
 		speed = 2.0f;
 		player.setMovementSpeed(PLAYER_SPEED);
 	} // walking
-	player.setVelocity({ 0, player.canFly ? 0 : player.getVelocity().y, 0 });
+	player.setVelocity({ 0, player.getFlying() ? 0 : player.getVelocity().y, 0 });
 
 	if (k[GLFW_KEY_W]) {
 		player.move(Move_Dir::FORWARD);
@@ -248,10 +247,10 @@ void Game::processKeys() {
 		player.move(Move_Dir::RIGHT);
 	}
 	if (k[GLFW_KEY_SPACE]) {
-		player.move(Move_Dir::UP, player.canFly);
+		player.move(Move_Dir::UP);
 	}
 	if (k[GLFW_KEY_LEFT_SHIFT]) {
-		player.move(Move_Dir::DOWN, player.canFly);
+		player.move(Move_Dir::DOWN);
 	}
 	/*else {
 		if (k[GLFW_KEY_W]) {
@@ -280,31 +279,31 @@ void Game::processKeys() {
 	}
 
 	if (k[GLFW_KEY_1]) {
-		player.setInvSlot(0);
+		// player.setInvSlot(0);
 	}
 	if (k[GLFW_KEY_2]) {
-		player.setInvSlot(1);
+		// player.setInvSlot(1);
 	}
 	if (k[GLFW_KEY_3]) {
-		player.setInvSlot(2);
+		// player.setInvSlot(2);
 	}
 	if (k[GLFW_KEY_4]) {
-		player.setInvSlot(3);
+		// player.setInvSlot(3);
 	}
 	if (k[GLFW_KEY_5]) {
-		player.setInvSlot(4);
+		// player.setInvSlot(4);
 	}
 	if (k[GLFW_KEY_6]) {
-		player.setInvSlot(5);
+		// player.setInvSlot(5);
 	}
 	if (k[GLFW_KEY_7]) {
-		player.setInvSlot(6);
+		// player.setInvSlot(6);
 	}
 	if (k[GLFW_KEY_8]) {
-		player.setInvSlot(7);
+		// player.setInvSlot(7);
 	}
 	if (k[GLFW_KEY_9]) {
-		player.setInvSlot(8);
+		// player.setInvSlot(8);
 	}
 }
 void Game::cleanUp() {
@@ -412,7 +411,7 @@ void Game::showGUI() {
 				glDrawArrays(GL_TRIANGLES, 0, 6);
 				BLOCKS[block].ItemTex.unBind();
 			}
-			if (player.getSlot() == i + length / 2) {
+			if (8 == i + length / 2) {
 				texSele.bind();
 			}
 			else {
@@ -426,7 +425,17 @@ void Game::showGUI() {
 		texNorm.unBind();
 	};
 	Shader& shader = *SHADERS[CROSSHAIR];
-	std::array<Blocks, 9> bar = player.getInvBar();
+	std::array<Blocks, 9> bar = {
+		Blocks::GRASS,
+		Blocks::DIRT,
+		Blocks::STONE,
+		Blocks::WATER,
+		Blocks::LOG,
+		Blocks::LEAF,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR
+	};
 	invBar(bar, { 0, -9.5, 0 }, texBN, texBS, shader, CHVAO);
 }
 

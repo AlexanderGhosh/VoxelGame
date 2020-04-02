@@ -15,7 +15,7 @@
 #include <time.h>
 
 #include "../EntityHander.h"
-#include "Player/Player.h"
+#include "Player/Entity.h"
 #include "World/World.h"
 struct Character {
 	GLuint     TextureID;  // ID handle of the glyph texture
@@ -55,7 +55,7 @@ private:
 	GLuint frameRate;
 	GLboolean gameRunning;
 	static World world;
-	static Player player;
+	static Entity player;
 	static EntityHander entityHander;
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;

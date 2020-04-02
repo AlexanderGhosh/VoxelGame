@@ -7,7 +7,7 @@ void EntityHander::render(Camera& cam, glm::mat4 projection, std::vector<ChunkCo
 	int i = 0;
 	for (auto& e : entitys) {
 		if (!occupied[i++]) continue;
-		e.render(projection, &cam);
+		e.render(projection, cam);
 	}
 }
 

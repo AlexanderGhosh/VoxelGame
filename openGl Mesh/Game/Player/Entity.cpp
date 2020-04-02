@@ -1,5 +1,29 @@
 #include "Entity.h"
+Entity::Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying) : Entity(1) {
+	hasCamera = 1;
+	movementSpeed = PLAYER_SPEED;
+	this->cameraOffset = camOffset;
+	collider = BoxCollider(glm::vec3(1), pos);
+	collider.setDimentions(glm::vec3(0.85f), glm::vec3(0.85f, 2.55f, 0.85f));
+	this->hasBody = 0;
+	/*invBar = {
+		Blocks::GRASS,
+		Blocks::DIRT,
+		Blocks::STONE,
+		Blocks::WATER,
+		Blocks::LOG,
+		Blocks::LEAF,
+		Blocks::AIR,
+		Blocks::AIR,
+		Blocks::AIR
+	};
+	invSlot = 0;*/
+	isClipping = clipping;
+	canFly = flying;
+	tag = "player";
+}
 Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(30), invunrableCooldown(30) {
+	hasCamera = 0;
 	pos = { 0, 0, 0 };
 	vel = { 0, 0, 0 };
 	acc = { 0, 0, 0 };
@@ -51,9 +75,6 @@ void Entity::setPosition(const glm::vec3& pos) {
 
 void Entity::setVelocity(const glm::vec3& vel) {
 	this->vel = vel;
-}
-void Entity::setVelocity(const GLfloat& vel) {
-	this->vel = glm::vec3(vel);
 }
 void Entity::setAcceleration(const glm::vec3& acc) {
 	this->acc = acc;
@@ -121,13 +142,6 @@ void Entity::getNewTarget() {
 	}
 }
 
-void Entity::addVelocity(const glm::vec3& vel) {
-	this->vel += vel;
-}
-void Entity::addAcceleration(const glm::vec3& acc) {
-	this->acc += acc;
-}
-
 void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, GLboolean clipping, GLboolean flying) {
 	deltaTime = 1.0f / 60.0f;
 	if (!flying) {
@@ -165,17 +179,24 @@ void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjace
 			}
 		}
 	}
-	
-	/*else {
-		grounded = 0;
-	}*/
-	this->pos += vel * deltaTime;
+
+	if (hasCamera) {
+		playerCam.setPosition(pos + cameraOffset);
+	}
+	pos += vel * deltaTime;
 	if (!hasBody) return;
 	renderer.setPosition(this->pos);
 }
 
-void Entity::move(Move_Dir dir, GLboolean flying) {
-	GLfloat jf = flying ? movementSpeed : jumpForce;
+void Entity::updateCamera(GLfloat xOff, GLfloat yOff)
+{
+	playerCam.ProcessMouseMovement(xOff, yOff);
+	forward = playerCam.GetFront() * glm::vec3(1, 0, 1);
+	right = playerCam.GetRight() * glm::vec3(1, 0, 1);
+}
+
+void Entity::move(Move_Dir dir) {
+	GLfloat jf = canFly ? movementSpeed : jumpForce;
 	switch (dir)
 	{
 	case Move_Dir::FORWARD:
@@ -191,11 +212,11 @@ void Entity::move(Move_Dir dir, GLboolean flying) {
 		vel += right * movementSpeed;
 		break;
 	case Move_Dir::UP:
-		if (!grounded && !flying) break;
+		if (!grounded && !canFly) break;
 		vel.y += jf;
 		break;
 	case Move_Dir::DOWN:
-		if (!flying) break;
+		if (!canFly) break;
 		vel.y -= jf;
 		break;
 	}
@@ -249,9 +270,10 @@ void Entity::create() {
 }
 
 
-void Entity::render(glm::mat4 projection, Camera* cam) {
+void Entity::render(glm::mat4 projection, Camera& cam) {
 	if (!hasBody) return;
-	renderer.render(*cam, projection);
+	if (hasCamera) cam = playerCam;
+	renderer.render(cam, projection);
 }
 void Entity::attack(Entity& e) {
 	if (hasAttacked) {
@@ -290,126 +312,6 @@ void Entity::update() {
 		}
 	}
 	checkDead();
-}
-GLboolean isAbove(glm::vec3 above, glm::vec3 bellow, GLboolean isCube = 1) {
-	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { bellow + glm::vec3(0.5), bellow - glm::vec3(0.5) };
-		auto& top = corners.first;
-		auto& bottom = corners.second;
-		if (above.x < top.x && above.x > bottom.x) {
-			if (above.z < top.z && above.z > bottom.z) {
-				if (above.y > top.y) {
-					return 1;
-				}
-			}
-		}
-	}
-	else {
-		if (above.x == bellow.x && above.z == bellow.z) {
-			return 1;
-		}
-	}
-	return 0;
-}
-GLboolean isBellow(glm::vec3 bellow, glm::vec3 above, GLboolean isCube = 1) {
-	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { above + glm::vec3(0.9), above - glm::vec3(0.9) };
-		auto& top = corners.first;
-		auto& bottom = corners.second;
-		if (bellow.x < top.x && bellow.x > bottom.x) {
-			if (bellow.z < top.z && bellow.z > bottom.z) {
-				if (bellow.y < above.y) {
-					return 1;
-				}
-			}
-		}
-	}
-	else {
-		if (bellow.x == above.x && bellow.z == above.z) {
-			return 1;
-		}
-	}
-	return 0;
-}
-GLboolean isRight(glm::vec3 right, glm::vec3 left, GLboolean isCube = 1) {
-	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { left + glm::vec3(0.9), left - glm::vec3(0.9) };
-		auto& top = corners.first;
-		auto& bottom = corners.second;
-		if (right.y < top.y && right.y > bottom.y) {
-			if (right.z < top.z && right.z > bottom.z) {
-				if (right.x > left.x) {
-					return 1;
-				}
-			}
-		}
-	}
-	else {
-		if (right.y == left.y && right.z == left.z) {
-			return 1;
-		}
-	}
-	return 0;
-}
-GLboolean isLeft(glm::vec3 left, glm::vec3 right, GLboolean isCube = 1) {
-	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { right + glm::vec3(0.9), right - glm::vec3(0.9) };
-		auto& top = corners.first;
-		auto& bottom = corners.second;
-		if (left.y < top.y && left.y > bottom.y) {
-			if (left.z < top.z && left.z > bottom.z) {
-				if (left.x < right.x) {
-					return 1;
-				}
-			}
-		}
-	}
-	else {
-		if (left.y == right.y && left.z == right.z) {
-			return 1;
-		}
-	}
-	return 0;
-}
-GLboolean isInFront(glm::vec3 front, glm::vec3 behind, GLboolean isCube = 1) {
-	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { behind + glm::vec3(0.9), behind - glm::vec3(0.9) };
-		auto& top = corners.first;
-		auto& bottom = corners.second;
-		if (front.x < top.x && front.x > bottom.x) {
-			if (front.y < top.y && front.y > bottom.y) {
-				if (front.z > behind.z) {
-					return 1;
-				}
-			}
-		}
-	}
-	else {
-		if (behind.x == front.x && behind.y == front.y) {
-			return 1;
-		}
-	}
-	return 0;
-}
-GLboolean isBehind(glm::vec3 behind, glm::vec3 front, GLboolean isCube = 1) {
-	if (isCube) {
-		std::pair<glm::vec3, glm::vec3> corners = { front + glm::vec3(0.9), front - glm::vec3(0.9) };
-		auto& top = corners.first;
-		auto& bottom = corners.second;
-		if (behind.x < top.x && behind.x > bottom.x) {
-			if (behind.y < top.y && behind.y > bottom.y) {
-				if (behind.z < front.z) {
-					return 1;
-				}
-			}
-		}
-	}
-	else {
-		if (behind.x == front.x && behind.y == front.y) {
-			return 1;
-		}
-	}
-	return 0;
 }
 
 glm::ivec3 Entity::determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV) {
@@ -551,13 +453,6 @@ std::string Entity::getTag()
 	return tag;
 }
 
-glm::vec3 Entity::getCenter() {
-	return getCenter(pos);
-}
-glm::vec3 Entity::getCenter(glm::vec3 pos) {
-	return pos;
-}
-
 BoxCollider& Entity::getCollider()
 {
 	return collider;
@@ -576,4 +471,14 @@ Texture_Names* Entity::getTextures()
 GLint& Entity::getHealth()
 {
 	return health;
+}
+
+Camera& Entity::getCamera()
+{
+	return playerCam;
+}
+
+GLboolean& Entity::getFlying()
+{
+	return canFly;
 }

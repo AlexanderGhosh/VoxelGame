@@ -10,45 +10,42 @@ using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 class Entity
 {
 public:
+	Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying);
 	Entity(GLboolean init = GL_FALSE, glm::vec3 dimentions = glm::vec3(1.0f));
 	glm::vec3& getPosition();
 	glm::vec3& getVelocity();
 	glm::vec3& getAcceleration();
-	glm::vec3 getCenter();
-	glm::vec3 getCenter(glm::vec3 pos);
 	BoxCollider& getCollider();
 	Faces& getBody();
 	Texture_Names* getTextures();
 	GLint& getHealth();
+	Camera& getCamera();
+	GLboolean& getFlying();
+	void getNewTarget();
 	
 	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
-	void setVelocity(const GLfloat& vel);
 	void setAcceleration(const glm::vec3& acc);
 	void setMovementSpeed(const GLfloat& speed);
 	void setTextues(Texture_Names texB, Texture_Names texT);
 	void setTarget(glm::vec3 targ);
-	void getNewTarget();
-
-	void addVelocity(const glm::vec3& vel);
-	void addAcceleration(const glm::vec3& acc);
 
 	void updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, GLboolean clipping = 1, GLboolean flying = 0);
+	void updateCamera(GLfloat xOff, GLfloat yOff);
 
-	void move(Move_Dir dir, GLboolean flying = 0);
+	void move(Move_Dir dir);
 	void moveToTarget();
 	void create();
 
-	void render(glm::mat4 projection, Camera* cam = nullptr);
+	void render(glm::mat4 projection, Camera& cam);
 
 	void attack(Entity& e);
 	void takeDamage(GLuint dmgTaken);
 	void update();
 
-
 	std::string getTag();
 	GLboolean isDead;
-protected:
+private:
 	glm::ivec3 determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV);
 	void calcMovementPath();
 	void moveBlock(Move_Dir dir);
@@ -56,6 +53,10 @@ protected:
 	void toggleShowDamage();
 	void checkDead();
 
+	// player stuff
+	Camera playerCam;
+	GLboolean hasCamera, isClipping, canFly;
+	glm::vec3 cameraOffset;
 
 	glm::vec3 pos, vel, acc;
 	glm::vec3 forward, right;
@@ -84,6 +85,5 @@ protected:
 	std::string tag;
 	GLint health;
 	GLuint attackDmg;
-private:
 };
 
