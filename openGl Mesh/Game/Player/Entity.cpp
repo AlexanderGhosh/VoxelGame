@@ -249,6 +249,7 @@ void Entity::takeDamage(GLuint dmgTaken) {
 		invunrableTimer = 0;
 		health -= dmgTaken;
 		toggleShowDamage();
+		move(Move_Dir::UP);
 		std::cout << "entity at position: " << glm::to_string(pos) << " health: " << std::to_string(health) << std::endl;
 	}
 }
