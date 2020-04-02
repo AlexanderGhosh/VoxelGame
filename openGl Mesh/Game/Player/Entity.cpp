@@ -1,5 +1,5 @@
 #include "Entity.h"
-Entity::Entity(GLboolean init, glm::vec3 dimentions) : dmgCooldown(30), invunrableCooldown(30) {
+Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(30), invunrableCooldown(30) {
 	pos = { 0, 0, 0 };
 	vel = { 0, 0, 0 };
 	acc = { 0, 0, 0 };
@@ -22,15 +22,18 @@ Entity::Entity(GLboolean init, glm::vec3 dimentions) : dmgCooldown(30), invunrab
 
 	targetPosition = glm::vec3(0);
 	hasTarget = 0;
-	dmgTimer = 0;
+
+	hasAttacked = 0;
+	attackTimer = 0;
 	showDmg = 0;
 
-	invunrableTimer = 15;
+	invunrableTimer = 0;
 	invunrable = 0;
 
 	isDead = 0;
 	health = 100;
 	attackDmg = 10;
+	tag = "hostile";
 }
 glm::vec3& Entity::getPosition() {
 	return pos;
@@ -249,6 +252,24 @@ void Entity::create() {
 void Entity::render(glm::mat4 projection, Camera* cam) {
 	if (!hasBody) return;
 	renderer.render(*cam, projection);
+}
+void Entity::attack(Entity& e) {
+	if (hasAttacked) {
+		attackTimer++;
+		if (attackTimer >= attackCooldown) {
+			hasAttacked = 0;
+			attackTimer = 0;
+		}
+		return;
+	}
+	GLfloat dist = glm::abs(glm::distance(e.pos, pos));
+	if (dist > 1.0f) return;
+	if (tag != "player") {
+		int t = 0;
+	}
+	if (e.tag != "player" || e.tag == "player" && tag == "player") return;
+	e.takeDamage(attackDmg);
+	hasAttacked = 1;
 }
 void Entity::takeDamage(GLuint dmgTaken) {
 	if (!invunrable) {
@@ -525,6 +546,11 @@ void Entity::checkDead() {
 	}
 }
 
+std::string Entity::getTag()
+{
+	return tag;
+}
+
 glm::vec3 Entity::getCenter() {
 	return getCenter(pos);
 }
@@ -545,4 +571,9 @@ Faces& Entity::getBody()
 Texture_Names* Entity::getTextures()
 {
 	return textures;
+}
+
+GLint& Entity::getHealth()
+{
+	return health;
 }

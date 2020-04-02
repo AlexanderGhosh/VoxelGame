@@ -14,6 +14,7 @@ public: // functions
 	void updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> occupied, std::vector<std::vector<ChunkColumn*>> adjacentChunks);
 	void create();
 	void update();
+	void attackPlayer(Entity& player);
 
 	// ai
 	void setTarget(glm::vec3 target);

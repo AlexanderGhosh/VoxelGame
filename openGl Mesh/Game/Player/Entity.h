@@ -19,6 +19,7 @@ public:
 	BoxCollider& getCollider();
 	Faces& getBody();
 	Texture_Names* getTextures();
+	GLint& getHealth();
 	
 	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
@@ -40,8 +41,12 @@ public:
 
 	void render(glm::mat4 projection, Camera* cam = nullptr);
 
+	void attack(Entity& e);
 	void takeDamage(GLuint dmgTaken);
 	void update();
+
+
+	std::string getTag();
 	GLboolean isDead;
 protected:
 	glm::ivec3 determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV);
@@ -50,6 +55,7 @@ protected:
 	void lookAt(Move_Dir dir);
 	void toggleShowDamage();
 	void checkDead();
+
 
 	glm::vec3 pos, vel, acc;
 	glm::vec3 forward, right;
@@ -68,13 +74,16 @@ protected:
 	std::vector<Move_Dir> movementPath;
 
 	GLboolean showDmg;
-	/*const*/ GLubyte dmgCooldown; // in frames
-	GLubyte dmgTimer;
+	GLboolean hasAttacked;
+	GLubyte attackCooldown; // in frames
+	GLubyte attackTimer;
 	GLboolean invunrable;
 	GLubyte invunrableTimer;
-	/*const*/ GLubyte invunrableCooldown; // in frames
+	GLubyte invunrableCooldown; // in frames
 
+	std::string tag;
 	GLint health;
 	GLuint attackDmg;
+private:
 };
 

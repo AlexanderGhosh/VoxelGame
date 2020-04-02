@@ -12,7 +12,6 @@ Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
 glm::vec3 Game::mouseData(0);
 std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
 Player Game::player = Player();
-GLboolean Game::hasPlayer = GL_FALSE;
 World Game::world = World(0);
 EntityHander Game::entityHander = EntityHander();
 #pragma endregion
@@ -87,7 +86,8 @@ void Game::doLoop(glm::mat4 projection) {
 		entityHander.render(cam, projection, occuped);
 
 		entityHander.updatePositions(deltaTime, occuped, adjacentChunkss);
-		
+		entityHander.attackPlayer();
+		// player = entityHander.getEntitys().front();
 		std::vector<ChunkColumn*> adjacentChunks = world.getAdjacentChunks(player.getPosition());
 
 		showStuff();
@@ -146,14 +146,16 @@ void Game::showStuff() {
 	m = "Chunk Pos: " + glm::to_string(p);
 	showText(m, { 5, 800 }, 0.5f);
 
+	m = "Health: " + std::to_string(player.getHealth());
+	showText(m, { 5, 775 }, 0.5f);
+
 	ray.render(cam, projection);
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	// if (!hasPlayer) return;
-	player = Player({ 1.0f, 60, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1, 0, 1, 1);
+	player = Player({ 1.0f, 60, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1, 0, 1, 0);
 	player.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	entityHander.addEntity(player, 0);
 

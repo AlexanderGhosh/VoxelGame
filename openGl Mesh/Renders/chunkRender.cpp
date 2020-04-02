@@ -4,15 +4,15 @@ namespace Render {
 		canRender = GL_FALSE;
 	}
 	ChunkMeshRender::ChunkMeshRender(std::string shaderName) {
-		shader = new Shader(shaderName);
+		shader = Shader(shaderName);
 		canRender = GL_FALSE;
 	}
 	ChunkMeshRender::ChunkMeshRender(Shader* shader) {
-		this->shader = shader;
+		this->shader = *shader;
 	}
 	ChunkMeshRender::ChunkMeshRender(GLboolean init, std::string t) {
 		if (init) {
-			shader = SHADERS[BLOCK2];
+			shader = *SHADERS[BLOCK2];
 			canRender = GL_FALSE;
 		}
 		else {
@@ -24,25 +24,25 @@ namespace Render {
 				std::cout << "Unable to render please call 'loadMesh()'" << std::endl;
 				return;
 			}
-			shader->bind();
+			shader.bind();
 
 			glm::mat4 view(1);
 			view = p1.GetViewMatrix();
-			shader->setValue("view", view);
-			shader->setValue("projection", projection);
+			shader.setValue("view", view);
+			shader.setValue("projection", projection);
 
 			glm::vec3 viewPos = p1.GetPosition();
-			shader->setValue("viewPos", viewPos);
+			shader.setValue("viewPos", viewPos);
 
 			
 
-			auto createModel = [](glm::vec3 position, GLfloat angle, glm::vec3 axis, Camera& p1, Shader* shader) {
+			auto createModel = [](glm::vec3 position, GLfloat angle, glm::vec3 axis, Camera& p1, Shader shader) {
 				glm::mat4 model(1);
 				model = glm::translate(model, position);
 				model = glm::rotate(model, glm::radians(angle), axis);
 
 				model = glm::scale(model, glm::vec3(0.8f));
-				shader->setValue("model", model);
+				shader.setValue("model", model);
 			};
 
 			for (auto& mesh : *meshes) {
@@ -52,7 +52,7 @@ namespace Render {
 			}
 			glBindVertexArray(0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-			shader->unBind();
+			shader.unBind();
 	}
 	void ChunkMeshRender::loadMeshes(std::vector<Face>* m) {
 		meshes = m;
@@ -74,10 +74,10 @@ namespace Render {
 		}
 	}
 	void ChunkMeshRender::setShader(std::string name) {
-		shader = new Shader(name);
+		shader = Shader(name);
 	}
 	void ChunkMeshRender::setShader(Shader* shader) {
-		this->shader = shader;
+		this->shader = *shader;
 	}
 	void ChunkMeshRender::setRelativePositions(std::vector<glm::vec3>& rel)
 	{
@@ -93,11 +93,11 @@ namespace Render {
 		}
 	}
 	void ChunkMeshRender::cleanUp() {
-		shader->unBind();
+		shader.unBind();
 		canRender = false;
 		meshes = new std::vector<Face>();
 	}
 	Shader& ChunkMeshRender::getShader() {
-		return *shader;
+		return shader;
 	}
 };

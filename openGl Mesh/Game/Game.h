@@ -55,7 +55,6 @@ private:
 	GLuint frameRate;
 	GLboolean gameRunning;
 	static World world;
-	static GLboolean hasPlayer;
 	static Player player;
 	static EntityHander entityHander;
 	GLboolean hasSkybox;
@@ -64,7 +63,7 @@ private:
 	GLuint SBVAO, CHVAO, LSVAO, LSVBO;
 	Texture texCH, texBN, texBS;
 	std::map<GLchar, Character> Letters;
-	// blockupdates
+
 	void showFPS();
 	void calcTimes();
 	void proccesEvents();

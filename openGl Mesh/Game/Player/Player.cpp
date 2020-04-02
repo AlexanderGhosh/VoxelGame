@@ -27,6 +27,7 @@ Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLbool
 	invSlot = 0;
 	isClipping = clipping;
 	canFly = flying;
+	tag = "player";
 }
 Camera& Player::getCamera() {
 	return cam;
@@ -65,6 +66,19 @@ void Player::setInvSlot(GLubyte slot) {
 
 void Player::attack(Entity& e) {
 	e.takeDamage(attackDmg);
+}
+
+Player& Player::operator=(Entity& e)
+{
+	Player& res = *this;
+	res.pos = e.getPosition();
+	res.vel = e.getVelocity();
+	res.acc = e.getAcceleration();
+	res.health = e.getHealth();
+	res.tag = e.getTag();
+	res.isDead = res.isDead;
+	// res.attackCooldown = res.getAttackCooldown();
+	return res;
 }
 
 /*void Player::move(Move_Dir dir)

@@ -49,6 +49,12 @@ void EntityHander::update() {
 	}
 }
 
+void EntityHander::attackPlayer(Entity& player) {
+	for (auto& e : entitys) {
+		e.attack(player);
+	}
+}
+
 void EntityHander::setTarget(glm::vec3 target) {
 	for (Entity& e : entitys) {
 		e.setTarget(target);

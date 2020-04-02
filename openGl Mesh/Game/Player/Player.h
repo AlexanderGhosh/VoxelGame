@@ -27,6 +27,9 @@ public:
 	// void move(Move_Dir dir);
 
 	GLboolean isClipping, canFly;
+
+	Player& operator=(Entity& e);
+
 private:
 	Camera cam;
 	glm::vec3 camera_offset;

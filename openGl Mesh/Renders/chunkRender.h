@@ -30,7 +30,7 @@ namespace Render {
 		// getters
 		Shader& getShader();
 	private:
-		Shader* shader;
+		Shader shader;
 		std::vector<Face>* meshes;
 		std::vector<glm::vec3> relativePositions;
 		GLboolean canRender;
