@@ -26,20 +26,18 @@ void EntityHander::updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> 
 	}
 }
 
-void EntityHander::create() {
-	for (auto& e : entitys) {
-		e.create();
-	}
-}
-
-void EntityHander::update() {
+void EntityHander::update(glm::mat4 projection, Camera& cam, std::vector<std::vector<ChunkColumn*>> adjacent, std::vector<ChunkColumn*> occuped) {
 	std::vector<GLuint> victimIndex;
 	int i = 0;
+	int j = 0;
+	int k = 0;
 	for (Entity& e : entitys) {
-		e.update();
+		e.update(projection, cam, adjacent[j++], occuped[k++]);
 		if (e.isDead) {
 			victimIndex.push_back(i);
+			continue;
 		}
+		e.attack(entitys[0]);
 		i++;
 	}
 	i = 0;

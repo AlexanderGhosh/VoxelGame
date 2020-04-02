@@ -55,7 +55,7 @@ private:
 	GLuint frameRate;
 	GLboolean gameRunning;
 	static World world;
-	static Entity player;
+	static Entity* player;
 	static EntityHander entityHander;
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;

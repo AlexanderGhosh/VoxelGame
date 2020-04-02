@@ -11,7 +11,7 @@ GLuint GameConfig::FPSlock = 0;
 Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
 glm::vec3 Game::mouseData(0);
 std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
-Entity Game::player = Entity();
+Entity* Game::player = new Entity();
 World Game::world = World(0);
 EntityHander Game::entityHander = EntityHander();
 #pragma endregion
@@ -69,8 +69,6 @@ void Game::doLoop(glm::mat4 projection) {
 
 		world.advanceGeneration();
 
-		entityHander.update();
-		entityHander.moveToTarget();
 
 		std::vector<std::vector<ChunkColumn*>> adjacentChunkss;
 		std::vector<ChunkColumn*> occuped;
@@ -79,20 +77,12 @@ void Game::doLoop(glm::mat4 projection) {
 			adjacentChunkss.push_back(world.getAdjacentChunks(p));
 			occuped.push_back(world.getChunkOccupied(p));
 		}
-
-
-		Camera& cam = player.getCamera();
-		entityHander.render(cam, projection, occuped);
-
-		entityHander.updatePositions(deltaTime, occuped, adjacentChunkss);
-		entityHander.attackPlayer(player);
-		// player = entityHander.getEntitys().front();
-		std::vector<ChunkColumn*> adjacentChunks = world.getAdjacentChunks(player.getPosition());
+		player = &entityHander.getEntitys()[0];
+		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped);
 
 		showStuff();
 		showFPS();
 
-		player.updatePosition(deltaTime, adjacentChunks);
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -125,7 +115,7 @@ void Game::lockFPS() {
 	}
 }
 void Game::showStuff() {
-	Camera& cam = player.getCamera();
+	Camera& cam = player->getCamera();
 	world.render(cam, projection);
 	if (hasSkybox) {
 		showSkybox();
@@ -133,19 +123,19 @@ void Game::showStuff() {
 
 	showGUI();
 
-	m = "Position: " + glm::to_string(player.getPosition());
+	m = "Position: " + glm::to_string(player->getPosition());
 	showText(m, { 5, 850 }, 0.5f);
 
 	m = "Controlling: Player";
 	showText(m, { 5, 825 }, 0.5f);
 
 	glm::vec2 p(0);
-	auto e = world.getChunkOccupied(player.getPosition());
+	auto e = world.getChunkOccupied(player->getPosition());
 	if (e)  p = e->getPosition();
 	m = "Chunk Pos: " + glm::to_string(p);
 	showText(m, { 5, 800 }, 0.5f);
 
-	m = "Health: " + std::to_string(player.getHealth());
+	m = "Health: " + std::to_string(player->getHealth());
 	showText(m, { 5, 775 }, 0.5f);
 
 	ray.render(cam, projection);
@@ -154,10 +144,11 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	player = Entity({ 0.0f, 1.25f, 0.0f }, 1, 0);
-	player.setPosition({ 0, 60, 0 });
-	player.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
-	entityHander.addEntity(player, 0);
+	Entity p = Entity({ 0.0f, 1.25f, 0.0f }, 1, 0);
+	p.setPosition({ 0, 60, 0 });
+	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
+	entityHander.addEntity(p, 0);
+	// player = &entityHander.getEntitys()[0];
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
@@ -165,7 +156,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
-		Camera& cam = player.getCamera();
+		Camera& cam = player->getCamera();
 		Ray ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH);
 		auto e = world.getIntersectedEntity(entityHander, ray);
 		if (!e) {
@@ -200,19 +191,19 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	Game::mouseData.y = yPos;
 	// Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
 
-	Game::player.updateCamera(xOffset, yOffset);
+	Game::player->updateCamera(xOffset, yOffset);
 }
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		Camera& cam = player.getCamera();
+		Camera& cam = player->getCamera();
 		Game::world.breakBlock(cam.GetPosition(), cam.GetFront());
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		Camera& cam = player.getCamera();
+		Camera& cam = player->getCamera();
 		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), Blocks::LOG);
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
-		Camera& cam = player.getCamera();
+		Camera& cam = player->getCamera();
 		entityHander.setTarget(cam.GetPosition());
 	}
 }
@@ -226,31 +217,31 @@ void Game::processKeys() {
 	GLfloat speed = 9.0f;
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
 		speed = 12.0f;
-		player.setMovementSpeed(PLAYER_SPEED * 2.5f);
+		player->setMovementSpeed(PLAYER_SPEED * 2.5f);
 	} // running
 	else {
 		speed = 2.0f;
-		player.setMovementSpeed(PLAYER_SPEED);
+		player->setMovementSpeed(PLAYER_SPEED);
 	} // walking
-	player.setVelocity({ 0, player.getFlying() ? 0 : player.getVelocity().y, 0 });
+	player->setVelocity({ 0, player->getFlying() ? 0 : player->getVelocity().y, 0 });
 
 	if (k[GLFW_KEY_W]) {
-		player.move(Move_Dir::FORWARD);
+		player->move(Move_Dir::FORWARD);
 	}
 	if (k[GLFW_KEY_S]) {
-		player.move(Move_Dir::BACKWARD);
+		player->move(Move_Dir::BACKWARD);
 	}
 	if (k[GLFW_KEY_A]) {
-		player.move(Move_Dir::LEFT);
+		player->move(Move_Dir::LEFT);
 	}
 	if (k[GLFW_KEY_D]) {
-		player.move(Move_Dir::RIGHT);
+		player->move(Move_Dir::RIGHT);
 	}
 	if (k[GLFW_KEY_SPACE]) {
-		player.move(Move_Dir::UP);
+		player->move(Move_Dir::UP);
 	}
 	if (k[GLFW_KEY_LEFT_SHIFT]) {
-		player.move(Move_Dir::DOWN);
+		player->move(Move_Dir::DOWN);
 	}
 	/*else {
 		if (k[GLFW_KEY_W]) {
@@ -272,8 +263,8 @@ void Game::processKeys() {
 			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
 	}*/
-	Camera& cam = player.getCamera();
-	world.updatePlayerPos(player.getPosition());
+	Camera& cam = player->getCamera();
+	world.updatePlayerPos(player->getPosition());
 	if (k[GLFW_KEY_0]) {
 		ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH, 1);
 	}
@@ -372,7 +363,7 @@ void Game::makeSkybox(std::string skybox) {
 void Game::showSkybox() {
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	SHADERS[SKYBOX]->bind();
-	Camera& camera = Game::player.getCamera();
+	Camera& camera = player->getCamera();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
 	SHADERS[SKYBOX]->setValue("view", view);
 	SHADERS[SKYBOX]->setValue("projection", projection);

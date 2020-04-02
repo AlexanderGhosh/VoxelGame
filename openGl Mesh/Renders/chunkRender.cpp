@@ -12,7 +12,8 @@ namespace Render {
 	}
 	ChunkMeshRender::ChunkMeshRender(GLboolean init, std::string t) {
 		if (init) {
-			shader = *SHADERS[BLOCK2];
+			shader = Shader("block2");
+			shader.setUp();
 			canRender = GL_FALSE;
 		}
 		else {

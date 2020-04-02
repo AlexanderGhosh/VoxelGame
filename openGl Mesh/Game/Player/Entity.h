@@ -30,7 +30,7 @@ public:
 	void setTextues(Texture_Names texB, Texture_Names texT);
 	void setTarget(glm::vec3 targ);
 
-	void updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, GLboolean clipping = 1, GLboolean flying = 0);
+	void updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt);
 	void updateCamera(GLfloat xOff, GLfloat yOff);
 
 	void move(Move_Dir dir);
@@ -41,7 +41,7 @@ public:
 
 	void attack(Entity& e);
 	void takeDamage(GLuint dmgTaken);
-	void update();
+	void update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied);
 
 	std::string getTag();
 	GLboolean isDead;
@@ -55,7 +55,7 @@ private:
 
 	// player stuff
 	Camera playerCam;
-	GLboolean hasCamera, isClipping, canFly;
+	GLboolean hasCamera, isClipping, canFly, loaded;
 	glm::vec3 cameraOffset;
 
 	glm::vec3 pos, vel, acc;

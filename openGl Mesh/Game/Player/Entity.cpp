@@ -22,7 +22,8 @@ Entity::Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying) : Enti
 	canFly = flying;
 	tag = "player";
 }
-Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(30), invunrableCooldown(30) {
+Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(90), invunrableCooldown(60) {
+	loaded = 1;
 	hasCamera = 0;
 	pos = { 0, 0, 0 };
 	vel = { 0, 0, 0 };
@@ -58,6 +59,7 @@ Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(30), invun
 	health = 100;
 	attackDmg = 10;
 	tag = "hostile";
+	isClipping = 1;
 }
 glm::vec3& Entity::getPosition() {
 	return pos;
@@ -142,14 +144,14 @@ void Entity::getNewTarget() {
 	}
 }
 
-void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, GLboolean clipping, GLboolean flying) {
+void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt) {
 	deltaTime = 1.0f / 60.0f;
-	if (!flying) {
+	if (!canFly) {
 		grounded = 0;
 		vel += acc * deltaTime;
 		vel.y -= GRAVITY * deltaTime;
 	}
-	if (clipping) {
+	if (isClipping) {
 		glm::ivec3 collisions = determinCollision(adjacesnt, vel * deltaTime);
 		if (collisions.y == -1) {
 			grounded = 1;
@@ -276,14 +278,7 @@ void Entity::render(glm::mat4 projection, Camera& cam) {
 	renderer.render(cam, projection);
 }
 void Entity::attack(Entity& e) {
-	if (hasAttacked) {
-		attackTimer++;
-		if (attackTimer >= attackCooldown) {
-			hasAttacked = 0;
-			attackTimer = 0;
-		}
-		return;
-	}
+	if (hasAttacked) return;
 	GLfloat dist = glm::abs(glm::distance(e.pos, pos));
 	if (dist > 1.0f) return;
 	if (tag != "player") {
@@ -300,10 +295,28 @@ void Entity::takeDamage(GLuint dmgTaken) {
 		health -= dmgTaken;
 		toggleShowDamage();
 		move(Move_Dir::UP);
-		std::cout << "entity at position: " << glm::to_string(pos) << " health: " << std::to_string(health) << std::endl;
+		std::cout << "entity with tag: " << tag << " health: " << std::to_string(health) << std::endl;
 	}
 }
-void Entity::update() {
+void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied) {
+	checkDead();
+	if (!occupied) {
+		loaded = 0;
+	}
+	else {
+		loaded = 1;
+	}
+	if (isDead || !loaded) return;
+
+	// attack timmer
+	if (hasAttacked) {
+		attackTimer++;
+		if (attackTimer >= attackCooldown) {
+			hasAttacked = 0;
+			attackTimer = 0;
+		}
+	}
+	// invunrable timer
 	if (invunrable) {
 		invunrableTimer++;
 		if (invunrableTimer >= invunrableCooldown) {
@@ -311,7 +324,12 @@ void Entity::update() {
 			toggleShowDamage();
 		}
 	}
-	checkDead();
+
+	moveToTarget();
+	
+	updatePosition(1.0f / 60.0f, adjacent);
+
+	render(projection, cam);
 }
 
 glm::ivec3 Entity::determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV) {
@@ -444,7 +462,7 @@ void Entity::toggleShowDamage()
 void Entity::checkDead() {
 	if (health <= 0) {
 		isDead = 1;
-		std::cout << "entity at position: " << glm::to_string(pos) << " is dead\n";
+		std::cout << "entity with tag: " << tag << " is dead\n";
 	}
 }
 

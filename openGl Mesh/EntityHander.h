@@ -12,8 +12,7 @@ public: // functions
 	void render(Camera& cam, glm::mat4 projection, std::vector<ChunkColumn*> occupied);
 	void addEntity(Entity& entity, GLboolean create = 1);
 	void updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> occupied, std::vector<std::vector<ChunkColumn*>> adjacentChunks);
-	void create();
-	void update();
+	void update(glm::mat4 projection, Camera& cam, std::vector<std::vector<ChunkColumn*>> adjacent, std::vector<ChunkColumn*> occuped);
 	void attackPlayer(Entity& player);
 
 	// ai
