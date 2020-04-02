@@ -45,6 +45,7 @@ public:
 
 	std::string getTag();
 	GLboolean isDead;
+	void lookAt(glm::vec3 pos);
 private:
 	glm::ivec3 determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV);
 	void calcMovementPath();

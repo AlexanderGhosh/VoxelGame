@@ -79,6 +79,8 @@ void Game::doLoop(glm::mat4 projection) {
 		}
 		player = &entityHander.getEntitys()[0];
 		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped);
+		entityHander.getEntitys()[1].lookAt(player->getPosition());
+		entityHander.getEntitys()[1].setTarget(player->getPosition());
 
 		showStuff();
 		showFPS();

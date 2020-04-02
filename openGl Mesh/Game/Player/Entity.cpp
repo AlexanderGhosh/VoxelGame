@@ -280,7 +280,7 @@ void Entity::render(glm::mat4 projection, Camera& cam) {
 void Entity::attack(Entity& e) {
 	if (hasAttacked) return;
 	GLfloat dist = glm::abs(glm::distance(e.pos, pos));
-	if (dist > 1.0f) return;
+	if (dist > 1.5f) return;
 	if (tag != "player") {
 		int t = 0;
 	}
@@ -448,6 +448,15 @@ void Entity::lookAt(Move_Dir dir) {
 	case Move_Dir::RIGHT:
 		angle = 90;
 		break;
+	}
+	renderer.setRotation({ 0, 1, 0 }, angle);
+}
+void Entity::lookAt(glm::vec3 pos)
+{
+	glm::vec3 diff = pos - this->pos;
+	GLfloat angle = glm::degrees(glm::atan(diff.x / diff.z));
+	if (diff.z < 0) {
+		angle = 180.0f + angle;
 	}
 	renderer.setRotation({ 0, 1, 0 }, angle);
 }
