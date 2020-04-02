@@ -4,7 +4,7 @@ Player::Player() : Entity(false, { 1, 2, 1 }) {
 	cam.setPosition({ 0, 1.25, -0.75 });
 	renderer = Render::ChunkMeshRender(false, "");
 }
-Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLboolean render) : Entity(true) {
+Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLboolean render, GLboolean clipping, GLboolean flying) : Entity(true) {
 	movementSpeed = PLAYER_SPEED;
 	camera_offset = camOff;
 	cam.setPosition(camOff + position);
@@ -25,6 +25,8 @@ Player::Player(glm::vec3 position, glm::vec3 camOff, GLboolean attachCam, GLbool
 		Blocks::AIR
 	};
 	invSlot = 0;
+	isClipping = clipping;
+	canFly = flying;
 }
 Camera& Player::getCamera() {
 	return cam;
@@ -32,45 +34,14 @@ Camera& Player::getCamera() {
 glm::vec3 Player::getPosition() {
 	return pos;
 }
-std::string Player::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacentChunks) {
-	std::string res = "";
-	Entity::updatePosition(deltaTime, adjacentChunks, res);
-	if(attachCam) cam.setPosition(pos + camera_offset);
-	return res;
+void Player::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacentChunks) {
+	Entity::updatePosition(deltaTime, adjacentChunks, isClipping, canFly);
+	if (attachCam) cam.setPosition(pos + camera_offset);
+	return;
 }
 void Player::create() {
-	// Entity(true);
 	setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	Entity::create();
-	/*for(GLuint i = 0; i < 2; i++){
-		pos.y += i;
-		std::string tex = "player/";
-		tex += i == 0 ? "bottom" : "top";
-
-		Texture_Names name = i == 0 ? Texture_Names::PLAYER_BOTTOM : Texture_Names::PLAYER_TOP;
-		auto texture = toIndex(name);
-		Face face = { FACES[FRONT], TEXTURES[texture], pos };
-		body.push_back(face);
-
-		face = { FACES[BACK], TEXTURES[texture], pos };
-		body.push_back(face);
-
-		if (i != 0) {
-			face = { FACES[TOP], TEXTURES[texture], pos };
-			body.push_back(face);
-		}
-		if (i == 0) {
-			face = { FACES[BOTTOM], TEXTURES[texture], pos };
-			body.push_back(face);
-		}
-		face = { FACES[RIGHT], TEXTURES[texture], pos };
-		body.push_back(face);
-
-		face = { FACES[LEFT], TEXTURES[texture], pos };
-		body.push_back(face);
-	}
-
-	renderer.loadMeshes(&body);*/
 }
 void Player::render(glm::mat4 projection, Camera* cam) {
 	if (!canRender) return;
@@ -95,3 +66,8 @@ void Player::setInvSlot(GLubyte slot) {
 void Player::attack(Entity& e) {
 	e.takeDamage(attackDmg);
 }
+
+/*void Player::move(Move_Dir dir)
+{
+	Entity::move(dir, canFly);
+}*/

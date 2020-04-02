@@ -125,49 +125,54 @@ void Entity::addAcceleration(const glm::vec3& acc) {
 	this->acc += acc;
 }
 
-void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, std::string& collision) {
+void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, GLboolean clipping, GLboolean flying) {
 	deltaTime = 1.0f / 60.0f;
-	grounded = 0;
-	vel += acc * deltaTime;
-	vel.y -= GRAVITY * deltaTime;
-	glm::ivec3 collisions = determinCollision(adjacesnt, vel * deltaTime);
-	collision = glm::to_string(collisions);
-	if (collisions.y == -1) {
-		grounded = 1;
-		vel.y = 0;
+	if (!flying) {
+		grounded = 0;
+		vel += acc * deltaTime;
+		vel.y -= GRAVITY * deltaTime;
 	}
-	if (collisions.y == 1) {
-		vel.y = 0;
-	}
-	if (collisions.x == -1) {
-		vel.x = 0; if (hasTarget) {
-			move(Move_Dir::UP);
+	if (clipping) {
+		glm::ivec3 collisions = determinCollision(adjacesnt, vel * deltaTime);
+		if (collisions.y == -1) {
+			grounded = 1;
+			vel.y = 0;
+		}
+		if (collisions.y == 1) {
+			vel.y = 0;
+		}
+		if (collisions.x == -1) {
+			vel.x = 0; if (hasTarget) {
+				move(Move_Dir::UP);
+			}
+		}
+		if (collisions.x == 1) {
+			vel.x = 0; if (hasTarget) {
+				move(Move_Dir::UP);
+			}
+		}
+		if (collisions.z == -1) {
+			vel.z = 0; if (hasTarget) {
+				move(Move_Dir::UP);
+			}
+		}
+		if (collisions.z == 1) {
+			vel.z = 0; if (hasTarget) {
+				move(Move_Dir::UP);
+			}
 		}
 	}
-	if (collisions.x == 1) {
-		vel.x = 0; if (hasTarget) {
-			move(Move_Dir::UP);
-		}
-	}
-	if (collisions.z == -1) {
-		vel.z = 0; if (hasTarget) {
-			move(Move_Dir::UP);
-		}
-	}
-	if (collisions.z == 1) {
-		vel.z = 0; if (hasTarget) {
-			move(Move_Dir::UP);
-		}
-	}
-
-	/*if (!grounded) vel.y -= GRAVITY * deltaTime;
-	else if (vel.y < 0) vel.y = 0;*/
-	pos += vel * deltaTime;
+	
+	/*else {
+		grounded = 0;
+	}*/
+	this->pos += vel * deltaTime;
 	if (!hasBody) return;
-	renderer.setPosition(pos);
+	renderer.setPosition(this->pos);
 }
 
-void Entity::move(Move_Dir dir) {
+void Entity::move(Move_Dir dir, GLboolean flying) {
+	GLfloat jf = flying ? movementSpeed : jumpForce;
 	switch (dir)
 	{
 	case Move_Dir::FORWARD:
@@ -183,10 +188,12 @@ void Entity::move(Move_Dir dir) {
 		vel += right * movementSpeed;
 		break;
 	case Move_Dir::UP:
-		if (!grounded) break;
-		vel.y += jumpForce;
+		if (!grounded && !flying) break;
+		vel.y += jf;
 		break;
 	case Move_Dir::DOWN:
+		if (!flying) break;
+		vel.y -= jf;
 		break;
 	}
 }
@@ -533,4 +540,9 @@ BoxCollider& Entity::getCollider()
 Faces& Entity::getBody()
 {
 	return body;
+}
+
+Texture_Names* Entity::getTextures()
+{
+	return textures;
 }

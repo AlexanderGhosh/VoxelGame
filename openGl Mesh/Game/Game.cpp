@@ -19,7 +19,7 @@ EntityHander Game::entityHander = EntityHander();
 
 
 Game::Game() {
-	hasPlayer = false;
+	// hasPlayer = false;
 	hasSkybox = false;
 	gameRunning = false;
 	lastFrameTime = -1.0f;
@@ -28,7 +28,7 @@ Game::Game() {
 	GameConfig::setup();
 }
 Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
-	this->hasPlayer = hasPlayer;
+	// this->hasPlayer = hasPlayer;
 	this->hasSkybox = hasSkybox;
 	setupPlayer();
 	gameRunning = false;
@@ -83,19 +83,17 @@ void Game::doLoop(glm::mat4 projection) {
 		}
 
 
-		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+		Camera& cam = player.getCamera();
 		entityHander.render(cam, projection, occuped);
 
-
 		entityHander.updatePositions(deltaTime, occuped, adjacentChunkss);
-		std::vector<ChunkColumn*> adjacentChunks;
-		if (hasPlayer) {
-			adjacentChunks = world.getAdjacentChunks(player.getPosition());
-			player.updatePosition(deltaTime, adjacentChunks);
-		}
+		
+		std::vector<ChunkColumn*> adjacentChunks = world.getAdjacentChunks(player.getPosition());
 
 		showStuff();
 		showFPS();
+
+		player.updatePosition(deltaTime, adjacentChunks);
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -115,7 +113,6 @@ void Game::showFPS() {
 	}
 }
 std::string m;
-GLboolean alt = 1;
 void Game::proccesEvents() {
 	glfwPollEvents();
 }
@@ -129,44 +126,34 @@ void Game::lockFPS() {
 	}
 }
 void Game::showStuff() {
-	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
-	if (hasPlayer) {
-		// player.render(projection);
-	}
+	Camera& cam = player.getCamera();
 	world.render(cam, projection);
 	if (hasSkybox) {
 		showSkybox();
 	}
+
 	showGUI();
-	m = "Position: ";
-	if (hasPlayer) {
-		m += glm::to_string(player.getPosition());
-	}
-	else {
-		m += glm::to_string(cam.GetPosition());
-	}
+
+	m = "Position: " + glm::to_string(player.getPosition());
 	showText(m, { 5, 850 }, 0.5f);
-	m = "Controlling: ";
-	if (alt) {
-		m += "Player";
-	}
-	else {
-		m += "Camera";
-	}
+
+	m = "Controlling: Player";
 	showText(m, { 5, 825 }, 0.5f);
+
 	glm::vec2 p(0);
-	auto e = world.getChunkOccupied(hasPlayer ? player.getPosition() : mainCamera->GetPosition());
+	auto e = world.getChunkOccupied(player.getPosition());
 	if (e)  p = e->getPosition();
 	m = "Chunk Pos: " + glm::to_string(p);
 	showText(m, { 5, 800 }, 0.5f);
+
 	ray.render(cam, projection);
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	if (!hasPlayer) return;
-	player = Player({ 1.0f, 100.0f, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1, 0);
+	// if (!hasPlayer) return;
+	player = Player({ 1.0f, 60, 1.0f }, { 0.0f, 1.25f, 0.0f }, 1, 0, 1, 1);
 	player.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	entityHander.addEntity(player, 0);
 
@@ -177,7 +164,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
-		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+		Camera& cam = player.getCamera();
 		Ray ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH);
 		auto e = world.getIntersectedEntity(entityHander, ray);
 		if (!e) {
@@ -210,21 +197,21 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 
 	Game::mouseData.x = xPos;
 	Game::mouseData.y = yPos;
-	if (Game::hasPlayer) {
-		Game::player.updateCamera(xOffset, yOffset);
-		// Game::player.processMouse(xOffset, yOffset, mouseData.x);
-		return;
-	}
-	Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
+	// Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
+
+	Game::player.updateCamera(xOffset, yOffset);
 }
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
+		Camera& cam = player.getCamera();
 		Game::world.breakBlock(cam.GetPosition(), cam.GetFront());
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
-		// Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player.getInvBar()[player.getSlot()]);
+		Camera& cam = player.getCamera();
+		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player.getInvBar()[player.getSlot()]);
+	}
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+		Camera& cam = player.getCamera();
 		entityHander.setTarget(cam.GetPosition());
 	}
 }
@@ -239,58 +226,32 @@ void Game::processKeys() {
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
 		speed = 12.0f;
 		player.setMovementSpeed(PLAYER_SPEED * 2.5f);
-	}
+	} // running
 	else {
 		speed = 2.0f;
 		player.setMovementSpeed(PLAYER_SPEED);
-	}
-	if (Game::hasPlayer) {
-		player.setVelocity({ 0, player.getVelocity().y, 0 });
-		if (k[GLFW_KEY_LEFT_ALT] && (GLuint)time(NULL) % 2 == 0) {
-			alt = !alt;
-		}
-		if (alt || 0) {
-			if (k[GLFW_KEY_W]) {
-				player.move(Move_Dir::FORWARD);
-			}
-			if (k[GLFW_KEY_S]) {
-				player.move(Move_Dir::BACKWARD);
-			}
-			if (k[GLFW_KEY_A]) {
-				player.move(Move_Dir::LEFT);
-			}
-			if (k[GLFW_KEY_D]) {
-				player.move(Move_Dir::RIGHT);
-			}
-			if (k[GLFW_KEY_SPACE]) {
-				player.move(Move_Dir::UP);
-			}
-		}
-		else {
-			auto& c = player.getCamera();
-			if (k[GLFW_KEY_W]) {
-				c.GetPosition() += c.GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
-			}
-			if (k[GLFW_KEY_S]) {
-				c.GetPosition() -= c.GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
-			}
-			if (k[GLFW_KEY_A]) {
-				c.GetPosition() -= c.GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
-			}
-			if (k[GLFW_KEY_D]) {
-				c.GetPosition() += c.GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
-			}
-			if (k[GLFW_KEY_SPACE]) {
-				c.GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
-			}
-			if (k[GLFW_KEY_LEFT_SHIFT]) {
-				c.GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
-			}
-		}
+	} // walking
+	player.setVelocity({ 0, player.canFly ? 0 : player.getVelocity().y, 0 });
 
-		// m = "Collison: " + player.updatePosition(Game::deltaTime, world);
+	if (k[GLFW_KEY_W]) {
+		player.move(Move_Dir::FORWARD);
 	}
-	else {
+	if (k[GLFW_KEY_S]) {
+		player.move(Move_Dir::BACKWARD);
+	}
+	if (k[GLFW_KEY_A]) {
+		player.move(Move_Dir::LEFT);
+	}
+	if (k[GLFW_KEY_D]) {
+		player.move(Move_Dir::RIGHT);
+	}
+	if (k[GLFW_KEY_SPACE]) {
+		player.move(Move_Dir::UP, player.canFly);
+	}
+	if (k[GLFW_KEY_LEFT_SHIFT]) {
+		player.move(Move_Dir::DOWN, player.canFly);
+	}
+	/*else {
 		if (k[GLFW_KEY_W]) {
 			Game::mainCamera->GetPosition() += Game::mainCamera->GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
 		}
@@ -309,9 +270,9 @@ void Game::processKeys() {
 		if (k[GLFW_KEY_LEFT_SHIFT]) {
 			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
-	}
-	Camera& cam = hasPlayer ? player.getCamera() : *mainCamera;
-	world.updatePlayerPos(cam.GetPosition());
+	}*/
+	Camera& cam = player.getCamera();
+	world.updatePlayerPos(player.getPosition());
 	if (k[GLFW_KEY_0]) {
 		ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH, 1);
 	}
@@ -410,7 +371,7 @@ void Game::makeSkybox(std::string skybox) {
 void Game::showSkybox() {
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	SHADERS[SKYBOX]->bind();
-	Camera& camera = hasPlayer ? Game::player.getCamera() : *Game::mainCamera;
+	Camera& camera = Game::player.getCamera();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
 	SHADERS[SKYBOX]->setValue("view", view);
 	SHADERS[SKYBOX]->setValue("projection", projection);
@@ -463,18 +424,7 @@ void Game::showGUI() {
 		texNorm.unBind();
 	};
 	Shader& shader = *SHADERS[CROSSHAIR];
-	std::array<Blocks, 9> bar = {
-		Blocks::GRASS,
-		Blocks::DIRT,
-		Blocks::STONE,
-		Blocks::WATER,
-		Blocks::LOG,
-		Blocks::LEAF,
-		Blocks::AIR,
-		Blocks::AIR,
-		Blocks::AIR
-	};
-	if (hasPlayer) bar = player.getInvBar();
+	std::array<Blocks, 9> bar = player.getInvBar();
 	invBar(bar, { 0, -9.5, 0 }, texBN, texBS, shader, CHVAO);
 }
 

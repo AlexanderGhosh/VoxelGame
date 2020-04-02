@@ -18,6 +18,7 @@ public:
 	glm::vec3 getCenter(glm::vec3 pos);
 	BoxCollider& getCollider();
 	Faces& getBody();
+	Texture_Names* getTextures();
 	
 	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
@@ -31,9 +32,9 @@ public:
 	void addVelocity(const glm::vec3& vel);
 	void addAcceleration(const glm::vec3& acc);
 
-	void updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, std::string& collision);
+	void updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt, GLboolean clipping = 1, GLboolean flying = 0);
 
-	void move(Move_Dir dir);
+	void move(Move_Dir dir, GLboolean flying = 0);
 	void moveToTarget();
 	void create();
 

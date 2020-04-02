@@ -22,7 +22,7 @@ void EntityHander::updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> 
 	int j = 0;
 	for (auto& e : entitys) {
 		if (!occupied[j++]) continue;
-		e.updatePosition(deltaTime, adjacentChunks[i++], collision);
+		e.updatePosition(deltaTime, adjacentChunks[i++]);
 	}
 }
 
