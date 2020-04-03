@@ -2,17 +2,17 @@
 
 #pragma region Public
 #pragma region Constructors
-ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), heightMap(), isFlat(1), breaking(0)
+ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), heightMap(), isFlat(1), breaking(0), fromFile(0)
 {
 	// blocks.fill(Blocks::AIR);
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), heightMap(), isFlat(0), stage(0), breaking(0)
+ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), heightMap(), isFlat(0), stage(0), breaking(0), fromFile(0)
 {
 	// blocks.fill(Blocks::GRASS);
 }
 
-ChunkColumn::ChunkColumn(std::string fileName) : breaking(0)
+ChunkColumn::ChunkColumn(std::string fileName) : breaking(0), fromFile(1)
 {
 	fileName = "Chunks/" + fileName + ".dat";
 	Savable_ s;
@@ -70,7 +70,7 @@ ChunkColumn::ChunkColumn(std::string fileName) : breaking(0)
 	isFlat = 0;
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), highest_natural_point(-1), mesh(), heightMap(heightMap), isFlat(0), breaking(0)
+ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), highest_natural_point(-1), mesh(), heightMap(heightMap), isFlat(0), breaking(0), fromFile(0)
 {
 	// blocks.fill(Blocks::AIR);
 }
@@ -80,7 +80,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), hi
 void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 {
 	try {
-		if (stage >= 10) stage = 0;
+		if (stage >= 101) stage = 0;
 	}
 	catch (std::exception e) {
 		return;

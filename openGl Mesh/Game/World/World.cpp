@@ -55,7 +55,8 @@ void World::generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap a
 		if (FILE* file = fopen(("Chunks/" + name + ".dat").c_str(), "r")) {
 			fclose(file);
 			chunks2.push_back({ name });
-			if(chunks2.back().getMesh().size() > 0) victims.push_back(pos);
+			if (chunks2.back().getMesh().size() > 0) victims.push_back(pos);
+			else chunks2.back().stage = 0;
 		}
 		else {
 			HeightMap heightMap = wg.createHeightMap(pos, 0);
@@ -199,12 +200,17 @@ void World::updatePlayerPos(glm::vec3 pos) {
 					newPositions.erase(found);
 				}
 			}
-			for (auto& chunk : victims) {
-				chunks2.erase(std::find(chunks2.begin(), chunks2.end(), chunk));
-			} // remove some
+			
 			for (auto& pos : newPositions) {
-				HeightMap hm = world_generation::createHeightMap(pos, 0);
-				chunks2.push_back({ pos, hm });
+				// check file
+				std::string name = ChunkColumn(pos).getFileName();
+				if (FILE* file = fopen(("Chunks/" + name + ".dat").c_str(), "r")) {
+					chunks2.push_back({ name });
+				}
+				else {
+					HeightMap hm = world_generation::createHeightMap(pos, 0);
+					chunks2.push_back({ pos, hm });
+				}
 			} // add some
 			adjacesntMapGenerationPtr = getAdjacentMapPointers({ chunkOccupiedPosition.x, 0, chunkOccupiedPosition.y }, RENDER_DISTANCE + 2);
 			for (GLubyte i = chunks2.size() - newPositions.size(); i < chunks2.size(); i++)
@@ -215,6 +221,10 @@ void World::updatePlayerPos(glm::vec3 pos) {
 			} // add to stack
 
 			adjacesntMapGeneration = getAdjacentMap({ chunkOccupiedPosition.x, 0, chunkOccupiedPosition.y }, RENDER_DISTANCE + 2);
+
+			for (auto& chunk : victims) {
+				chunks2.erase(std::find(chunks2.begin(), chunks2.end(), chunk));
+			} // remove some
 		}
 	}
 }
@@ -468,23 +478,19 @@ void World::save() {
 void World::advanceGeneration()
 {
 	if (generationStack.size() == 0) return;
-	// checks files
-	glm::vec2 pos = generationStack.back()->getPosition();
-	std::string name = "chunk" + std::to_string((int)pos.x) + "," + std::to_string((int)pos.y);
-	if (FILE* file = fopen(("Chunks/" + name + ".dat").c_str(), "r")) {
-		fclose(file);
-		auto found = std::find(chunks2.begin(), chunks2.end(), pos);
-		*found = ChunkColumn(name);
-		if ((*found).getMesh().size() == 0) {
-			generationStack.back() = &*found;
-		}else{
-			generationStack.back()->stage = 100;
-		}
+	ChunkColumn* chunk = generationStack.back();
+	glm::vec2 pos = chunk->getPosition();
+	
+	if (chunk->getMesh().size() == 0 || chunk->stage < 100) {
+		chunk->createMesh(adjacesntMapGeneration);
 	}
-	else {
-		generationStack.back()->createMesh(adjacesntMapGeneration);
+	else if (chunk->fromFile) {
+		chunk->stage = 100;
 	}
-	if (generationStack.back()->stage >= 4) {
+
+	
+	
+	if (chunk->stage >= 4) {
 		generationStack.pop_back();
 		genWorldMesh();
 		drawable.setUp(worldMesh);

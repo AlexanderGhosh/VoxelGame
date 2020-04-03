@@ -19,7 +19,7 @@ private: // properties
 public: // functions
 
 	GLubyte stage;
-
+	GLboolean fromFile;
 
    // constructors
 	ChunkColumn();
@@ -41,6 +41,7 @@ public: // functions
 	glm::vec3 getRelativePosition(glm::vec3 worldPos);
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
 	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent);
+	std::string getFileName();
 
 	// opertations
 	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, AdjacentMap_p& adjacentCunks);
@@ -59,7 +60,6 @@ private: // functions
 
 	// getters
 	Blocks getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, AdjacentMap& ajacentChunks);
-	std::string getFileName();
 };
 bool operator==(ChunkColumn* chunk, glm::vec2 pos);
 

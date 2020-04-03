@@ -1,5 +1,6 @@
 #pragma once
 #include <gtx/string_cast.hpp>
+#include <random>
 #include <algorithm>
 // #include "../World/World.h"
 #include "../../Renders/chunkRender.h"
@@ -29,6 +30,7 @@ public:
 	void setMovementSpeed(const GLfloat& speed);
 	void setTextues(Texture_Names texB, Texture_Names texT);
 	void setTarget(glm::vec3 targ);
+	void setInvincable(GLboolean inv);
 
 	void updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt);
 	void updateCamera(GLfloat xOff, GLfloat yOff);
@@ -53,6 +55,7 @@ private:
 	void lookAt(Move_Dir dir);
 	void toggleShowDamage();
 	void checkDead();
+	glm::vec3 wanderTarget();
 
 	void clampVelocity();
 
@@ -88,5 +91,6 @@ private:
 	std::string tag;
 	GLint health;
 	GLuint attackDmg;
+	GLboolean invincable;
 };
 

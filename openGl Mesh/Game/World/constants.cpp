@@ -63,11 +63,6 @@ const std::vector<Blocks> AllBlocks = {
 	Blocks::LOG,
 	Blocks::LEAF
 };
-GLint getBlockIndex(glm::vec3 position) {
-	int index = position.x + position.z * CHUNK_SIZE + position.y * CHUNK_AREA;
-	if (index >= CHUNK_VOLUME) index *= -1;
-	return index;
-}
 
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload) {
 	while (victim.x % multiple != 0) {

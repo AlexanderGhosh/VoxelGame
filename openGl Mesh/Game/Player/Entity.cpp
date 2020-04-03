@@ -121,10 +121,15 @@ void Entity::setTarget(glm::vec3 targ)	{
 	}
 }
 
+void Entity::setInvincable(GLboolean inv)
+{
+	invincable = inv;
+}
+
 void Entity::getNewTarget() {
 	stage = 0;
 	hasTarget = !hasTarget;
-	targetPosition = glm::vec3(0, 50, 10);
+	targetPosition = wanderTarget();
 	prevBlock = glm::round(pos);
 	calcMovementPath();
 	nxtBlock = prevBlock;
@@ -195,8 +200,8 @@ void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjace
 void Entity::updateCamera(GLfloat xOff, GLfloat yOff)
 {
 	playerCam.ProcessMouseMovement(xOff, yOff);
-	forward = playerCam.GetFront() * glm::vec3(1, 0, 1);
-	right = playerCam.GetRight() * glm::vec3(1, 0, 1);
+	forward = glm::normalize(playerCam.GetFront() * glm::vec3(1, 0, 1));
+	right = glm::normalize(playerCam.GetRight() * glm::vec3(1, 0, 1));
 }
 
 void Entity::move(Move_Dir dir) {
@@ -226,7 +231,10 @@ void Entity::move(Move_Dir dir) {
 	}
 }
 void Entity::moveToTarget() {
-	if (vel.y > 0 || !hasTarget) return;
+	if (vel.y > 0) return;
+	if (!hasTarget) {
+		getNewTarget();
+	}
 	moveBlock(movementPath[stage]);
 }
 void Entity::create() {
@@ -291,7 +299,7 @@ void Entity::attack(Entity& e) {
 	hasAttacked = 1;
 }
 void Entity::takeDamage(GLuint dmgTaken) {
-	if (!invunrable) {
+	if (!invunrable && !invincable) {
 		invunrable = 1;
 		invunrableTimer = 0;
 		health -= dmgTaken;
@@ -326,8 +334,8 @@ void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>
 			toggleShowDamage();
 		}
 	}
-
-	moveToTarget();
+	if(!hasCamera)
+		moveToTarget();
 	
 	updatePosition(1.0f / 60.0f, adjacent);
 
@@ -410,9 +418,10 @@ void Entity::moveBlock(Move_Dir dir) {
 
 		if (stage >= movementPath.size()) {
 			hasTarget = 0;
+			getNewTarget();
 			return;
 		}
-		// lookAt(movementPath[stage]);
+		lookAt(movementPath[stage]);
 		switch (movementPath[stage])
 		{
 		case Move_Dir::FORWARD:
@@ -475,6 +484,23 @@ void Entity::checkDead() {
 		isDead = 1;
 		std::cout << "entity with tag: " << tag << " is dead\n";
 	}
+}
+
+glm::vec3 Entity::wanderTarget()
+{
+	glm::ivec3 p = glm::round(pos);
+	std::array<glm::ivec3, 2> range = {
+		p + glm::ivec3(WANDER_RANGE),
+		p - glm::ivec3(WANDER_RANGE),
+	};
+	for (auto& r : range) {
+		for (GLubyte i = 0; i < 3; i++) {
+			if (!r[i]) r++;
+		}
+	}
+	GLfloat x = rand() % range[1].x + range[0].x;
+	GLfloat z = rand() % range[1].z + range[0].z;
+	return { x, 0, z };
 }
 
 void Entity::clampVelocity()

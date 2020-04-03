@@ -80,8 +80,8 @@ void Game::doLoop(glm::mat4 projection) {
 		player = &entityHander.getEntitys()[0];
 		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped);
 		if (entityHander.getEntitys().size() > 1) {
-			entityHander.getEntitys()[1].lookAt(player->getPosition());
-			// entityHander.getEntitys()[1].setTarget(player->getPosition());
+			// entityHander.getEntitys()[1].lookAt(player->getPosition());
+			// entityHander.getEntitys()[1].getNewTarget();
 		}
 
 		showStuff();
@@ -148,11 +148,12 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	Entity p = Entity({ 0.0f, 1.25f, 0.0f }, 1, 1);
+	Entity p = Entity({ 0.0f, 1.25f, 0.0f }, 1, 0);
 	p.setPosition({ 0, 60, 0 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
+	p.setInvincable(1);
 	entityHander.addEntity(p, 0);
-	// player = &entityHander.getEntitys()[0];
+	
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
