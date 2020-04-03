@@ -79,8 +79,10 @@ void Game::doLoop(glm::mat4 projection) {
 		}
 		player = &entityHander.getEntitys()[0];
 		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped);
-		entityHander.getEntitys()[1].lookAt(player->getPosition());
-		entityHander.getEntitys()[1].setTarget(player->getPosition());
+		if (entityHander.getEntitys().size() > 1) {
+			entityHander.getEntitys()[1].lookAt(player->getPosition());
+			// entityHander.getEntitys()[1].setTarget(player->getPosition());
+		}
 
 		showStuff();
 		showFPS();
@@ -146,7 +148,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	Entity p = Entity({ 0.0f, 1.25f, 0.0f }, 1, 0);
+	Entity p = Entity({ 0.0f, 1.25f, 0.0f }, 1, 1);
 	p.setPosition({ 0, 60, 0 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	entityHander.addEntity(p, 0);

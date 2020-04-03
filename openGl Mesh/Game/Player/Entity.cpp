@@ -92,6 +92,7 @@ void Entity::setTextues(Texture_Names texB, Texture_Names texT)
 }
 
 void Entity::setTarget(glm::vec3 targ)	{
+	if (glm::round(targ) == glm::round(pos)) return;
 	stage = 0;
 	movementPath.clear();
 	hasTarget = 1;
@@ -185,6 +186,7 @@ void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjace
 	if (hasCamera) {
 		playerCam.setPosition(pos + cameraOffset);
 	}
+	clampVelocity();
 	pos += vel * deltaTime;
 	if (!hasBody) return;
 	renderer.setPosition(this->pos);
@@ -410,7 +412,7 @@ void Entity::moveBlock(Move_Dir dir) {
 			hasTarget = 0;
 			return;
 		}
-		lookAt(movementPath[stage]);
+		// lookAt(movementPath[stage]);
 		switch (movementPath[stage])
 		{
 		case Move_Dir::FORWARD:
@@ -472,6 +474,19 @@ void Entity::checkDead() {
 	if (health <= 0) {
 		isDead = 1;
 		std::cout << "entity with tag: " << tag << " is dead\n";
+	}
+}
+
+void Entity::clampVelocity()
+{
+	for (GLubyte i = 0; i < 3; i++) {
+		if (i == 1) continue;
+		if (vel[i] > movementSpeed) {
+			vel[i] = movementSpeed;
+		}
+		if (vel[i] < -movementSpeed) {
+			vel[i] = -movementSpeed;
+		}
 	}
 }
 

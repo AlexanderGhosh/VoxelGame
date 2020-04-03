@@ -54,6 +54,8 @@ private:
 	void toggleShowDamage();
 	void checkDead();
 
+	void clampVelocity();
+
 	// player stuff
 	Camera playerCam;
 	GLboolean hasCamera, isClipping, canFly, loaded;
