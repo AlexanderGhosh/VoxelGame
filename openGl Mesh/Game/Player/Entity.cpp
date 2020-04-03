@@ -231,10 +231,8 @@ void Entity::move(Move_Dir dir) {
 	}
 }
 void Entity::moveToTarget() {
-	if (vel.y > 0) return;
-	if (!hasTarget) {
-		getNewTarget();
-	}
+	if (vel.y > 0 || !hasTarget) return;
+	
 	moveBlock(movementPath[stage]);
 }
 void Entity::create() {
