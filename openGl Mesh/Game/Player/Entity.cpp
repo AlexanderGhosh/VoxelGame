@@ -233,6 +233,7 @@ void Entity::move(Move_Dir dir) {
 void Entity::moveToTarget() {
 	if (vel.y > 0) return;
 	if (!hasTarget) {
+		return;
 		getNewTarget();
 	}
 	moveBlock(movementPath[stage]);
