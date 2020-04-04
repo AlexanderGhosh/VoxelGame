@@ -187,9 +187,21 @@ std::array<std::vector<glm::vec2>, 2> getNewOld(glm::vec2 oldChunkPos, glm::vec2
 		pos[i] += t;
 		res[1].push_back(pos);
 	}
+	glm::vec2 pos = delta + newChunkPos;
+	pos[i] = delta[i] - vary - CHUNK_SIZE;
+	res[0].push_back(pos);
+	pos[i] = max + CHUNK_SIZE;
+	res[0].push_back(pos);
+
+	pos = delta + oldChunkPos;
+	pos[i] = delta[i] - vary - CHUNK_SIZE;
+	res[1].push_back(pos);
+	pos[i] = max + CHUNK_SIZE;
+	res[1].push_back(pos);
 	return res;
 }
 
+std::unordered_map <glm::vec2, std::string> savedChunks;
 void World::updatePlayerPos(glm::vec3 pos) {
 	Timer t;
 	t.start();
@@ -211,14 +223,36 @@ void World::updatePlayerPos(glm::vec3 pos) {
 
 	t1.start();
 
-	const std::vector<glm::vec2> newPos = addVic[0];
-	const std::vector<glm::vec2> victims = addVic[1];
+	std::vector<glm::vec2> newPos = addVic[0];
+	std::vector<glm::vec2> victims = addVic[1];
+	std::vector<glm::vec2> newMap, delMap;
+
+	int i = 0;
+	if (newPos[0].y == newPos[1].y) {
+		i = 1;
+	}
+	for (auto pos : newPos) {
+		glm::vec2 p = pos;
+		p[i] += CHUNK_SIZE;
+		newMap.push_back(p);
+		p[i] -= CHUNK_SIZE * (RENDER_DISTANCE % 2 ? RENDER_DISTANCE + 2 : RENDER_DISTANCE + 3);
+		delMap.push_back(p);
+	}
+	newPos.pop_back();
+	newPos.pop_back();
+
+	victims.pop_back();
+	victims.pop_back();
+	victims.insert(victims.end(), delMap.begin(), delMap.end());
 	
 	for (auto& vic : victims) {
 		Chunks::iterator found = std::find(chunks2.begin(), chunks2.end(), vic);
-		if (found == chunks2.end()) continue;
-		chunks2.erase(found);
-		worldMap.erase(vic);
+		if (found != chunks2.end()) {
+			chunks2.erase(found);
+		}
+		else {
+			worldMap.erase(vic);
+		}
 	}
 	t1.end();
 	t1.showTime("erase", 1);
@@ -226,8 +260,8 @@ void World::updatePlayerPos(glm::vec3 pos) {
 	t.start();
 	for (auto& pos : newPos) {
 		std::string name = ChunkColumn(pos).getFileName();
-		if (FILE* file = fopen(("Chunks/" + name + ".dat").c_str(), "r")) {
-			chunks2.push_back({ name });
+		if (savedChunks.find(pos) != savedChunks.end()) {
+			chunks2.push_back({ savedChunks[pos] });
 		}
 		else {
 			chunks2.push_back({ pos, &worldMap });
@@ -238,25 +272,20 @@ void World::updatePlayerPos(glm::vec3 pos) {
 	}
 
 	t1.end();
-	t1.showTime("add to chunks2", 1);
+	t1.showTime("add to chunks2", 1); // most costly
 
 	
 	t1.start();
 
+	newPos.insert(newPos.end(), newMap.begin(), newMap.end());
+
 	// updating worldMap
-	glm::vec2 deltas[] = {
-		{1, 0}, {0, 1}, {1, 1}, {0, 0}
-	};
 	GLuint size = worldMap.size();
-	for (auto& pos : newPos) {
-		for (auto delta : deltas) {
-			delta *= CHUNK_SIZE;
-			glm::vec2 p = pos + delta;
-			auto& bs = worldMap[p];
-			if (worldMap.size() > size) {
-				bs = BlockStore(pos);
-				size++;
-			}
+	for (auto& pos : newMap) {
+		auto& bs = worldMap[pos];
+		if (worldMap.size() > size) {
+			bs = BlockStore(pos);
+			size++;
 		}
 	}
 
@@ -265,7 +294,7 @@ void World::updatePlayerPos(glm::vec3 pos) {
 
 	t.end();
 	t.showTime("all", 1);
-	std::cout << "_________________________________________________________________________\n";
+	std::cout << "worldmap size: " << std::to_string(worldMap.size()) << "\n_________________________________________________________________________\n";
 }
 
 std::tuple<glm::vec3, FACES_NAMES> World::getIntersectedBlock(ChunkColumn*& chunkOcc, Ray ray) {
