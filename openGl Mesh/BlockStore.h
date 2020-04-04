@@ -7,6 +7,7 @@ private: // properties
 	glm::vec2 position;
 	HeightMap heightMap;
 	std::unordered_map<glm::vec3, Blocks> editedBlocks;
+	GLboolean initalised;
 public:
 	BlockStore();
 	BlockStore(glm::vec2 pos);
@@ -18,6 +19,7 @@ public:
 	std::vector<Block_Count>& getBlocksAt(glm::vec2 pos);
 	std::vector<Block_Count>& getBlocksAt(GLfloat x, GLfloat z);
 	Blocks getBlock(glm::vec3 pos, GLboolean worldPosition);
+	GLboolean isInitilised();
 
 	// setters
 	void setPosition(glm::vec2 pos);

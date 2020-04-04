@@ -1,11 +1,11 @@
 #include "BlockStore.h"
 
-BlockStore::BlockStore()
+BlockStore::BlockStore() : initalised(0)
 {
-
+	
 }
 
-BlockStore::BlockStore(glm::vec2 pos) : position(pos), editedBlocks()
+BlockStore::BlockStore(glm::vec2 pos) : position(pos), editedBlocks(), initalised(1)
 {
 	heightMap = world_generation::createHeightMap(pos, 0);
 }
@@ -64,6 +64,11 @@ Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition)
 		}
 	}
 	return Blocks::AIR;
+}
+
+GLboolean BlockStore::isInitilised()
+{
+	return initalised;
 }
 
 void BlockStore::setPosition(glm::vec2 pos)

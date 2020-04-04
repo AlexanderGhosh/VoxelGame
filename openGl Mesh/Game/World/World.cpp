@@ -68,10 +68,11 @@ void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 	}
 	std::vector<glm::vec2> ring = centeredPositions({ 0, 0 }, chunks2, RENDER_DISTANCE + 2);
 	for (auto& chunk : chunks2) {
-		worldMap[chunk.getPosition()] = &chunk.getBlockStore();
+		worldMap[chunk.getPosition()] = *chunk.getBlockStore();
+		chunk.setBlockStore(&worldMap[chunk.getPosition()]);
 	}
 	for (auto& pos : ring) {
-		worldMap[pos] = new BlockStore(pos);
+		worldMap[pos] = BlockStore(pos);
 	}
 	
 	genWorldMesh();
@@ -180,10 +181,10 @@ std::array<std::vector<glm::vec2>, 2> getNewOld(glm::vec2 oldChunkPos, glm::vec2
 	GLint max = delta[i] + vary;
 	for (GLint t = delta[i] - vary; t < max + CHUNK_SIZE; t+=CHUNK_SIZE) {
 		glm::vec2 pos = delta + newChunkPos;
-		pos[i] = t;
+		pos[i] += t;
 		res[0].push_back(pos);
 		pos = oldChunkPos - delta;
-		pos[i] = t;
+		pos[i] += t;
 		res[1].push_back(pos);
 	}
 	return res;
@@ -217,6 +218,7 @@ void World::updatePlayerPos(glm::vec3 pos) {
 		Chunks::iterator found = std::find(chunks2.begin(), chunks2.end(), vic);
 		if (found == chunks2.end()) continue;
 		chunks2.erase(found);
+		worldMap.erase(vic);
 	}
 	t1.end();
 	t1.showTime("erase", 1);
@@ -247,12 +249,12 @@ void World::updatePlayerPos(glm::vec3 pos) {
 	};
 	GLuint size = worldMap.size();
 	for (auto& pos : newPos) {
-		for (auto& delta : deltas) {
+		for (auto delta : deltas) {
 			delta *= CHUNK_SIZE;
 			glm::vec2 p = pos + delta;
 			auto& bs = worldMap[p];
 			if (worldMap.size() > size) {
-				bs = new BlockStore(pos);
+				bs = BlockStore(pos);
 				size++;
 			}
 		}

@@ -7,9 +7,9 @@ ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), blo
 	// blocks.fill(Blocks::AIR);
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), blockStore(pos), isFlat(0), stage(0), breaking(0), fromFile(0)
+ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), breaking(0), fromFile(0)
 {
-	// blocks.fill(Blocks::GRASS);
+	blockStore = new BlockStore(pos);
 }
 
 ChunkColumn::ChunkColumn(std::string fileName) : breaking(0), fromFile(1)
@@ -30,9 +30,9 @@ ChunkColumn::ChunkColumn(std::string fileName) : breaking(0), fromFile(1)
 	if (size != 0) {
 		std::vector<BlockData> blocks(size);
 		in.read(reinterpret_cast<char*>(&blocks[0]), size * sizeof(BlockData));
-		blockStore.getEditedBlocks().clear();
+		blockStore->getEditedBlocks().clear();
 		for (auto& data : blocks) {
-			blockStore.getEditedBlocks().insert(data.toBlockD());
+			blockStore->getEditedBlocks().insert(data.toBlockD());
 		}
 	}
 	size = 0;
@@ -59,20 +59,16 @@ ChunkColumn::ChunkColumn(std::string fileName) : breaking(0), fromFile(1)
 	// hasCaves = 0;
 	GLuint seed = world_generation::seed;
 	world_generation::seed = s.seed;
-	blockStore.setHeightMap(world_generation::createHeightMap(position, 0));
+	blockStore->setHeightMap(world_generation::createHeightMap(position, 0));
 	world_generation::seed = seed;
 	isFlat = 0;
 }
 
 ChunkColumn::ChunkColumn(glm::vec2 pos, WorldMap* worldMap) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), breaking(0), fromFile(0) {
-	auto found = worldMap->find(pos);
-	if (found != worldMap->end()) {
-		blockStore = *(*found).second;
+	blockStore = &(*worldMap)[pos];
+	if (!blockStore->isInitilised()) {
+		(*worldMap)[pos] = BlockStore(pos);
 	}
-	else {
-		blockStore = BlockStore(pos);
-	}
-	(*worldMap)[pos] = &blockStore;
 }
 
 /*ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), highest_natural_point(-1), mesh(), blockStore(ightMap), isFlat(0), breaking(0), fromFile(0)
@@ -108,7 +104,7 @@ void ChunkColumn::createMesh(WorldMap* worldMap)
 	{
 		for (GLubyte z = startZ[stage]; z < endZ[stage]; z++)
 		{
-			std::vector<Block_Count>& encodes = blockStore.getBlocksAt(x, z);
+			std::vector<Block_Count>& encodes = blockStore->getBlocksAt(x, z);
 			GLuint y = 0;
 			GLuint height = 0;
 			Blocks block = Blocks::AIR;
@@ -306,7 +302,7 @@ std::pair<Blocks, ChunkColumn*> ChunkColumn::getBlock_ChunkPos(glm::vec3 worldPo
 
 Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos)
 {
-	return blockStore.getBlock(pos, worldPos);
+	return blockStore->getBlock(pos, worldPos);
 }
 glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)
 {
@@ -322,7 +318,7 @@ std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> ChunkColumn::getHeig
 	if (!this) return t;
 	GLuint maxHeight = 0;
 	if (glm::all(glm::greaterThanEqual(pos, { 0, 0 }) && glm::lessThan(pos, { CHUNK_SIZE, CHUNK_SIZE }))) {
-		auto& encoded = blockStore.getBlocksAt(pos);
+		auto& encoded = blockStore->getBlocksAt(pos);
 		std::for_each(encoded.begin(), encoded.end(), [&](Block_Count& encode) { maxHeight += encode.second; });
 		return { &encoded, maxHeight, this };
 	}
@@ -538,11 +534,11 @@ void ChunkColumn::save(std::string name, GLuint seed) {
 		seed
 	};
 	out.write((char*)&s, sizeof(s)); // pos and seed
-	unsigned size = blockStore.getEditedBlocks().size();
+	unsigned size = blockStore->getEditedBlocks().size();
 	out.write(reinterpret_cast<char*>(&size), sizeof(unsigned));
 	if(size != 0){
 		std::vector<BlockData> blockData;
-		for (auto& edit : blockStore.getEditedBlocks()) {
+		for (auto& edit : blockStore->getEditedBlocks()) {
 			blockData.push_back({ edit.first, toIndex(edit.second) });
 		}
 		out.write(reinterpret_cast<char*>(&blockData[0]), blockData.size() * sizeof(BlockData)); // block data
@@ -714,7 +710,7 @@ Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, 
 	if (worldMap->size() > 0) {
 		auto found = worldMap->find(chunkPositionToLookAt);
 		if (found == worldMap->end()) return Blocks::STONE;
-		return (*(*found).second).getBlock(relativePostion, 0);
+		return (*found).second.getBlock(relativePostion, 0);
 	}
 	return Blocks::STONE;
 }
@@ -722,9 +718,13 @@ std::string ChunkColumn::getFileName()
 {
 	return "chunk" + std::to_string((int)position.x) + "," + std::to_string((int)position.y);
 }
-BlockStore& ChunkColumn::getBlockStore()
+BlockStore* ChunkColumn::getBlockStore()
 {
 	return blockStore;
+}
+void ChunkColumn::setBlockStore(BlockStore* bs)
+{
+	blockStore = bs;
 }
 #pragma endregion
 

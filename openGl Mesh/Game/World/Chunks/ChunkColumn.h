@@ -10,7 +10,7 @@ private: // properties
 	glm::vec2 position;
 	// HeightMap heightMap;
 	// std::unordered_map<glm::vec3, Blocks> blocksEdited;
-	BlockStore blockStore;
+	BlockStore* blockStore;
 	std::unordered_map<GLuint, FaceB_p> mesh;
 	GLubyte highest_natural_point;
 	GLboolean isFlat;
@@ -43,7 +43,10 @@ public: // functions
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
 	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent);
 	std::string getFileName();
-	BlockStore& getBlockStore();
+	BlockStore* getBlockStore();
+
+	// setters
+	void setBlockStore(BlockStore* bs);
 
 	// opertations
 	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, AdjacentMap_p& adjacentCunks);
