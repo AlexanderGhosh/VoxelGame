@@ -152,8 +152,9 @@ void ChunkColumn::createMesh_flat(AdjacentMap& adjacentCunks)
 		}
 	}
 }
-void ChunkColumn::addTrees()
-{
+void ChunkColumn::addTrees() {
+	if (blockStore->doesHaveTrees()) return;
+	blockStore->setHaveTrees(1);
 	AdjacentMap_p adjacent;
 	std::vector<glm::vec2> treePos = world_generation::getTreePositions(position);
 	for (auto& pos : treePos) {

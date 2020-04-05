@@ -223,31 +223,49 @@ void World::updatePlayerPos(glm::vec3 pos) {
 	if (!chunk) return;
 	glm::vec2 position = chunk->getPosition();
 	if (position == chunkOccupiedPosition || !isDynamic) return;
+
+	Timer t1;
+	t1.start();
 	std::array<std::vector<glm::vec2>, 4> addVic{  };
 	if(isDynamic)
 		 addVic = getNewOld(chunkOccupiedPosition, position);
 
 	chunkOccupiedPosition = position;
 	if (!isDynamic) return;
-	std::vector<glm::vec2> newPos = addVic[0];
-	std::vector<glm::vec2> victims = addVic[2];
-	std::vector<glm::vec2> newMap = addVic[1], delMap = addVic[3];
-	
+	std::vector<glm::vec2> newPos = addVic[0], newMap = addVic[1], victims = addVic[2], delMap = addVic[3];
+	t1.end();
+	t1.showTime("getNewOld", 1);
+	// victims.insert(victims.end(), delMap.begin(), delMap.end());
+
+	t1.start();
+
+	GLubyte i = 0;
 	for (auto& vic : victims) {
-		Chunks::iterator found = std::find(chunks2.begin(), chunks2.end(), vic);
-		if (found != chunks2.end()) {
-			chunks2.erase(found);
+		Chunks::iterator found;
+		if (i++ < RENDER_DISTANCE) {
+			found = std::find(chunks2.begin(), chunks2.end(), vic);
+			if (found != chunks2.end()) {
+				chunks2.erase(found);
+			}
 		}
 		else {
-			int h = 0;
+			worldMap.erase(vic);
 		}
 	}
+	t1.end();
+	t1.showTime("victims", 1);
+
+	t1.start();
 	for (auto& p : delMap) {
 		if (worldMap.find(p) == worldMap.end()) {
 			int h = 0;
 		}
 		worldMap.erase(p);
 	}
+	t1.end();
+	t1.showTime("delMap", 1);
+
+	t1.start();
 	for (auto& pos : newPos) {
 		std::string name = ChunkColumn(pos).getFileName();
 		if (savedChunks.find(pos) != savedChunks.end()) {
@@ -257,24 +275,35 @@ void World::updatePlayerPos(glm::vec3 pos) {
 			chunks2.push_back({ pos, &worldMap });
 		}
 		if (chunks2.back().getMesh().size() > 0) continue;
-		// chunks2.back().addTrees();
+		chunks2.back().addTrees();
 		generationStack.push_back(chunks2.size() - 1);
 	}
+	t1.end();
+	t1.showTime("nePos loop", 1);
 
+	t1.start();
 	// updating worldMap
 	GLuint size = worldMap.size();
 	for (auto& pos : newMap) {
 		worldMap[pos] = BlockStore(pos);
 	}
+	t1.end();
+	t1.showTime("updating worldMap", 1);
+
 	auto s = worldMap.size() + chunks2.size();
-	t.end();
-	t.showTime("all", 1);
+
+	t1.start();
 	std::vector<glm::vec2> check = centeredPositions(position, {}, RENDER_DISTANCE + 2);
 	for (auto& p : check) {
 		if (worldMap.find(p) == worldMap.end()) {
 			std::cout << glm::to_string(p) << " wasn't found\n";
 		}
 	}
+	t1.end();
+	t1.showTime("check", 1);
+
+	t.end();
+	t.showTime("all");
 	std::cout << "worldmap size: " << std::to_string(worldMap.size()) << "\n_________________________________________________________________________\n";
 }
 

@@ -43,7 +43,7 @@ public:
 
 	void attack(Entity& e);
 	void takeDamage(GLuint dmgTaken);
-	void update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied);
+	void update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied, GLfloat deltaTime);
 
 	std::string getTag();
 	GLboolean isDead;

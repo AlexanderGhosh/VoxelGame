@@ -1,11 +1,11 @@
 #include "BlockStore.h"
 
-BlockStore::BlockStore() : initalised(0)
+BlockStore::BlockStore() : initalised(0), hasTrees(0)
 {
 	
 }
 
-BlockStore::BlockStore(glm::vec2 pos) : position(pos), editedBlocks(), initalised(1)
+BlockStore::BlockStore(glm::vec2 pos) : position(pos), editedBlocks(), initalised(1), hasTrees(0)
 {
 	heightMap = world_generation::createHeightMap(pos, 0);
 }
@@ -66,6 +66,11 @@ Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition)
 	return Blocks::AIR;
 }
 
+GLboolean BlockStore::doesHaveTrees()
+{
+	return hasTrees;
+}
+
 GLboolean BlockStore::isInitilised()
 {
 	return initalised;
@@ -84,4 +89,9 @@ void BlockStore::setHeightMap(const HeightMap& hm)
 void BlockStore::setEditedBlocks(std::unordered_map<glm::vec3, Blocks>& edited)
 {
 	editedBlocks = edited;
+}
+
+void BlockStore::setHaveTrees(GLboolean trees)
+{
+	hasTrees = trees;
 }
