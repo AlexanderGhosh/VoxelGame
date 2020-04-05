@@ -10,7 +10,7 @@
 class ChunkColumn;
 class BlockStore;
 
-#define RENDER_DISTANCE 4
+#define RENDER_DISTANCE 5
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 #define WANDER_RANGE 15
