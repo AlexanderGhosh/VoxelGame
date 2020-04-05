@@ -2,14 +2,14 @@
 
 #pragma region Public
 #pragma region Constructors
-ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), heightMap(), isFlat(1), breaking(0), fromFile(0)
+ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), blockStore(), isFlat(1), breaking(0), fromFile(0)
 {
 	// blocks.fill(Blocks::AIR);
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), heightMap(), isFlat(0), stage(0), breaking(0), fromFile(0)
+ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), breaking(0), fromFile(0)
 {
-	// blocks.fill(Blocks::GRASS);
+	blockStore = new BlockStore(pos);
 }
 
 ChunkColumn::ChunkColumn(std::string fileName) : breaking(0), fromFile(1)
@@ -30,9 +30,9 @@ ChunkColumn::ChunkColumn(std::string fileName) : breaking(0), fromFile(1)
 	if (size != 0) {
 		std::vector<BlockData> blocks(size);
 		in.read(reinterpret_cast<char*>(&blocks[0]), size * sizeof(BlockData));
-		blocksEdited.clear();
+		blockStore->getEditedBlocks().clear();
 		for (auto& data : blocks) {
-			blocksEdited.insert(data.toBlockD());
+			blockStore->getEditedBlocks().insert(data.toBlockD());
 		}
 	}
 	size = 0;
@@ -56,28 +56,29 @@ ChunkColumn::ChunkColumn(std::string fileName) : breaking(0), fromFile(1)
 		Texture* t = std::get<1>(data);
 		mesh.insert({ (int)b * (int)t, data });
 	}
-	/*for (GLuint i = 0; i < chunks.size(); i++) {
-		chunks[i].blocks.empty();
-		for (GLuint j = i * 4096; j < (i + 1) * 4096; j++) {
-			chunks[i].blocks[j - i * 4096] = toBlock(blocks[j]);
-		}
-	}*/
 	// hasCaves = 0;
 	GLuint seed = world_generation::seed;
 	world_generation::seed = s.seed;
-	heightMap = world_generation::createHeightMap(position, 0);
+	blockStore->setHeightMap(world_generation::createHeightMap(position, 0));
 	world_generation::seed = seed;
 	isFlat = 0;
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), highest_natural_point(-1), mesh(), heightMap(heightMap), isFlat(0), breaking(0), fromFile(0)
+ChunkColumn::ChunkColumn(glm::vec2 pos, WorldMap* worldMap) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), breaking(0), fromFile(0) {
+	blockStore = &(*worldMap)[pos];
+	if (!blockStore->isInitilised()) {
+		(*worldMap)[pos] = BlockStore(pos);
+	}
+}
+
+/*ChunkColumn::ChunkColumn(glm::vec2 pos, HeightMap heightMap) : position(pos), highest_natural_point(-1), mesh(), blockStore(ightMap), isFlat(0), breaking(0), fromFile(0)
 {
 	// blocks.fill(Blocks::AIR);
-}
+}*/
 #pragma endregion
 
 #pragma region Creation
-void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
+void ChunkColumn::createMesh(WorldMap* worldMap)
 {
 	try {
 		if (stage >= 101) stage = 0;
@@ -103,7 +104,7 @@ void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 	{
 		for (GLubyte z = startZ[stage]; z < endZ[stage]; z++)
 		{
-			std::vector<Block_Count>& encodes = heightMap[x][z];
+			std::vector<Block_Count>& encodes = blockStore->getBlocksAt(x, z);
 			GLuint y = 0;
 			GLuint height = 0;
 			Blocks block = Blocks::AIR;
@@ -125,7 +126,7 @@ void ChunkColumn::createMesh(AdjacentMap& adjacentCunks)
 			y = height - 1;
 			for (GLubyte i = 0; i < lookDepth; i++) {
 				block = blks[i];
-				addBlock({ x, y - i, z }, 0, block, adjacentCunks);
+				addBlock({ x, y - i, z }, 0, block, worldMap);
 			}
 		}
 	}
@@ -146,13 +147,15 @@ void ChunkColumn::createMesh_flat(AdjacentMap& adjacentCunks)
 			for (GLubyte z = 0; z < CHUNK_SIZE; z++)
 			{
 				Blocks block = Blocks::GRASS;
-				addBlock({ x, y, z }, 0, block, adjacentCunks);
+				// addBlock({ x, y, z }, 0, block, adjacentCunks);
 			}
 		}
 	}
 }
-void ChunkColumn::addTrees(AdjacentMap_p& adjacent)
-{
+void ChunkColumn::addTrees() {
+	if (blockStore->doesHaveTrees()) return;
+	blockStore->setHaveTrees(1);
+	AdjacentMap_p adjacent;
 	std::vector<glm::vec2> treePos = world_generation::getTreePositions(position);
 	for (auto& pos : treePos) {
 		GLubyte x = pos.x;
@@ -300,30 +303,7 @@ std::pair<Blocks, ChunkColumn*> ChunkColumn::getBlock_ChunkPos(glm::vec3 worldPo
 
 Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos)
 {
-	glm::vec3 relativePos = worldPos ? getRelativePosition(pos) : pos;
-	// check changed blocks
-	GLuint size = blocksEdited.size();
-	Blocks t = blocksEdited[relativePos];
-	if (blocksEdited.size() > size) {
-		blocksEdited.erase(relativePos);
-	}
-	else {
-		return t;
-	}
-
-	// get from height map
-	std::vector<Block_Count> encodes;
-	glm::vec2 hPos(relativePos.x, relativePos.z);
-	if (glm::all(glm::lessThan(hPos, glm::vec2(CHUNK_SIZE)) && glm::greaterThanEqual(hPos, { 0, 0 }))) {
-		encodes = heightMap[hPos.x][hPos.y];
-	}
-	for (Block_Count&  encoded : encodes) {
-		relativePos.y -= encoded.second;
-		if (relativePos.y < 0) {
-			return encoded.first;
-		}
-	}
-	return Blocks::AIR;
+	return blockStore->getBlock(pos, worldPos);
 }
 glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)
 {
@@ -339,7 +319,7 @@ std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> ChunkColumn::getHeig
 	if (!this) return t;
 	GLuint maxHeight = 0;
 	if (glm::all(glm::greaterThanEqual(pos, { 0, 0 }) && glm::lessThan(pos, { CHUNK_SIZE, CHUNK_SIZE }))) {
-		auto& encoded = heightMap[pos.x][pos.y];
+		auto& encoded = blockStore->getBlocksAt(pos);
 		std::for_each(encoded.begin(), encoded.end(), [&](Block_Count& encode) { maxHeight += encode.second; });
 		return { &encoded, maxHeight, this };
 	}
@@ -373,171 +353,172 @@ std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> ChunkColumn::getHeig
 #pragma region Operations
 void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, AdjacentMap_p& adjacentCunks)
 {
-	glm::vec3 worldPosition = worldPos ? pos : getWorldPosition(pos);
-	glm::vec3 relativePos = getRelativePosition(worldPosition);
-
-	AdjacentMap adjacentCunks_n;
-	for (auto& adjacent : adjacentCunks) {
-		adjacentCunks_n.insert({ adjacent.first, *adjacent.second });
-	}
-
-	if (block == Blocks::AIR) { // breaking block
-		breaking = 1;
-		std::vector<Face> toKill;
-		std::vector<Face> toAdd;
-		GLfloat x = relativePos.x;
-		GLfloat y = relativePos.y;
-		GLfloat z = relativePos.z;
-		Blocks block_at = getBlock(relativePos, 0);
-		if (block_at == Blocks::AIR) return;
-		GLubyte tex_index = (GLubyte)getTexture(block_at);
-
-		for (GLubyte i = 0; i < 6; i++)
-		{
-			removeFromMesh({ FACES[i], TEXTURES[tex_index], worldPosition });
-		}
-
-		#pragma region Checking adjacent blocks
-		// x
-		Blocks found = getBlock({ x - 1, y, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
-			removeFromMesh({ FACES[LEFT], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(-1, 0, 0), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->addToMesh({ FACES[RIGHT], TEXTURES[tex_index2], worldPosition + glm::vec3(-1, 0, 0) });
-		}
-		found = getBlock({ x + 1, y, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
-			removeFromMesh({ FACES[RIGHT], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(1, 0, 0), adjacentCunks);
-
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->addToMesh({ FACES[LEFT], TEXTURES[tex_index2], worldPosition + glm::vec3(1, 0, 0) });
-		}
-
-		// y
-		found = getBlock({ x, y - 1, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
-			removeFromMesh({ FACES[BOTTOM], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, -1, 0), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->addToMesh({ FACES[TOP], TEXTURES[tex_index2], worldPosition + glm::vec3(0, -1, 0) });
-		}
-		found = getBlock({ x, y + 1, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
-			removeFromMesh({ FACES[TOP], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 1, 0), adjacentCunks);
-
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->addToMesh({ FACES[BOTTOM], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 1, 0) });
-		}
-
-		// z
-		found = getBlock({ x, y, z - 1 }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
-			removeFromMesh({ FACES[BACK], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, -1), adjacentCunks);
-
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->addToMesh({ FACES[FRONT], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, -1) });
-		}
-		found = getBlock({ x, y, z + 1 }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
-			removeFromMesh({ FACES[FRONT], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, 1), adjacentCunks);
-
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->addToMesh({ FACES[BACK], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, 1) });
-		}
-		#pragma endregion
-	}
-	else {
-		std::vector<Face> toAdd;
-		std::vector<Face> toKill;
-		GLfloat x = relativePos.x;
-		GLfloat y = relativePos.y;
-		GLfloat z = relativePos.z;
-		Blocks block_at = getBlock(relativePos, 0);
-		if (block_at != Blocks::AIR) return;
-		GLubyte tex_index = (GLubyte)getTexture(block);
-		#pragma region Checking adjacent blocks
-		Blocks found = getBlock({ x - 1, y, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
-			addToMesh({ FACES[LEFT], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(-1, 0, 0), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->removeFromMesh({ FACES[RIGHT], TEXTURES[tex_index2], worldPosition + glm::vec3(-1, 0, 0) });
-		}
-
-		found = getBlock({ x + 1, y, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
-			addToMesh({ FACES[RIGHT], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(1, 0, 0), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->removeFromMesh({ FACES[LEFT], TEXTURES[tex_index2], worldPosition + glm::vec3(1, 0, 0) });
-		}
-
-		// y
-		found = getBlock({ x, y - 1, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
-			addToMesh({ FACES[BOTTOM], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, -1, 0), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->removeFromMesh({ FACES[TOP], TEXTURES[tex_index2], worldPosition + glm::vec3(0, -1, 0) });
-		}
-
-		found = getBlock({ x, y + 1, z }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
-			addToMesh({ FACES[TOP], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 1, 0), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->removeFromMesh({ FACES[BOTTOM], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 1, 0) });
-		}
-
-		// z
-		found = getBlock({ x, y, z - 1 }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
-			addToMesh({ FACES[BACK], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, -1), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->removeFromMesh({ FACES[FRONT], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, -1) });
-		}
-
-		found = getBlock({ x, y, z + 1 }, 0, 1, adjacentCunks_n);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
-			addToMesh({ FACES[FRONT], TEXTURES[tex_index], worldPosition });
-		}
-		else {
-			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, 1), adjacentCunks);
-			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
-			block_at2.second->removeFromMesh({ FACES[BACK], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, 1) });
-		}
-#pragma endregion
-	}
-	blocksEdited[relativePos] = block;
-	breaking = 0;
+//	glm::vec3 worldPosition = worldPos ? pos : getWorldPosition(pos);
+//	glm::vec3 relativePos = getRelativePosition(worldPosition);
+//
+//	AdjacentMap adjacentCunks_n;
+//	for (auto& adjacent : adjacentCunks) {
+//		adjacentCunks_n.insert({ adjacent.first, *adjacent.second });
+//	}
+//
+//	if (block == Blocks::AIR) { // breaking block
+//		breaking = 1;
+//		std::vector<Face> toKill;
+//		std::vector<Face> toAdd;
+//		GLfloat x = relativePos.x;
+//		GLfloat y = relativePos.y;
+//		GLfloat z = relativePos.z;
+//		Blocks block_at = getBlock(relativePos, 0);
+//		if (block_at == Blocks::AIR) return;
+//		GLubyte tex_index = (GLubyte)getTexture(block_at);
+//
+//		for (GLubyte i = 0; i < 6; i++)
+//		{
+//			removeFromMesh({ FACES[i], TEXTURES[tex_index], worldPosition });
+//		}
+//
+//		#pragma region Checking adjacent blocks
+//		// x
+//		Blocks found = getBlock({ x - 1, y, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
+//			removeFromMesh({ FACES[LEFT], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(-1, 0, 0), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->addToMesh({ FACES[RIGHT], TEXTURES[tex_index2], worldPosition + glm::vec3(-1, 0, 0) });
+//		}
+//		found = getBlock({ x + 1, y, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
+//			removeFromMesh({ FACES[RIGHT], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(1, 0, 0), adjacentCunks);
+//
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->addToMesh({ FACES[LEFT], TEXTURES[tex_index2], worldPosition + glm::vec3(1, 0, 0) });
+//		}
+//
+//		// y
+//		found = getBlock({ x, y - 1, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
+//			removeFromMesh({ FACES[BOTTOM], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, -1, 0), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->addToMesh({ FACES[TOP], TEXTURES[tex_index2], worldPosition + glm::vec3(0, -1, 0) });
+//		}
+//		found = getBlock({ x, y + 1, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
+//			removeFromMesh({ FACES[TOP], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 1, 0), adjacentCunks);
+//
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->addToMesh({ FACES[BOTTOM], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 1, 0) });
+//		}
+//
+//		// z
+//		found = getBlock({ x, y, z - 1 }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
+//			removeFromMesh({ FACES[BACK], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, -1), adjacentCunks);
+//
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->addToMesh({ FACES[FRONT], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, -1) });
+//		}
+//		found = getBlock({ x, y, z + 1 }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR /*|| found == Blocks::LEAF*/) {
+//			removeFromMesh({ FACES[FRONT], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, 1), adjacentCunks);
+//
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->addToMesh({ FACES[BACK], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, 1) });
+//		}
+//		#pragma endregion
+//	}
+//	else {
+//		std::vector<Face> toAdd;
+//		std::vector<Face> toKill;
+//		GLfloat x = relativePos.x;
+//		GLfloat y = relativePos.y;
+//		GLfloat z = relativePos.z;
+//		Blocks block_at = getBlock(relativePos, 0);
+//		if (block_at != Blocks::AIR) return;
+//		GLubyte tex_index = (GLubyte)getTexture(block);
+//		#pragma region Checking adjacent blocks
+//		Blocks found = getBlock({ x - 1, y, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+//			addToMesh({ FACES[LEFT], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(-1, 0, 0), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->removeFromMesh({ FACES[RIGHT], TEXTURES[tex_index2], worldPosition + glm::vec3(-1, 0, 0) });
+//		}
+//
+//		found = getBlock({ x + 1, y, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+//			addToMesh({ FACES[RIGHT], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(1, 0, 0), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->removeFromMesh({ FACES[LEFT], TEXTURES[tex_index2], worldPosition + glm::vec3(1, 0, 0) });
+//		}
+//
+//		// y
+//		found = getBlock({ x, y - 1, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+//			addToMesh({ FACES[BOTTOM], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, -1, 0), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->removeFromMesh({ FACES[TOP], TEXTURES[tex_index2], worldPosition + glm::vec3(0, -1, 0) });
+//		}
+//
+//		found = getBlock({ x, y + 1, z }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+//			addToMesh({ FACES[TOP], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 1, 0), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->removeFromMesh({ FACES[BOTTOM], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 1, 0) });
+//		}
+//
+//		// z
+//		found = getBlock({ x, y, z - 1 }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+//			addToMesh({ FACES[BACK], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, -1), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->removeFromMesh({ FACES[FRONT], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, -1) });
+//		}
+//
+//		found = getBlock({ x, y, z + 1 }, 0, 1, adjacentCunks_n);
+//		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+//			addToMesh({ FACES[FRONT], TEXTURES[tex_index], worldPosition });
+//		}
+//		else {
+//			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, 1), adjacentCunks);
+//			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
+//			block_at2.second->removeFromMesh({ FACES[BACK], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, 1) });
+//		}
+//#pragma endregion
+//	}
+//	blockStore.getEditedBlocks()[relativePos] = block;
+//	breaking = 0;
+	
 }
 
 void ChunkColumn::save(std::string name, GLuint seed) {
@@ -554,11 +535,11 @@ void ChunkColumn::save(std::string name, GLuint seed) {
 		seed
 	};
 	out.write((char*)&s, sizeof(s)); // pos and seed
-	unsigned size = blocksEdited.size();
+	unsigned size = blockStore->getEditedBlocks().size();
 	out.write(reinterpret_cast<char*>(&size), sizeof(unsigned));
 	if(size != 0){
 		std::vector<BlockData> blockData;
-		for (auto& edit : blocksEdited) {
+		for (auto& edit : blockStore->getEditedBlocks()) {
 			blockData.push_back({ edit.first, toIndex(edit.second) });
 		}
 		out.write(reinterpret_cast<char*>(&blockData[0]), blockData.size() * sizeof(BlockData)); // block data
@@ -649,7 +630,7 @@ bool ChunkColumn::operator==(glm::vec2 pos)
 
 #pragma region Private
 // editors
-void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, AdjacentMap& adjacentCunks) {
+void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, WorldMap* worldMap) {
 	if (block == Blocks::AIR) return;
 	glm::vec3 relativePos = worldPos ? getRelativePosition(position) : position;
 	GLfloat& x = relativePos.x;
@@ -689,7 +670,7 @@ void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block,
 		else {
 			lookingAt[i] += delta[i];
 		}
-		Blocks found = getBlock(lookingAt, 0, 1, adjacentCunks);
+		Blocks found = getBlock(lookingAt, 0, 1, worldMap);
 		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
 			addToMesh(face, TEXTURES[tex_index], worldPosition, mesh);
 		}
@@ -697,7 +678,7 @@ void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block,
 }
 
 // getters
-Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, AdjacentMap& ajacentChunks) {
+Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, WorldMap* worldMap) {
 	glm::vec3 relativePostion = worldPos ? getRelativePosition(pos) : pos;
 
 	if (glm::all(glm::greaterThanEqual(relativePostion, { 0, 0, 0 }))) {
@@ -727,15 +708,24 @@ Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, 
 		relativePostion.z -= CHUNK_SIZE;
 		chunkPositionToLookAt.y += CHUNK_SIZE;
 	}
-	if (ajacentChunks.size() > 0) {
-		
-		return ajacentChunks[chunkPositionToLookAt].getBlock(relativePostion, 0);
+	if (worldMap->size() > 0) {
+		auto found = worldMap->find(chunkPositionToLookAt);
+		if (found == worldMap->end()) return Blocks::STONE;
+		return (*found).second.getBlock(relativePostion, 0);
 	}
 	return Blocks::STONE;
 }
 std::string ChunkColumn::getFileName()
 {
 	return "chunk" + std::to_string((int)position.x) + "," + std::to_string((int)position.y);
+}
+BlockStore* ChunkColumn::getBlockStore()
+{
+	return blockStore;
+}
+void ChunkColumn::setBlockStore(BlockStore* bs)
+{
+	blockStore = bs;
 }
 #pragma endregion
 

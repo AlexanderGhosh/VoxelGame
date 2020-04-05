@@ -236,7 +236,13 @@ GLulong Timer::getTime()
 	return std::chrono::duration_cast<std::chrono::microseconds>(stop_ - start_).count();
 }
 
-void Timer::showTime(std::string name)
+void Timer::showTime(std::string name, GLboolean inFrames)
 {
-	std::cout << "Timer " << name << ": " << std::to_string((GLfloat)getTime()/1000000.0f) << " secconds" << std::endl;
+	std::string unit = " secconds";
+	GLfloat time = (GLfloat)getTime() / 1000000.0f;
+	if (inFrames) {
+		time /= (1.0f / 60.0f);
+		unit = " frames";
+	}
+	std::cout << "Timer " + name + ": " + std::to_string(time) + unit << std::endl;
 }

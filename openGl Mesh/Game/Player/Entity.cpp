@@ -151,7 +151,7 @@ void Entity::getNewTarget() {
 }
 
 void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt) {
-	deltaTime = 1.0f / 60.0f;
+	// deltaTime = 1.0f / 60.0f;
 	if (!canFly) {
 		grounded = 0;
 		vel += acc * deltaTime;
@@ -231,8 +231,11 @@ void Entity::move(Move_Dir dir) {
 	}
 }
 void Entity::moveToTarget() {
-	if (vel.y > 0 || !hasTarget) return;
-	
+	if (vel.y > 0) return;
+	if (!hasTarget) {
+		return;
+		getNewTarget();
+	}
 	moveBlock(movementPath[stage]);
 }
 void Entity::create() {
@@ -306,7 +309,7 @@ void Entity::takeDamage(GLuint dmgTaken) {
 		std::cout << "entity with tag: " << tag << " health: " << std::to_string(health) << std::endl;
 	}
 }
-void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied) {
+void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied, GLfloat deltaTime) {
 	checkDead();
 	if (!occupied) {
 		loaded = 0;
@@ -335,7 +338,7 @@ void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>
 	if(!hasCamera)
 		moveToTarget();
 	
-	updatePosition(1.0f / 60.0f, adjacent);
+	updatePosition(deltaTime, adjacent);
 
 	render(projection, cam);
 }

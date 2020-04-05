@@ -42,7 +42,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 0);
+	world = World(1, 1, 1);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -56,7 +56,7 @@ void Game::doLoop(glm::mat4 projection) {
 	vampire.setPosition({ 5, 80, 0 });
 	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
-	entityHander.addEntity(vampire);
+	// entityHander.addEntity(vampire);
 
 	while (gameRunning) {
 		calcTimes();
@@ -78,7 +78,7 @@ void Game::doLoop(glm::mat4 projection) {
 			occuped.push_back(world.getChunkOccupied(p));
 		}
 		player = &entityHander.getEntitys()[0];
-		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped);
+		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);
 		if (entityHander.getEntitys().size() > 1) {
 			entityHander.getEntitys()[1].lookAt(player->getPosition());
 			entityHander.getEntitys()[1].setTarget(player->getPosition());
@@ -148,12 +148,11 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	Entity p = Entity({ 0.0f, 1.25f, 0.0f }, 1, 0);
-	p.setPosition({ 0, 60, 0 });
+	Entity p = Entity({ 0, 1.25f, 0 }, 0, 1);
+	p.setPosition({ 8, 80, 8 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	// p.setInvincable(1);
 	entityHander.addEntity(p, 0);
-	
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {

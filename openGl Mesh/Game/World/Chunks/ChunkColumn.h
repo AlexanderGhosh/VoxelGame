@@ -3,14 +3,15 @@
 #include "gtx/hash.hpp"
 #include <chrono>
 #include "../constants.h"
-#include "../world_generation.h"
+#include "../../../BlockStore.h"
 class ChunkColumn
 {
 private: // properties
 	glm::vec2 position;
-	std::unordered_map<glm::vec3, Blocks> blocksEdited;
+	// HeightMap heightMap;
+	// std::unordered_map<glm::vec3, Blocks> blocksEdited;
+	BlockStore* blockStore;
 	std::unordered_map<GLuint, FaceB_p> mesh;
-	HeightMap heightMap;
 	GLubyte highest_natural_point;
 	GLboolean isFlat;
 
@@ -25,13 +26,13 @@ public: // functions
 	ChunkColumn();
 	ChunkColumn(glm::vec2 pos);
 	ChunkColumn(std::string fileName);
-	ChunkColumn(glm::vec2 pos, HeightMap heightMap);
+	ChunkColumn(glm::vec2 pos, WorldMap* worldMap);
 
 	// creators
-	void createMesh(AdjacentMap& adjacentCunks);
+	void createMesh(WorldMap* worldMap);
 	void createMesh(AdjacentMap& adjacentCunks, HeightMap heighMap);
 	void createMesh_flat(AdjacentMap& adjacentCunks);
-	void addTrees(AdjacentMap_p& adjacent);
+	void addTrees();
 
 	// getters
 	std::unordered_map<GLuint, FaceB_p>& getMesh();
@@ -42,6 +43,10 @@ public: // functions
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
 	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent);
 	std::string getFileName();
+	BlockStore* getBlockStore();
+
+	// setters
+	void setBlockStore(BlockStore* bs);
 
 	// opertations
 	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, AdjacentMap_p& adjacentCunks);
@@ -56,10 +61,10 @@ public: // functions
 
 private: // functions
 	// editors
-	void addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, AdjacentMap& adjacentCunks);
+	void addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, WorldMap* worldMap);
 
 	// getters
-	Blocks getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, AdjacentMap& ajacentChunks);
+	Blocks getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, WorldMap* worldMap);
 };
 bool operator==(ChunkColumn* chunk, glm::vec2 pos);
 

@@ -11,6 +11,7 @@
 #include "../../Ray.h"
 #include "Chunks/ChunkColumn.h"
 #include "../../EntityHander.h"
+#include "../../BlockStore.h"
 
 class World
 {
@@ -35,11 +36,11 @@ public:
 
 	AdjacentMap_p adjacesntMapGenerationPtr;
 	AdjacentMap adjacesntMapGeneration;
-	std::vector<ChunkColumn*> generationStack;
+	std::vector<GLuint> generationStack;
 	GLuint seed;
 	Chunks chunks2;
 	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
-
+	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<ChunkColumn>& exclude, GLint renderDist = RENDER_DISTANCE);
 
 	Entity* getIntersectedEntity(EntityHander& handler, Ray ray);
 private:
@@ -49,17 +50,14 @@ private:
 	GLboolean reDraw;
 	glm::vec2 chunkOccupiedPosition;
 
+	WorldMap worldMap;
 
 	void getNewChunkPositions(GLboolean flat);
 
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
-	void generateTerrain(std::vector<glm::vec2> chunkPositions, AdjacentMap adjacent);
+	void generateTerrain(std::vector<glm::vec2>& chunkPositions);
 
 	void genWorldMesh();
 
 	std::tuple<glm::vec3, FACES_NAMES> getIntersectedBlock(ChunkColumn*& chunkOcc, Ray ray);
-
-
-	std::vector<ChunkColumn> createChunks(std::vector<glm::vec2> positions, std::vector<glm::vec2> activeChunks,
-		std::vector<glm::vec2> lazyChunks, GLboolean rectifyForExisting, GLboolean checkLazy, std::vector<ChunkColumn>* subChunks);
 };

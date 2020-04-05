@@ -8,8 +8,9 @@
 #include "../../Mesh.h"
 
 class ChunkColumn;
+class BlockStore;
 
-#define RENDER_DISTANCE 4
+#define RENDER_DISTANCE 5
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 #define WANDER_RANGE 15
@@ -30,6 +31,7 @@ using Chunks = std::vector<ChunkColumn>;
 using FaceB = std::tuple<Buffer, Texture*, GLuint>;
 using FaceB_p = std::tuple<Buffer*, Texture*, std::vector<glm::mat4>>;
 using AdjacentMap = std::unordered_map<glm::vec2, ChunkColumn>;
+using WorldMap = std::unordered_map<glm::vec2, BlockStore>;
 
 using AdjacentMap_p = std::unordered_map<glm::vec2, ChunkColumn*>;
 
@@ -117,5 +119,5 @@ public:
 	void stop();
 	void end();
 	GLulong getTime();
-	void showTime(std::string name = "");
+	void showTime(std::string name = "", GLboolean inFrames = 0);
 };
