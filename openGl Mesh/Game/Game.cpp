@@ -78,7 +78,9 @@ void Game::doLoop(glm::mat4 projection) {
 			occuped.push_back(world.getChunkOccupied(p));
 		}
 		player = &entityHander.getEntitys()[0];
-		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);
+		if (world.created) {
+			entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);
+		}
 		if (entityHander.getEntitys().size() > 1) {
 			entityHander.getEntitys()[1].lookAt(player->getPosition());
 			entityHander.getEntitys()[1].setTarget(player->getPosition());
@@ -148,7 +150,7 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	Entity p = Entity({ 0, 1.25f, 0 }, 0, 1);
+	Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
 	p.setPosition({ 8, 80, 8 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	// p.setInvincable(1);

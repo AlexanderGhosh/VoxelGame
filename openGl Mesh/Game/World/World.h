@@ -34,8 +34,7 @@ public:
 
 	void advanceGeneration();
 
-	AdjacentMap_p adjacesntMapGenerationPtr;
-	AdjacentMap adjacesntMapGeneration;
+	GLboolean created;
 	std::vector<GLuint> generationStack;
 	GLuint seed;
 	Chunks chunks2;

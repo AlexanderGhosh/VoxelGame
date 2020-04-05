@@ -2,10 +2,10 @@
 #include "gtx/string_cast.hpp"
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
-World::World() {
+World::World() : created(0) {
 	chunks2 = std::vector<ChunkColumn>();
 }
-World::World(GLboolean gen, GLboolean terrain, GLboolean isDynamic, GLuint seed) {
+World::World(GLboolean gen, GLboolean terrain, GLboolean isDynamic, GLuint seed) : created(0) {
 	this->seed = seed;
 	chunks2 = std::vector<ChunkColumn>();
 	this->isDynamic = isDynamic;
@@ -234,8 +234,7 @@ void World::updatePlayerPos(glm::vec3 pos) {
 	if (!isDynamic) return;
 	std::vector<glm::vec2> newPos = addVic[0], newMap = addVic[1], victims = addVic[2], delMap = addVic[3];
 	t1.end();
-	t1.showTime("getNewOld", 1);
-	// victims.insert(victims.end(), delMap.begin(), delMap.end());
+	// t1.showTime("getNewOld", 1);
 
 	t1.start();
 
@@ -253,7 +252,7 @@ void World::updatePlayerPos(glm::vec3 pos) {
 		}
 	}
 	t1.end();
-	t1.showTime("victims", 1);
+	// t1.showTime("victims", 1);
 
 	t1.start();
 	for (auto& p : delMap) {
@@ -263,7 +262,7 @@ void World::updatePlayerPos(glm::vec3 pos) {
 		worldMap.erase(p);
 	}
 	t1.end();
-	t1.showTime("delMap", 1);
+	// t1.showTime("delMap", 1);
 
 	t1.start();
 	for (auto& pos : newPos) {
@@ -279,16 +278,16 @@ void World::updatePlayerPos(glm::vec3 pos) {
 		generationStack.push_back(chunks2.size() - 1);
 	}
 	t1.end();
-	t1.showTime("nePos loop", 1);
+	// t1.showTime("nePos loop", 1);
 
 	t1.start();
-	// updating worldMap
+
 	GLuint size = worldMap.size();
 	for (auto& pos : newMap) {
 		worldMap[pos] = BlockStore(pos);
 	}
 	t1.end();
-	t1.showTime("updating worldMap", 1);
+	// t1.showTime("updating worldMap", 1);
 
 	auto s = worldMap.size() + chunks2.size();
 
@@ -300,10 +299,10 @@ void World::updatePlayerPos(glm::vec3 pos) {
 		}
 	}
 	t1.end();
-	t1.showTime("check", 1);
+	// t1.showTime("check", 1);
 
 	t.end();
-	t.showTime("all");
+	t.showTime("all", 1);
 	std::cout << "worldmap size: " << std::to_string(worldMap.size()) << "\n_________________________________________________________________________\n";
 }
 
@@ -502,7 +501,10 @@ void World::save() {
 }
 void World::advanceGeneration()
 {
-	if (generationStack.size() == 0) return;
+	if (generationStack.size() == 0) {
+		created = 1;  
+		return;
+	}
 	ChunkColumn* chunk = &chunks2[generationStack.back()];
 	glm::vec2 pos = chunk->getPosition();
 	
