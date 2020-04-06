@@ -505,21 +505,21 @@ void World::advanceGeneration()
 		created = 1;  
 		return;
 	}
+
 	ChunkColumn* chunk = &chunks2[generationStack.back()];
 	glm::vec2 pos = chunk->getPosition();
 	
+	if (chunk->stage >= PARTS_PER_CHUNK) {
+		generationStack.pop_back();
+		genWorldMesh();
+		drawable.setUp(worldMesh);
+		return;
+	}
+
 	if (chunk->getMesh().size() == 0 || chunk->stage < 100) {
 		chunk->createMesh(&worldMap);
 	}
 	else if (chunk->fromFile) {
 		chunk->stage = 100;
-	}
-
-	
-	
-	if (chunk->stage >= 4) {
-		generationStack.pop_back();
-		genWorldMesh();
-		drawable.setUp(worldMesh);
 	}
 }

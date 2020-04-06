@@ -56,7 +56,7 @@ void Game::doLoop(glm::mat4 projection) {
 	vampire.setPosition({ 5, 80, 0 });
 	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
-	// entityHander.addEntity(vampire);
+	entityHander.addEntity(vampire);
 
 	while (gameRunning) {
 		calcTimes();

@@ -14,6 +14,7 @@ class BlockStore;
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 #define WANDER_RANGE 15
+#define PARTS_PER_CHUNK 16
 
 #define CHUNK_SIZE 16
 

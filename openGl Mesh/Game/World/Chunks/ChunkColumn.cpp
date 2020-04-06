@@ -86,6 +86,8 @@ void ChunkColumn::createMesh(WorldMap* worldMap)
 	catch (std::exception e) {
 		return;
 	}
+	// for 4
+	/*
 	GLubyte startX[] = {
 		0, 8, 0, 8
 	};
@@ -97,8 +99,22 @@ void ChunkColumn::createMesh(WorldMap* worldMap)
 	};
 	GLubyte endZ[] = {
 		8, 16, 16, 8
-	};
+	};*/
 
+
+	// for 8
+	GLubyte startX[] = {
+		0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12
+	};
+	GLubyte startZ[] = {
+		0, 4, 8, 12, 0, 4, 8, 12,0, 4, 8, 12, 0, 4, 8, 12
+	};
+	GLubyte endX[] = {
+		4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 16, 16, 16, 16
+	};
+	GLubyte endZ[] = {
+		4, 8, 12, 16, 4, 8, 12, 16,4, 8, 12, 16, 4, 8, 12, 16
+	};
 	GLubyte lookDepth = 8;
 	for (GLubyte x = startX[stage]; x < endX[stage]; x++)
 	{
