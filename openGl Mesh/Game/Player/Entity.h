@@ -22,7 +22,7 @@ public:
 	GLint& getHealth();
 	Camera& getCamera();
 	GLboolean& getFlying();
-	void getNewTarget();
+	void getNewTarget(glm::vec3 playerPos);
 	
 	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
@@ -36,14 +36,14 @@ public:
 	void updateCamera(GLfloat xOff, GLfloat yOff);
 
 	void move(Move_Dir dir);
-	void moveToTarget();
+	void moveToTarget(glm::vec3 playerPos = glm::vec3(10000000));
 	void create();
 
 	void render(glm::mat4 projection, Camera& cam);
 
 	void attack(Entity& e);
 	void takeDamage(GLuint dmgTaken);
-	void update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied, GLfloat deltaTime);
+	void update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied, GLfloat deltaTime, glm::vec3 playerPos = glm::vec3(10000000));
 
 	std::string getTag();
 	GLboolean isDead;
@@ -76,7 +76,7 @@ private:
 	Texture_Names textures[2];
 
 	glm::vec3 targetPosition, prevBlock, nxtBlock;
-	GLboolean hasTarget;
+	GLboolean hasTarget, wandering;
 	GLuint stage;
 	std::vector<Move_Dir> movementPath;
 

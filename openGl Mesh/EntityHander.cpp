@@ -32,7 +32,7 @@ void EntityHander::update(glm::mat4 projection, Camera& cam, std::vector<std::ve
 	int j = 0;
 	int k = 0;
 	for (Entity& e : entitys) {
-		e.update(projection, cam, adjacent[j++], occuped[k++], deltaTime);
+		e.update(projection, cam, adjacent[j++], occuped[k++], deltaTime, entitys[0].getPosition());
 		if (e.isDead) {
 			victimIndex.push_back(i);
 			continue;
@@ -61,7 +61,7 @@ void EntityHander::setTarget(glm::vec3 target) {
 
 void EntityHander::getNewTarget() {
 	for (Entity& e : entitys) {
-		e.getNewTarget();
+		e.getNewTarget(e.getPosition() + glm::vec3(10000));
 	}
 }
 void EntityHander::moveToTarget() {

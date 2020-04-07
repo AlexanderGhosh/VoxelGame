@@ -81,10 +81,6 @@ void Game::doLoop(glm::mat4 projection) {
 		if (world.created) {
 			entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);
 		}
-		if (entityHander.getEntitys().size() > 1) {
-			entityHander.getEntitys()[1].lookAt(player->getPosition());
-			entityHander.getEntitys()[1].setTarget(player->getPosition());
-		}
 
 		showStuff();
 		showFPS();
@@ -170,7 +166,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		}
 		else {
 			std::cout << "Entity found at: " << glm::to_string(e->getPosition()) << std::endl;
-			e->takeDamage(50);
+			e->takeDamage(10);
 		}
 
 	}

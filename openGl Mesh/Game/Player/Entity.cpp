@@ -22,7 +22,7 @@ Entity::Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying) : Enti
 	canFly = flying;
 	tag = "player";
 }
-Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(90), invunrableCooldown(60) {
+Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(90), invunrableCooldown(60), wandering(0) {
 	loaded = 1;
 	hasCamera = 0;
 	pos = { 0, 0, 0 };
@@ -126,13 +126,23 @@ void Entity::setInvincable(GLboolean inv)
 	invincable = inv;
 }
 
-void Entity::getNewTarget() {
+void Entity::getNewTarget(glm::vec3 playerPos) {
+	// if (hasTarget) return;
+	if (glm::distance(playerPos, pos) < WANDER_RANGE) {
+		targetPosition = playerPos;
+		wandering = 0;
+	}
+	else {
+		if (wandering) return;
+		wandering = 1;
+		targetPosition = wanderTarget();
+	}
 	stage = 0;
-	hasTarget = !hasTarget;
-	targetPosition = wanderTarget();
+	hasTarget = 1;
 	prevBlock = glm::round(pos);
 	calcMovementPath();
 	nxtBlock = prevBlock;
+	if (movementPath.size() == 0) return;
 	switch (movementPath[stage])
 	{
 	case Move_Dir::FORWARD:
@@ -230,12 +240,13 @@ void Entity::move(Move_Dir dir) {
 		break;
 	}
 }
-void Entity::moveToTarget() {
+void Entity::moveToTarget(glm::vec3 playerPos) {
 	if (vel.y > 0) return;
-	if (!hasTarget) {
-		return;
-		getNewTarget();
+	if (!hasTarget || (playerPos != glm::vec3(10000000) && playerPos.x != targetPosition.x && playerPos.z != targetPosition.z)) {
+		getNewTarget(playerPos);
 	}
+	if (movementPath.size() == 0) return;
+	lookAt(targetPosition); 
 	moveBlock(movementPath[stage]);
 }
 void Entity::create() {
@@ -309,7 +320,7 @@ void Entity::takeDamage(GLuint dmgTaken) {
 		std::cout << "entity with tag: " << tag << " health: " << std::to_string(health) << std::endl;
 	}
 }
-void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied, GLfloat deltaTime) {
+void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied, GLfloat deltaTime, glm::vec3 playerPos) {
 	checkDead();
 	if (!occupied) {
 		loaded = 0;
@@ -336,7 +347,7 @@ void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>
 		}
 	}
 	if(!hasCamera)
-		moveToTarget();
+		moveToTarget(playerPos);
 	
 	updatePosition(deltaTime, adjacent);
 
@@ -393,6 +404,7 @@ glm::ivec3 Entity::determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::
 }
 void Entity::calcMovementPath() {
 	if (!hasTarget) return;
+	movementPath.clear();
 	/*if (glm::distance(targetPosition, pos) > 32) {
 		getNewTarget();
 		return;
@@ -419,10 +431,9 @@ void Entity::moveBlock(Move_Dir dir) {
 
 		if (stage >= movementPath.size()) {
 			hasTarget = 0;
-			getNewTarget();
+			wandering = 0;
 			return;
 		}
-		lookAt(movementPath[stage]);
 		switch (movementPath[stage])
 		{
 		case Move_Dir::FORWARD:
@@ -440,7 +451,6 @@ void Entity::moveBlock(Move_Dir dir) {
 		}
 		return;
 	}
-
 	move(dir);
 }
 void Entity::lookAt(Move_Dir dir) {

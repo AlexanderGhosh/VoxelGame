@@ -162,6 +162,7 @@
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Game\Player\Entity.cpp" />
     <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Renders\chunkRender.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="Game\Player\Entity.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\Player\Camera.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Renders\chunkRender.h" />
