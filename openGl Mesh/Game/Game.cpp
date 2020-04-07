@@ -44,12 +44,12 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 void Game::generateWorld() {
 	world = World(1, 1, 1);
 }
-void Game::doLoop(glm::mat4 projection) {
+void Game::doLoop(glm::mat4 projection, glm::mat4 ortho) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
 	mainCamera->setPosition({ 8, 65, 8 });
-
+	orthoProjection = ortho;
 	// temp vampire
 	Entity vampire(1);
 	vampire.getCollider().setDimentions({ 0.85, 0.85, 0.85 }, { 0.85, 2.55, 0.85 });
@@ -378,23 +378,27 @@ void Game::showSkybox() {
 
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
-
+UI_Renderer uiRend;
 void Game::createGUI() {
-	createCrossHair();
+	uiRend = UI_Renderer(SHADERS[SHADER_NAMES::CROSSHAIR]);
+	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::CROSSHAIR]);
+	uiRend.addElement(crosshair);
+	/*createCrossHair();
 	texBN = Texture("boarders/normal", 1);
-	texBS = Texture("boarders/selected", 1);
+	texBS = Texture("boarders/selected", 1);*/
 }
 void Game::showGUI() {
-	showCrossHair();
+	uiRend.render();
+	/*showCrossHair();
 	auto invBar = [](std::array<Blocks, 9> bar, glm::vec3 center, Texture& texNorm, Texture& texSele, Shader& shader, GLuint VAO) {
 		GLubyte length = 9;
 		shader.bind();
-		glBindVertexArray(VAO); 
+		glBindVertexArray(VAO);
 		glm::vec3 delta(0.5, 0, 0);
-		for(GLbyte i = -length/2; i < length/2 +1; i++) {
+		for (GLbyte i = -length / 2; i < length / 2 + 1; i++) {
 			glm::vec3 delta1(delta.x * i, 0, 0);
 			glm::vec3 pos = center + delta1;
-			
+
 
 			shader.setValue("modelPos", pos);
 
@@ -429,19 +433,19 @@ void Game::showGUI() {
 		Blocks::AIR,
 		Blocks::AIR
 	};
-	invBar(bar, { 0, -9.5, 0 }, texBN, texBS, shader, CHVAO);
+	invBar(bar, { 0, -9.5, 0 }, texBN, texBS, shader, CHVAO);*/
 }
 
 void Game::createCrossHair() {
 	texCH = Texture("crosshair", 1);
 	GLfloat vertices[] = {
-		0.25f,  0.45f, 0.0f,  1, 1,
-		0.25f, -0.45f, 0.0f,  1, 0,
-		-0.25f,  0.45f, 0.0f, 0, 1,
+		1,  1,  1, 1,
+		1, 0,  1, 0,
+		0,  1, 0, 1,
 
-		0.25f, -0.45f, 0.0f,  1, 0,
-		-0.25f, -0.45f, 0.0f, 0, 0,
-		-0.25f,  0.45f, 0.0f, 0, 1
+		1, 0,  1, 0,
+		0, 0, 0, 0,
+		0,  1, 0, 1
 	};
 	GLuint vbo;
 	glGenVertexArrays(1, &CHVAO);
@@ -451,9 +455,9 @@ void Game::createCrossHair() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
 	glBindVertexArray(0);
 
@@ -461,16 +465,14 @@ void Game::createCrossHair() {
 	auto& shader = SHADERS[CROSSHAIR];
 	shader->bind();
 	texCH.bind();
-	auto scale = glm::vec3(0.1f);
-	shader->setValue("scale", scale);
 	shader->setValue("texture0", 0);
 	shader->unBind();
 }
 void Game::showCrossHair() {
-	glm::vec3 scale(0.1);
+	glm::vec2 scale(1.0f/16.0f, 1.0f/9.0f);
 	auto& shader = SHADERS[CROSSHAIR];
 	shader->bind();
-	glm::vec3 pos(0, 0, 0);
+	glm::vec2 pos(0, 0);
 	shader->setValue("modelPos", pos);
 	shader->setValue("scale", scale);
 	texCH.bind();
@@ -582,7 +584,7 @@ void Game::showText(std::string text, glm::vec2 position, GLfloat scale, glm::ve
 		// Render quad
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.Advance >> 6)* scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+		x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);

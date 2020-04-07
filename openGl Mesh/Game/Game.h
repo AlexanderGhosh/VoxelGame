@@ -14,6 +14,7 @@
 #include FT_FREETYPE_H
 #include <time.h>
 
+#include "../Renders/UI Stuff/UI_Renderer.h"
 #include "../EntityHander.h"
 #include "Player/Entity.h"
 #include "World/World.h"
@@ -40,7 +41,7 @@ public:
 	Game(GLboolean hasPlayer, GLboolean hasSkybox);
 	void generateWorld();
 	void setupPlayer();
-	void doLoop(glm::mat4 projection);
+	void doLoop(glm::mat4 projection, glm::mat4 ortho);
 
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
@@ -60,6 +61,7 @@ private:
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;
 	glm::mat4 projection;
+	glm::mat4 orthoProjection;
 	GLuint SBVAO, CHVAO, LSVAO, LSVBO;
 	Texture texCH, texBN, texBS;
 	std::map<GLchar, Character> Letters;

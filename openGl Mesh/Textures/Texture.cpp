@@ -24,7 +24,7 @@ Texture::Texture(GLboolean loadTex) {
 }
 GLboolean Texture::load2D(std::string& name) {
 	name = "Textures/" + name + ".png";
-
+	is2D = 1;
 	glGenTextures(1, &texMap);
 	// diffuse
 	unsigned char* image = SOIL_load_image(name.c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
@@ -39,6 +39,7 @@ GLboolean Texture::load2D(std::string& name) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	created = 1;
 	return GL_TRUE;
 }
 GLboolean Texture::load3D(const std::string& name) {

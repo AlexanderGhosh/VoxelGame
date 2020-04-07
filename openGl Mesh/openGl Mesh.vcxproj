@@ -176,6 +176,8 @@
     <ClCompile Include="Textures\Texture.cpp" />
     <ClCompile Include="Game\World\World.cpp" />
     <ClCompile Include="Game\World\world_generation.cpp" />
+    <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp" />
+    <ClCompile Include="Renders\UI Stuff\UI_Element.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -234,6 +236,8 @@
     <ClInclude Include="Textures\Texture.h" />
     <ClInclude Include="Game\World\World.h" />
     <ClInclude Include="Game\World\world_generation.h" />
+    <ClInclude Include="Renders\UI Stuff\UI_Renderer.h" />
+    <ClInclude Include="Renders\UI Stuff\UI_Element.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />

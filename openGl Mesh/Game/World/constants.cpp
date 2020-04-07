@@ -38,6 +38,11 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("vampire/bottom"),
 	new Texture("vampire/top")
 };
+const std::vector<Texture*>TEXTURES2D = {
+	new Texture("crosshair", ""),
+	new Texture("boarders/normal", ""),
+	new Texture("boarders/selected", "")
+};
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),
 	new Shader("block3"),

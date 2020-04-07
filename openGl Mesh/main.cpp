@@ -21,22 +21,27 @@ int main() {
 	for (auto& tex : TEXTURES) {
 		tex->load3D(tex->getName());
 	}
+	for (auto& tex : TEXTURES2D) {
+		tex->load2D(tex->getName());
+	}
 	for (auto& shader : SHADERS) {
 		shader->setUp();
 	}
 	createBlocks();
 
-	Game game = Game(1, 1);
+	Game game = Game(1, 0);
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.01f, 1000.0f);
-	game.doLoop(projection);
+	glm::mat4 ortho = glm::ortho(0, DIM.x, DIM.y, 0, -1, 1);
+	game.doLoop(projection, ortho);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return EXIT_SUCCESS;
 }
+
 void createBlocks() {
 	for (auto& block_ : BLOCKS) {
 		auto& block = block_.first;

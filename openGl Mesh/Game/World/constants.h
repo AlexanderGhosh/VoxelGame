@@ -55,7 +55,12 @@ enum class Texture_Names {
 	LOG,
 	LEAF,
 	VAMPIRE_BOTTOM,
-	VAMPIRE_TOP
+	VAMPIRE_TOP,
+};
+enum class Texture_Names_2D {
+	CROSSHAIR,
+	BOARDER_NORM,
+	BOARDER_SELECTED
 };
 enum SHADER_NAMES {
 	BLOCK2,
@@ -86,6 +91,7 @@ enum class Blocks : uint8_t {
 };
 extern const std::array<Buffer*, 6> FACES;
 extern const std::vector<Texture*> TEXTURES;
+extern const std::vector<Texture*> TEXTURES2D;
 extern const std::vector<Shader*> SHADERS;
 extern std::map<Blocks, BlockDet> BLOCKS;
 extern const std::vector<Blocks> AllBlocks;
