@@ -41,7 +41,7 @@ public: // functions
 	Blocks getBlock(glm::vec3 pos, GLboolean worldPos = 1);
 	glm::vec3 getRelativePosition(glm::vec3 worldPos);
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
-	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent);
+	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent); // mabye could be optimised
 	std::string getFileName();
 	BlockStore* getBlockStore();
 
@@ -49,7 +49,7 @@ public: // functions
 	void setBlockStore(BlockStore* bs);
 
 	// opertations
-	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, AdjacentMap_p& adjacentCunks);
+	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, WorldMap* worldmap, AdjacentMap_p& allChunks);
 	void save(std::string name, GLuint seed);
 	void save(GLuint seed);
 	void addToMesh(Face face);

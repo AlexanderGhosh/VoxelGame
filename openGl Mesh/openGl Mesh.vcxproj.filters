@@ -78,13 +78,16 @@
     <ClCompile Include="BlockStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Inventory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Renders\UI Stuff\UI_Element.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Player\Inventory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Player\PlayerInv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,13 +215,16 @@
     <ClInclude Include="BlockStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Inventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Renders\UI Stuff\UI_Element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renders\UI Stuff\UI_Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Player\Inventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Player\PlayerInv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -257,6 +263,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Textures\grass\top.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\crosshair.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

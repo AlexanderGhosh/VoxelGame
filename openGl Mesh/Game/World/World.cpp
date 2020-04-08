@@ -121,13 +121,13 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	glm::vec3 p = std::get<0>(intersect);
 
 	auto t = getAdjacentMapPointers(pos, RENDER_DISTANCE + 2);
-	chunkOcc->editBlock(p, 1, Blocks::AIR, t);
+	chunkOcc->editBlock(p, 1, Blocks::AIR, &worldMap, t);
 
 	genWorldMesh();
 	drawable.setUp(worldMesh);
 }
 void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
-	
+	if (block == Blocks::AIR) return;
 	Ray ray = Ray(pos, front, PLAYER_REACH);
 	ChunkColumn* chunkOcc = getChunkOccupied(pos);
 
@@ -161,7 +161,7 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
 	// p is the world pos
 
 	auto t = getAdjacentMapPointers(pos);
-	chunkOcc->editBlock(p, 1, block, t);
+	chunkOcc->editBlock(p, 1, block, &worldMap, t);
 
 	genWorldMesh();
 	drawable.setUp(worldMesh);

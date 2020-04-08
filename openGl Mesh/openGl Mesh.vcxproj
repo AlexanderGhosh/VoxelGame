@@ -162,8 +162,9 @@
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Game\Player\Entity.cpp" />
     <ClCompile Include="Game\Game.cpp" />
-    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="Game\Player\Inventory.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Game\Player\PlayerInv.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Renders\chunkRender.cpp" />
     <ClCompile Include="Game\World\constants.cpp" />
@@ -210,8 +211,9 @@
     <ClInclude Include="Game\Player\Entity.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\Player\Camera.h" />
-    <ClInclude Include="Inventory.h" />
+    <ClInclude Include="Game\Player\Inventory.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Game\Player\PlayerInv.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Renders\chunkRender.h" />
     <ClInclude Include="Game\World\constants.h" />
@@ -242,6 +244,7 @@
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />
     <Image Include="Textures\cobblestone_spec.png" />
+    <Image Include="Textures\crosshair.png" />
     <Image Include="Textures\grass\back.png" />
     <Image Include="Textures\grass\bottom.png" />
     <Image Include="Textures\grass\front.png" />

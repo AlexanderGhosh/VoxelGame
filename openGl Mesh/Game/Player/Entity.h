@@ -2,11 +2,12 @@
 #include <gtx/string_cast.hpp>
 #include <random>
 #include <algorithm>
-// #include "../World/World.h"
+
+
 #include "../../Renders/chunkRender.h"
 #include "../Physics/BoxCollider.h"
 #include "../World/Chunks/ChunkColumn.h"
-// #include "../World/World.h"
+#include "PlayerInv.h"
 using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 class Entity
 {
@@ -23,6 +24,7 @@ public:
 	Camera& getCamera();
 	GLboolean& getFlying();
 	void getNewTarget(glm::vec3 playerPos);
+	PlayerInv& getInventory();
 	
 	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
@@ -63,6 +65,8 @@ private:
 	Camera playerCam;
 	GLboolean hasCamera, isClipping, canFly, loaded;
 	glm::vec3 cameraOffset;
+	PlayerInv inventory;
+
 
 	glm::vec3 pos, vel, acc;
 	glm::vec3 forward, right;

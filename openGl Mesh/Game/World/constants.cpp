@@ -190,6 +190,29 @@ void translate(glm::mat4& mat, glm::vec3 vec) {
 	}
 }
 
+Blocks itemToBlock(Item item)
+{
+	switch (item)
+	{
+	case 0:
+		return Blocks::AIR;
+	case 1:
+		return Blocks::GRASS;
+	case 2:
+		return Blocks::DIRT;
+	case 3:
+		return Blocks::STONE; 
+	case 4:
+		return Blocks::WATER;
+	case 5:
+		return Blocks::ERROR;
+	case 6:
+		return Blocks::LOG;
+	case 7:
+		return Blocks::LEAF;
+	}
+}
+
 
 std::vector<Face> toFaces(FaceB_p face)
 {

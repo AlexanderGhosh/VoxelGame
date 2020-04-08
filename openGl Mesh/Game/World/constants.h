@@ -10,7 +10,7 @@
 class ChunkColumn;
 class BlockStore;
 
-#define RENDER_DISTANCE 7
+#define RENDER_DISTANCE 3
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 #define WANDER_RANGE 15
@@ -109,6 +109,8 @@ std::string getName(Blocks block);
 glm::vec3 getTranslation(glm::mat4 matrix);
 glm::mat4 translate(glm::mat4 mat, glm::vec3 vec);
 void translate(glm::mat4& mat, glm::vec3 vec);
+
+Blocks itemToBlock(Item item);
 
 std::vector<Face> toFaces(FaceB_p face);
 

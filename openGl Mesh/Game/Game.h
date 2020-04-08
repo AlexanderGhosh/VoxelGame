@@ -58,6 +58,7 @@ private:
 	static World world;
 	static Entity* player;
 	static EntityHander entityHander;
+	static UI_Renderer uiRenderer;
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;
 	glm::mat4 projection;

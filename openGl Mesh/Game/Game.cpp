@@ -14,6 +14,7 @@ std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
 Entity* Game::player = new Entity();
 World Game::world = World(0);
 EntityHander Game::entityHander = EntityHander();
+UI_Renderer Game::uiRenderer = UI_Renderer();
 #pragma endregion
 
 
@@ -56,7 +57,7 @@ void Game::doLoop(glm::mat4 projection, glm::mat4 ortho) {
 	vampire.setPosition({ 5, 80, 0 });
 	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
-	entityHander.addEntity(vampire);
+	//entityHander.addEntity(vampire);
 
 	while (gameRunning) {
 		calcTimes();
@@ -149,6 +150,7 @@ void Game::setupPlayer() {
 	Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
 	p.setPosition({ 8, 80, 8 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
+	PlayerInv& inv = p.getInventory();
 	// p.setInvincable(1);
 	entityHander.addEntity(p, 0);
 }
@@ -202,7 +204,7 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		Camera& cam = player->getCamera();
-		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), Blocks::LOG);
+		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player->getInventory().getBlockHotbar(player->getInventory().getHotbarSelected()));
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 		Camera& cam = player->getCamera();
@@ -271,33 +273,49 @@ void Game::processKeys() {
 		ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH, 1);
 	}
 
+	std::string num;
 	if (k[GLFW_KEY_1]) {
+		num = "0";
 		// player.setInvSlot(0);
 	}
 	if (k[GLFW_KEY_2]) {
+		num = "1";
 		// player.setInvSlot(1);
 	}
 	if (k[GLFW_KEY_3]) {
+		num = "2";
 		// player.setInvSlot(2);
 	}
 	if (k[GLFW_KEY_4]) {
+		num = "3";
 		// player.setInvSlot(3);
 	}
 	if (k[GLFW_KEY_5]) {
+		num = "4";
 		// player.setInvSlot(4);
 	}
 	if (k[GLFW_KEY_6]) {
+		num = "5";
 		// player.setInvSlot(5);
 	}
 	if (k[GLFW_KEY_7]) {
+		num = "6";
 		// player.setInvSlot(6);
 	}
 	if (k[GLFW_KEY_8]) {
+		num = "7";
 		// player.setInvSlot(7);
 	}
 	if (k[GLFW_KEY_9]) {
+		num = "8";
 		// player.setInvSlot(8);
 	}
+	if (num == "") return;
+	uiRenderer.popWhere("slot_selected");
+	UI_Element& element = uiRenderer.getWhere("slot" + num);
+	UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
+	uiRenderer.addElement(e);
+	player->getInventory().setHotbarSelected(std::stoi(num));
 }
 void Game::cleanUp() {
 }
@@ -378,62 +396,37 @@ void Game::showSkybox() {
 
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
-UI_Renderer uiRend;
 void Game::createGUI() {
-	uiRend = UI_Renderer(SHADERS[SHADER_NAMES::CROSSHAIR]);
-	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::CROSSHAIR]);
-	uiRend.addElement(crosshair);
-	/*createCrossHair();
-	texBN = Texture("boarders/normal", 1);
-	texBS = Texture("boarders/selected", 1);*/
+	uiRenderer = UI_Renderer(SHADERS[SHADER_NAMES::CROSSHAIR]);
+	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::CROSSHAIR], "crosshair");
+
+	UI_Element slot0 = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot0");
+	UI_Element slot1 = UI_Element({ -0.18, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot1");
+	UI_Element slot2 = UI_Element({ -0.12, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot2");
+	UI_Element slot3 = UI_Element({ -0.06, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot3");
+	UI_Element slot4 = UI_Element({ 0, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot4"); // mid
+	UI_Element slot5 = UI_Element({ 0.06, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot5");
+	UI_Element slot6 = UI_Element({ 0.12, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot6");
+	UI_Element slot7 = UI_Element({ 0.18, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot7");
+	UI_Element slot8 = UI_Element({ 0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot8");
+
+	UI_Element slotSelected = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
+
+	uiRenderer.addElement(slot0);
+	uiRenderer.addElement(slot1);
+	uiRenderer.addElement(slot2);
+	uiRenderer.addElement(slot3);
+	uiRenderer.addElement(slot4);
+	uiRenderer.addElement(slot5);
+	uiRenderer.addElement(slot6);
+	uiRenderer.addElement(slot7);
+	uiRenderer.addElement(slot8);
+	uiRenderer.addElement(slotSelected);
+
+	uiRenderer.addElement(crosshair);
 }
 void Game::showGUI() {
-	uiRend.render();
-	/*showCrossHair();
-	auto invBar = [](std::array<Blocks, 9> bar, glm::vec3 center, Texture& texNorm, Texture& texSele, Shader& shader, GLuint VAO) {
-		GLubyte length = 9;
-		shader.bind();
-		glBindVertexArray(VAO);
-		glm::vec3 delta(0.5, 0, 0);
-		for (GLbyte i = -length / 2; i < length / 2 + 1; i++) {
-			glm::vec3 delta1(delta.x * i, 0, 0);
-			glm::vec3 pos = center + delta1;
-
-
-			shader.setValue("modelPos", pos);
-
-			Blocks block = bar[i + length / 2];
-			if (block != Blocks::AIR) {
-				BLOCKS[block].ItemTex.bind();
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-				BLOCKS[block].ItemTex.unBind();
-			}
-			if (8 == i + length / 2) {
-				texSele.bind();
-			}
-			else {
-				texNorm.bind();
-			}
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-			texNorm.unBind();
-		}
-		glBindVertexArray(0);
-		shader.unBind();
-		texNorm.unBind();
-	};
-	Shader& shader = *SHADERS[CROSSHAIR];
-	std::array<Blocks, 9> bar = {
-		Blocks::GRASS,
-		Blocks::DIRT,
-		Blocks::STONE,
-		Blocks::WATER,
-		Blocks::LOG,
-		Blocks::LEAF,
-		Blocks::AIR,
-		Blocks::AIR,
-		Blocks::AIR
-	};
-	invBar(bar, { 0, -9.5, 0 }, texBN, texBS, shader, CHVAO);*/
+	uiRenderer.render();
 }
 
 void Game::createCrossHair() {

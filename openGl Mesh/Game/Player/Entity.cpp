@@ -21,6 +21,16 @@ Entity::Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying) : Enti
 	isClipping = clipping;
 	canFly = flying;
 	tag = "player";
+
+	inventory.setSlot(1, 0); 
+	inventory.setSlot(2, 1);
+	inventory.setSlot(3, 2);
+	inventory.setSlot(4, 3);
+	inventory.setSlot(6, 4);
+	inventory.setSlot(7, 5);
+	inventory.setSlot(0, 6);
+	inventory.setSlot(0, 7);
+	inventory.setSlot(0, 8);
 }
 Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(90), invunrableCooldown(60), wandering(0) {
 	loaded = 1;
@@ -158,6 +168,11 @@ void Entity::getNewTarget(glm::vec3 playerPos) {
 		nxtBlock.x++;
 		break;
 	}
+}
+
+PlayerInv& Entity::getInventory()
+{
+	return inventory;
 }
 
 void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt) {
