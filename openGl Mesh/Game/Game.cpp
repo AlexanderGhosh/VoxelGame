@@ -396,6 +396,7 @@ void Game::showSkybox() {
 
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
+
 void Game::createGUI() {
 	uiRenderer = UI_Renderer(SHADERS[SHADER_NAMES::CROSSHAIR]);
 	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::CROSSHAIR], "crosshair");
@@ -412,6 +413,8 @@ void Game::createGUI() {
 
 	UI_Element slotSelected = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
 
+	UI_Element heart0 = UI_Element({ -0.24, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart0");
+
 	uiRenderer.appendElement(slot0);
 	uiRenderer.appendElement(slot1);
 	uiRenderer.appendElement(slot2);
@@ -422,6 +425,8 @@ void Game::createGUI() {
 	uiRenderer.appendElement(slot7);
 	uiRenderer.appendElement(slot8);
 	uiRenderer.appendElement(slotSelected);
+
+	uiRenderer.appendElement(heart0);
 
 	uiRenderer.appendElement(crosshair);
 }
@@ -441,53 +446,6 @@ void Game::showGUI() {
 			uiRenderer.prependElement(item);
 		}
 	}
-}
-
-void Game::createCrossHair() {
-	texCH = Texture("crosshair", 1);
-	GLfloat vertices[] = {
-		1,  1,  1, 1,
-		1, 0,  1, 0,
-		0,  1, 0, 1,
-
-		1, 0,  1, 0,
-		0, 0, 0, 0,
-		0,  1, 0, 1
-	};
-	GLuint vbo;
-	glGenVertexArrays(1, &CHVAO);
-	glGenBuffers(1, &vbo);
-
-	glBindVertexArray(CHVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-	glBindVertexArray(0);
-
-
-	auto& shader = SHADERS[CROSSHAIR];
-	shader->bind();
-	texCH.bind();
-	shader->setValue("texture0", 0);
-	shader->unBind();
-}
-void Game::showCrossHair() {
-	glm::vec2 scale(1.0f/16.0f, 1.0f/9.0f);
-	auto& shader = SHADERS[CROSSHAIR];
-	shader->bind();
-	glm::vec2 pos(0, 0);
-	shader->setValue("modelPos", pos);
-	shader->setValue("scale", scale);
-	texCH.bind();
-	glBindVertexArray(CHVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-	shader->unBind();
-	texCH.unBind();
 }
 
 void Game::setUpFreeType() {

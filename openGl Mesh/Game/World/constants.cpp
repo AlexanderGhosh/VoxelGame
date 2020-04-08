@@ -41,7 +41,9 @@ const std::vector<Texture*>TEXTURES = {
 const std::vector<Texture*>TEXTURES2D = {
 	new Texture("crosshair", ""),
 	new Texture("boarders/normal", ""),
-	new Texture("boarders/selected", "")
+	new Texture("boarders/selected", ""),
+	new Texture("hearts/live_heart", ""),
+	new Texture("hearts/dead_heart", "")
 };
 const std::vector<Shader*>SHADERS = {
 	new Shader("block2"),

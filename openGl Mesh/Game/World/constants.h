@@ -60,7 +60,9 @@ enum class Texture_Names {
 enum class Texture_Names_2D {
 	CROSSHAIR,
 	BOARDER_NORM,
-	BOARDER_SELECTED
+	BOARDER_SELECTED,
+	LIVE_HEART,
+	DEAD_HEART
 };
 enum SHADER_NAMES {
 	BLOCK2,
