@@ -29,7 +29,6 @@ void UI_Element::bind(Shader*& shader)
 	glm::mat4 model = translate(glm::mat4(1), glm::vec3(pos, 0));
 	model = glm::scale(model, glm::vec3(size, 0));
 	shader->setValue("model", model);
-	shader->setValue("scale", size);
 }
 
 void UI_Element::unBind()

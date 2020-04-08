@@ -57,7 +57,7 @@ void Game::doLoop(glm::mat4 projection, glm::mat4 ortho) {
 	vampire.setPosition({ 5, 80, 0 });
 	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
-	//entityHander.addEntity(vampire);
+	entityHander.addEntity(vampire);
 
 	while (gameRunning) {
 		calcTimes();
@@ -413,7 +413,16 @@ void Game::createGUI() {
 
 	UI_Element slotSelected = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
 
-	UI_Element heart0 = UI_Element({ -0.24, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart0");
+	UI_Element heart0 = UI_Element({ -0.26, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart0");
+	UI_Element heart1 = UI_Element({ -0.22, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart1");
+	UI_Element heart2 = UI_Element({ -0.18, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart2");
+	UI_Element heart3 = UI_Element({ -0.14, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart3");
+	UI_Element heart4 = UI_Element({ -0.10, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart4");
+	UI_Element heart5 = UI_Element({ -0.06, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart5");
+	UI_Element heart6 = UI_Element({ -0.02, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart6");
+	UI_Element heart7 = UI_Element({ 0.02, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart7");
+	UI_Element heart8 = UI_Element({ 0.06, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart8");
+	UI_Element heart9 = UI_Element({ 0.10, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart9");
 
 	uiRenderer.appendElement(slot0);
 	uiRenderer.appendElement(slot1);
@@ -427,23 +436,56 @@ void Game::createGUI() {
 	uiRenderer.appendElement(slotSelected);
 
 	uiRenderer.appendElement(heart0);
+	uiRenderer.appendElement(heart1);
+	uiRenderer.appendElement(heart2);
+	uiRenderer.appendElement(heart3);
+	uiRenderer.appendElement(heart4);
+	uiRenderer.appendElement(heart5);
+	uiRenderer.appendElement(heart6);
+	uiRenderer.appendElement(heart7);
+	uiRenderer.appendElement(heart8);
+	uiRenderer.appendElement(heart9);
 
 	uiRenderer.appendElement(crosshair);
 }
 std::vector<Texture*> prevHotBar;
+GLint prevPlayerHealth = 100;
 void Game::showGUI() {
 	uiRenderer.render();
 
 	auto hotBar = player->getInventory().getHotBarTextures();
-	if (hotBar == prevHotBar) return;
-	prevHotBar = hotBar;
-	GLuint i = 0;
-	for (Texture* tex : hotBar) {
-		if (tex) {
-			UI_Element& slot = uiRenderer.getWhere("slot" + std::to_string(i++));
-			uiRenderer.popWhere(slot.getName() + "_block");
-			UI_Element item = UI_Element(slot.getPos(), slot.getSize(), tex, slot.getName() + "_block");
-			uiRenderer.prependElement(item);
+	if (hotBar != prevHotBar) {
+		prevHotBar = hotBar;
+		GLuint i = 0;
+		for (Texture* tex : hotBar) {
+			if (tex) {
+				UI_Element& slot = uiRenderer.getWhere("slot" + std::to_string(i++));
+				uiRenderer.popWhere(slot.getName() + "_block");
+				UI_Element item = UI_Element(slot.getPos(), slot.getSize(), tex, slot.getName() + "_block");
+				uiRenderer.prependElement(item);
+			}
+		}
+	}
+	GLint playerHealth = player->getHealth();
+	if (playerHealth != prevPlayerHealth) {
+		GLint diff = 100 - playerHealth;
+		diff = reduceToMultiple(diff, 10);
+		diff /= 10;
+		if (diff == 10) {
+			for (GLubyte i = 0; i < 10; i++) {
+				UI_Element& heartPos = uiRenderer.getWhere("heart" + std::to_string(i));
+				uiRenderer.popWhere(heartPos.getName() + "_dead");
+				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
+				uiRenderer.appendElement(heart);
+			}
+		}
+		else {
+			for (GLubyte i = 9; i > 9 - diff; i--) {
+				UI_Element& heartPos = uiRenderer.getWhere("heart" + std::to_string(i));
+				uiRenderer.popWhere(heartPos.getName() + "_dead");
+				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
+				uiRenderer.appendElement(heart);
+			}
 		}
 	}
 }
