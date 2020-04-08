@@ -11,7 +11,8 @@ public: // functions
 	UI_Renderer(Shader* shader);
 
 	UI_Element popWhere(std::string name);
-	void addElement(const UI_Element& element);
+	void appendElement(const UI_Element& element);
+	void prependElement(const UI_Element& element);
 	UI_Element& getWhere(std::string name);
 
 

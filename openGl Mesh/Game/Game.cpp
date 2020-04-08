@@ -314,7 +314,7 @@ void Game::processKeys() {
 	uiRenderer.popWhere("slot_selected");
 	UI_Element& element = uiRenderer.getWhere("slot" + num);
 	UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
-	uiRenderer.addElement(e);
+	uiRenderer.appendElement(e);
 	player->getInventory().setHotbarSelected(std::stoi(num));
 }
 void Game::cleanUp() {
@@ -412,21 +412,35 @@ void Game::createGUI() {
 
 	UI_Element slotSelected = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
 
-	uiRenderer.addElement(slot0);
-	uiRenderer.addElement(slot1);
-	uiRenderer.addElement(slot2);
-	uiRenderer.addElement(slot3);
-	uiRenderer.addElement(slot4);
-	uiRenderer.addElement(slot5);
-	uiRenderer.addElement(slot6);
-	uiRenderer.addElement(slot7);
-	uiRenderer.addElement(slot8);
-	uiRenderer.addElement(slotSelected);
+	uiRenderer.appendElement(slot0);
+	uiRenderer.appendElement(slot1);
+	uiRenderer.appendElement(slot2);
+	uiRenderer.appendElement(slot3);
+	uiRenderer.appendElement(slot4);
+	uiRenderer.appendElement(slot5);
+	uiRenderer.appendElement(slot6);
+	uiRenderer.appendElement(slot7);
+	uiRenderer.appendElement(slot8);
+	uiRenderer.appendElement(slotSelected);
 
-	uiRenderer.addElement(crosshair);
+	uiRenderer.appendElement(crosshair);
 }
+std::vector<Texture*> prevHotBar;
 void Game::showGUI() {
 	uiRenderer.render();
+
+	auto hotBar = player->getInventory().getHotBarTextures();
+	if (hotBar == prevHotBar) return;
+	prevHotBar = hotBar;
+	GLuint i = 0;
+	for (Texture* tex : hotBar) {
+		if (tex) {
+			UI_Element& slot = uiRenderer.getWhere("slot" + std::to_string(i++));
+			uiRenderer.popWhere(slot.getName() + "_block");
+			UI_Element item = UI_Element(slot.getPos(), slot.getSize(), tex, slot.getName() + "_block");
+			uiRenderer.prependElement(item);
+		}
+	}
 }
 
 void Game::createCrossHair() {

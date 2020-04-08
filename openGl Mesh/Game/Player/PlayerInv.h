@@ -14,5 +14,6 @@ public: // functions
 	Item getItemHotbar(GLubyte slot);
 	Blocks getBlockHotbar(GLubyte slot);
 	GLubyte& getHotbarSelected();
+	std::vector<Texture*> getHotBarTextures();
 };
 

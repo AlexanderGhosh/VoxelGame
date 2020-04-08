@@ -15,6 +15,21 @@ GLubyte& PlayerInv::getHotbarSelected()
 	return hotbarSlotSelected;
 }
 
+std::vector<Texture*> PlayerInv::getHotBarTextures()
+{
+	std::vector<Texture*> res;
+	for (GLubyte x = 0; x < 9; x++) {
+		Blocks block = getBlockHotbar(x);
+		if (block == Blocks::AIR || block == Blocks::ERROR) {
+			res.push_back(nullptr);
+		}
+		else {
+			res.push_back(&BLOCKS[block].ItemTex);
+		}
+	}
+	return res;
+}
+
 PlayerInv::PlayerInv() : Inventory({ 9, 4 })
 {
 	hotbarSlotSelected = 0;

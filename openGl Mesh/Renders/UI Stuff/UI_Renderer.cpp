@@ -24,9 +24,14 @@ UI_Element UI_Renderer::popWhere(std::string name)
 	return res;
 }
 
-void UI_Renderer::addElement(const UI_Element& element)
+void UI_Renderer::appendElement(const UI_Element& element)
 {
 	elements.push_back(element);
+}
+
+void UI_Renderer::prependElement(const UI_Element& element)
+{
+	elements.insert(elements.begin(), element);
 }
 
 UI_Element& UI_Renderer::getWhere(std::string name)
