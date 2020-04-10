@@ -11,6 +11,7 @@ World::World(GLboolean gen, GLboolean terrain, GLboolean isDynamic, GLuint seed)
 	this->isDynamic = isDynamic;
 	if (!gen) return;
 	chunkOccupiedPosition = glm::vec2(0);
+	worldMap.reserve(RENDER_DISTANCE + 2);
 	getNewChunkPositions(!terrain);
 }
 

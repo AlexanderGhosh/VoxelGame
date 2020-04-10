@@ -10,14 +10,14 @@ uniform vec3 viewPos;
 uniform bool isDamaged;
 
 vec3 lightCol = vec3(1);
-vec3 lightPos = vec3( 50, 50, 50);
+vec3 lightPos = vec3(-20, 100, -1000);
 
 void main()
 {    
     if(texture(skybox, TexCoords).a < 0.1)
         discard;
     vec3 result = vec3(0);
-    float amb_k = 0.75f;
+    float amb_k = 0.1;
     vec3 ambient = amb_k * vec3(texture(skybox, TexCoords));
 
     vec3 norm = normalize(Normal);
@@ -26,14 +26,13 @@ void main()
     vec3 diffuse = diff * vec3(texture(skybox, TexCoords));
 
     // specular
-    float specularStrength = 0.25;
+    float specularStrength = 0.1;
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * vec3(texture(skybox, TexCoords));
 
     result = (ambient + diffuse + specular) * lightCol;
-    result == vec3(0);
     if(isDamaged)
         result.r = 200;
     color = vec4(result, 1.0f);

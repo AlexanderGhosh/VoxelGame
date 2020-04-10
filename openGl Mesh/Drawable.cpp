@@ -36,6 +36,9 @@ void Drawable::setUp(std::unordered_map<GLuint, FaceB_p>& mesh) {
 }
 void Drawable::render(Camera& cam, glm::mat4 projection) {
 	if (buffers.size() == 0) return;
+	// glEnable(GL_FRAMEBUFFER_SRGB);
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CW);
 	Shader* shader = SHADERS[BLOCK3];
 	shader->bind();
 
@@ -59,6 +62,8 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 		t->unBind();
 	}
 	shader->unBind();
+	glDisable(GL_CULL_FACE);
+	// glDisable(GL_FRAMEBUFFER_SRGB);
 }
 
 void Drawable::clear() {

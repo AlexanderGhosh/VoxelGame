@@ -57,7 +57,7 @@ void Game::doLoop(glm::mat4 projection, glm::mat4 ortho) {
 	vampire.setPosition({ 5, 80, 0 });
 	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
-	entityHander.addEntity(vampire);
+	// entityHander.addEntity(vampire);
 
 	while (gameRunning) {
 		calcTimes();
@@ -393,7 +393,7 @@ void Game::showSkybox() {
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
+	TEXTURES[(int)Texture_Names::SKYBOX]->unBind();
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
