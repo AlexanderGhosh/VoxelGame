@@ -38,7 +38,7 @@ std::vector<Block_Count>& BlockStore::getBlocksAt(GLfloat x, GLfloat z)
 Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition)
 {
 	auto getRelativePosition = [&](glm::vec3 pos) -> glm::vec3 {
-		return this->getPosition() + pos;
+		return pos - this->getPosition();
 	};
 	glm::vec3 relativePos = worldPosition ? getRelativePosition(pos) : pos;
 	// check changed blocks

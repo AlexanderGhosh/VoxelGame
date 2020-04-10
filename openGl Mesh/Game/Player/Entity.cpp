@@ -176,7 +176,7 @@ PlayerInv& Entity::getInventory()
 }
 
 void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt) {
-	// deltaTime = 1.0f / 60.0f;
+	deltaTime = 1.0f / 60.0f;
 	if (!canFly) {
 		grounded = 0;
 		vel += acc * deltaTime;

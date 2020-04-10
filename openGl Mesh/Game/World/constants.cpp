@@ -134,6 +134,9 @@ Texture_Names getTexture(Blocks block) {
 		res = Texture_Names::LEAF;
 		break;
 	}
+	if (res == Texture_Names::ERROR) {
+		int i = 0;
+	}
 	return res;
 }
 Texture* getBlockTexture(Blocks block) {
