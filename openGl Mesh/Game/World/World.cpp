@@ -80,8 +80,12 @@ void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 	drawable.setUp(worldMesh);
 }
 
-void World::render(Camera& c, glm::mat4 projection) {
-	drawable.render(c, projection);
+void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap) {
+	drawable.render(c, projection, lightMatrix, depthMap);
+}
+void World::render(glm::mat4 lightProjection, glm::mat4 lightView)
+{
+	drawable.render(lightProjection, lightView);
 }
 
 void World::genWorldMesh() {
@@ -216,7 +220,17 @@ std::array<std::vector<glm::vec2>, 4> getNewOld(glm::vec2 oldChunkPos, glm::vec2
 }
 
 std::unordered_map <glm::vec2, std::string> savedChunks;
+
+glm::vec3 prevPos(8, 80, 8);
 void World::updatePlayerPos(glm::vec3 pos) {
+	if (prevPos != pos) {
+		prevPos = pos;
+		// LIGHTPOSITION.x = LIGHTPOSITIONOrigin.x + pos.x;
+		// LIGHTPOSITION.z = LIGHTPOSITIONOrigin.z + pos.z;
+	}
+	else {
+		return;
+	}
 	Timer t;
 	t.start();
 
@@ -500,9 +514,14 @@ void World::save() {
 		// chunk.save(seed);
 	}
 }
+GLboolean done1 = 0;
 void World::advanceGeneration()
 {
 	if (generationStack.size() == 0) {
+		if (!done1) {
+			std::cout << "done\n";
+			done1 = 1;
+		}
 		created = 1;  
 		return;
 	}

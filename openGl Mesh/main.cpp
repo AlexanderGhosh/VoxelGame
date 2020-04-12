@@ -6,7 +6,7 @@
 
 #include "Game/Game.h"
 
-glm::ivec2 DIM(1600, 900);
+glm::ivec2 DIM(1280, 720);
 
 GLFWwindow* createWindow();
 void createBlocks();
@@ -29,13 +29,12 @@ int main() {
 	}
 	createBlocks();
 
-	Game game = Game(1, 1);
+	Game game = Game(1, 1, DIM);
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.01f, 1000.0f);
-	glm::mat4 ortho = glm::ortho(0, DIM.x, DIM.y, 0, -1, 1);
-	game.doLoop(projection, ortho);
+	game.doLoop(projection);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
@@ -48,7 +47,12 @@ void createBlocks() {
 		auto& dets = block_.second;
 		dets.Name = getName(block);
 		dets.Tex = TEXTURES[(GLuint)getTexture(block)];
-		dets.ItemTex = { "Items/" + dets.Name, 1 };
+		if(dets.Name != "air")
+			dets.ItemTex = { "Items/" + dets.Name, 1 };
+		dets.isTransparant = 0;
+		if (dets.Name == "air" || dets.Name == "leaf") {
+			dets.isTransparant = 1;
+		}
 	}
 }
 GLFWwindow* createWindow() {

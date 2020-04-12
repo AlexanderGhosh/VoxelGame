@@ -24,6 +24,7 @@ public:
 	void bind();
 	void unBind();
 	GLboolean setValue(std::string name, glm::mat4& value);
+	GLboolean setValue(std::string name, glm::vec4& value);
 	GLboolean setValue(std::string name, glm::vec3& value);
 	GLboolean setValue(std::string name, glm::vec2& value);
 	GLboolean setValue(std::string name, GLfloat& value);
@@ -34,6 +35,7 @@ private:
 
 	GLint getLocation(std::string name);
 	void setLocation(GLint& location, glm::mat4& value);
+	void setLocation(GLint& location, glm::vec4& value);
 	void setLocation(GLint& location, glm::vec3& value);
 	void setLocation(GLint& location, glm::vec2& value);
 	void setLocation(GLint& location, GLfloat& value);

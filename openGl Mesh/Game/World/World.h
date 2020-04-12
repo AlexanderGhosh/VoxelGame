@@ -18,7 +18,8 @@ class World
 public:
 	World();
 	World(GLboolean gen, GLboolean terrain = 1, GLboolean isDynamic = 0, GLuint seed = CHUNK_SIZE*2);
-	void render(Camera& c, glm::mat4 projection);
+	void render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap);
+	void render(glm::mat4 lightProjection, glm::mat4 lightView);
 	void updatePlayerPos(glm::vec3 pos);
 
 	void breakBlock(glm::vec3 pos, glm::vec3 front);

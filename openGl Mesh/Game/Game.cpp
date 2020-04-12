@@ -27,13 +27,14 @@ Game::Game() {
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 }
-Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
+Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) {
 	// this->hasPlayer = hasPlayer;
 	this->hasSkybox = hasSkybox;
 	setupPlayer();
 	gameRunning = false;
 	Game::mouseData = { 0, 0, -90 };
 	lastFrameTime = -1.0f;
+	this->windowDim = windowDim;
 	GameConfig::setup();
 	if (hasSkybox) {
 		makeSkybox("skybox");
@@ -45,23 +46,24 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox) {
 void Game::generateWorld() {
 	world = World(1, 1, 1);
 }
-void Game::doLoop(glm::mat4 projection, glm::mat4 ortho) {
+void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	this->projection = projection;
+	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 50.0f);
 	mainCamera->setPosition({ 8, 65, 8 });
-	orthoProjection = ortho;
 	// temp vampire
 	Entity vampire(1);
 	vampire.getCollider().setDimentions({ 0.85, 0.85, 0.85 }, { 0.85, 2.55, 0.85 });
 	vampire.setPosition({ 5, 80, 0 });
 	vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
+	setupDepthFBO();
+
 	// entityHander.addEntity(vampire);
 
 	while (gameRunning) {
 		calcTimes();
-		lockFPS();
 		proccesEvents();
 		processKeys();
 
@@ -108,22 +110,35 @@ std::string m;
 void Game::proccesEvents() {
 	glfwPollEvents();
 }
-void Game::lockFPS() {
-	if (GameConfig::FPSlock > 0) {
-		if (frameRate > GameConfig::FPSlock) {
-			GLfloat toEllaps = (GLfloat)1 / (frameRate - GameConfig::FPSlock);
-			while (toEllaps < 0) toEllaps *= 10;
-			std::this_thread::sleep_for(std::chrono::milliseconds((GLuint)toEllaps));
-		}
-	}
-}
 void Game::showStuff() {
 	Camera& cam = player->getCamera();
-	world.render(cam, projection);
+	Shader* s = SHADERS[DEPTH];
+	s->bind();
+	// light orhto projection
+	float near_plane = 0.1f, far_plane = 100.0f;
+	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	glm::mat4 lightView = glm::lookAt(LIGHTPOSITION, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 LSM = lightProjection * lightView;
+	s->setValue("lightSpaceMatrix", LSM);
+	s->setValue("lightPos", LIGHTPOSITION);
+
+	glViewport(0, 0, 1024, 1024);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	world.render(lightProjection, lightView);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	s->unBind();
+
+	// 2. then render scene as normal with shadow mapping (using depth map)
+	glViewport(0, 0, windowDim.x, windowDim.y);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	world.render(cam, projection, LSM, depthMap);
+	
 	if (hasSkybox) {
 		showSkybox();
 	}
-
 	showGUI();
 
 	m = "Position: " + glm::to_string(player->getPosition());
@@ -490,13 +505,37 @@ void Game::showGUI() {
 	}
 }
 
+void Game::setupDepthFBO()
+{
+	glGenFramebuffers(1, &depthFBO);
+	const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "hhhhhhhhh\n";
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Game::setUpFreeType() {
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
 		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
 
 	FT_Face face;
-	if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
+	if (FT_New_Face(ft, "C://Windows/Fonts/arial.ttf", 0, &face))
 		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
 	FT_Set_Pixel_Sizes(face, 0, 48); // font size

@@ -38,10 +38,10 @@ class Game
 {
 public:
 	Game();
-	Game(GLboolean hasPlayer, GLboolean hasSkybox);
+	Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim);
 	void generateWorld();
 	void setupPlayer();
-	void doLoop(glm::mat4 projection, glm::mat4 ortho);
+	void doLoop(glm::mat4 projection);
 
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
@@ -61,17 +61,16 @@ private:
 	static UI_Renderer uiRenderer;
 	GLboolean hasSkybox;
 	GLfloat lastFrameTime;
-	glm::mat4 projection;
-	glm::mat4 orthoProjection;
-	GLuint SBVAO, CHVAO, LSVAO, LSVBO;
-	Texture texCH, texBN, texBS;
+	glm::mat4 projection, lightProjection;
+	GLuint SBVAO,LSVAO, LSVBO, depthFBO;
 	std::map<GLchar, Character> Letters;
+	GLuint depthMap;
+	glm::ivec2 windowDim;
 
 	void showFPS();
 	void calcTimes();
 	void proccesEvents();
 	void setupEventCB(GLFWwindow* window);
-	void lockFPS();
 	void showStuff();
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
@@ -79,11 +78,10 @@ private:
 	void processKeys();
 	void makeSkybox(std::string skybox);
 	void showSkybox();
-	void createCrossHair();
-	void showCrossHair();
 	void setUpFreeType();
 	void showText(std::string text, glm::vec2 position, GLfloat scale = 1.0f, glm::vec3 colour = glm::vec3(0));
 	void createGUI();
 	void showGUI();
 
+	void setupDepthFBO();
 };

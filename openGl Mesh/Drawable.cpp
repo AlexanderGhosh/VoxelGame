@@ -5,6 +5,20 @@ Drawable::Drawable() {
 Drawable::Drawable(Faces* sortedMeshes) {
 	// setUp(sortedMeshes);
 }
+void Drawable::render(glm::mat4 lightProjection, glm::mat4 lightView)
+{
+	if (buffers.size() == 0) return;
+	Shader* shader = SHADERS[DEPTH];
+	shader->setUp();
+	shader->bind();
+
+	glm::mat4 LSM = lightProjection * lightView;
+
+	shader->setValue("lightSpaceMatrix", LSM);
+
+	draw(0);
+	shader->unBind();
+}
 void Drawable::setUp(std::unordered_map<GLuint, FaceB_p>& mesh) {
 	
 	clear();
@@ -34,7 +48,7 @@ void Drawable::setUp(std::unordered_map<GLuint, FaceB_p>& mesh) {
 		buf.addPositions(positions[key]);
 	}
 }
-void Drawable::render(Camera& cam, glm::mat4 projection) {
+void Drawable::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap) {
 	if (buffers.size() == 0) return;
 	// glEnable(GL_FRAMEBUFFER_SRGB);
 	glEnable(GL_CULL_FACE);
@@ -42,28 +56,49 @@ void Drawable::render(Camera& cam, glm::mat4 projection) {
 	Shader* shader = SHADERS[BLOCK3];
 	shader->bind();
 
-	glm::mat4 view(1);
-	view = cam.GetViewMatrix();
-	shader->setValue("view", view);
+	glm::mat4 viewMatrix = cam.GetViewMatrix();
+	shader->setValue("view", viewMatrix);
 	shader->setValue("projection", projection);
 
 	glm::vec3 viewPos = cam.GetPosition();
 	shader->setValue("viewPos", viewPos);
+	shader->setValue("lightPos", LIGHTPOSITION);
 
+	shader->setValue("lightSpaceMatrix", lightMatrix);
+
+	shader->setValue("cubeMap", 0);
+	shader->setValue("shadowMap", 1);
+
+	draw(depthMap);
+	shader->unBind();
+	glDisable(GL_CULL_FACE);
+	// glDisable(GL_FRAMEBUFFER_SRGB);
+}
+
+Texture t;
+GLboolean first = 1;
+void Drawable::draw(GLuint depthMap)
+{
+	if (first) {
+		t = Texture("grass/hd/top", 1);
+		first = 0;
+	}
+	// t.load2D(t.getName());
 	for (auto& bu : buffers) {
 		FaceB& buffer = std::get<1>(bu);
 		Buffer& b = std::get<0>(buffer);
 		Texture* t = std::get<1>(buffer);
 		GLuint c = std::get<2>(buffer);
 		t->bind();
+		// t.bind();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
 		b.render(0);
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, c);
 		b.endRender();
 		t->unBind();
+		// t.unBind();
 	}
-	shader->unBind();
-	glDisable(GL_CULL_FACE);
-	// glDisable(GL_FRAMEBUFFER_SRGB);
 }
 
 void Drawable::clear() {

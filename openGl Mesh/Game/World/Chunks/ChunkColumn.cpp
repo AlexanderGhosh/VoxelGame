@@ -465,7 +465,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 		GLubyte tex_index = (GLubyte)getTexture(block);
 		#pragma region Checking adjacent blocks
 		Blocks found = getBlock({ x - 1, y, z }, 0, 1, worldmap);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+		if (getDets(found).isTransparant || block == Blocks::LEAF) {
 			addToMesh({ FACES[LEFT], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -475,7 +475,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 		}
 
 		found = getBlock({ x + 1, y, z }, 0, 1, worldmap);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+		if (getDets(found).isTransparant || block == Blocks::LEAF) {
 			addToMesh({ FACES[RIGHT], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -486,7 +486,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 
 		// y
 		found = getBlock({ x, y - 1, z }, 0, 1, worldmap);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+		if (getDets(found).isTransparant || block == Blocks::LEAF) {
 			addToMesh({ FACES[BOTTOM], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -496,7 +496,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 		}
 
 		found = getBlock({ x, y + 1, z }, 0, 1, worldmap);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+		if (getDets(found).isTransparant || block == Blocks::LEAF) {
 			addToMesh({ FACES[TOP], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -507,7 +507,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 
 		// z
 		found = getBlock({ x, y, z - 1 }, 0, 1, worldmap);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+		if (getDets(found).isTransparant || block == Blocks::LEAF) {
 			addToMesh({ FACES[BACK], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -517,7 +517,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 		}
 
 		found = getBlock({ x, y, z + 1 }, 0, 1, worldmap);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+		if (getDets(found).isTransparant || block == Blocks::LEAF) {
 			addToMesh({ FACES[FRONT], TEXTURES[tex_index], worldPosition });
 		}
 		else {
@@ -682,7 +682,7 @@ void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block,
 			lookingAt[i] += delta[i];
 		}
 		Blocks found = getBlock(lookingAt, 0, 1, worldMap);
-		if (found == Blocks::AIR || found == Blocks::LEAF || block == Blocks::LEAF) {
+		if (getDets(found).isTransparant || block == Blocks::LEAF) {
 			addToMesh(face, TEXTURES[tex_index], worldPosition, mesh);
 		}
 	}

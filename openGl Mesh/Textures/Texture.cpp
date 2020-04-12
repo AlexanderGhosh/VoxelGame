@@ -27,18 +27,19 @@ GLboolean Texture::load2D(std::string& name) {
 	is2D = 1;
 	glGenTextures(1, &texMap);
 	// diffuse
+	// "C:\Users\ghosh\Desktop\openGl Mesh\openGl Mesh\Textures\hearts\live_heart.png"
 	unsigned char* image = SOIL_load_image(name.c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
 	if (!image) {
 		std::cout << "texture error" << std::endl;
 	}
 	glBindTexture(GL_TEXTURE_2D, texMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dimentions.x, dimentions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	// glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST_MIPMAP_NEAREST
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST_MIPMAP_NEAREST
 	created = 1;
 	return GL_TRUE;
 }
@@ -54,6 +55,7 @@ GLboolean Texture::load3D(const std::string& name) {
 		"Textures/" + name + "/back.png"	// back
 	};
 	glGenTextures(1, &texMap);
+	// glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texMap);
 	// texMap = texMap;
 	unsigned char* data;
@@ -83,8 +85,8 @@ GLboolean Texture::load3D(const std::string& name) {
 }
 void Texture::bind() {
 	if (!created) return;
+	glActiveTexture(GL_TEXTURE0);
 	if (is2D) {
-		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texMap);
 	}
 	else {

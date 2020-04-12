@@ -10,7 +10,7 @@
 class ChunkColumn;
 class BlockStore;
 
-#define RENDER_DISTANCE 3
+#define RENDER_DISTANCE 5
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 #define WANDER_RANGE 15
@@ -20,6 +20,8 @@ class BlockStore;
 
 #define GRAVITY 10
 #define PLAYER_SPEED 2.0
+extern glm::vec3 LIGHTPOSITION;
+extern glm::vec3 LIGHTPOSITIONOrigin;
 
 enum class Blocks : uint8_t;
 
@@ -42,6 +44,7 @@ struct BlockDet {
 	std::string Name;
 	Texture* Tex;
 	Texture ItemTex;
+	GLboolean isTransparant;
 };
 enum class Texture_Names {
 	GRASS,
@@ -70,7 +73,8 @@ enum SHADER_NAMES {
 	SKYBOX,
 	CROSSHAIR,
 	GLYPH,
-	RAY
+	RAY,
+	DEPTH
 };
 enum class Move_Dir {
 	FORWARD,
@@ -111,6 +115,7 @@ std::string getName(Blocks block);
 glm::vec3 getTranslation(glm::mat4 matrix);
 glm::mat4 translate(glm::mat4 mat, glm::vec3 vec);
 void translate(glm::mat4& mat, glm::vec3 vec);
+BlockDet& getDets(Blocks block);
 
 Blocks itemToBlock(Item item);
 

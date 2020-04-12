@@ -7,13 +7,16 @@ layout(location = 3) in mat4 model;
 out vec3 Normal;
 out vec3 FragPos;
 out vec3 TexCoords;
+out vec4 FragPosLightSpace;
 
 uniform mat4 projection;
 uniform mat4 view;
+uniform mat4 lightSpaceMatrix;
 
 void main()
 {
     FragPos = vec3(model * vec4(position, 1));
+    FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
     gl_Position = projection * view * model * vec4(position, 1);
 	Normal = mat3(transpose(inverse(model))) * normal;
     TexCoords = texCoords;

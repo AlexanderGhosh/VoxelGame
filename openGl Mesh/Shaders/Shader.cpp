@@ -16,6 +16,9 @@ GLint Shader::getLocation(std::string name) {
 void Shader::setLocation(GLint& location, glm::mat4& value) {
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
+void Shader::setLocation(GLint& location, glm::vec4& value) {
+	glUniform4f(location, value.x, value.y, value.z, value.w);
+}
 void Shader::setLocation(GLint& location, glm::vec3& value) {
 	glUniform3f(location, value.x, value.y, value.z);
 }
@@ -27,9 +30,15 @@ void Shader::setLocation(GLint& location, GLfloat& value) {
 	glUniform1f(location, value);
 }
 void Shader::setLocation(GLint& location, const GLint& value) {
-	glUniform1f(location, value);
+	glUniform1i(location, value);
 }
 GLboolean Shader::setValue(std::string name, const GLint& value) {
+	GLint loc = getLocation(name);
+	if (loc == -1) return GL_FALSE;
+	setLocation(loc, value);
+	return GL_TRUE;
+}
+GLboolean Shader::setValue(std::string name, glm::vec4& value) {
 	GLint loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);

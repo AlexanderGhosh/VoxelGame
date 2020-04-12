@@ -35,8 +35,8 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("error", ""),
 	new Texture("log", ""),
 	new Texture("leaf", ""),
-	new Texture("vampire/bottom"),
-	new Texture("vampire/top")
+	new Texture("vampire/bottom", ""),
+	new Texture("vampire/top", "")
 };
 const std::vector<Texture*>TEXTURES2D = {
 	new Texture("crosshair", ""),
@@ -51,9 +51,11 @@ const std::vector<Shader*>SHADERS = {
 	new Shader("skybox"),
 	new Shader("crosshair"),
 	new Shader("glyph"),
-	new Shader("ray")
+	new Shader("ray"),
+	new Shader("depth")
 };
 std::map<Blocks, BlockDet> BLOCKS = {
+	{ Blocks::AIR, {} },
 	{ Blocks::GRASS, {} },
 	{ Blocks::DIRT, {} },
 	{ Blocks::STONE, {} },
@@ -70,6 +72,8 @@ const std::vector<Blocks> AllBlocks = {
 	Blocks::LOG,
 	Blocks::LEAF
 };
+glm::vec3 LIGHTPOSITION = glm::vec3(8, 70, 8);
+glm::vec3 LIGHTPOSITIONOrigin = glm::vec3(8, 70, 8);
 
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload) {
 	while (victim.x % multiple != 0) {
@@ -135,7 +139,7 @@ Texture_Names getTexture(Blocks block) {
 		break;
 	}
 	if (res == Texture_Names::ERROR) {
-		int i = 0;
+		// std::cout << "Error Texture created\n";
 	}
 	return res;
 }
@@ -181,6 +185,10 @@ std::string getName(Blocks block) {
 }
 glm::vec3 getTranslation(glm::mat4 matrix) {
 	return { matrix[3][0], matrix[3][1], matrix[3][2] };
+}
+
+BlockDet& getDets(Blocks block) {
+	return BLOCKS[block];
 }
 
 glm::mat4 translate(glm::mat4 mat, glm::vec3 vec) {

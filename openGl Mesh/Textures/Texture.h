@@ -14,7 +14,7 @@ public:
 		created = GL_FALSE;
 	}
 	Texture(GLboolean loadTex);
-	Texture(std::string name, GLboolean is2D = GL_FALSE);
+	Texture(std::string name, GLboolean is2D);
 	void bind();
 	GLuint& getTexMap();
 	std::string& getName();
