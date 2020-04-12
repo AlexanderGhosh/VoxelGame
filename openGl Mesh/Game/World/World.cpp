@@ -225,8 +225,8 @@ glm::vec3 prevPos(8, 80, 8);
 void World::updatePlayerPos(glm::vec3 pos) {
 	if (prevPos != pos) {
 		prevPos = pos;
-		// LIGHTPOSITION.x = LIGHTPOSITIONOrigin.x + pos.x;
-		// LIGHTPOSITION.z = LIGHTPOSITIONOrigin.z + pos.z;
+		LIGHTPOSITION.x = LIGHTPOSITIONOrigin.x + pos.x - 4;
+		LIGHTPOSITION.z = LIGHTPOSITIONOrigin.z + pos.z - 4;
 	}
 	else {
 		return;
