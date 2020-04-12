@@ -54,6 +54,7 @@ void Drawable::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, 
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
 	Shader* shader = SHADERS[BLOCK3];
+	shader->setUp();
 	shader->bind();
 
 	glm::mat4 viewMatrix = cam.GetViewMatrix();

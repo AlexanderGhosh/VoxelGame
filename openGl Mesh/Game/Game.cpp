@@ -110,6 +110,7 @@ std::string m;
 void Game::proccesEvents() {
 	glfwPollEvents();
 }
+const GLuint SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
 void Game::showStuff() {
 	Camera& cam = player->getCamera();
 	Shader* s = SHADERS[DEPTH];
@@ -122,7 +123,7 @@ void Game::showStuff() {
 	s->setValue("lightSpaceMatrix", LSM);
 	s->setValue("lightPos", LIGHTPOSITION);
 
-	glViewport(0, 0, 1024, 1024);
+	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	world.render(lightProjection, lightView);
@@ -508,15 +509,16 @@ void Game::showGUI() {
 void Game::setupDepthFBO()
 {
 	glGenFramebuffers(1, &depthFBO);
-	const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 	glGenTextures(1, &depthMap);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
