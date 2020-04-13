@@ -72,8 +72,8 @@ const std::vector<Blocks> AllBlocks = {
 	Blocks::LOG,
 	Blocks::LEAF
 };
-glm::vec3 LIGHTPOSITION = glm::vec3(8, 70, 8);
-glm::vec3 LIGHTPOSITIONOrigin = glm::vec3(8, 70, 8);
+glm::vec3 LIGHTPOSITION = glm::vec3(-8, 80, -8);
+glm::vec3 LIGHTPOSITIONOrigin = glm::vec3(-8, 80, -8);
 
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload) {
 	while (victim.x % multiple != 0) {
