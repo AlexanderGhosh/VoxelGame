@@ -191,6 +191,15 @@ BlockDet& getDets(Blocks block) {
 	return BLOCKS[block];
 }
 
+BlockDet& getDets(Texture* tex) {
+	for (auto& b : BLOCKS) {
+		if (tex->getName().find(b.second.Name) != std::string::npos) {
+			return b.second;
+		}
+	}
+	return BLOCKS[Blocks::AIR];
+}
+
 glm::mat4 translate(glm::mat4 mat, glm::vec3 vec) {
 	for (unsigned char i = 0; i < 3; i++) {
 		mat[3][i] = vec[i];

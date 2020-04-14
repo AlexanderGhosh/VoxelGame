@@ -7,7 +7,7 @@ BlockStore::BlockStore() : initalised(0), hasTrees(0)
 
 BlockStore::BlockStore(glm::vec2 pos) : position(pos), editedBlocks(), initalised(1), hasTrees(0)
 {
-	heightMap = world_generation::createHeightMap(pos, 0);
+	heightMap = world_generation::createHeightMap(pos, 32);
 }
 
 glm::vec2& BlockStore::getPosition()
@@ -35,22 +35,23 @@ std::vector<Block_Count>& BlockStore::getBlocksAt(GLfloat x, GLfloat z)
 	return heightMap[x][z];
 }
 
-Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition)
+Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition, GLboolean checkEdited)
 {
 	auto getRelativePosition = [&](glm::vec3 pos) -> glm::vec3 {
 		return pos - this->getPosition();
 	};
 	glm::vec3 relativePos = worldPosition ? getRelativePosition(pos) : pos;
 	// check changed blocks
-	GLuint size = editedBlocks.size();
-	Blocks t = editedBlocks[relativePos];
-	if (editedBlocks.size() > size) {
-		editedBlocks.erase(relativePos);
+	if (checkEdited) {
+		GLuint size = editedBlocks.size();
+		Blocks t = editedBlocks[relativePos];
+		if (editedBlocks.size() > size) {
+			editedBlocks.erase(relativePos);
+		}
+		else {
+			return t;
+		}
 	}
-	else {
-		return t;
-	}
-
 	// get from height map
 	std::vector<Block_Count> encodes;
 	glm::vec2 hPos(relativePos.x, relativePos.z);

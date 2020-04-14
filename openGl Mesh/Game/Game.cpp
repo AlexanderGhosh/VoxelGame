@@ -44,7 +44,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) {
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 1);
+	world = World(1, 1, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -135,11 +135,13 @@ void Game::showStuff() {
 	glViewport(0, 0, windowDim.x, windowDim.y);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	world.render(cam, projection, LSM, depthMap);
-	
+
 	if (hasSkybox) {
 		showSkybox();
 	}
+
+	world.render(cam, projection, LSM, depthMap);
+	
 	showGUI();
 
 	m = "Position: " + glm::to_string(player->getPosition());
@@ -163,8 +165,8 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
-	p.setPosition({ 8, 80, 8 });
+	Entity p = Entity({ 0, 1.25f, 0 },0, 1);
+	p.setPosition({ 8, 25, 8 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	PlayerInv& inv = p.getInventory();
 	// p.setInvincable(1);
@@ -227,10 +229,29 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 		entityHander.setTarget(cam.GetPosition());
 	}
 }
+std::string num = "0";
+void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
+{
+	int i = std::stoi(num);
+	i -= yoffset;
+	if (i > 8) {
+		i = 9 - i;
+	}
+	else if (i < 0) {
+		i = 9 + i;
+	}
+	num = std::to_string(i);
+	uiRenderer.popWhere("slot_selected");
+	UI_Element& element = uiRenderer.getWhere("slot" + num);
+	UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
+	uiRenderer.appendElement(e);
+	player->getInventory().setHotbarSelected(i);
+}
 void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
 	glfwSetMouseButtonCallback(window, Game::clickCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
+	glfwSetScrollCallback(window, Game::scrollCallBack);
 }
 void Game::processKeys() {
 	auto& k = Game::keys;
@@ -289,7 +310,6 @@ void Game::processKeys() {
 		ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH, 1);
 	}
 
-	std::string num;
 	if (k[GLFW_KEY_1]) {
 		num = "0";
 		// player.setInvSlot(0);

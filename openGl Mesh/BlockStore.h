@@ -18,7 +18,7 @@ public:
 	std::unordered_map<glm::vec3, Blocks>& getEditedBlocks();
 	std::vector<Block_Count>& getBlocksAt(glm::vec2 pos);
 	std::vector<Block_Count>& getBlocksAt(GLfloat x, GLfloat z);
-	Blocks getBlock(glm::vec3 pos, GLboolean worldPosition);
+	Blocks getBlock(glm::vec3 pos, GLboolean worldPosition, GLboolean checkEdited = 1);
 	GLboolean doesHaveTrees();
 	GLboolean isInitilised();
 

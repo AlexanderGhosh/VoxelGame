@@ -48,8 +48,8 @@ void World::generateFlatChunks(std::vector<glm::vec2> chunkPositions) {
 void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 	std::cout << "Started\n";
 
-	world_generation wg(seed, 1, 0.5, {  { 1, 1 } });
-
+	// world_generation wg = world_generation(seed, 2, 0.5, { { 1, 1 }, { 2, 2 } } );
+	// world_generation wg(seed, 1, 0.5, {  { 1, 1 } }); perlin
 	std::vector<glm::vec2> victims;
 	// files and blocks
 	for (glm::vec2& pos : chunkPositions) {
@@ -450,7 +450,7 @@ AdjacentMap World::getAdjacentMap(glm::vec3 worldPos, GLuint range)
 	AdjacentMap res;
 	std::vector<glm::vec2> poss = centeredPositions({ worldPos.x , worldPos.z }, chunks2, range);
 	for (glm::vec2& pos : poss) {
-		HeightMap hm = world_generation::createHeightMap(pos, 0);
+		HeightMap hm = world_generation::createHeightMap(pos, seed);
 		res.insert({ pos, { pos } });
 	}
 	for (ChunkColumn& chunk : chunks2) {

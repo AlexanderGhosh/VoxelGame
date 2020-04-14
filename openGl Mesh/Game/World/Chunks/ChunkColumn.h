@@ -15,8 +15,6 @@ private: // properties
 	GLubyte highest_natural_point;
 	GLboolean isFlat;
 
-	GLboolean breaking;
-
 public: // functions
 
 	GLubyte stage;
@@ -38,7 +36,7 @@ public: // functions
 	std::unordered_map<GLuint, FaceB_p>& getMesh();
 	glm::vec2 getPosition();
 	std::pair<Blocks, ChunkColumn*> getBlock_ChunkPos(glm::vec3 worldPosition, AdjacentMap_p& allChunks);
-	Blocks getBlock(glm::vec3 pos, GLboolean worldPos = 1);
+	Blocks getBlock(glm::vec3 pos, GLboolean worldPos = 1, GLboolean checkEdited = 1);
 	glm::vec3 getRelativePosition(glm::vec3 worldPos);
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
 	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent); // mabye could be optimised

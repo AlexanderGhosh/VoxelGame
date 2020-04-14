@@ -75,11 +75,12 @@ private:
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
 	static void clickCallBack(GLFWwindow* window, int button, int action, int mods);
+	static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset);
 	void processKeys();
 	void makeSkybox(std::string skybox);
 	void showSkybox();
 	void setUpFreeType();
-	void showText(std::string text, glm::vec2 position, GLfloat scale = 1.0f, glm::vec3 colour = glm::vec3(0));
+	void showText(std::string text, glm::vec2 position, GLfloat scale = 1.0f, glm::vec3 colour = glm::vec3(1));
 	void createGUI();
 	void showGUI();
 

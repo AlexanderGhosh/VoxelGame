@@ -12,7 +12,7 @@ public:
 	void render(glm::mat4 lightProjection, glm::mat4 lightView);
 	void setUp(std::unordered_map<GLuint, FaceB_p>& meshes);
 private:
-	std::unordered_map<GLuint, FaceB> buffers;
+	std::unordered_map<GLuint, FaceB> opaqueBuffer, transparantBuffer;
 	void draw(GLuint depthMap);
 	void clear();
 };

@@ -1,23 +1,21 @@
 #pragma once
 #include "constants.h"
 #include "gtc/noise.hpp"
+struct NoiseOptions {
+	GLint octaves;
+	GLfloat amplitude;
+	GLfloat smoothness;
+	GLfloat roughness;
+	GLfloat offset;
+};
 class world_generation
 {
 public:
-	static GLuint seed;
-	static GLubyte octaves;
-	static std::vector<glm::vec2> frequencies;
-	static GLfloat redistribution;
-	world_generation();
-	world_generation(GLuint seed, GLubyte octaves, GLfloat redist, std::vector<glm::vec2> freqs = { glm::vec2(0.5f) });
-	static GLubyte heightAtPositon(GLfloat x, GLfloat y);
-	static GLubyte heightAtPositon(const glm::vec2 pos);
+	static GLfloat heightAtPositon(const glm::vec2 pos, NoiseOptions options, GLuint seed);
 	// static ChunkHeightMap genHeightMap(glm::vec3 chunkPos);
-	static HeightMap createHeightMap(glm::vec2 chunkPos, GLboolean hasCaves = 0);
+	static HeightMap createHeightMap(glm::vec2 chunkPos, GLuint seed, GLuint biome = 0);
 	static std::vector<glm::vec2> getTreePositions(glm::vec2 chunkPos);
 private:
 	static glm::ivec2 treeCooldown;
-	static GLfloat noise(glm::vec2 pos);
-	static GLfloat noise(GLfloat x, GLfloat y);
 };
 

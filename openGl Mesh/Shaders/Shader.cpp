@@ -84,7 +84,7 @@ void Shader::setUp() {
 
 		vShaderFile.close();
 		fShaderFile.close();
-
+		
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
 	}

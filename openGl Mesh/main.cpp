@@ -50,7 +50,7 @@ void createBlocks() {
 		if(dets.Name != "air")
 			dets.ItemTex = { "Items/" + dets.Name, 1 };
 		dets.isTransparant = 0;
-		if (dets.Name == "air" || dets.Name == "leaf") {
+		if (dets.Name == "air" || dets.Name == "leaf" || dets.Name == "water") {
 			dets.isTransparant = 1;
 		}
 	}

@@ -6,18 +6,7 @@ Entity::Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying) : Enti
 	collider = BoxCollider(glm::vec3(1), pos);
 	collider.setDimentions(glm::vec3(0.85f), glm::vec3(0.85f, 2.55f, 0.85f));
 	this->hasBody = 0;
-	/*invBar = {
-		Blocks::GRASS,
-		Blocks::DIRT,
-		Blocks::STONE,
-		Blocks::WATER,
-		Blocks::LOG,
-		Blocks::LEAF,
-		Blocks::AIR,
-		Blocks::AIR,
-		Blocks::AIR
-	};
-	invSlot = 0;*/
+	if (flying) movementSpeed *= 1.5;
 	isClipping = clipping;
 	canFly = flying;
 	tag = "player";

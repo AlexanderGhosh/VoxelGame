@@ -116,6 +116,7 @@ glm::vec3 getTranslation(glm::mat4 matrix);
 glm::mat4 translate(glm::mat4 mat, glm::vec3 vec);
 void translate(glm::mat4& mat, glm::vec3 vec);
 BlockDet& getDets(Blocks block);
+BlockDet& getDets(Texture* tex);
 
 Blocks itemToBlock(Item item);
 
