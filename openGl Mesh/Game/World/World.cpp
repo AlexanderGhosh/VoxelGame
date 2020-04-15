@@ -48,8 +48,6 @@ void World::generateFlatChunks(std::vector<glm::vec2> chunkPositions) {
 void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 	std::cout << "Started\n";
 
-	// world_generation wg = world_generation(seed, 2, 0.5, { { 1, 1 }, { 2, 2 } } );
-	// world_generation wg(seed, 1, 0.5, {  { 1, 1 } }); perlin
 	std::vector<glm::vec2> victims;
 	// files and blocks
 	for (glm::vec2& pos : chunkPositions) {
@@ -70,7 +68,7 @@ void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 	std::vector<glm::vec2> ring = centeredPositions({ 0, 0 }, chunks2, RENDER_DISTANCE + 2);
 	for (auto& chunk : chunks2) {
 		worldMap[chunk.getPosition()] = *chunk.getBlockStore();
-		chunk.setBlockStore(&worldMap[chunk.getPosition()]);
+		// chunk.setBlockStore(&worldMap[chunk.getPosition()]);
 	}
 	for (auto& pos : ring) {
 		worldMap[pos] = BlockStore(pos);
@@ -527,7 +525,7 @@ std::vector<glm::vec2> World::centeredPositions(glm::vec2 origin, std::vector<Ch
 
 void World::save() {
 	for (auto& chunk : chunks2) {
-		// chunk.save(seed);
+		chunk.save(seed);
 	}
 }
 GLboolean done1 = 0;

@@ -15,6 +15,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-
 ChunkColumn::ChunkColumn(std::string fileName) : fromFile(1)
 {
 	fileName = "Chunks/" + fileName + ".dat";
+
 	Savable_ s;
 	std::ifstream in;
 	if (!in) {
@@ -25,6 +26,9 @@ ChunkColumn::ChunkColumn(std::string fileName) : fromFile(1)
 
 	in.read(reinterpret_cast<char*>(&s), sizeof(s));
 	position = { s.x, s.z };
+
+	blockStore = new BlockStore(position);
+
 	unsigned size = 0;
 	in.read(reinterpret_cast<char*>(&size), sizeof(unsigned));
 	if (size != 0) {
@@ -54,7 +58,7 @@ ChunkColumn::ChunkColumn(std::string fileName) : fromFile(1)
 		FaceB_p data = element.toFace();
 		Buffer* b = std::get<0>(data);
 		Texture* t = std::get<1>(data);
-		mesh.insert({ (int)b * (int)t, data });
+		mesh.insert({ std::pow(b->type + 1, 2) * std::pow(t->getTexMap() + 1, 3), data });
 	}
 	// hasCaves = 0;
 	// GLuint seed = world_generation::seed;
@@ -422,7 +426,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 			block_at2.second->addToMesh({ FACES[FRONT], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, -1) });
 		}
 		found = getBlock({ x, y, z + 1 }, 0, 1, worldmap);
-		if (found != Blocks::AIR /*|| found == Blocks::LEAF*/) {
+		if (found != Blocks::AIR) {
 			auto block_at2 = getBlock_ChunkPos(worldPosition + glm::vec3(0, 0, 1), allChunks);
 			GLubyte tex_index2 = (GLubyte)getTexture(block_at2.first);
 			block_at2.second->addToMesh({ FACES[BACK], TEXTURES[tex_index2], worldPosition + glm::vec3(0, 0, 1) });
