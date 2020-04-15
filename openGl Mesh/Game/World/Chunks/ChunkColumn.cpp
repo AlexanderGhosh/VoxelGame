@@ -529,7 +529,7 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 		blockStored = block;
 	}
 	else {
-		if (block == Blocks::AIR || blockStore->getBlock(relativePos, 0, 0) != Blocks::AIR) {
+		if (blockStore->getBlock(relativePos, 0, 0) == block) {
 			blockStore->getEditedBlocks().erase(relativePos);
 		}
 		else {
