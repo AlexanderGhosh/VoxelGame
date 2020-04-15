@@ -17,7 +17,7 @@ Entity::Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying) : Enti
 	inventory.setSlot(4, 3);
 	inventory.setSlot(6, 4);
 	inventory.setSlot(7, 5);
-	inventory.setSlot(0, 6);
+	inventory.setSlot(8, 6);
 	inventory.setSlot(0, 7);
 	inventory.setSlot(0, 8);
 }
@@ -59,6 +59,9 @@ Entity::Entity(GLboolean init, glm::vec3 dimentions) : attackCooldown(90), invun
 	attackDmg = 10;
 	tag = "hostile";
 	isClipping = 1;
+	resToGravity = 1;
+	submerged = 0;
+	jumpForce_orig = jumpForce;
 }
 glm::vec3& Entity::getPosition() {
 	return pos;
@@ -164,12 +167,19 @@ PlayerInv& Entity::getInventory()
 	return inventory;
 }
 
+GLboolean Entity::getSubmerged()
+{
+	return submerged;
+}
+
 void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjacesnt) {
 	deltaTime = 1.0f / 60.0f;
 	if (!canFly) {
 		grounded = 0;
+		submerged = 0;
 		vel += acc * deltaTime;
-		vel.y -= GRAVITY * deltaTime;
+		vel.y -= GRAVITY * deltaTime * resToGravity;
+		resToGravity = 1;
 	}
 	if (isClipping) {
 		glm::ivec3 collisions = determinCollision(adjacesnt, vel * deltaTime);
@@ -199,6 +209,9 @@ void Entity::updatePosition(GLfloat deltaTime, std::vector<ChunkColumn*>& adjace
 			vel.z = 0; if (hasTarget) {
 				move(Move_Dir::UP);
 			}
+		}
+		if (submerged) {
+			resToGravity = 1.3f;
 		}
 	}
 
@@ -235,7 +248,7 @@ void Entity::move(Move_Dir dir) {
 		vel += right * movementSpeed;
 		break;
 	case Move_Dir::UP:
-		if (!grounded && !canFly) break;
+		if (!grounded && !canFly && !submerged) break;
 		vel.y += jf;
 		break;
 	case Move_Dir::DOWN:
@@ -391,6 +404,7 @@ glm::ivec3 Entity::determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::
 	BoxCollider boxColl = BoxCollider(glm::vec3(1.0f), glm::vec3(0));
 	for (auto& face : mesh) {
 		boxColl.setPosition(std::get<2>(face));
+		std::string texName = std::get<1>(face)->getName();
 		for (GLubyte i = 0; i < 3; i++) {
 			GLfloat& component = deltaV[i];
 			if (component == 0) continue;
@@ -399,6 +413,11 @@ glm::ivec3 Entity::determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::
 			collider.setPosition(p);
 			GLboolean colliding = collider.isColliding(boxColl);
 			if (colliding) {
+				Blocks blockCollidedWith = toBlock(texName);
+				if (blockCollidedWith == Blocks::WATER) {
+					submerged = 1;
+					continue;
+				}
 				res[i] = 1;
 				if (component < 0) res[i] = -1;
 			}
@@ -521,7 +540,12 @@ glm::vec3 Entity::wanderTarget()
 void Entity::clampVelocity()
 {
 	for (GLubyte i = 0; i < 3; i++) {
-		if (i == 1) continue;
+		if (i == 1) {
+			if (vel[i] > jumpForce_orig) {
+				vel[i] = jumpForce_orig;
+			}
+			continue;
+		}
 		if (vel[i] > movementSpeed) {
 			vel[i] = movementSpeed;
 		}

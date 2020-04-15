@@ -126,7 +126,7 @@ void Game::showStuff() {
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	world.render(lightProjection, lightView);
+	// world.render(lightProjection, lightView);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	s->unBind();
@@ -165,8 +165,8 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	Entity p = Entity({ 0, 1.25f, 0 },0, 1);
-	p.setPosition({ 8, 25, 8 });
+	Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
+	p.setPosition({ 8, 26, 8 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	PlayerInv& inv = p.getInventory();
 	// p.setInvincable(1);
@@ -523,6 +523,15 @@ void Game::showGUI() {
 				uiRenderer.appendElement(heart);
 			}
 		}
+	}
+
+	if (player->getSubmerged()) {
+		UI_Element submerged = UI_Element({ 0, 0 }, { 16, 9 }, &getDets(Blocks::WATER).ItemTex, "submerged");
+		uiRenderer.popWhere(submerged.getName());
+		uiRenderer.prependElement(submerged);
+	}
+	else {
+		uiRenderer.popWhere("submerged");
 	}
 }
 

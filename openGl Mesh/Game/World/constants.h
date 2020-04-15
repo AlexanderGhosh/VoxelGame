@@ -10,7 +10,7 @@
 class ChunkColumn;
 class BlockStore;
 
-#define RENDER_DISTANCE 5
+#define RENDER_DISTANCE 11
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 #define WANDER_RANGE 15
@@ -59,6 +59,7 @@ enum class Texture_Names {
 	LEAF,
 	VAMPIRE_BOTTOM,
 	VAMPIRE_TOP,
+	SAND
 };
 enum class Texture_Names_2D {
 	CROSSHAIR,
@@ -93,14 +94,15 @@ enum class Blocks : uint8_t {
 	WATER,
 	ERROR,
 	LOG,
-	LEAF
+	LEAF,
+	SAND
 };
 extern const std::array<Buffer*, 6> FACES;
 extern const std::vector<Texture*> TEXTURES;
 extern const std::vector<Texture*> TEXTURES2D;
 extern const std::vector<Shader*> SHADERS;
 extern std::map<Blocks, BlockDet> BLOCKS;
-extern const std::vector<Blocks> AllBlocks;
+extern const std::vector<Material> MATERIALS;
 
 void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload);
 void reduceToMultiple(glm::ivec2& victim, GLuint multiple, const char* overload);
@@ -117,8 +119,11 @@ glm::mat4 translate(glm::mat4 mat, glm::vec3 vec);
 void translate(glm::mat4& mat, glm::vec3 vec);
 BlockDet& getDets(Blocks block);
 BlockDet& getDets(Texture* tex);
+Material getMaterial(const Texture_Names& tex);
+Material getMaterial(const std::string& texName);
 
 Blocks itemToBlock(Item item);
+Blocks toBlock(std::string name);
 
 std::vector<Face> toFaces(FaceB_p face);
 

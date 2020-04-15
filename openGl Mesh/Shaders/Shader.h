@@ -13,6 +13,12 @@
 #include <sstream>
 #include <iostream>
 
+struct Material {
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	GLfloat shininess;
+};
 class Shader {
 public:
 	Shader() {
@@ -29,6 +35,7 @@ public:
 	GLboolean setValue(std::string name, glm::vec2& value);
 	GLboolean setValue(std::string name, GLfloat& value);
 	GLboolean setValue(std::string name, const GLint& value);
+	GLboolean setValue(std::string name, Material& value);
 private:
 	GLuint program;
 	std::string name;

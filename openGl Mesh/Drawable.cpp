@@ -85,12 +85,12 @@ void Drawable::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, 
 	shader->setValue("cubeMap", 0);
 	shader->setValue("shadowMap", 1);
 
-	draw(depthMap);
+	draw(depthMap, shader);
 	shader->unBind();
 	glDisable(GL_CULL_FACE);
 }
 ;
-void Drawable::draw(GLuint depthMap)
+void Drawable::draw(GLuint depthMap, Shader* shader)
 {
 	for (auto& bu : opaqueBuffer) {
 		FaceB& buffer = std::get<1>(bu);
@@ -98,6 +98,10 @@ void Drawable::draw(GLuint depthMap)
 		Texture* t = std::get<1>(buffer);
 		GLuint c = std::get<2>(buffer);
 		t->bind();
+		if (shader) {
+			Material mat = getMaterial(t->getName());
+			shader->setValue("material", mat);
+		}
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 		b.render(0);
@@ -111,6 +115,10 @@ void Drawable::draw(GLuint depthMap)
 		Texture* t = std::get<1>(buffer);
 		GLuint c = std::get<2>(buffer);
 		t->bind();
+		if (shader) {
+			Material mat = getMaterial(t->getName());
+			shader->setValue("material", mat);
+		}
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 		b.render(0);

@@ -40,8 +40,6 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 	secondNoise.roughness = 0.45f;
 	secondNoise.offset = 0.0f;
 
-
-
 	HeightMap res;
 
 	for (GLubyte x = 0; x < CHUNK_SIZE; x++)
@@ -56,12 +54,32 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 			GLfloat result = height * height2;
 			result *= firstNoise.amplitude + firstNoise.offset - 5;
 			result = abs(result);
+			if (worldPos == glm::vec2(0)) {
+				worldPos.x++;
+				height = heightAtPositon(worldPos, firstNoise, seed);
+				height2 = heightAtPositon(worldPos, secondNoise, seed);
+				result = height * height2;
+				result *= firstNoise.amplitude + firstNoise.offset - 5;
+				result = abs(result);
+			}
+
+			GLfloat result_orig = result;
+
 			if (result < 2) {
 				encoded.push_back({ Blocks::WATER, result + 1 });
 				break;
 			}
 			if (result - 3 > 0) {
 				encoded.push_back({ Blocks::STONE, result -= 3 });
+			}
+			if (result_orig <= 20) {
+				encoded.push_back({ Blocks::SAND, 3 });
+				encoded.push_back({ Blocks::WATER, 20 - result - 2 });
+				continue;
+			}
+			if (result_orig < 23) {
+				encoded.push_back({ Blocks::SAND, 3 });
+				continue;
 			}
 			if (result - 2 > 0) {
 				encoded.push_back({ Blocks::DIRT, 2 });
@@ -76,7 +94,7 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 std::vector<glm::vec2> world_generation::getTreePositions(glm::vec2 chunkPos)
 {
 	std::vector <glm::vec2> trees;
-
+	treeCooldown = { 4, 4 };
 	for (GLubyte x = 2; x < CHUNK_SIZE-2; x++)
 	{
 		for (GLubyte z = 2; z < CHUNK_SIZE-2; z++)

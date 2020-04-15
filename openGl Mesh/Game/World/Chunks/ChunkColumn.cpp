@@ -2,17 +2,17 @@
 
 #pragma region Public
 #pragma region Constructors
-ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), blockStore(), isFlat(1), fromFile(0)
+ChunkColumn::ChunkColumn() : position(0), highest_natural_point(-1), mesh(), blockStore(), isFlat(1), fromFile(0), needsSave(0), stage(200)
 {
 	// blocks.fill(Blocks::AIR);
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), fromFile(0)
+ChunkColumn::ChunkColumn(glm::vec2 pos) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), fromFile(0), needsSave(0)
 {
 	blockStore = new BlockStore(pos);
 }
 
-ChunkColumn::ChunkColumn(std::string fileName) : fromFile(1)
+ChunkColumn::ChunkColumn(std::string fileName) : fromFile(1), needsSave(0)
 {
 	fileName = "Chunks/" + fileName + ".dat";
 
@@ -68,7 +68,7 @@ ChunkColumn::ChunkColumn(std::string fileName) : fromFile(1)
 	isFlat = 0;
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, WorldMap* worldMap) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), fromFile(0) {
+ChunkColumn::ChunkColumn(glm::vec2 pos, WorldMap* worldMap) : position(pos), highest_natural_point(-1), mesh(), isFlat(0), stage(0), fromFile(0), needsSave(0) {
 	blockStore = &(*worldMap)[pos];
 	if (!blockStore->isInitilised()) {
 		(*worldMap)[pos] = BlockStore(pos);
@@ -114,7 +114,7 @@ void ChunkColumn::createMesh(WorldMap* worldMap)
 	GLubyte endZ[] = {
 		4, 8, 12, 16, 4, 8, 12, 16,4, 8, 12, 16, 4, 8, 12, 16
 	};
-	GLubyte lookDepth = 10;
+	GLubyte lookDepth = WORLD_HEIGHT;
 	for (GLubyte x = startX[stage]; x < endX[stage]; x++)
 	{
 		for (GLubyte z = startZ[stage]; z < endZ[stage]; z++)
@@ -133,13 +133,13 @@ void ChunkColumn::createMesh(WorldMap* worldMap)
 				if (encoded.second > WORLD_HEIGHT) continue;
 				for (GLuint i = 0; i < encoded.second; i++) {
 					height++;
-					if (height >= maxHeigh - lookDepth - 1) {
+					if (height >= maxHeigh - lookDepth - 1 || true) {
 						blks.insert(blks.begin(), (encoded.first));
 					}
 				}
 			}
 			y = height - 1;
-			GLuint lookD = blks.size() >= lookDepth ? lookDepth : blks.size();
+			GLuint lookD = /*blks.size() >= lookDepth ? lookDepth : */blks.size();
 			for (GLubyte i = 0; i < lookD; i++) {
 				block = blks[i];
 				addBlock({ x, y - i, z }, 0, block, worldMap);
@@ -177,6 +177,9 @@ void ChunkColumn::addTrees() {
 		GLubyte x = pos.x;
 		GLubyte z = pos.y;
 		auto t = getHeightAt(pos, GL_TRUE, adjacent);
+		if (getBlock({ x, std::get<1>(t) - 1, z }, 0, 0) != Blocks::GRASS) {
+			continue;
+		}
 		std::vector<Block_Count>* encoded = std::get<0>(t);
 		GLuint maxHeight = std::get<1>(t);
 		ChunkColumn* column = std::get<2>(t);
@@ -364,6 +367,10 @@ std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> ChunkColumn::getHeig
 	}
 	return t;
 }
+GLboolean ChunkColumn::needsSaving()
+{
+	return needsSave;
+}
 #pragma endregion
 
 #pragma region Operations
@@ -540,9 +547,11 @@ void ChunkColumn::editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, Wor
 			blockStored = block;
 		}
 	}
+	needsSave = 1;
 }
 
 void ChunkColumn::save(std::string name, GLuint seed) {
+	if (!needsSave) return;
 	name = "Chunks/" + name + ".dat";
 	remove(name.c_str()); // deletes it
 
@@ -696,8 +705,10 @@ void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block,
 			lookingAt[i] += delta[i];
 		}
 		Blocks found = getBlock(lookingAt, 0, 1, worldMap);
-		if (getDets(found).isTransparant || block == Blocks::LEAF) {
-			addToMesh(face, TEXTURES[tex_index], worldPosition, mesh);
+		if (getDets(found).isTransparant || getDets(block).isTransparant) {
+			if (getDets(block).Name == "water" && getDets(found).Name != "water" || getDets(block).Name != "water") {
+				addToMesh(face, TEXTURES[tex_index], worldPosition, mesh);
+			}
 		}
 	}
 }

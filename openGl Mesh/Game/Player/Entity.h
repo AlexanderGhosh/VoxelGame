@@ -25,6 +25,7 @@ public:
 	GLboolean& getFlying();
 	void getNewTarget(glm::vec3 playerPos);
 	PlayerInv& getInventory();
+	GLboolean getSubmerged();
 	
 	void setPosition(const glm::vec3& pos);
 	void setVelocity(const glm::vec3& vel);
@@ -70,11 +71,10 @@ private:
 
 	glm::vec3 pos, vel, acc;
 	glm::vec3 forward, right;
-	GLfloat movementSpeed;
-	GLfloat jumpForce;
+	GLfloat movementSpeed, jumpForce, jumpForce_orig, resToGravity;
 	std::vector<Face> body;
 	Render::ChunkMeshRender renderer;
-	GLboolean grounded;
+	GLboolean grounded, submerged;
 	GLboolean hasBody;
 	BoxCollider collider;
 	Texture_Names textures[2];

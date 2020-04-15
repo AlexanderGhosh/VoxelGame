@@ -122,13 +122,6 @@ void World::breakBlock(glm::vec3 pos, glm::vec3 front) {
 	
 	std::tuple<glm::vec3, FACES_NAMES> intersect = getIntersectedBlock(chunkOcc, ray);
 	glm::vec3 p = std::get<0>(intersect);
-	if (std::get<1>(intersect) == NULL_) {
-		std::cout << "break null\n";
-		return;
-	}
-	else {
-		std::cout << "break found\n";
-	}
 
 	auto t = getAdjacentMapPointers(pos, RENDER_DISTANCE + 2);
 	chunkOcc->editBlock(p, 1, Blocks::AIR, &worldMap, t);
@@ -144,14 +137,6 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
 	std::tuple<glm::vec3, FACES_NAMES> intersect = getIntersectedBlock(chunkOcc, ray);
 	auto p = std::get<0>(intersect);
 	auto face = std::get<1>(intersect);
-
-	if (face == NULL_) {
-		std::cout << "place null\n";
-		return;
-	}
-	else {
-		std::cout << "place found\n";
-	}
 
 	switch (face)
 	{

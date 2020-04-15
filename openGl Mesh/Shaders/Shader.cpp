@@ -38,6 +38,18 @@ GLboolean Shader::setValue(std::string name, const GLint& value) {
 	setLocation(loc, value);
 	return GL_TRUE;
 }
+GLboolean Shader::setValue(std::string name, Material& value)
+{
+	GLboolean res = 0;
+	res = setValue(name + ".ambient", value.ambient);
+	if (!res) return 0;
+	res = setValue(name + ".diffuse", value.diffuse);
+	if (!res) return 0;
+	res = setValue(name + ".specular", value.specular);
+	if (!res) return 0;
+	res = setValue(name + ".shininess", value.shininess);
+	if (!res) return 0;
+}
 GLboolean Shader::setValue(std::string name, glm::vec4& value) {
 	GLint loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;

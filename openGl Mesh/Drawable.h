@@ -13,6 +13,6 @@ public:
 	void setUp(std::unordered_map<GLuint, FaceB_p>& meshes);
 private:
 	std::unordered_map<GLuint, FaceB> opaqueBuffer, transparantBuffer;
-	void draw(GLuint depthMap);
+	void draw(GLuint depthMap, Shader* shader = nullptr);
 	void clear();
 };

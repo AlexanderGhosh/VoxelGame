@@ -13,7 +13,7 @@ private: // properties
 	BlockStore* blockStore;
 	std::unordered_map<GLuint, FaceB_p> mesh;
 	GLubyte highest_natural_point;
-	GLboolean isFlat;
+	GLboolean isFlat, needsSave;
 
 public: // functions
 
@@ -42,6 +42,7 @@ public: // functions
 	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent); // mabye could be optimised
 	std::string getFileName();
 	BlockStore* getBlockStore();
+	GLboolean needsSaving();
 
 	// setters
 	void setBlockStore(BlockStore* bs);

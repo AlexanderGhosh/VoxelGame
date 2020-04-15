@@ -1,10 +1,20 @@
 #version 330 core
+
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+}; 
+
 out vec4 color;
 
 in vec3 Normal;
 in vec3 FragPos;
 in vec3 TexCoords;
 in vec4 FragPosLightSpace;
+
+uniform Material material;
 
 uniform samplerCube cubeMap; // samplerCube
 uniform sampler2D shadowMap;
@@ -17,11 +27,6 @@ const vec3 lightCol = vec3(0.3);
 
 float shadowBias = 0.005;
 
-/*void main(){
-    color = texture(cubeMap, TexCoords);
-}*/
-
-
 float ShadowCalculation(vec4 fragPosLightSpace);
 
 void main()
@@ -29,21 +34,20 @@ void main()
     vec4 colourA = texture(cubeMap, TexCoords);
     vec3 colour = colourA.rgb;
     // ambient
-    vec3 ambient = light_constant * colour; // 0.15
-    ambient = 0.3 * colour; // 0.15
+    vec3 ambient = material.ambient * colour; // 0.15
 
     // diffuse
     vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);  
 	float diff = max(dot(lightDir, norm), 0.0);
-    vec3 diffuse = diff * lightCol;
+    vec3 diffuse = diff * material.diffuse * lightCol;
 
     // specular
     vec3 viewDir = normalize(viewPos - FragPos);
     float spec = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);  
-    spec = pow(max(dot(norm, halfwayDir), 0.0), 64.0);
-    vec3 specular = spec * lightCol;    
+    spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
+    vec3 specular = spec * material.specular * lightCol;    
 
 
     shadowBias = max(0.05 * (1.0 - dot(norm, lightDir)), shadowBias);

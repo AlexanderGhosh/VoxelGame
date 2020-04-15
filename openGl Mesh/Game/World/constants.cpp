@@ -25,7 +25,7 @@ const std::array<Buffer*, 6> FACES = {
 	{ glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1), glm::vec3(1), glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1) }).getBuffer()
 }; 
 const std::vector<Texture*>TEXTURES = {
-	new Texture("grass/hd", ""),
+	new Texture("grass", ""),
 	new Texture("player/bottom", ""),
 	new Texture("player/top", ""),
 	new Texture("skybox", ""),
@@ -36,7 +36,8 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("log", ""),
 	new Texture("leaf", ""),
 	new Texture("vampire/bottom", ""),
-	new Texture("vampire/top", "")
+	new Texture("vampire/top", ""),
+	new Texture("sand", "")
 };
 const std::vector<Texture*>TEXTURES2D = {
 	new Texture("crosshair", ""),
@@ -61,16 +62,23 @@ std::map<Blocks, BlockDet> BLOCKS = {
 	{ Blocks::STONE, {} },
 	{ Blocks::WATER, {} },
 	{ Blocks::LOG, { } },
-	{ Blocks::LEAF, { } }
+	{ Blocks::LEAF, { } },
+	{ Blocks::SAND, { } }
 };
-const std::vector<Blocks> AllBlocks = {
-	Blocks::AIR,
-	Blocks::GRASS,
-	Blocks::DIRT,
-	Blocks::STONE,
-	Blocks::WATER,
-	Blocks::LOG,
-	Blocks::LEAF
+const std::vector<Material> MATERIALS = {
+	{ glm::vec3(0.3), glm::vec3(1), glm::vec3(0), 0 }, // grass
+	{ glm::vec3(1), glm::vec3(1), glm::vec3(1), 1 }, // player bottom
+	{ glm::vec3(1), glm::vec3(1), glm::vec3(1), 1 }, // player top
+	{ glm::vec3(1), glm::vec3(1), glm::vec3(1), 1 }, // skybox
+	{ glm::vec3(0.3), glm::vec3(1), glm::vec3(1), 32 }, // stone
+	{ glm::vec3(0.3), glm::vec3(1), glm::vec3(0), 0 }, // dirt
+	{ glm::vec3(0.4), glm::vec3(1), glm::vec3(1), 64 }, // water
+	{ glm::vec3(1), glm::vec3(1), glm::vec3(1), 1 }, // error
+	{ glm::vec3(0.4), glm::vec3(1), glm::vec3(0), 0 }, // log
+	{ glm::vec3(0.4), glm::vec3(1), glm::vec3(1), 64 }, // leaf
+	{ glm::vec3(1), glm::vec3(1), glm::vec3(1), 1 }, // vampire bottom
+	{ glm::vec3(1), glm::vec3(1), glm::vec3(1), 1 }, // vampire top
+	{ glm::vec3(0.4), glm::vec3(1), glm::vec3(0), 0 }, // sand
 };
 glm::vec3 LIGHTPOSITION = glm::vec3(-8, 80, -8);
 glm::vec3 LIGHTPOSITIONOrigin = glm::vec3(-8, 80, -8);
@@ -137,6 +145,9 @@ Texture_Names getTexture(Blocks block) {
 	case Blocks::LEAF:
 		res = Texture_Names::LEAF;
 		break;
+	case Blocks::SAND:
+		res = Texture_Names::SAND;
+		break;
 	}
 	if (res == Texture_Names::ERROR) {
 		// std::cout << "Error Texture created\n";
@@ -180,6 +191,9 @@ std::string getName(Blocks block) {
 	case Blocks::LEAF:
 		name = "leaf";
 		break;
+	case Blocks::SAND:
+		name = "sand";
+		break;
 	}
 	return name;
 }
@@ -198,6 +212,20 @@ BlockDet& getDets(Texture* tex) {
 		}
 	}
 	return BLOCKS[Blocks::AIR];
+}
+
+Material getMaterial(const Texture_Names& block)
+{
+	return MATERIALS[toIndex(block)];
+}
+
+Material getMaterial(const std::string& texName)
+{
+	for (GLuint i = 0; i < TEXTURES.size(); i++) {
+		if (texName == TEXTURES[i]->getName()) {
+			return getMaterial(Texture_Names(i));
+		}
+	}
 }
 
 glm::mat4 translate(glm::mat4 mat, glm::vec3 vec) {
@@ -232,9 +260,18 @@ Blocks itemToBlock(Item item)
 		return Blocks::LOG;
 	case 7:
 		return Blocks::LEAF;
+	case 8:
+		return Blocks::SAND;
 	}
 }
-
+Blocks toBlock(std::string name) {
+	for (auto& b : BLOCKS) {
+		if (name == b.second.Name) {
+			return b.first;
+		}
+	}
+	return Blocks::ERROR;
+}
 
 std::vector<Face> toFaces(FaceB_p face)
 {
