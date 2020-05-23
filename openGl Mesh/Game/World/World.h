@@ -25,7 +25,9 @@ public:
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block);
 
-	ChunkColumn* getChunkOccupied(glm::vec3 position); 
+	ChunkColumn* getChunkOccupied(glm::vec3 position);
+	glm::vec2 getChunkOccPosition(glm::vec3 position);
+
 	std::unordered_map<GLuint, FaceB_p>& getWorldMesh();
 	std::vector<ChunkColumn*> getAdjacentChunks(glm::vec3 worldPosition);
 	AdjacentMap getAdjacentMap(glm::vec3 worldPos, GLuint range = RENDER_DISTANCE);

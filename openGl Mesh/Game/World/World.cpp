@@ -171,7 +171,7 @@ void World::placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block) {
 }
 
 std::array<std::vector<glm::vec2>, 4> getNewOld(glm::vec2 oldChunkPos, glm::vec2 newChunkPos) {
-	std::array<std::vector<glm::vec2>, 4> res{};
+	std::array<std::vector<glm::vec2>, 4> res { };
 	GLint rd = RENDER_DISTANCE % 2 ? RENDER_DISTANCE : RENDER_DISTANCE + 1;
 	glm::ivec2 delta = (glm::ivec2)glm::normalize(newChunkPos - oldChunkPos);
 	glm::ivec2 translation(rd);
@@ -245,7 +245,10 @@ void World::updatePlayerPos(glm::vec3 pos) {
 
 	chunkOccupiedPosition = position;
 	if (!isDynamic) return;
-	std::vector<glm::vec2> newPos = addVic[0], newMap = addVic[1], victims = addVic[2], delMap = addVic[3];
+	std::vector<glm::vec2> newPos = addVic[0], 
+		newMap = addVic[1],
+		victims = addVic[2], 
+		delMap = addVic[3];
 	t1.end();
 	// t1.showTime("getNewOld", 1);
 
@@ -269,9 +272,9 @@ void World::updatePlayerPos(glm::vec3 pos) {
 
 	t1.start();
 	for (auto& p : delMap) {
-		if (worldMap.find(p) == worldMap.end()) {
+		/*if (worldMap.find(p) == worldMap.end()) {
 			int h = 0;
-		}
+		}*/
 		worldMap.erase(p);
 	}
 	t1.end();
@@ -280,14 +283,14 @@ void World::updatePlayerPos(glm::vec3 pos) {
 	t1.start();
 	for (auto& pos : newPos) {
 		std::string name = ChunkColumn(pos).getFileName();
-		if (savedChunks.find(pos) != savedChunks.end()) {
+		if (false && savedChunks.find(pos) != savedChunks.end()) {
 			chunks2.push_back({ savedChunks[pos] });
 		}
 		else {
 			chunks2.push_back({ pos, &worldMap });
 		}
 		if (chunks2.back().getMesh().size() > 0) continue;
-		chunks2.back().addTrees();
+		// chunks2.back().addTrees();
 		generationStack.push_back(chunks2.size() - 1);
 	}
 	t1.end();
@@ -300,9 +303,7 @@ void World::updatePlayerPos(glm::vec3 pos) {
 		worldMap[pos] = BlockStore(pos);
 	}
 	t1.end();
-	// t1.showTime("updating worldMap", 1);
-
-	auto s = worldMap.size() + chunks2.size();
+	t1.showTime("updating worldMap", 1);
 
 	t1.start();
 	std::vector<glm::vec2> check = centeredPositions(position, {}, RENDER_DISTANCE + 2);
@@ -312,11 +313,11 @@ void World::updatePlayerPos(glm::vec3 pos) {
 		}
 	}
 	t1.end();
-	// t1.showTime("check", 1);
+	t1.showTime("check", 1);
 
 	t.end();
 	t.showTime("all", 1);
-	std::cout << "worldmap size: " << std::to_string(worldMap.size()) << "\n_________________________________________________________________________\n";
+	std::cout << "worldmap size: " << std::to_string(worldMap.size()) << " generation stack: " << std::to_string(generationStack.size()) << "\n_________________________________________________________________________\n";
 }
 
 std::tuple<glm::vec3, FACES_NAMES> World::getIntersectedBlock(ChunkColumn*& chunkOcc, Ray ray) {
@@ -482,7 +483,7 @@ std::vector<glm::vec2> World::centeredPositions(glm::vec2 origin, std::vector<gl
 			glm::vec2 pos(x, y);
 			pos *= CHUNK_SIZE;
 			pos += origin;
-			if (std::find(exclude.begin(), exclude.end(), pos) != exclude.end()) continue;
+			if (exclude.size() > 0 && std::find(exclude.begin(), exclude.end(), pos) != exclude.end()) continue;
 			res.push_back(pos);
 		}
 	}

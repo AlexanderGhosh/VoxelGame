@@ -25,7 +25,6 @@ GLfloat world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, G
 
 HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLuint biome) {
 	// doesn't generate caves
-
 	NoiseOptions firstNoise;
 	firstNoise.amplitude = 105.0f;
 	firstNoise.octaves = 6;
@@ -46,6 +45,8 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 	{
 		for (GLubyte y = 0; y < CHUNK_SIZE; y++)
 		{
+			Timer t;
+			t.start();
 			std::vector<Block_Count>& encoded = res[x][y];
 			glm::vec2 worldPos = { x, y };
 			worldPos += chunkPos;
@@ -85,7 +86,8 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 				encoded.push_back({ Blocks::DIRT, 2 });
 			}
 			encoded.push_back({ Blocks::GRASS, 1 });
-
+			t.end();
+			t.showTime("hu", 1);
 		}
 	}
 	return res;

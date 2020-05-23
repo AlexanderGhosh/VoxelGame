@@ -114,7 +114,7 @@ void ChunkColumn::createMesh(WorldMap* worldMap)
 	GLubyte endZ[] = {
 		4, 8, 12, 16, 4, 8, 12, 16,4, 8, 12, 16, 4, 8, 12, 16
 	};
-	GLubyte lookDepth = WORLD_HEIGHT;
+	GLubyte lookDepth = 5;
 	for (GLubyte x = startX[stage]; x < endX[stage]; x++)
 	{
 		for (GLubyte z = startZ[stage]; z < endZ[stage]; z++)
