@@ -1,5 +1,6 @@
 #include "ChunkColumn.h"
 #include <algorithm>
+#include "../../../Buffer.h"
 
 #pragma region Public
 #pragma region Constructors

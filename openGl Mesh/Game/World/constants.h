@@ -5,10 +5,11 @@
 #include <unordered_map>
 #include <chrono>
 #include "../../Shaders/Shader.h"
-#include "../../Mesh.h"
+#include "../../Textures/Texture.h"
 
 class ChunkColumn;
 class BlockStore;
+class Buffer;
 
 #define RENDER_DISTANCE 11
 #define PLAYER_REACH 5
@@ -39,7 +40,6 @@ using Item = GLuint;
 
 using AdjacentMap_p = std::unordered_map<glm::vec2, ChunkColumn*>;
 
-using namespace Mesh; 
 struct BlockDet {
 	std::string Name;
 	Texture* Tex;

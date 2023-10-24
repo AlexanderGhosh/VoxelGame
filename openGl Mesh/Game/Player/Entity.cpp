@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "../../Buffer.h"
 Entity::Entity(glm::vec3 camOffset, GLboolean clipping, GLboolean flying) : Entity(1) {
 	hasCamera = 1;
 	movementSpeed = PLAYER_SPEED;

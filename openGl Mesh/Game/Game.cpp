@@ -18,16 +18,29 @@ UI_Renderer Game::uiRenderer = UI_Renderer();
 #pragma endregion
 
 
-Game::Game() {
-	// hasPlayer = false;
-	hasSkybox = false;
-	gameRunning = false;
-	lastFrameTime = -1.0f;
+/*
+
+	Ray ray;
+private:
+	GLFWwindow* window;
+	GLfloat deltaTime;
+	GLuint frameRate;
+	GLboolean gameRunning;
+	GLboolean hasSkybox;
+	GLfloat lastFrameTime;
+	glm::mat4 projection, lightProjection;
+	GLuint SBVAO,LSVAO, LSVBO, depthFBO;
+	std::map<GLchar, Character> Letters;
+	GLuint depthMap;
+	glm::ivec2 windowDim;
+*/
+
+Game::Game() :ray(), window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), projection(1), lightProjection(0), SBVAO(0), LSVAO(), depthFBO(), Letters(), depthMap(), windowDim() {
 	Game::mainCamera = new Camera({ 0, 2, 0 });
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 }
-Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) {
+Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) : Game() {
 	// this->hasPlayer = hasPlayer;
 	this->hasSkybox = hasSkybox;
 	setupPlayer();

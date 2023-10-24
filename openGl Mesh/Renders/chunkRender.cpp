@@ -1,4 +1,5 @@
 #include "chunkRender.h"
+#include "../Buffer.h"
 namespace Render {
 	ChunkMeshRender::ChunkMeshRender() {
 		canRender = GL_FALSE;

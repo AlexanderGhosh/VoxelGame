@@ -8,6 +8,7 @@
 
 #include "constants.h"
 #include "../../Drawable.h"
+#include "../../Buffer.h"
 #include "../../Ray.h"
 #include "Chunks/ChunkColumn.h"
 #include "../../EntityHander.h"

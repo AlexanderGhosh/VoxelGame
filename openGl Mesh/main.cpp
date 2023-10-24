@@ -5,6 +5,7 @@
 #include <gtc/type_ptr.hpp>
 
 #include "Game/Game.h"
+#include "Buffer.h"
 
 glm::ivec2 DIM(1280, 720);
 
@@ -29,7 +30,7 @@ int main() {
 	}
 	createBlocks();
 
-	Game game = Game(1, 1, DIM);
+	Game game = Game(true, true, DIM);
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
