@@ -1,4 +1,5 @@
 #include "ChunkColumn.h"
+#include <algorithm>
 
 #pragma region Public
 #pragma region Constructors
@@ -582,7 +583,7 @@ void ChunkColumn::save(std::string name, GLuint seed) {
 		Buffer*& b = std::get<0>(faces);
 		Texture*& t = std::get<1>(faces);
 		std::vector<glm::mat4>& modles = std::get<2>(faces);
-		meshes.push_back({ { (GLubyte)b->type, (GLubyte)t->getTexMap(), modles.size() }, modles });
+		meshes.push_back({ { (GLubyte)b->type, (GLubyte)t->getTexMap(), (GLuint) modles.size() }, modles });
 	} // convert to useable data
 	size = meshes.size();
 	out.write(reinterpret_cast<char*>(&size), sizeof(unsigned)); // size of mesh

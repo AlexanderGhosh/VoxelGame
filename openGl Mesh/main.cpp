@@ -1,7 +1,7 @@
 #include <iostream>
 #define GLEW_STATIC
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <glfw3.h>
 #include <gtc/type_ptr.hpp>
 
 #include "Game/Game.h"
@@ -57,8 +57,8 @@ void createBlocks() {
 }
 GLFWwindow* createWindow() {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -83,7 +83,7 @@ GLFWwindow* createWindow() {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disabel cursor visabilaty
 
-	glewExperimental = GL_TRUE; // uses the modern way of stuff
+	//glewExperimental = GL_TRUE; // uses the modern way of stuff
 
 	glViewport(0, 0, DIM.x, DIM.y);
 

@@ -2,7 +2,7 @@
 #include <iostream>
 #define GLEW_STATIC
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <glfw3.h>
 #include <glm.hpp>
 #include <gtx/string_cast.hpp>
 #include <gtc/matrix_transform.hpp>

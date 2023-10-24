@@ -3,7 +3,7 @@
 #include <string>
 #define GLEW_STATIC
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <glfw3.h>
 #include <GL/glew.h>
 
 #include <glm.hpp>
@@ -21,7 +21,7 @@ struct Material {
 };
 class Shader {
 public:
-	Shader() {
+	Shader() : program(0), name() {
 
 	}
 	Shader(std::string shaderName);

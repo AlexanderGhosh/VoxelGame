@@ -18,7 +18,7 @@ namespace Mesh {
 		Texture* texture;
 		std::vector<Buffer*> comboOf;
 		// Physics::BoxCollider collider;
-		FaceMesh() {
+		FaceMesh() : vertices(), normals(), texCoords(), position(), buffer(), texture(), comboOf(), rotation() {
 			vertices = std::vector<glm::vec3>();
 			normals = std::array<glm::vec3, 6>();
 			texCoords = std::array<glm::vec3, 6>();
@@ -28,7 +28,7 @@ namespace Mesh {
 			rotation = { 0, 0, 0 };
 			// collider = Physics::BoxCollider(position, 1);
 		}
-		FaceMesh(Buffer* buffer, Texture* texture, glm::vec3 pos = { 3, 2, 0 }) {
+		FaceMesh(Buffer* buffer, Texture* texture, glm::vec3 pos = { 3, 2, 0 }) : FaceMesh() {
 			position = pos;
 			this->buffer = buffer;
 			this->texture = texture;
