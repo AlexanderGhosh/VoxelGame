@@ -90,6 +90,12 @@
     <ClCompile Include="Game\Player\PlayerInv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeomRendering\BufferGeom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeomRendering\DrawableGeom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
@@ -227,6 +233,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Player\PlayerInv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeomRendering\BufferGeom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeomRendering\GeomData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeomRendering\DrawableGeom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeomRendering\DrawData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

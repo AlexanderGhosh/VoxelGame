@@ -11,7 +11,7 @@ class ChunkColumn;
 class BlockStore;
 class Buffer;
 
-#define RENDER_DISTANCE 11
+#define RENDER_DISTANCE 3
 #define PLAYER_REACH 5
 #define WORLD_HEIGHT 256
 #define WANDER_RANGE 15
@@ -75,7 +75,8 @@ enum SHADER_NAMES {
 	CROSSHAIR,
 	GLYPH,
 	RAY,
-	DEPTH
+	DEPTH,
+	GEOMBLOCKS
 };
 enum class Move_Dir {
 	FORWARD,

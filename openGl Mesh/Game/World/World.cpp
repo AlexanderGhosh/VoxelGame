@@ -2,12 +2,10 @@
 #include "gtx/string_cast.hpp"
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
-World::World() : created(0) {
-	chunks2 = std::vector<ChunkColumn>();
+World::World() : created(0), chunks2(), geomDrawable() {
 }
-World::World(GLboolean gen, GLboolean terrain, GLboolean isDynamic, GLuint seed) : created(0) {
+World::World(GLboolean gen, GLboolean terrain, GLboolean isDynamic, GLuint seed) : World() {
 	this->seed = seed;
-	chunks2 = std::vector<ChunkColumn>();
 	this->isDynamic = isDynamic;
 	if (!gen) return;
 	chunkOccupiedPosition = glm::vec2(0);
@@ -76,10 +74,12 @@ void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 	
 	genWorldMesh();
 	drawable.setUp(worldMesh);
+	geomDrawable.setUp(worldMesh);
 }
 
 void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap) {
-	drawable.render(c, projection, lightMatrix, depthMap);
+	// drawable.render(c, projection, lightMatrix, depthMap);
+	geomDrawable.render(c, projection, lightMatrix, depthMap);
 }
 void World::render(glm::mat4 lightProjection, glm::mat4 lightView)
 {
@@ -533,6 +533,7 @@ void World::advanceGeneration()
 		generationStack.pop_back();
 		genWorldMesh();
 		drawable.setUp(worldMesh);
+		geomDrawable.setUp(worldMesh);
 		return;
 	}
 

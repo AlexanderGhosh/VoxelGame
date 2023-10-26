@@ -14,6 +14,8 @@
 #include "../../EntityHander.h"
 #include "../../BlockStore.h"
 
+#include "../../GeomRendering/DrawableGeom.h"
+
 class World
 {
 public:
@@ -49,6 +51,8 @@ public:
 private:
 	std::unordered_map<GLuint, FaceB_p> worldMesh;
 	Drawable drawable;
+	DrawableGeom geomDrawable;
+
 	GLboolean isDynamic;
 	GLboolean reDraw;
 	glm::vec2 chunkOccupiedPosition;

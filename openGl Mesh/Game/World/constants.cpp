@@ -37,7 +37,7 @@ const std::vector<Texture*>TEXTURES = {
 	new Texture("dirt", ""),
 	new Texture("water", ""),
 	new Texture("error", ""),
-	new Texture("log", ""),
+	new Texture("vampire/bottom", ""), // logs
 	new Texture("leaf", ""),
 	new Texture("vampire/bottom", ""),
 	new Texture("vampire/top", ""),
@@ -57,7 +57,8 @@ const std::vector<Shader*>SHADERS = {
 	new Shader("crosshair"),
 	new Shader("glyph"),
 	new Shader("ray"),
-	new Shader("depth")
+	new Shader("depth"),
+	new Shader("GeomBlocks/geom", true)
 };
 std::map<Blocks, BlockDet> BLOCKS = {
 	{ Blocks::AIR, {} },

@@ -669,11 +669,11 @@ bool ChunkColumn::operator==(glm::vec2 pos)
 void ChunkColumn::addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, WorldMap* worldMap) {
 	if (block == Blocks::AIR) return;
 	glm::vec3 relativePos = worldPos ? getRelativePosition(position) : position;
-	GLfloat& x = relativePos.x;
-	GLfloat& y = relativePos.y;
-	GLfloat& z = relativePos.z;
+	const GLfloat& x = relativePos.x;
+	const GLfloat& y = relativePos.y;
+	const GLfloat& z = relativePos.z;
 
-	glm::vec3 worldPosition = getWorldPosition(relativePos);
+	glm::vec3 worldPosition = worldPos ? position : getWorldPosition(position);
 	auto addToMesh = [](Buffer* buffer, Texture* texture, glm::vec3 position, std::unordered_map<GLuint, FaceB_p>& mesh) {
 		GLuint key = std::pow(buffer->type + 1, 2) * std::pow(texture->getTexMap() + 1, 3);
 		glm::mat4 model = translate(glm::mat4(1), position);

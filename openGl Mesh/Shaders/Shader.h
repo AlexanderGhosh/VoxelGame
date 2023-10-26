@@ -21,10 +21,10 @@ struct Material {
 };
 class Shader {
 public:
-	Shader() : program(0), name() {
+	Shader() : program(0), name(), hasGeom(false) {
 
 	}
-	Shader(std::string shaderName);
+	Shader(std::string shaderName, bool hasGeom = false);
 	void setUp();
 	void setName(std::string name);
 	void bind();
@@ -37,6 +37,7 @@ public:
 	GLboolean setValue(std::string name, const GLint& value);
 	GLboolean setValue(std::string name, Material& value);
 private:
+	bool hasGeom;
 	GLuint program;
 	std::string name;
 

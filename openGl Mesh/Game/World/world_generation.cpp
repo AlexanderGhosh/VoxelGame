@@ -87,7 +87,7 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 			}
 			encoded.push_back({ Blocks::GRASS, 1 });
 			t.end();
-			t.showTime("hu", 1);
+			// t.showTime("hu", 1);
 		}
 	}
 	return res;

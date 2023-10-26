@@ -64,40 +64,6 @@ namespace Mesh {
 		buffer->destroy();
 		texture->unBind();
 	}
-	/*FaceMesh& operator+= (FaceMesh& mesh1, const FaceMesh& mesh2) {
-		mesh1.buffer->merge(*mesh2.buffer);
-		mesh1.comboOf.push_back(mesh2.buffer);
-		mesh1.setTexture(mesh2.texture);
-		mesh1.setPosition(mesh2.position);
-		mesh1.setRotation(mesh2.rotation);
-		return mesh1;
-	}*/
-	/*bool FaceMesh::operator <= (const FaceMesh& mesh) {
-		return buffer <= mesh.buffer;
-	}*/
-	/*void FaceMesh::operator() (FaceMesh* mesh, glm::vec3 pos) {
-		mesh->setPosition(pos);
-		*this += *mesh;
-	}*/
-	/*void FaceMesh::operator() (Buffer* buffer, Texture* texture, glm::vec3 pos) {
-		this->buffer->merge(*buffer);
-		comboOf.push_back(buffer);
-		setTexture(texture);
-		setPosition(pos);
-		setRotation({ 0, 0, 0 });
-	}*/
-	/*bool FaceMesh::isCombo() {
-		if (comboOf.size() > 1) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	Buffer* FaceMesh::getCombo(int index) {
-		if (index < 0 || index + 1 > comboOf.size()) return nullptr;
-		return comboOf[index];
-	}*/
 	std::vector<GLushort> FaceMesh::createIncides() {
 		std::vector<GLushort> indices;
 		std::vector<glm::vec3> vertices_unique;
@@ -115,12 +81,6 @@ namespace Mesh {
 		return indices;
 	}
 
-
-	/*
-		std::vector<FaceMesh*> faces;
-		glm::vec3 position;
-		Buffer* buffer;
-		Texture* texture;*/
 
 	BlockMesh::BlockMesh() : faces(), position(), buffer(), texture() {
 		faces = std::vector<FaceMesh*>();

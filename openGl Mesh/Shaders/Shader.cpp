@@ -1,7 +1,8 @@
 #include "Shader.h"
 
-Shader::Shader(std::string shaderName) {
+Shader::Shader(std::string shaderName, bool hasGeom) : Shader() {
 	name = shaderName;
+	this->hasGeom = hasGeom;
 }
 void Shader::bind() {
 	glUseProgram(program);
@@ -82,14 +83,15 @@ GLboolean Shader::setValue(std::string name, glm::mat4& value) {
 	return GL_TRUE;
 }
 void Shader::setUp() {
-	std::string vertexCode, fragmentCode;
-	std::ifstream vShaderFile, fShaderFile;
+	std::string vertexCode, geometryCode, fragmentCode;
+	std::ifstream vShaderFile, gShaderFile, fShaderFile;
 	vShaderFile.exceptions(std::ifstream::badbit);
+	gShaderFile.exceptions(std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::badbit);
 	try {
 		vShaderFile.open(("Shaders/" + name + "_v.glsl").c_str());
 		fShaderFile.open(("Shaders/" + name + "_f.glsl").c_str());
-		std::stringstream vShaderStream, fShaderStream;
+		std::stringstream vShaderStream, gShaderStream, fShaderStream;
 
 		vShaderStream << vShaderFile.rdbuf();
 		fShaderStream << fShaderFile.rdbuf();
@@ -99,14 +101,22 @@ void Shader::setUp() {
 		
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
+
+		if (hasGeom) {
+			gShaderFile.open(("Shaders/" + name + "_g.glsl").c_str());
+			gShaderStream << gShaderFile.rdbuf();
+			gShaderFile.close();
+			geometryCode = gShaderStream.str();
+		}
 	}
 	catch (std::ifstream::failure e) {
 		std::cout << "Shader file faild to be read" << std::endl;
 	}
 	const GLchar* vShaderCode = vertexCode.c_str();
+	const GLchar* gShaderCode = geometryCode.c_str();
 	const GLchar* fShaderCode = fragmentCode.c_str();
 
-	GLuint vertex, fragment;
+	GLuint vertex, geometry, fragment;
 	GLint success;
 	GLchar infoLog[512];
 
@@ -120,6 +130,18 @@ void Shader::setUp() {
 		std::cout << "Vertex compilation failed: " << std::string(infoLog) << std::endl;
 	}
 
+	//geometry
+	if (hasGeom) {
+		geometry = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometry, 1, &gShaderCode, nullptr);
+		glCompileShader(geometry);
+		glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(geometry, 512, NULL, infoLog);
+			std::cout << "Geometry compilation failed: " << std::string(infoLog) << std::endl;
+		}
+	}
+
 	//fragment
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment, 1, &fShaderCode, nullptr);
@@ -129,8 +151,11 @@ void Shader::setUp() {
 		glGetShaderInfoLog(fragment, 512, NULL, infoLog);
 		std::cout << "Fragment compilation failed: " << std::string(infoLog) << std::endl;
 	}
+
+	// the program
 	program = glCreateProgram();
 	glAttachShader(program, vertex);
+	if(hasGeom) glAttachShader(program, geometry);
 	glAttachShader(program, fragment);
 	glLinkProgram(program);
 
@@ -141,10 +166,14 @@ void Shader::setUp() {
 	}
 
 	glDetachShader(program, vertex);
+	if (hasGeom) glDetachShader(program, geometry);
 	glDetachShader(program, fragment);
 
 	glDeleteShader(vertex);
+	if (hasGeom) glDeleteShader(geometry);
 	glDeleteShader(fragment);
+
+	glUseProgram(0);
 }
 void Shader::setName(std::string name) {
 	this->name = name;

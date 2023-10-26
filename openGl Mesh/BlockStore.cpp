@@ -1,6 +1,6 @@
 #include "BlockStore.h"
 
-BlockStore::BlockStore() : initalised(0), hasTrees(0)
+BlockStore::BlockStore() : initalised(0), hasTrees(0), position(0)
 {
 	
 }

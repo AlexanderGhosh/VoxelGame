@@ -57,7 +57,7 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) : Gam
 }
 
 void Game::generateWorld() {
-	world = World(1, 1, 1);
+	world = World(true, true, false, 0);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -95,6 +95,7 @@ void Game::doLoop(glm::mat4 projection) {
 		}
 		player = &entityHander.getEntitys()[0];
 		if (world.created) {
+			// world.save();
 			entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);
 		}
 
@@ -160,19 +161,22 @@ void Game::showStuff() {
 	m = "Position: " + glm::to_string(player->getPosition());
 	showText(m, { 5, 850 }, 0.5f);
 
-	m = "Controlling: Player";
+	m = "View Direction: " + glm::to_string(player->getCamera().GetFront());
 	showText(m, { 5, 825 }, 0.5f);
+
+	m = "Controlling: Player";
+	showText(m, { 5, 80 }, 0.5f);
 
 	glm::vec2 p(0);
 	auto e = world.getChunkOccupied(player->getPosition());
 	if (e)  p = e->getPosition();
 	m = "Chunk Pos: " + glm::to_string(p);
-	showText(m, { 5, 800 }, 0.5f);
-
-	m = "Health: " + std::to_string(player->getHealth());
 	showText(m, { 5, 775 }, 0.5f);
 
-	ray.render(cam, projection);
+	m = "Health: " + std::to_string(player->getHealth());
+	showText(m, { 5, 750 }, 0.5f);
+
+	//ray.render(cam, projection);
 }
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;

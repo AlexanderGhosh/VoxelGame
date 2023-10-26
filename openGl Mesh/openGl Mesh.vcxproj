@@ -89,6 +89,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +124,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +157,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BlockStore.cpp" />
+    <ClCompile Include="GeomRendering\DrawableGeom.cpp" />
+    <ClCompile Include="GeomRendering\BufferGeom.cpp" />
     <ClCompile Include="EntityHander.cpp" />
     <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp" />
     <ClCompile Include="Game\Physics\BoxCollider.cpp" />
@@ -205,6 +209,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlockStore.h" />
+    <ClInclude Include="GeomRendering\DrawableGeom.h" />
+    <ClInclude Include="GeomRendering\BufferGeom.h" />
     <ClInclude Include="EntityHander.h" />
     <ClInclude Include="Game\World\Chunks\ChunkColumn.h" />
     <ClInclude Include="Game\Physics\BoxCollider.h" />
@@ -214,6 +220,8 @@
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\Player\Camera.h" />
     <ClInclude Include="Game\Player\Inventory.h" />
+    <ClInclude Include="GeomRendering\DrawData.h" />
+    <ClInclude Include="GeomRendering\GeomData.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Game\Player\PlayerInv.h" />
     <ClInclude Include="Ray.h" />
