@@ -19,10 +19,10 @@ DrawableGeom::~DrawableGeom()
 
 void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap)
 {
-	// glEnable(GL_CULL_FACE);
-	// glFrontFace(GL_CW);
+	//glEnable(GL_CULL_FACE);
+	//glFrontFace(GL_CW);
 	Shader* shader = SHADERS[GEOMBLOCKS];
-	// shader->setUp();
+
 	shader->bind();
 
 	glm::mat4 viewMatrix = cam.GetViewMatrix();

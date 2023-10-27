@@ -4,6 +4,6 @@
 struct GeomData {
 	glm::vec3 worldPos_;
 	// represetns which faces are to be rendered
-	unsigned int cubeType_;
+	float cubeType_;
 };
 
