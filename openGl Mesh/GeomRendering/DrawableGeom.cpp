@@ -19,8 +19,8 @@ DrawableGeom::~DrawableGeom()
 
 void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap)
 {
-	//glEnable(GL_CULL_FACE);
-	//glFrontFace(GL_CW);
+	// glEnable(GL_CULL_FACE);
+	// glFrontFace(GL_CW);
 	Shader* shader = SHADERS[GEOMBLOCKS];
 	// shader->setUp();
 	shader->bind();
@@ -38,9 +38,8 @@ void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatr
 	shader->setValue("cubeMap", 0);
 	shader->setValue("shadowMap", 1);
 
-	glEnable(GL_DEPTH_TEST);
+
 	draw(depthMap, shader);
-	glDisable(GL_DEPTH_TEST);
 
 	shader->unBind();
 	glDisable(GL_CULL_FACE);
@@ -81,6 +80,9 @@ void DrawableGeom::draw(unsigned int depthMap, Shader* shader)
 		tex->bind();
 		// glActiveTexture(GL_TEXTURE1);
 		// glBindTexture(GL_TEXTURE_2D, depthMap);
+
+		Material mat = getMaterial(tex->getName());
+		shader->setValue("material", mat);
 
 		buffer->bind();
 		glDrawArrays(GL_POINTS, 0, buffer->size());
