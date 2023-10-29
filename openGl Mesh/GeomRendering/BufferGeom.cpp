@@ -7,6 +7,13 @@ BufferGeom::BufferGeom() : VBO(0), VAO(0), size_(0)
 {
 }
 
+BufferGeom::~BufferGeom()
+{
+	if (!VAO || !VBO) {
+		cleanUp();
+	}
+}
+
 void BufferGeom::setUp(const GeomData* data, unsigned int size)
 {
 	glGenBuffers(1, &VBO); // VBO
@@ -50,4 +57,5 @@ void BufferGeom::cleanUp()
 {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	VAO = VBO = 0;
 }

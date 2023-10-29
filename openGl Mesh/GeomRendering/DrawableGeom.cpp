@@ -5,6 +5,7 @@
 #include "BufferGeom.h"
 #include "GeomData.h"
 #include "../Buffer.h"
+#include "../Game/World/Chunks/ChunkColumn.h"
 
 DrawableGeom::DrawableGeom() : data()
 {
@@ -72,21 +73,29 @@ void DrawableGeom::setUp(const std::unordered_map<GLuint, FaceB_p>& mesh)
 	}
 }
 
+void DrawableGeom::setUp(const Chunks& chunks)
+{
+	data.clear();
+	for (auto& chunk : chunks) {
+		data.emplace_back(chunk.buffer, nullptr);
+	}
+}
+
 void DrawableGeom::draw(unsigned int depthMap, Shader* shader)
 {
 	for (const DrawData& data : this->data) {
 		const BufferGeom* buffer = &data.buffer;
 		Texture* tex = data.texture;
-		tex->bind();
-		// glActiveTexture(GL_TEXTURE1);
-		// glBindTexture(GL_TEXTURE_2D, depthMap);
+		if (tex) {
+			tex->bind();
 
-		Material mat = getMaterial(tex->getName());
-		shader->setValue("material", mat);
+			Material mat = getMaterial(tex->getName());
+			shader->setValue("material", mat);
+		}
 
 		buffer->bind();
 		glDrawArrays(GL_POINTS, 0, buffer->size());
 		buffer->unbind();
-		tex->unBind();
+		if (tex) tex->unBind();
 	}
 }

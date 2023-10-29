@@ -5,6 +5,7 @@ class BufferGeom
 {
 public:
 	BufferGeom();
+	~BufferGeom();
 
 	void setUp(const GeomData* data, unsigned int size);
 

@@ -1,6 +1,7 @@
 #include "ChunkColumn.h"
 #include <algorithm>
 #include "../../../Buffer.h"
+#include "../../../GeomRendering/GeomData.h"
 
 #pragma region Public
 #pragma region Constructors
@@ -79,6 +80,62 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, WorldMap* worldMap) : position(pos), hig
 #pragma endregion
 
 #pragma region Creation
+void ChunkColumn::createMeshNew(WorldMap* worldMap) {
+	const std::list<glm::vec3> offsets = {
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, -1),
+
+		glm::vec3(-1, 0, 0),
+		glm::vec3(1, 0, 0),
+
+		glm::vec3(0, -1, 0),
+		glm::vec3(0, 1, 0)
+
+	};
+
+	std::vector<GeomData> bufferData;
+	for (int z = 0; z < CHUNK_SIZE; z++) {
+		for (int x = 0; x < CHUNK_SIZE; x++) {
+			GeomData d{};
+			d.worldPos_ = glm::vec3(x, 20, z) + position;
+			d.cubeType_ = TOP;
+			bufferData.push_back(d);
+			continue;
+
+			std::vector<Block_Count>& encodes = blockStore->getBlocksAt(x, z);
+			int height = 0;
+			for (const Block_Count& bc : encodes) {
+				height += bc.second;
+			}
+
+			for (auto itt = encodes.rbegin(); itt != encodes.rend(); itt++) {
+				Block_Count& bc = *itt;
+				GeomData data{};
+				data.worldPos_ = glm::vec3(x, height--, z) + position;
+
+				const BlockDet& blockDets = getDets(bc.first);
+				data.textureIndex_ = (unsigned int)bc.first;
+
+				int i = 0;
+				for (const glm::vec3& off : offsets) {
+					const glm::vec3 p = data.worldPos_ + off;
+					const Blocks& b = getBlock(p, true, true, worldMap);
+
+					const BlockDet& blockDets2 = getDets(b);
+
+					if (blockDets2.isTransparant && blockDets.Name != "water" && blockDets2.Name != "water") {
+						data.cubeType_ = i;
+						bufferData.push_back(data);
+					}
+					i++;
+				}
+			}
+		}
+	}
+
+	buffer.setUp(bufferData.data(), bufferData.size());
+	stage = PARTS_PER_CHUNK;
+}
 void ChunkColumn::createMesh(WorldMap* worldMap)
 {
 	try {

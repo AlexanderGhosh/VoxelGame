@@ -4,6 +4,7 @@
 #include <chrono>
 #include "../constants.h"
 #include "../../../BlockStore.h"
+#include "../../../GeomRendering/BufferGeom.h"
 class ChunkColumn
 {
 private: // properties
@@ -16,7 +17,7 @@ private: // properties
 	GLboolean isFlat, needsSave;
 
 public: // functions
-
+	BufferGeom buffer;
 	GLubyte stage;
 	GLboolean fromFile;
 
@@ -27,6 +28,7 @@ public: // functions
 	ChunkColumn(glm::vec2 pos, WorldMap* worldMap);
 
 	// creators
+	void createMeshNew(WorldMap* worldMap);
 	void createMesh(WorldMap* worldMap);
 	void createMesh(AdjacentMap& adjacentCunks, HeightMap heighMap);
 	void createMesh_flat(AdjacentMap& adjacentCunks);
