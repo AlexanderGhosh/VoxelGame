@@ -80,6 +80,27 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, WorldMap* worldMap) : position(pos), hig
 #pragma endregion
 
 #pragma region Creation
+
+const Blocks getBlockNew(const glm::vec3& worldPos, const WorldMap& map) {
+	glm::vec2 chunkPos(worldPos.x, worldPos.z);
+	chunkPos.x = ((int)chunkPos.x) / 16;
+	chunkPos.y = ((int)chunkPos.y) / 16;
+	chunkPos *= 16.f;
+
+	glm::vec3 localPos = worldPos;
+	localPos.x -= chunkPos.x;
+	localPos.z -= chunkPos.y;
+	localPos = abs(localPos);
+
+	auto itt = map.find(chunkPos);
+	if (itt == map.end()) {
+		return Blocks::ERROR;
+	}
+	auto pair = *itt;
+	BlockStore& chunk = pair.second;
+	return chunk.getBlock(localPos, false, true);
+}
+
 void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 	const std::list<glm::vec3> offsets = {
 		glm::vec3(0, 0, 1),
@@ -92,11 +113,7 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 		glm::vec3(0, -1, 0),
 
 	};
-
-	if (position.x + position.y != 0) {
-		int h = 0;
-	}
-
+	// 30,  ,13
 	std::vector<GeomData> bufferData;
 	GeomData data{};
 	for (int z = 0; z < CHUNK_SIZE; z++) {
@@ -114,13 +131,15 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 					height -= bc.second;
 					continue;
 				}
-				const BlockDet& blockDets = getDets(bc.first);
+				const BlockDet& blockDets1 = getDets(bc.first);
 				data.textureIndex_ = (unsigned int)bc.first;
 
 				int depth = 10;
 				for (unsigned int i = 0; i < (bc.second > depth ? depth : bc.second); i++) {
 					data.worldPos_ = glm::vec3(x, height--, z) + glm::vec3(position.x, 0, position.y);
-
+					if (data.worldPos_.x == 13 && data.worldPos_.z == 5) {
+						int j = 0;
+					}
 					int j = 0;
 					for (const glm::vec3& off : offsets) {
 						const glm::vec3 p = data.worldPos_ + off;
@@ -128,12 +147,9 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 
 						const BlockDet& blockDets2 = getDets(b);
 
-						if (blockDets2.isTransparant) {
+						if (blockDets2.isTransparant && (bc.first != b)) {
 							data.cubeType_ = j;
 							bufferData.push_back(data);
-						}
-						else {
-							int h = 0;
 						}
 						j++;
 					}
@@ -251,7 +267,7 @@ void ChunkColumn::addTrees() {
 		GLubyte x = pos.x;
 		GLubyte z = pos.y;
 		auto t = getHeightAt(pos, GL_TRUE, adjacent);
-		if (getBlock({ x, std::get<1>(t) - 1, z }, 0, 0) != Blocks::GRASS) {
+		if (getBlock({ x, std::get<1>(t), z }, 0, 0) != Blocks::GRASS) {
 			continue;
 		}
 		std::vector<Block_Count>* encoded = std::get<0>(t);

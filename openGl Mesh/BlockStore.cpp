@@ -60,7 +60,7 @@ Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition, GLboolean ch
 	}
 	for (Block_Count& encoded : encodes) {
 		relativePos.y -= encoded.second;
-		if (relativePos.y < 0) {
+		if (relativePos.y <= 0) {
 			return encoded.first;
 		}
 	}
