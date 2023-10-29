@@ -73,6 +73,7 @@ void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 
 	for (auto& chunk : chunks2) {
 		chunk.createMesh(&worldMap);
+		chunk.createMeshNew(&worldMap);
 		// chunk.setBlockStore(&worldMap[chunk.getPosition()]);
 	}
 

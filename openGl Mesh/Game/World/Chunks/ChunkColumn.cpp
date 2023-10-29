@@ -85,22 +85,18 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 		glm::vec3(0, 0, 1),
 		glm::vec3(0, 0, -1),
 
-		glm::vec3(-1, 0, 0),
 		glm::vec3(1, 0, 0),
+		glm::vec3(-1, 0, 0),
 
+		glm::vec3(0, 1, 0),
 		glm::vec3(0, -1, 0),
-		glm::vec3(0, 1, 0)
 
 	};
 
 	std::vector<GeomData> bufferData;
+	GeomData data{};
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
-			GeomData d{};
-			d.worldPos_ = glm::vec3(x, 20, z) + position;
-			d.cubeType_ = TOP;
-			bufferData.push_back(d);
-			continue;
 
 			std::vector<Block_Count>& encodes = blockStore->getBlocksAt(x, z);
 			int height = 0;
@@ -110,24 +106,31 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 
 			for (auto itt = encodes.rbegin(); itt != encodes.rend(); itt++) {
 				Block_Count& bc = *itt;
-				GeomData data{};
-				data.worldPos_ = glm::vec3(x, height--, z) + position;
-
+				if (bc.first == Blocks::AIR) {
+					height -= bc.second;
+					continue;
+				}
 				const BlockDet& blockDets = getDets(bc.first);
 				data.textureIndex_ = (unsigned int)bc.first;
 
-				int i = 0;
-				for (const glm::vec3& off : offsets) {
-					const glm::vec3 p = data.worldPos_ + off;
-					const Blocks& b = getBlock(p, true, true, worldMap);
+				int depth = 5;
+				for (unsigned int i = 0; i < (bc.second > depth ? depth : bc.second); i++) {
+					data.worldPos_ = glm::vec3(x, height--, z) + glm::vec3(position.x, 0, position.y);
 
-					const BlockDet& blockDets2 = getDets(b);
+					int j = 0;
+					for (const glm::vec3& off : offsets) {
+						const glm::vec3 p = data.worldPos_ + off;
+						const Blocks& b = getBlock(p, true, true, worldMap);
 
-					if (blockDets2.isTransparant && blockDets.Name != "water" && blockDets2.Name != "water") {
-						data.cubeType_ = i;
-						bufferData.push_back(data);
+						const BlockDet& blockDets2 = getDets(b);
+
+						if (blockDets2.isTransparant && blockDets.Name != "water" && blockDets2.Name != "water") {
+							data.cubeType_ = j;
+							bufferData.push_back(data);
+						}
+						j++;
 					}
-					i++;
+
 				}
 			}
 		}
