@@ -33,9 +33,6 @@ public: // functions
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
 	std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent); // mabye could be optimised
 
-	// setters
-	void editBlock(glm::vec3 pos, bool worldPos, Blocks block, WorldMap* worldmap, AdjacentMap_p& allChunks);
-
 private: // functions
 	// editors
 	void addBlock(glm::vec3 position, bool worldPos, Blocks block, WorldMap* worldMap);

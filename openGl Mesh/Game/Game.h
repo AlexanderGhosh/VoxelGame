@@ -18,6 +18,7 @@
 #include "../EntityHander.h"
 #include "Player/Entity.h"
 #include "World/World.h"
+#include "../Ray.h"
 struct Character {
 	unsigned int     TextureID;  // ID handle of the glyph texture
 	glm::ivec2 Size;       // Size of glyph

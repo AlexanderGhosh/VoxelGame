@@ -18,7 +18,7 @@ DrawableGeom::~DrawableGeom()
 	}
 }
 
-void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap)
+void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) const
 {
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
@@ -54,7 +54,7 @@ void DrawableGeom::setUp(const Chunks& chunks)
 	}
 }
 
-void DrawableGeom::draw(unsigned int depthMap, Shader* shader)
+void DrawableGeom::draw(unsigned int depthMap, Shader* shader) const
 {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (const DrawData& data : this->data) {

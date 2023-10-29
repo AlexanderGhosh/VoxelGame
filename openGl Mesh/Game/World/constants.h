@@ -4,6 +4,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <chrono>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <gtx/hash.hpp>
 #include "../../Shaders/Shader.h"
 #include "../../Textures/Texture.h"
 

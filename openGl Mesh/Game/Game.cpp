@@ -35,7 +35,7 @@ private:
 	glm::ivec2 windowDim;
 */
 
-Game::Game() :ray(), window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), projection(1), lightProjection(0), SBVAO(0), LSVAO(), depthFBO(), Letters(), depthMap(), windowDim() {
+Game::Game() : ray(), window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), projection(1), lightProjection(0), SBVAO(0), LSVAO(), depthFBO(), Letters(), depthMap(), windowDim() {
 	Game::mainCamera = new Camera({ 0, 2, 0 });
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -57,7 +57,7 @@ Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 }
 
 void Game::generateWorld() {
-	world = World(true, true, false, 32);
+	world = World(true, false, 32);
 	world.setUpDrawable();
 }
 void Game::doLoop(glm::mat4 projection) {
@@ -91,8 +91,8 @@ void Game::doLoop(glm::mat4 projection) {
 		std::vector<ChunkColumn*> occuped;
 		for (auto& e : entityHander.getEntitys()) {
 			glm::vec3& p = e.getPosition();
-			adjacentChunkss.push_back(world.getAdjacentChunks(p));
-			occuped.push_back(world.getChunkOccupied(p));
+			// adjacentChunkss.push_back(world.getAdjacentChunks(p));
+			// occuped.push_back(world.getChunkOccupied(p));
 		}
 		player = &entityHander.getEntitys()[0];
 
@@ -167,10 +167,10 @@ void Game::showStuff() {
 	showText(m, { 5, 80 }, 0.5f);
 
 	glm::vec2 p(0);
-	auto e = world.getChunkOccupied(player->getPosition());
-	if (e)  p = e->getPosition();
-	m = "Chunk Pos: " + glm::to_string(p);
-	showText(m, { 5, 775 }, 0.5f);
+	// auto e = world.getChunkOccupied(player->getPosition());
+	// if (e)  p = e->getPosition();
+	// m = "Chunk Pos: " + glm::to_string(p);
+	// showText(m, { 5, 775 }, 0.5f);
 
 	m = "Health: " + std::to_string(player->getHealth());
 	showText(m, { 5, 750 }, 0.5f);
@@ -197,14 +197,14 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
 		Camera& cam = player->getCamera();
 		Ray ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH);
-		auto e = world.getIntersectedEntity(entityHander, ray);
-		if (!e) {
-			std::cout << "No Entity found" << std::endl;
-		}
-		else {
-			std::cout << "Entity found at: " << glm::to_string(e->getPosition()) << std::endl;
-			e->takeDamage(10);
-		}
+		// auto e = world.getIntersectedEntity(entityHander, ray);
+		// if (!e) {
+		// 	std::cout << "No Entity found" << std::endl;
+		// }
+		// else {
+		// 	std::cout << "Entity found at: " << glm::to_string(e->getPosition()) << std::endl;
+		// 	e->takeDamage(10);
+		// }
 
 	}
 	if (key >= 0 && key < 1024) {
@@ -235,11 +235,11 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		Camera& cam = player->getCamera();
-		Game::world.breakBlock(cam.GetPosition(), cam.GetFront());
+		//Game::world.breakBlock(cam.GetPosition(), cam.GetFront());
 	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		Camera& cam = player->getCamera();
-		Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player->getInventory().getBlockHotbar(player->getInventory().getHotbarSelected()));
+		//Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player->getInventory().getBlockHotbar(player->getInventory().getHotbarSelected()));
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 		Camera& cam = player->getCamera();

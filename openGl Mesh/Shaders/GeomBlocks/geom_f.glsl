@@ -45,7 +45,7 @@ void main()
 {    
     vec4 colourA = texture(cubeMap, TexCoords);
     colourA = blockColours[blockColourIndex - 1u];
-    material.ambient = vec3(1);
+    material.ambient = vec3(0.25);
     material.diffuse = vec3(1);
     material.specular = vec3(0);
     material.shininess = 10;

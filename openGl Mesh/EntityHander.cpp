@@ -32,7 +32,7 @@ void EntityHander::update(glm::mat4 projection, Camera& cam, std::vector<std::ve
 	int j = 0;
 	int k = 0;
 	for (Entity& e : entitys) {
-		e.update(projection, cam, adjacent[j++], occuped[k++], deltaTime, entitys[0].getPosition());
+		//e.update(projection, cam, adjacent[j++], occuped[k++], deltaTime, entitys[0].getPosition());
 		if (e.isDead) {
 			victimIndex.push_back(i);
 			continue;
