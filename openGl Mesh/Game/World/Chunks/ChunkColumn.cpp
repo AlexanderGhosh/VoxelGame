@@ -134,8 +134,7 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 				const BlockDet& blockDets1 = getDets(bc.first);
 				data.textureIndex_ = (unsigned int)bc.first;
 
-				int depth = 10;
-				for (unsigned int i = 0; i < (bc.second > depth ? depth : bc.second); i++) {
+				for (unsigned int i = 0; i < bc.second; i++) {
 					data.worldPos_ = glm::vec3(x, height--, z) + glm::vec3(position.x, 0, position.y);
 					if (data.worldPos_.x == 13 && data.worldPos_.z == 5) {
 						int j = 0;
