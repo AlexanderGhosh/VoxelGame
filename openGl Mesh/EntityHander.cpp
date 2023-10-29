@@ -11,12 +11,12 @@ void EntityHander::render(Camera& cam, glm::mat4 projection, std::vector<ChunkCo
 	}
 }
 
-void EntityHander::addEntity(Entity& entity, GLboolean create) {
+void EntityHander::addEntity(Entity& entity, bool create) {
 	entitys.push_back(entity);
 	if(create) entitys.back().create();
 }
 
-void EntityHander::updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> occupied, std::vector<std::vector<ChunkColumn*>> adjacentChunks) {
+void EntityHander::updatePositions(float deltaTime, std::vector<ChunkColumn*> occupied, std::vector<std::vector<ChunkColumn*>> adjacentChunks) {
 	std::string collision = "";
 	int i = 0;
 	int j = 0;
@@ -26,8 +26,8 @@ void EntityHander::updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> 
 	}
 }
 
-void EntityHander::update(glm::mat4 projection, Camera& cam, std::vector<std::vector<ChunkColumn*>> adjacent, std::vector<ChunkColumn*> occuped, GLfloat deltaTime) {
-	std::vector<GLuint> victimIndex;
+void EntityHander::update(glm::mat4 projection, Camera& cam, std::vector<std::vector<ChunkColumn*>> adjacent, std::vector<ChunkColumn*> occuped, float deltaTime) {
+	std::vector<unsigned int> victimIndex;
 	int i = 0;
 	int j = 0;
 	int k = 0;
@@ -41,7 +41,7 @@ void EntityHander::update(glm::mat4 projection, Camera& cam, std::vector<std::ve
 		i++;
 	}
 	i = 0;
-	for (GLuint& index : victimIndex) {
+	for (unsigned int& index : victimIndex) {
 		entitys.erase(entitys.begin() + index - i);
 		i++;
 	}

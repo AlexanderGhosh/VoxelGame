@@ -13,9 +13,9 @@ namespace Mesh {
 		position = { 0, 0, 0 };
 		setupBufferStructure();
 	}
-	void FaceMesh::setupBufferStructure(GLboolean is3D) {
+	void FaceMesh::setupBufferStructure(bool is3D) {
 		//std::vector<GLushort> indices = createIncides();
-		std::vector<GLfloat> bufferData;
+		std::vector<float> bufferData;
 		for (int i = 0; i < 6; i++)
 		{
 			bufferData.push_back(vertices[i].x + position.x);
@@ -33,7 +33,7 @@ namespace Mesh {
 			}
 		}
 		buffer->setBufferData(bufferData);
-		buffer->setStructure({ (is3D) ? (GLuint)9 : (GLuint)8, 3, {3, 3, (is3D) ? (GLuint)3 : (GLuint)2} });
+		buffer->setStructure({ (is3D) ? (unsigned int)9 : (unsigned int)8, 3, {3, 3, (is3D) ? (unsigned int)3 : (unsigned int)2} });
 	}
 	/*void FaceMesh::bindTexture() {
 		texture->bind();

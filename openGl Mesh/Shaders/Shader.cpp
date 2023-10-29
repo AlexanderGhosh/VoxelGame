@@ -10,38 +10,38 @@ void Shader::bind() {
 void Shader::unBind() {
 	glUseProgram(0);
 }
-GLint Shader::getLocation(std::string name) {
+int Shader::getLocation(std::string name) {
 	return glGetUniformLocation(program, name.c_str());
 }
 
-void Shader::setLocation(GLint& location, glm::mat4& value) {
+void Shader::setLocation(int& location, glm::mat4& value) {
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
-void Shader::setLocation(GLint& location, glm::vec4& value) {
+void Shader::setLocation(int& location, glm::vec4& value) {
 	glUniform4f(location, value.x, value.y, value.z, value.w);
 }
-void Shader::setLocation(GLint& location, glm::vec3& value) {
+void Shader::setLocation(int& location, glm::vec3& value) {
 	glUniform3f(location, value.x, value.y, value.z);
 }
-void Shader::setLocation(GLint& location, glm::vec2& value)
+void Shader::setLocation(int& location, glm::vec2& value)
 {
 	glUniform2f(location, value.x, value.y);
 }
-void Shader::setLocation(GLint& location, GLfloat& value) {
+void Shader::setLocation(int& location, float& value) {
 	glUniform1f(location, value);
 }
-void Shader::setLocation(GLint& location, const GLint& value) {
+void Shader::setLocation(int& location, const int& value) {
 	glUniform1i(location, value);
 }
-GLboolean Shader::setValue(std::string name, const GLint& value) {
-	GLint loc = getLocation(name);
+bool Shader::setValue(std::string name, const int& value) {
+	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-GLboolean Shader::setValue(std::string name, Material& value)
+bool Shader::setValue(std::string name, Material& value)
 {
-	GLboolean res = 0;
+	bool res = 0;
 	res = setValue(name + ".ambient", value.ambient);
 	if (!res) return 0;
 	res = setValue(name + ".diffuse", value.diffuse);
@@ -51,33 +51,33 @@ GLboolean Shader::setValue(std::string name, Material& value)
 	res = setValue(name + ".shininess", value.shininess);
 	if (!res) return 0;
 }
-GLboolean Shader::setValue(std::string name, glm::vec4& value) {
-	GLint loc = getLocation(name);
+bool Shader::setValue(std::string name, glm::vec4& value) {
+	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-GLboolean Shader::setValue(std::string name, glm::vec3& value) {
-	GLint loc = getLocation(name);
+bool Shader::setValue(std::string name, glm::vec3& value) {
+	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-GLboolean Shader::setValue(std::string name, glm::vec2& value)
+bool Shader::setValue(std::string name, glm::vec2& value)
 {
-	GLint loc = getLocation(name);
+	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-GLboolean Shader::setValue(std::string name, GLfloat& value) {
-	GLint loc = getLocation(name);
+bool Shader::setValue(std::string name, float& value) {
+	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-GLboolean Shader::setValue(std::string name, glm::mat4& value) {
-	GLint loc = getLocation(name);
+bool Shader::setValue(std::string name, glm::mat4& value) {
+	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
@@ -116,8 +116,8 @@ void Shader::setUp() {
 	const GLchar* gShaderCode = geometryCode.c_str();
 	const GLchar* fShaderCode = fragmentCode.c_str();
 
-	GLuint vertex, geometry, fragment;
-	GLint success;
+	unsigned int vertex, geometry, fragment;
+	int success;
 	GLchar infoLog[512];
 
 	//vertex

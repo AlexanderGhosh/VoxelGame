@@ -1,21 +1,19 @@
 #include "BlockStore.h"
 
-BlockStore::BlockStore() : initalised(0), hasTrees(0), position(0)
+BlockStore::BlockStore() : position(), heightMap(), editedBlocks(), hasTrees(false) { }
+
+BlockStore::BlockStore(glm::vec2 pos, unsigned int seed) : BlockStore()
 {
-	
+	position = pos;
+	heightMap = world_generation::createHeightMap(pos, seed);
 }
 
-BlockStore::BlockStore(glm::vec2 pos) : position(pos), editedBlocks(), initalised(1), hasTrees(0)
-{
-	heightMap = world_generation::createHeightMap(pos, 32);
-}
-
-glm::vec2& BlockStore::getPosition()
+const glm::vec2& BlockStore::getPosition() const
 {
 	return position;
 }
 
-HeightMap& BlockStore::getHeightMap()
+const HeightMap& BlockStore::getHeightMap() const
 {
 	return heightMap;
 }
@@ -30,12 +28,12 @@ std::vector<Block_Count>& BlockStore::getBlocksAt(glm::vec2 pos)
 	return heightMap[pos.x][pos.y];
 }
 
-std::vector<Block_Count>& BlockStore::getBlocksAt(GLfloat x, GLfloat z)
+std::vector<Block_Count>& BlockStore::getBlocksAt(float x, float z)
 {
 	return heightMap[x][z];
 }
 
-Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition, GLboolean checkEdited)
+const Blocks BlockStore::getBlock(glm::vec3 pos, bool worldPosition, bool checkEdited) const
 {
 	auto getRelativePosition = [&](glm::vec3 pos) -> glm::vec3 {
 		return pos - this->getPosition();
@@ -43,13 +41,9 @@ Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition, GLboolean ch
 	glm::vec3 relativePos = worldPosition ? getRelativePosition(pos) : pos;
 	// check changed blocks
 	if (checkEdited) {
-		GLuint size = editedBlocks.size();
-		Blocks t = editedBlocks[relativePos];
-		if (editedBlocks.size() > size) {
-			editedBlocks.erase(relativePos);
-		}
-		else {
-			return t;
+		unsigned int size = editedBlocks.size();
+		if (editedBlocks.find(relativePos) != editedBlocks.cend()) {
+			return editedBlocks.at(relativePos);
 		}
 	}
 	// get from height map
@@ -67,14 +61,9 @@ Blocks BlockStore::getBlock(glm::vec3 pos, GLboolean worldPosition, GLboolean ch
 	return Blocks::AIR;
 }
 
-GLboolean BlockStore::doesHaveTrees()
+bool BlockStore::doesHaveTrees()
 {
 	return hasTrees;
-}
-
-GLboolean BlockStore::isInitilised()
-{
-	return initalised;
 }
 
 void BlockStore::setPosition(glm::vec2 pos)
@@ -92,7 +81,7 @@ void BlockStore::setEditedBlocks(std::unordered_map<glm::vec3, Blocks>& edited)
 	editedBlocks = edited;
 }
 
-void BlockStore::setHaveTrees(GLboolean trees)
+void BlockStore::setHaveTrees(bool trees)
 {
 	hasTrees = trees;
 }

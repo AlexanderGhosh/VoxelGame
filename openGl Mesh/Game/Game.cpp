@@ -2,15 +2,15 @@
 
 
 #pragma region GameConfig
-GLboolean GameConfig::showFPS = false;
+bool GameConfig::showFPS = false;
 glm::vec3 GameConfig::backgroundCol = { 0.5, 0.5, 0.5 };
-GLuint GameConfig::FPSlock = 0;
+unsigned int GameConfig::FPSlock = 0;
 #pragma endregion
 
 #pragma region Static Members
 Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
 glm::vec3 Game::mouseData(0);
-std::array<GLboolean, 1024> Game::keys = std::array<GLboolean, 1024>();
+std::array<bool, 1024> Game::keys = std::array<bool, 1024>();
 Entity* Game::player = new Entity();
 World Game::world = World(0);
 EntityHander Game::entityHander = EntityHander();
@@ -23,15 +23,15 @@ UI_Renderer Game::uiRenderer = UI_Renderer();
 	Ray ray;
 private:
 	GLFWwindow* window;
-	GLfloat deltaTime;
-	GLuint frameRate;
-	GLboolean gameRunning;
-	GLboolean hasSkybox;
-	GLfloat lastFrameTime;
+	float deltaTime;
+	unsigned int frameRate;
+	bool gameRunning;
+	bool hasSkybox;
+	float lastFrameTime;
 	glm::mat4 projection, lightProjection;
-	GLuint SBVAO,LSVAO, LSVBO, depthFBO;
+	unsigned int SBVAO,LSVAO, LSVBO, depthFBO;
 	std::map<GLchar, Character> Letters;
-	GLuint depthMap;
+	unsigned int depthMap;
 	glm::ivec2 windowDim;
 */
 
@@ -40,7 +40,7 @@ Game::Game() :ray(), window(), deltaTime(), frameRate(), gameRunning(false), has
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 }
-Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) : Game() {
+Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 	// this->hasPlayer = hasPlayer;
 	this->hasSkybox = hasSkybox;
 	setupPlayer();
@@ -57,11 +57,8 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) : Gam
 }
 
 void Game::generateWorld() {
-	world = World(true, true, false, 0);
-	world.genWorldMesh();
-	world.drawable.setUp(world.worldMesh);
-	world.geomDrawable.setUp(world.worldMesh);
-	world.geomDrawable.setUp(world.chunks2);
+	world = World(true, true, false, 32);
+	world.setUpDrawable();
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -98,10 +95,8 @@ void Game::doLoop(glm::mat4 projection) {
 			occuped.push_back(world.getChunkOccupied(p));
 		}
 		player = &entityHander.getEntitys()[0];
-		if (world.created) {
-			// world.save();
-			entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);
-		}
+
+		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);
 
 		showStuff();
 		showFPS();
@@ -113,7 +108,7 @@ void Game::doLoop(glm::mat4 projection) {
 	}
 }
 void Game::calcTimes() {
-	GLfloat frame = glfwGetTime();
+	float frame = glfwGetTime();
 	deltaTime = frame - lastFrameTime;
 	if (lastFrameTime == -1) deltaTime = 1.0f / 60.0f;
 	lastFrameTime = frame;
@@ -128,7 +123,7 @@ std::string m;
 void Game::proccesEvents() {
 	glfwPollEvents();
 }
-const GLuint SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
+const unsigned int SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
 void Game::showStuff() {
 	Camera& cam = player->getCamera();
 	Shader* s = SHADERS[DEPTH];
@@ -197,7 +192,6 @@ void Game::setupPlayer() {
 }
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-		world.save();
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
@@ -229,8 +223,8 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 		Game::mouseData.z = false;
 	}
 
-	GLfloat xOffset = xPos - Game::mouseData.x;
-	GLfloat yOffset = Game::mouseData.y - yPos;
+	float xOffset = xPos - Game::mouseData.x;
+	float yOffset = Game::mouseData.y - yPos;
 
 	Game::mouseData.x = xPos;
 	Game::mouseData.y = yPos;
@@ -266,7 +260,7 @@ void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
 	num = std::to_string(i);
 	uiRenderer.popWhere("slot_selected");
 	UI_Element& element = uiRenderer.getWhere("slot" + num);
-	UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
+	UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
 	uiRenderer.appendElement(e);
 	player->getInventory().setHotbarSelected(i);
 }
@@ -278,7 +272,7 @@ void Game::setupEventCB(GLFWwindow* window) {
 }
 void Game::processKeys() {
 	auto& k = Game::keys;
-	GLfloat speed = 9.0f;
+	float speed = 9.0f;
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
 		speed = 12.0f;
 		player->setMovementSpeed(PLAYER_SPEED * 2.5f);
@@ -329,7 +323,6 @@ void Game::processKeys() {
 		}
 	}*/
 	Camera& cam = player->getCamera();
-	world.updatePlayerPos(player->getPosition());
 	if (k[GLFW_KEY_0]) {
 		ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH, 1);
 	}
@@ -373,7 +366,7 @@ void Game::processKeys() {
 	if (num == "") return;
 	uiRenderer.popWhere("slot_selected");
 	UI_Element& element = uiRenderer.getWhere("slot" + num);
-	UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
+	UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
 	uiRenderer.appendElement(e);
 	player->getInventory().setHotbarSelected(std::stoi(num));
 }
@@ -381,7 +374,7 @@ void Game::cleanUp() {
 }
 
 void Game::makeSkybox(std::string skybox) {
-	GLfloat skyboxVertices[] = {
+	float skyboxVertices[] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
@@ -426,14 +419,14 @@ void Game::makeSkybox(std::string skybox) {
 		 1.0f, -1.0f,  1.0f
 	};
 	// skybox VAO
-	GLuint skyboxVBO;
+	unsigned int skyboxVBO;
 	glGenVertexArrays(1, &SBVAO);
 	glGenBuffers(1, &skyboxVBO);
 	glBindVertexArray(SBVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	auto& shader = SHADERS[SKYBOX];
 	shader->bind();
@@ -459,30 +452,30 @@ void Game::showSkybox() {
 
 void Game::createGUI() {
 	uiRenderer = UI_Renderer(SHADERS[SHADER_NAMES::CROSSHAIR]);
-	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::CROSSHAIR], "crosshair");
+	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::CROSSHAIR], "crosshair");
 
-	UI_Element slot0 = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot0");
-	UI_Element slot1 = UI_Element({ -0.18, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot1");
-	UI_Element slot2 = UI_Element({ -0.12, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot2");
-	UI_Element slot3 = UI_Element({ -0.06, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot3");
-	UI_Element slot4 = UI_Element({ 0, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot4"); // mid
-	UI_Element slot5 = UI_Element({ 0.06, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot5");
-	UI_Element slot6 = UI_Element({ 0.12, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot6");
-	UI_Element slot7 = UI_Element({ 0.18, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot7");
-	UI_Element slot8 = UI_Element({ 0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_NORM], "slot8");
+	UI_Element slot0 = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot0");
+	UI_Element slot1 = UI_Element({ -0.18, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot1");
+	UI_Element slot2 = UI_Element({ -0.12, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot2");
+	UI_Element slot3 = UI_Element({ -0.06, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot3");
+	UI_Element slot4 = UI_Element({ 0, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot4"); // mid
+	UI_Element slot5 = UI_Element({ 0.06, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot5");
+	UI_Element slot6 = UI_Element({ 0.12, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot6");
+	UI_Element slot7 = UI_Element({ 0.18, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot7");
+	UI_Element slot8 = UI_Element({ 0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot8");
 
-	UI_Element slotSelected = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(GLuint)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
+	UI_Element slotSelected = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
 
-	UI_Element heart0 = UI_Element({ -0.26, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart0");
-	UI_Element heart1 = UI_Element({ -0.22, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart1");
-	UI_Element heart2 = UI_Element({ -0.18, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart2");
-	UI_Element heart3 = UI_Element({ -0.14, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart3");
-	UI_Element heart4 = UI_Element({ -0.10, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart4");
-	UI_Element heart5 = UI_Element({ -0.06, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart5");
-	UI_Element heart6 = UI_Element({ -0.02, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart6");
-	UI_Element heart7 = UI_Element({ 0.02, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart7");
-	UI_Element heart8 = UI_Element({ 0.06, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart8");
-	UI_Element heart9 = UI_Element({ 0.10, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(GLuint)Texture_Names_2D::LIVE_HEART], "heart9");
+	UI_Element heart0 = UI_Element({ -0.26, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart0");
+	UI_Element heart1 = UI_Element({ -0.22, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart1");
+	UI_Element heart2 = UI_Element({ -0.18, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart2");
+	UI_Element heart3 = UI_Element({ -0.14, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart3");
+	UI_Element heart4 = UI_Element({ -0.10, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart4");
+	UI_Element heart5 = UI_Element({ -0.06, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart5");
+	UI_Element heart6 = UI_Element({ -0.02, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart6");
+	UI_Element heart7 = UI_Element({ 0.02, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart7");
+	UI_Element heart8 = UI_Element({ 0.06, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart8");
+	UI_Element heart9 = UI_Element({ 0.10, -0.83 }, { 0.3, 0.3 }, TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart9");
 
 	uiRenderer.appendElement(slot0);
 	uiRenderer.appendElement(slot1);
@@ -509,14 +502,14 @@ void Game::createGUI() {
 	uiRenderer.appendElement(crosshair);
 }
 std::vector<Texture*> prevHotBar;
-GLint prevPlayerHealth = 100;
+int prevPlayerHealth = 100;
 void Game::showGUI() {
 	uiRenderer.render();
 
 	auto hotBar = player->getInventory().getHotBarTextures();
 	if (hotBar != prevHotBar) {
 		prevHotBar = hotBar;
-		GLuint i = 0;
+		unsigned int i = 0;
 		for (Texture* tex : hotBar) {
 			if (tex) {
 				UI_Element& slot = uiRenderer.getWhere("slot" + std::to_string(i++));
@@ -526,16 +519,16 @@ void Game::showGUI() {
 			}
 		}
 	}
-	GLint playerHealth = player->getHealth();
+	int playerHealth = player->getHealth();
 	if (playerHealth != prevPlayerHealth) {
-		GLint diff = 100 - playerHealth;
+		int diff = 100 - playerHealth;
 		diff = reduceToMultiple(diff, 10);
 		diff /= 10;
 		if (diff == 10) {
 			for (GLubyte i = 0; i < 10; i++) {
 				UI_Element& heartPos = uiRenderer.getWhere("heart" + std::to_string(i));
 				uiRenderer.popWhere(heartPos.getName() + "_dead");
-				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
+				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(unsigned int)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
 				uiRenderer.appendElement(heart);
 			}
 		}
@@ -543,7 +536,7 @@ void Game::showGUI() {
 			for (GLubyte i = 9; i > 9 - diff; i--) {
 				UI_Element& heartPos = uiRenderer.getWhere("heart" + std::to_string(i));
 				uiRenderer.popWhere(heartPos.getName() + "_dead");
-				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(GLuint)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
+				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(unsigned int)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
 				uiRenderer.appendElement(heart);
 			}
 		}
@@ -609,7 +602,7 @@ void Game::setUpFreeType() {
 			continue;
 		}
 		// Generate texture
-		GLuint texture;
+		unsigned int texture;
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
@@ -637,9 +630,9 @@ void Game::setUpFreeType() {
 	glGenBuffers(1, &LSVBO);
 	glBindVertexArray(LSVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, LSVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -647,9 +640,9 @@ void Game::setUpFreeType() {
 	SHADERS[GLYPH]->bind();
 	SHADERS[GLYPH]->setValue("projection", projection);
 }
-void Game::showText(std::string text, glm::vec2 position, GLfloat scale, glm::vec3 colour) {
-	GLfloat& x = position.x;
-	GLfloat& y = position.y;
+void Game::showText(std::string text, glm::vec2 position, float scale, glm::vec3 colour) {
+	float& x = position.x;
+	float& y = position.y;
 
 	auto& s = SHADERS[GLYPH];
 	s->bind();
@@ -661,13 +654,13 @@ void Game::showText(std::string text, glm::vec2 position, GLfloat scale, glm::ve
 	{
 		Character& ch = Letters[*c];
 
-		GLfloat xpos = x + ch.Bearing.x * scale;
-		GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+		float xpos = x + ch.Bearing.x * scale;
+		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
 
-		GLfloat w = ch.Size.x * scale;
-		GLfloat h = ch.Size.y * scale;
+		float w = ch.Size.x * scale;
+		float h = ch.Size.y * scale;
 		// Update VBO for each character
-		GLfloat vertices[6][4] = {
+		float vertices[6][4] = {
 			{ xpos,     ypos + h,   0.0, 0.0 },
 			{ xpos,     ypos,       0.0, 1.0 },
 			{ xpos + w, ypos,       1.0, 1.0 },

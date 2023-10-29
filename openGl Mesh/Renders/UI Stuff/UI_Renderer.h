@@ -3,7 +3,7 @@
 class UI_Renderer
 {
 private: // properties
-	GLuint quadVAO;
+	unsigned int quadVAO;
 	Shader* shader;
 	std::vector<UI_Element> elements;
 public: // functions

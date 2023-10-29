@@ -8,11 +8,11 @@ class Drawable
 public:
 	Drawable();
 	Drawable(Faces* mesh);
-	void render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap);
+	void render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap);
 	void render(glm::mat4 lightProjection, glm::mat4 lightView);
-	void setUp(std::unordered_map<GLuint, FaceB_p>& meshes);
+	void setUp(std::unordered_map<unsigned int, FaceB_p>& meshes);
 private:
-	std::unordered_map<GLuint, FaceB> opaqueBuffer, transparantBuffer;
-	void draw(GLuint depthMap, Shader* shader = nullptr);
+	std::unordered_map<unsigned int, FaceB> opaqueBuffer, transparantBuffer;
+	void draw(unsigned int depthMap, Shader* shader = nullptr);
 	void clear();
 };

@@ -62,14 +62,14 @@ void UI_Renderer::render()
 
 void UI_Renderer::setupQuadVAO()
 {
-	GLfloat vertices[] = {
+	float vertices[] = {
 		-1.0f/16.0f, -1.0f / 9.0f,  0, 0,
 		1.0f / 16.0f, -1.0f / 9.0f, 1, 0,
 		-1.0f / 16.0f, 1.0f / 9.0f, 0, 1,
 		1.0f / 16.0f, 1.0f / 9.0f,  1, 1
 	};
 	
-	GLuint vbo;
+	unsigned int vbo;
 	glGenVertexArrays(1, &quadVAO);
 	glGenBuffers(1, &vbo);
 
@@ -77,7 +77,7 @@ void UI_Renderer::setupQuadVAO()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 }

@@ -10,24 +10,24 @@
 
 
 
-const GLfloat YAW = -90.0f;
-const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 6.0f;
-const GLfloat SENSITIVITY = 0.25f;
-const GLfloat ZOOM = 45.0f; // the field of view
+const float YAW = -90.0f;
+const float PITCH = 0.0f;
+const float SPEED = 6.0f;
+const float SENSITIVITY = 0.25f;
+const float ZOOM = 45.0f; // the field of view
 
 class Camera {
 public:
-	Camera(glm::vec3 position = glm::vec3(0, 0, 0), glm::vec3 up = glm::vec3(0, 1, 0), GLfloat yaw = YAW,
-		GLfloat pitch = PITCH) : front(glm::vec3(0, 0, -1)), movementSpeed(SPEED), mouseSensitivaty(SENSITIVITY), zoom(ZOOM) {
+	Camera(glm::vec3 position = glm::vec3(0, 0, 0), glm::vec3 up = glm::vec3(0, 1, 0), float yaw = YAW,
+		float pitch = PITCH) : front(glm::vec3(0, 0, -1)), movementSpeed(SPEED), mouseSensitivaty(SENSITIVITY), zoom(ZOOM) {
 		this->position = position;
 		this->worldUp = up;
 		this->yaw = yaw;
 		this->pitch = pitch;
 		this->updateCameraVectors();
 	}
-	Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw,
-		GLfloat pitch) : front(glm::vec3(0, 0, -1)), movementSpeed(SPEED), mouseSensitivaty(SENSITIVITY), zoom(ZOOM) {
+	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw,
+		float pitch) : front(glm::vec3(0, 0, -1)), movementSpeed(SPEED), mouseSensitivaty(SENSITIVITY), zoom(ZOOM) {
 		this->position = glm::vec3(posX, posY, posZ);
 		this->worldUp = glm::vec3(upX, upY, upZ);
 		this->yaw = yaw;
@@ -42,8 +42,8 @@ public:
 		return right;
 	}
 
-	void ProcessMovement(Move_Dir direction, GLfloat deltaTime) {
-		GLfloat velocity = this->movementSpeed * deltaTime;
+	void ProcessMovement(Move_Dir direction, float deltaTime) {
+		float velocity = this->movementSpeed * deltaTime;
 		/*if (direction == Move_Dir::FORWARD) {
 			this->position += this->front * velocity;
 		}
@@ -90,7 +90,7 @@ public:
 	void t() {
 		std::cout << this->position.x << std::endl;
 	}
-	void ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch = true) {
+	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true) {
 		xOffset *= this->mouseSensitivaty;
 		yOffset *= this->mouseSensitivaty;
 
@@ -119,7 +119,7 @@ public:
 		this->right = glm::normalize(glm::cross(this->front, this->worldUp));
 		this->up = glm::normalize(glm::cross(this->right, this->front));
 	}
-	GLfloat GetZoom() {
+	float GetZoom() {
 		return this->zoom;
 	}
 	glm::vec3& GetPosition() {
@@ -137,11 +137,11 @@ private:
 	glm::vec3 right;
 	glm::vec3 up;
 	glm::vec3 worldUp;
-	GLfloat mouseSensitivaty;
-	GLfloat pitch;
-	GLfloat yaw;
-	GLfloat movementSpeed;
-	GLfloat zoom;
+	float mouseSensitivaty;
+	float pitch;
+	float yaw;
+	float movementSpeed;
+	float zoom;
 	
 	glm::vec3 tr;
 };

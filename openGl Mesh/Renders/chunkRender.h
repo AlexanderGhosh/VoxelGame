@@ -11,7 +11,7 @@ namespace Render {
 	class ChunkMeshRender {
 	public:
 		ChunkMeshRender();
-		ChunkMeshRender(GLboolean init, std::string t);
+		ChunkMeshRender(bool init, std::string t);
 		ChunkMeshRender(std::string shaderName);
 		ChunkMeshRender(Shader* shader);
 
@@ -22,7 +22,7 @@ namespace Render {
 		void setShader(std::string name);
 		void setShader(Shader* shader);
 		void setRelativePositions(std::vector<glm::vec3>& rel);
-		void setRotation(glm::vec3 rotAxis, GLfloat rotAngle);
+		void setRotation(glm::vec3 rotAxis, float rotAngle);
 
 		void addPosition(glm::vec3 positon);
 		void cleanUp();
@@ -33,8 +33,8 @@ namespace Render {
 		Shader shader;
 		std::vector<Face>* meshes;
 		std::vector<glm::vec3> relativePositions;
-		GLboolean canRender;
-		GLfloat angle;
+		bool canRender;
+		float angle;
 		glm::vec3 axis;
 	};
 };

@@ -11,7 +11,7 @@ namespace Render {
 	ChunkMeshRender::ChunkMeshRender(Shader* shader) {
 		this->shader = *shader;
 	}
-	ChunkMeshRender::ChunkMeshRender(GLboolean init, std::string t) {
+	ChunkMeshRender::ChunkMeshRender(bool init, std::string t) {
 		if (init) {
 			shader = Shader("block2");
 			shader.setUp();
@@ -38,7 +38,7 @@ namespace Render {
 
 			
 
-			auto createModel = [](glm::vec3 position, GLfloat angle, glm::vec3 axis, Camera& p1, Shader shader) {
+			auto createModel = [](glm::vec3 position, float angle, glm::vec3 axis, Camera& p1, Shader shader) {
 				glm::mat4 model(1);
 				model = glm::translate(model, position);
 				model = glm::rotate(model, glm::radians(angle), axis);
@@ -85,7 +85,7 @@ namespace Render {
 	{
 		relativePositions = rel;
 	}
-	void ChunkMeshRender::setRotation(glm::vec3 rotAxis, GLfloat rotAngle) {
+	void ChunkMeshRender::setRotation(glm::vec3 rotAxis, float rotAngle) {
 		angle = rotAngle;
 		axis = rotAxis;
 	}

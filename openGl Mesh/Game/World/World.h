@@ -18,47 +18,38 @@ class World
 {
 public:
 	World();
-	World(GLboolean gen, GLboolean terrain = 1, GLboolean isDynamic = 0, GLuint seed = CHUNK_SIZE*2);
-	void render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap);
-	void render(glm::mat4 lightProjection, glm::mat4 lightView);
-	void updatePlayerPos(glm::vec3 pos);
+	World(bool gen, bool terrain = true, bool isDynamic = false, unsigned int seed = SEED);
+	void render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap);
 
 	void breakBlock(glm::vec3 pos, glm::vec3 front);
 	void placeBlock(glm::vec3 pos, glm::vec3 front, Blocks block);
 
 	ChunkColumn* getChunkOccupied(glm::vec3 position);
-	glm::vec2 getChunkOccPosition(glm::vec3 position);
 
-	std::unordered_map<GLuint, FaceB_p>& getWorldMesh();
 	std::vector<ChunkColumn*> getAdjacentChunks(glm::vec3 worldPosition);
-	AdjacentMap getAdjacentMap(glm::vec3 worldPos, GLuint range = RENDER_DISTANCE);
-	AdjacentMap_p getAdjacentMapPointers(glm::vec3 worldPos, GLuint range = RENDER_DISTANCE);
+	AdjacentMap getAdjacentMap(glm::vec3 worldPos, unsigned int range = RENDER_DISTANCE);
+	AdjacentMap_p getAdjacentMapPointers(glm::vec3 worldPos, unsigned int range = RENDER_DISTANCE);
 	
-	void save();
-
-	void advanceGeneration();
-
-	GLboolean created;
-	std::vector<GLuint> generationStack;
-	GLuint seed;
-	Chunks chunks2;
-	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, GLint renderDist = RENDER_DISTANCE);
-	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<ChunkColumn>& exclude, GLint renderDist = RENDER_DISTANCE);
+	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<glm::vec2> exclude, int renderDist = RENDER_DISTANCE);
+	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<ChunkColumn>& exclude, int renderDist = RENDER_DISTANCE);
 
 	Entity* getIntersectedEntity(EntityHander& handler, Ray ray);
-	void genWorldMesh();
-	DrawableGeom geomDrawable;
-	std::unordered_map<GLuint, FaceB_p> worldMesh;
-	Drawable drawable;
-private:
 
-	GLboolean isDynamic;
-	GLboolean reDraw;
-	glm::vec2 chunkOccupiedPosition;
+	void setUpDrawable() {
+		geomDrawable.setUp(chunks2);
+	}
+private:
+	bool created;
+	unsigned int seed;
+	Chunks chunks2;
+
+	DrawableGeom geomDrawable;
+	bool isDynamic;
+	bool reDraw;
 
 	WorldMap worldMap;
 
-	void getNewChunkPositions(GLboolean flat);
+	void getNewChunkPositions(bool flat);
 
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
 	void generateTerrain(std::vector<glm::vec2>& chunkPositions);

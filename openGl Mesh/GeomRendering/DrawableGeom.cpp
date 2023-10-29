@@ -46,38 +46,11 @@ void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatr
 	glDisable(GL_CULL_FACE);
 }
 
-void DrawableGeom::setUp(const std::unordered_map<GLuint, FaceB_p>& mesh)
-{
-	for (auto& d : data) {
-		d.buffer.cleanUp();
-	}
-	data.clear();
-	for (auto& m : mesh) {
-		const FaceB_p& d = m.second;
-		const auto& translations = std::get<2>(d);
-		BufferGeom buffer;
-		std::vector<GeomData> raw;
-		raw.reserve(translations.size());
-		
-		for (const glm::mat4& translation: translations) {
-			const glm::vec3 pos = translation * glm::vec4(1);
-			GeomData geomData;
-			geomData.worldPos_ = pos;
-			geomData.cubeType_ = std::get<0>(d)->type;
-			raw.push_back(geomData);
-		}
-
-		buffer.setUp(raw.data(), raw.size());
-
-		data.emplace_back(buffer, std::get<1>(d));
-	}
-}
-
 void DrawableGeom::setUp(const Chunks& chunks)
 {
 	data.clear();
 	for (auto& chunk : chunks) {
-		data.emplace_back(chunk.buffer, nullptr);
+		data.emplace_back(chunk.getBuffer(), nullptr);
 	}
 }
 

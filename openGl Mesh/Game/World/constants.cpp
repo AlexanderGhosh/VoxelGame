@@ -88,7 +88,7 @@ const std::vector<Material> MATERIALS = {
 glm::vec3 LIGHTPOSITION = glm::vec3(-8, 80, -8);
 glm::vec3 LIGHTPOSITIONOrigin = glm::vec3(-8, 80, -8);
 
-void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload) {
+void reduceToMultiple(glm::ivec3& victim, unsigned int multiple, const char* overload) {
 	while (victim.x % multiple != 0) {
 		victim.x -= 1;
 	}
@@ -99,7 +99,7 @@ void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload)
 		victim.z -= 1;
 	}
 }
-void reduceToMultiple(glm::ivec2& victim, GLuint multiple, const char* overload) {
+void reduceToMultiple(glm::ivec2& victim, unsigned int multiple, const char* overload) {
 	while (victim.x % multiple != 0) {
 		victim.x -= 1;
 	}
@@ -107,7 +107,7 @@ void reduceToMultiple(glm::ivec2& victim, GLuint multiple, const char* overload)
 		victim.y -= 1;
 	}
 }
-glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple) {
+glm::ivec3 reduceToMultiple(glm::ivec3 victim, unsigned int multiple) {
 	while (victim.x % multiple != 0) {
 		victim.x -= 1;
 	}
@@ -119,9 +119,9 @@ glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple) {
 	}
 	return victim;
 }
-GLint reduceToMultiple(GLfloat victim, GLuint multiple) {
+int reduceToMultiple(float victim, unsigned int multiple) {
 	victim = std::round(victim);
-	while ((GLint)victim % multiple != 0) {
+	while ((int)victim % multiple != 0) {
 		victim--;
 	}
 	return victim;
@@ -226,7 +226,7 @@ Material getMaterial(const Texture_Names& block)
 
 Material getMaterial(const std::string& texName)
 {
-	for (GLuint i = 0; i < TEXTURES.size(); i++) {
+	for (unsigned int i = 0; i < TEXTURES.size(); i++) {
 		if (texName == TEXTURES[i]->getName()) {
 			return getMaterial(Texture_Names(i));
 		}
@@ -328,10 +328,10 @@ GLulong Timer::getTime()
 	return std::chrono::duration_cast<std::chrono::microseconds>(stop_ - start_).count();
 }
 
-void Timer::showTime(std::string name, GLboolean inFrames)
+void Timer::showTime(std::string name, bool inFrames)
 {
 	std::string unit = " secconds";
-	GLfloat time = (GLfloat)getTime() / 1000000.0f;
+	float time = (float)getTime() / 1000000.0f;
 	if (inFrames) {
 		time /= (1.0f / 60.0f);
 		unit = " frames";

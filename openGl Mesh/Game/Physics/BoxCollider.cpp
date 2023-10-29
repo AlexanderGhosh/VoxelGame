@@ -10,7 +10,7 @@ BoxCollider::BoxCollider(glm::vec3 dimentions, glm::vec3 position) {
 	dimMax = dimentions;
 	updateMinMax();
 }
-GLboolean BoxCollider::isColliding(BoxCollider& collider) {
+bool BoxCollider::isColliding(BoxCollider& collider) {
 	auto& a = *this;
 	auto& b = collider;
 	if (b.position.y == -11 && b.position.x == 0 && b.position.z == 0) {

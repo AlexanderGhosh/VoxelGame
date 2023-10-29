@@ -23,16 +23,16 @@ enum FACES_NAMES {
 	NULL_
 };
 struct Structure {
-	GLuint total_data_len;
-	GLuint layout_count;
-	std::vector<GLuint> individual_lens;
+	unsigned int total_data_len;
+	unsigned int layout_count;
+	std::vector<unsigned int> individual_lens;
 
 	Structure() {
 		total_data_len = 9;
 		layout_count = 3;
 		individual_lens = { 3, 3, 3 };
 	}
-	Structure(GLuint dataLength, GLuint layoutsCount, std::vector<GLuint> dataLens);
+	Structure(unsigned int dataLength, unsigned int layoutsCount, std::vector<unsigned int> dataLens);
 	void merge(Structure& struc);
 	
 };
@@ -50,31 +50,31 @@ public:
 		canRender = GL_FALSE;
 		structure = Structure();
 	}
-	GLuint getTriangleCount();
-	void render(GLboolean draw = GL_TRUE);
+	unsigned int getTriangleCount();
+	void render(bool draw = GL_TRUE);
 	void createBuffers();
-	GLuint getVBO();
-	GLuint getVAO(); 
-	std::vector<GLfloat>& getBufferData();
+	unsigned int getVBO();
+	unsigned int getVAO(); 
+	std::vector<float>& getBufferData();
 	void setStructure(Structure structure);
-	void setBufferData(std::vector<GLfloat> bufferData);
+	void setBufferData(std::vector<float> bufferData);
 	void merge(Buffer& b);
 	void destroy();
 	void endRender();
 	void draw();
 	void addPositions(std::vector<glm::mat4>& positions);
 	void resetData();
-	std::vector<GLfloat> getVertices(GLboolean unique);
-	std::vector<glm::vec3> getVertices(GLboolean unique, GLboolean overload);
+	std::vector<float> getVertices(bool unique);
+	std::vector<glm::vec3> getVertices(bool unique, bool overload);
 private:
-	GLuint VBO;
-	GLuint VAO;
-	GLuint IBO;
-	GLboolean hasInstances;
-	std::vector<GLfloat> bufferData;
+	unsigned int VBO;
+	unsigned int VAO;
+	unsigned int IBO;
+	bool hasInstances;
+	std::vector<float> bufferData;
 	std::vector<GLushort> bufferIndices;
 	Structure structure;
-	GLboolean canRender;
-	std::vector<GLfloat> originalData;
+	bool canRender;
+	std::vector<float> originalData;
 };
 

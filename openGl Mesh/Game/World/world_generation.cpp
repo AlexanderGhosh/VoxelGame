@@ -2,19 +2,19 @@
 
 glm::ivec2 world_generation::treeCooldown = glm::vec2(4);
 
-GLfloat world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, GLuint seed) {
+float world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, unsigned int seed) {
 
 	// Begin iterating through the octaves
-	GLfloat value = 0;
-	GLfloat accumulatedAmps = 0;
+	float value = 0;
+	float accumulatedAmps = 0;
 	for (int i = 0; i < options.octaves; i++) {
-		GLfloat frequency = glm::pow(2.0f, i);
-		GLfloat amplitude = glm::pow(options.roughness, i);
+		float frequency = glm::pow(2.0f, i);
+		float amplitude = glm::pow(options.roughness, i);
 
 		glm::vec2 xy = (pos * frequency) / options.smoothness;
 		xy += seed;
 
-		GLfloat noise = glm::simplex(glm::vec3{ xy.x, xy.y, seed });
+		float noise = glm::simplex(glm::vec3{ xy.x, xy.y, seed });
 		noise = (noise + 1.0f) / 2.0f;
 		value += noise * amplitude;
 		accumulatedAmps += amplitude;
@@ -23,7 +23,7 @@ GLfloat world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, G
 }
 
 
-HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLuint biome) {
+HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, unsigned int biome) {
 	// doesn't generate caves
 	NoiseOptions firstNoise;
 	firstNoise.amplitude = 105.0f;
@@ -50,9 +50,9 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 			std::vector<Block_Count>& encoded = res[x][y];
 			glm::vec2 worldPos = { x, y };
 			worldPos += chunkPos;
-			GLfloat height = heightAtPositon(worldPos, firstNoise, seed);
-			GLfloat height2 = heightAtPositon(worldPos, secondNoise, seed);
-			GLfloat result = height * height2;
+			float height = heightAtPositon(worldPos, firstNoise, seed);
+			float height2 = heightAtPositon(worldPos, secondNoise, seed);
+			float result = height * height2;
 			result *= firstNoise.amplitude + firstNoise.offset - 5;
 			result = abs(result);
 			if (worldPos == glm::vec2(0)) {
@@ -64,7 +64,7 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, GLuint seed, GLu
 				result = abs(result);
 			}
 
-			GLfloat result_orig = result;
+			float result_orig = result;
 
 			if (result < 2) {
 				encoded.push_back({ Blocks::WATER, result + 1 });
