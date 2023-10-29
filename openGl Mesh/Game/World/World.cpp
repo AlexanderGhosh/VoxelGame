@@ -85,7 +85,7 @@ void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 }
 
 void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap) {
-	// drawable.render(c, projection, lightMatrix, depthMap);
+	//drawable.render(c, projection, lightMatrix, depthMap);
 	geomDrawable.render(c, projection, lightMatrix, depthMap);
 }
 void World::render(glm::mat4 lightProjection, glm::mat4 lightView)

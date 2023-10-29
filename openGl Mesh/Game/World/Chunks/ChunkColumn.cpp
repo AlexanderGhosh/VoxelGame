@@ -93,6 +93,10 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 
 	};
 
+	if (position.x + position.y != 0) {
+		int h = 0;
+	}
+
 	std::vector<GeomData> bufferData;
 	GeomData data{};
 	for (int z = 0; z < CHUNK_SIZE; z++) {
@@ -127,6 +131,9 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 						if (blockDets2.isTransparant) {
 							data.cubeType_ = j;
 							bufferData.push_back(data);
+						}
+						else {
+							int h = 0;
 						}
 						j++;
 					}
@@ -787,7 +794,7 @@ Blocks ChunkColumn::getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, 
 	if (glm::all(glm::greaterThanEqual(relativePostion, { 0, 0, 0 }))) {
 		if (glm::all(glm::lessThan(relativePostion, { CHUNK_SIZE, WORLD_HEIGHT, CHUNK_SIZE }))) {
 			if (isFlat) return Blocks::GRASS;
-			return getBlock(pos, 0);
+			return getBlock(pos, worldPos);
 		}
 	}
 	if (!safe) return Blocks::STONE;

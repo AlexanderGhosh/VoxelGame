@@ -59,7 +59,8 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) : Gam
 void Game::generateWorld() {
 	world = World(true, true, false, 0);
 	world.genWorldMesh();
-	// world.geomDrawable.setUp(world.worldMesh);
+	world.drawable.setUp(world.worldMesh);
+	world.geomDrawable.setUp(world.worldMesh);
 	world.geomDrawable.setUp(world.chunks2);
 }
 void Game::doLoop(glm::mat4 projection) {

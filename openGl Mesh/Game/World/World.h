@@ -49,8 +49,8 @@ public:
 	void genWorldMesh();
 	DrawableGeom geomDrawable;
 	std::unordered_map<GLuint, FaceB_p> worldMesh;
-private:
 	Drawable drawable;
+private:
 
 	GLboolean isDynamic;
 	GLboolean reDraw;
