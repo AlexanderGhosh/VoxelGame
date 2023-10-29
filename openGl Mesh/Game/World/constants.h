@@ -91,11 +91,11 @@ enum class Move_Dir {
 };
 enum class Blocks : uint8_t {
 	AIR,
+	ERROR,
 	GRASS,
 	DIRT,
 	STONE,
 	WATER,
-	ERROR,
 	LOG,
 	LEAF,
 	SAND

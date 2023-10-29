@@ -9,12 +9,13 @@ struct Material {
 
 out vec4 color;
 
+flat in uint blockColourIndex;
 in vec3 Normal;
 in vec3 FragPos;
 in vec3 TexCoords;
 in vec4 FragPosLightSpace;
 
-uniform Material material;
+Material material;
 
 uniform samplerCube cubeMap; // samplerCube
 uniform sampler2D shadowMap;
@@ -25,13 +26,30 @@ uniform vec3 viewPos;
 const float light_constant = 0.4f;
 const vec3 lightCol = vec3(0.3);
 
+const vec4[] blockColours = vec4[] (
+    vec4(.5, 0, .5, 1),
+    vec4(0, 1, 0, 1),
+    vec4(.5, .25, .25, 1),
+    vec4(.65, .65, .65, 1),
+    vec4(0, 0, 1, 0.5),
+    vec4(.5, .25, .25, 1),
+    vec4(.25, 1, .25, .75),
+    vec4(1, 1, 0, 1)
+);
+
 float shadowBias = 0.005;
 
-float ShadowCalculation(vec4 fragPosLightSpace);
+float ShadowCalculation(vec4 fragPosLightSpace_);
 
 void main()
 {    
     vec4 colourA = texture(cubeMap, TexCoords);
+    colourA = blockColours[blockColourIndex - 1u];
+    material.ambient = vec3(1);
+    material.diffuse = vec3(1);
+    material.specular = vec3(0);
+    material.shininess = 10;
+
     vec3 colour = colourA.rgb;
     // ambient
     vec3 ambient = material.ambient * colour; // 0.15
@@ -55,15 +73,14 @@ void main()
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;   
     color = vec4(lighting, colourA.a);
     // color = colourA;
-    color.xyz = (Normal + 1) * 0.5;
-    color.w = 1;
+    //color.xyz = (Normal + 1) * 0.5;
 }
 
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation(vec4 fragPosLightSpace_)
 {
      // perform perspective divide
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    vec3 projCoords = fragPosLightSpace_.xyz / fragPosLightSpace_.w;
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)

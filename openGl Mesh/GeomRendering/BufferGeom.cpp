@@ -22,15 +22,14 @@ void BufferGeom::setUp(const GeomData* data, unsigned int size)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_STATIC_DRAW);
 
-
-	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GeomData), 0);
-	glEnableVertexAttribArray(0);
 
 	glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(GeomData), (void*)offsetof(GeomData, cubeType_));
-	glEnableVertexAttribArray(1);
 
 	glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(GeomData), (void*)offsetof(GeomData, textureIndex_));
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);

@@ -5,11 +5,13 @@ layout (triangle_strip, max_vertices = 24) out;
 
 in VS_OUT {
     uint cubeType;
+    uint blockColourIndex;
     mat4 vp;
     mat4 m;
 } vs_out[];
 uniform mat4 lightSpaceMatrix;
 
+flat out uint blockColourIndex;
 out vec3 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
@@ -116,7 +118,8 @@ void main() {
         }
         EndPrimitive();
     }*/
-
+    blockColourIndex = vs_out[0].blockColourIndex;
+    Normal = normals[vs_out[0].cubeType];
     for (uint j = 0u; j < 4u; j++){ 
         int l = indices2[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];
@@ -128,7 +131,6 @@ void main() {
         TexCoords = v * inv_size;
         TexCoords.y *= -1;
 
-        Normal = normals[vs_out[0].cubeType];
         EmitVertex();
     }
     EndPrimitive();
