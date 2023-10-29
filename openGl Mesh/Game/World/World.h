@@ -1,7 +1,5 @@
 #pragma once
 #include <tuple>
-#include <thread>
-#include <future>
 #include <vector>
 #include <chrono>
 #include <gtc/noise.hpp>
@@ -48,10 +46,11 @@ public:
 	std::vector<glm::vec2> centeredPositions(glm::vec2 origin, std::vector<ChunkColumn>& exclude, GLint renderDist = RENDER_DISTANCE);
 
 	Entity* getIntersectedEntity(EntityHander& handler, Ray ray);
-private:
-	std::unordered_map<GLuint, FaceB_p> worldMesh;
-	Drawable drawable;
+	void genWorldMesh();
 	DrawableGeom geomDrawable;
+	std::unordered_map<GLuint, FaceB_p> worldMesh;
+private:
+	Drawable drawable;
 
 	GLboolean isDynamic;
 	GLboolean reDraw;
@@ -64,7 +63,6 @@ private:
 	void generateFlatChunks(std::vector<glm::vec2> chunkPositions);
 	void generateTerrain(std::vector<glm::vec2>& chunkPositions);
 
-	void genWorldMesh();
 
 	std::tuple<glm::vec3, FACES_NAMES> getIntersectedBlock(ChunkColumn*& chunkOcc, Ray ray);
 };

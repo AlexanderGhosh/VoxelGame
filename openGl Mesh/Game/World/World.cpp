@@ -2,7 +2,7 @@
 #include "gtx/string_cast.hpp"
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
-World::World() : created(0), chunks2(), geomDrawable() {
+World::World() : created(0), chunks2(), geomDrawable(), drawable() {
 }
 World::World(GLboolean gen, GLboolean terrain, GLboolean isDynamic, GLuint seed) : World() {
 	this->seed = seed;
@@ -11,6 +11,9 @@ World::World(GLboolean gen, GLboolean terrain, GLboolean isDynamic, GLuint seed)
 	chunkOccupiedPosition = glm::vec2(0);
 	worldMap.reserve(RENDER_DISTANCE + 2);
 	getNewChunkPositions(!terrain);
+
+	genWorldMesh();
+	geomDrawable.setUp(worldMesh);
 }
 
 
@@ -24,7 +27,6 @@ void World::getNewChunkPositions(GLboolean flat) {
 		generateTerrain(chunkPositions);
 	}
 }
-
 
 void World::generateFlatChunks(std::vector<glm::vec2> chunkPositions) {
 	std::cout << "Started\n";
@@ -63,18 +65,25 @@ void World::generateTerrain(std::vector<glm::vec2>& chunkPositions) {
 			generationStack.push_back(chunks2.size() - 1);
 		}
 	}
-	std::vector<glm::vec2> ring = centeredPositions({ 0, 0 }, chunks2, RENDER_DISTANCE + 2);
+	//std::vector<glm::vec2> ring = centeredPositions({ 0, 0 }, chunks2, RENDER_DISTANCE + 2);
 	for (auto& chunk : chunks2) {
 		worldMap[chunk.getPosition()] = *chunk.getBlockStore();
 		// chunk.setBlockStore(&worldMap[chunk.getPosition()]);
 	}
-	for (auto& pos : ring) {
+	/*for (auto& pos : ring) {
 		worldMap[pos] = BlockStore(pos);
+	}*/
+
+	for (auto& chunk : chunks2) {
+		chunk.createMesh(&worldMap);
+		// chunk.setBlockStore(&worldMap[chunk.getPosition()]);
 	}
-	
-	genWorldMesh();
-	drawable.setUp(worldMesh);
-	geomDrawable.setUp(worldMesh);
+
+	//genWorldMesh();
+	// drawable.setUp(worldMesh);
+	//geomDrawable.setUp(worldMesh);
+	created = 1;
+	generationStack.clear();
 }
 
 void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap) {
@@ -519,6 +528,12 @@ void World::advanceGeneration()
 {
 	if (generationStack.size() == 0) {
 		if (!done1) {
+			//auto wm = worldMesh;
+			//auto gd = geomDrawable;
+
+			genWorldMesh();
+			// drawable.setUp(worldMesh);
+			geomDrawable.setUp(worldMesh);
 			std::cout << "done\n";
 			done1 = 1;
 		}
@@ -531,16 +546,12 @@ void World::advanceGeneration()
 	
 	if (chunk->stage >= PARTS_PER_CHUNK) {
 		generationStack.pop_back();
-		genWorldMesh();
-		drawable.setUp(worldMesh);
-		geomDrawable.setUp(worldMesh);
 		return;
 	}
-
-	if (chunk->getMesh().size() == 0 || chunk->stage < 100) {
+	else {
 		chunk->createMesh(&worldMap);
 	}
-	else if (chunk->fromFile) {
-		chunk->stage = 100;
+	if (chunk->fromFile) {
+		//chunk->stage = 100;
 	}
 }

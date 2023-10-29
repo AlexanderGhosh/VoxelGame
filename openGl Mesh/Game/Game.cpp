@@ -58,6 +58,8 @@ Game::Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim) : Gam
 
 void Game::generateWorld() {
 	world = World(true, true, false, 0);
+	// world.genWorldMesh();
+	// world.geomDrawable.setUp(world.worldMesh);
 }
 void Game::doLoop(glm::mat4 projection) {
 	gameRunning = true;
@@ -75,6 +77,7 @@ void Game::doLoop(glm::mat4 projection) {
 
 	// entityHander.addEntity(vampire);
 
+	// world.advanceGeneration();
 	while (gameRunning) {
 		calcTimes();
 		proccesEvents();
@@ -83,7 +86,6 @@ void Game::doLoop(glm::mat4 projection) {
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		world.advanceGeneration();
 
 
 		std::vector<std::vector<ChunkColumn*>> adjacentChunkss;

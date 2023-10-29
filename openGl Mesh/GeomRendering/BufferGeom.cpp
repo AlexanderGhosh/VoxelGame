@@ -17,11 +17,14 @@ void BufferGeom::setUp(const GeomData* data, unsigned int size)
 
 
 	
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(GeomData), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GeomData), 0);
 	glEnableVertexAttribArray(0);
 
-	// glVertexAttribPointer(1, 1, GL_INT, GL_TRUE, sizeof(GeomData), (void*)(3*sizeof(float)));
-	// glEnableVertexAttribArray(1);
+	glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(GeomData), (void*)offsetof(GeomData, cubeType_));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(GeomData), (void*)offsetof(GeomData, textureIndex_));
+	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
 

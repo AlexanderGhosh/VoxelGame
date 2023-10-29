@@ -4,7 +4,7 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 24) out;
 
 in VS_OUT {
-    int cubeType;
+    uint cubeType;
     mat4 vp;
     mat4 m;
 } vs_out[];
@@ -117,8 +117,8 @@ void main() {
         EndPrimitive();
     }*/
 
-    for (int j = 0; j < 4; j++){ 
-        int l = indices2[vs_out[0].cubeType * 4 + j];
+    for (uint j = 0u; j < 4u; j++){ 
+        int l = indices2[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];
 
         FragPos = vec3(vs_out[0].m * vec4(v, 1));
