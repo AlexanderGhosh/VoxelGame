@@ -34,7 +34,7 @@ int main() {
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
-	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)DIM.x / (GLfloat)DIM.y, 0.01f, 1000.0f);
+	glm::mat4 projection = glm::perspective(45.0f, (float)DIM.x / (float)DIM.y, 0.01f, 1000.0f);
 	game.doLoop(projection);
 
 	glfwDestroyWindow(window);
@@ -47,9 +47,9 @@ void createBlocks() {
 		auto& block = block_.first;
 		auto& dets = block_.second;
 		dets.Name = getName(block);
-		dets.Tex = TEXTURES[(GLuint)getTexture(block)];
+		dets.Tex = TEXTURES[(unsigned int)getTexture(block)];
 		if(dets.Name != "air")
-			dets.ItemTex = { "Items/" + dets.Name, 1 };
+			dets.ItemTex = Texture("Items/" + dets.Name);
 		dets.isTransparant = 0;
 		if (dets.Name == "air" || dets.Name == "leaf" || dets.Name == "water") {
 			dets.isTransparant = 1;
@@ -68,7 +68,7 @@ GLFWwindow* createWindow() {
 	glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GL_TRUE);
 	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr, nullptr);
 
-	GLint w, h;
+	int w, h;
 	glfwGetFramebufferSize(window, &w, &h);
 	DIM = glm::ivec2(w, h);
 	if (nullptr == window) {

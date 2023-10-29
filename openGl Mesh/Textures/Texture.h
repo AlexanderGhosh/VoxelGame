@@ -13,21 +13,22 @@ public:
 	Texture() {
 		created = GL_FALSE;
 	}
-	Texture(GLboolean loadTex);
-	Texture(std::string name, GLboolean is2D);
+	Texture(bool loadTex);
+	// Texture(std::string name, bool is2D);
+	Texture(std::string name);
 	void bind();
-	GLuint& getTexMap();
+	unsigned int& getTexMap();
 	std::string& getName();
-	GLboolean& get2D();
+	bool& get2D();
 	glm::ivec2& getDimentions();
 	void unBind();
-	GLboolean load3D(const std::string& name);
-	GLboolean load2D(std::string& name);
+	bool load3D(const std::string& name);
+	bool load2D(std::string& name);
 private:
-	GLboolean created;
+	bool created;
 	glm::ivec2 dimentions;
-	GLuint texMap;
-	GLboolean is2D;
+	unsigned int texMap;
+	bool is2D;
 	std::string name;
 };
 

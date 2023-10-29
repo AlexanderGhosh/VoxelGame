@@ -20,11 +20,11 @@ void Drawable::render(glm::mat4 lightProjection, glm::mat4 lightView)
 	draw(0);
 	shader->unBind();
 }
-void Drawable::setUp(std::unordered_map<GLuint, FaceB_p>& mesh) {
+void Drawable::setUp(std::unordered_map<unsigned int, FaceB_p>& mesh) {
 	clear();
-	std::map<GLuint, std::vector<glm::mat4>> positions;
+	std::map<unsigned int, std::vector<glm::mat4>> positions;
 	for (auto& pair : mesh) {
-		const GLuint key = pair.first;
+		const unsigned int key = pair.first;
 		FaceB_p& faces = pair.second;
 		Texture* texture = std::get<1>(pair.second);
 		try {
@@ -51,21 +51,21 @@ void Drawable::setUp(std::unordered_map<GLuint, FaceB_p>& mesh) {
 		}
 	}
 	for (auto& b : opaqueBuffer) {
-		const GLuint key = b.first;
+		const unsigned int key = b.first;
 		FaceB& buff = b.second;
 		Buffer& buf = std::get<0>(buff);
 		buf.resetData();
 		buf.addPositions(positions[key]);
 	}
 	for (auto& b : transparantBuffer) {
-		const GLuint key = b.first;
+		const unsigned int key = b.first;
 		FaceB& buff = b.second;
 		Buffer& buf = std::get<0>(buff);
 		buf.resetData();
 		buf.addPositions(positions[key]);
 	}
 }
-void Drawable::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, GLuint depthMap) {
+void Drawable::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) {
 	if (opaqueBuffer.size() == 0) return;
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
@@ -91,13 +91,13 @@ void Drawable::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, 
 	glDisable(GL_CULL_FACE);
 }
 ;
-void Drawable::draw(GLuint depthMap, Shader* shader)
+void Drawable::draw(unsigned int depthMap, Shader* shader)
 {
 	for (auto& bu : opaqueBuffer) {
 		FaceB& buffer = std::get<1>(bu);
 		Buffer& b = std::get<0>(buffer);
 		Texture* t = std::get<1>(buffer);
-		GLuint c = std::get<2>(buffer);
+		unsigned int c = std::get<2>(buffer);
 		t->bind();
 		if (shader) {
 			Material mat = getMaterial(t->getName());
@@ -114,7 +114,7 @@ void Drawable::draw(GLuint depthMap, Shader* shader)
 		FaceB& buffer = std::get<1>(bu);
 		Buffer& b = std::get<0>(buffer);
 		Texture* t = std::get<1>(buffer);
-		GLuint c = std::get<2>(buffer);
+		unsigned int c = std::get<2>(buffer);
 		t->bind();
 		if (shader) {
 			Material mat = getMaterial(t->getName());

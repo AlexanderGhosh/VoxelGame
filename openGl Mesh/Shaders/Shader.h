@@ -17,7 +17,7 @@ struct Material {
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
-	GLfloat shininess;
+	float shininess;
 };
 class Shader {
 public:
@@ -29,23 +29,23 @@ public:
 	void setName(std::string name);
 	void bind();
 	void unBind();
-	GLboolean setValue(std::string name, glm::mat4& value);
-	GLboolean setValue(std::string name, glm::vec4& value);
-	GLboolean setValue(std::string name, glm::vec3& value);
-	GLboolean setValue(std::string name, glm::vec2& value);
-	GLboolean setValue(std::string name, GLfloat& value);
-	GLboolean setValue(std::string name, const GLint& value);
-	GLboolean setValue(std::string name, Material& value);
+	bool setValue(std::string name, glm::mat4& value);
+	bool setValue(std::string name, glm::vec4& value);
+	bool setValue(std::string name, glm::vec3& value);
+	bool setValue(std::string name, glm::vec2& value);
+	bool setValue(std::string name, float& value);
+	bool setValue(std::string name, const int& value);
+	bool setValue(std::string name, Material& value);
 private:
 	bool hasGeom;
-	GLuint program;
+	unsigned int program;
 	std::string name;
 
-	GLint getLocation(std::string name);
-	void setLocation(GLint& location, glm::mat4& value);
-	void setLocation(GLint& location, glm::vec4& value);
-	void setLocation(GLint& location, glm::vec3& value);
-	void setLocation(GLint& location, glm::vec2& value);
-	void setLocation(GLint& location, GLfloat& value);
-	void setLocation(GLint& location, const GLint& value);
+	int getLocation(std::string name);
+	void setLocation(int& location, glm::mat4& value);
+	void setLocation(int& location, glm::vec4& value);
+	void setLocation(int& location, glm::vec3& value);
+	void setLocation(int& location, glm::vec2& value);
+	void setLocation(int& location, float& value);
+	void setLocation(int& location, const int& value);
 };

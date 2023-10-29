@@ -10,9 +10,9 @@ public: // functions
 
 	// operations
 	void render(Camera& cam, glm::mat4 projection, std::vector<ChunkColumn*> occupied);
-	void addEntity(Entity& entity, GLboolean create = 1);
-	void updatePositions(GLfloat deltaTime, std::vector<ChunkColumn*> occupied, std::vector<std::vector<ChunkColumn*>> adjacentChunks);
-	void update(glm::mat4 projection, Camera& cam, std::vector<std::vector<ChunkColumn*>> adjacent, std::vector<ChunkColumn*> occuped, GLfloat deltaTime);
+	void addEntity(Entity& entity, bool create = 1);
+	void updatePositions(float deltaTime, std::vector<ChunkColumn*> occupied, std::vector<std::vector<ChunkColumn*>> adjacentChunks);
+	void update(glm::mat4 projection, Camera& cam, std::vector<std::vector<ChunkColumn*>> adjacent, std::vector<ChunkColumn*> occuped, float deltaTime);
 	void attackPlayer(Entity& player);
 
 	// ai

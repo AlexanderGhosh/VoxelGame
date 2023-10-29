@@ -1,82 +1,52 @@
 #pragma once
 #define GLM_ENABLE_EXPERIMENTAL
 #include "gtx/hash.hpp"
-#include <chrono>
 #include "../constants.h"
 #include "../../../BlockStore.h"
 #include "../../../GeomRendering/BufferGeom.h"
+
 class ChunkColumn
 {
 private: // properties
 	glm::vec2 position;
 	// HeightMap heightMap;
 	// std::unordered_map<glm::vec3, Blocks> blocksEdited;
-	BlockStore* blockStore;
-	std::unordered_map<GLuint, FaceB_p> mesh;
-	GLubyte highest_natural_point;
-	GLboolean isFlat, needsSave;
+	BlockStore blockStore;
+	BufferGeom buffer;
 
 public: // functions
-	BufferGeom buffer;
-	GLubyte stage;
-	GLboolean fromFile;
 
    // constructors
 	ChunkColumn();
-	ChunkColumn(glm::vec2 pos);
-	ChunkColumn(std::string fileName);
-	ChunkColumn(glm::vec2 pos, WorldMap* worldMap);
+	ChunkColumn(glm::vec2 pos, unsigned int seed);
 
 	// creators
 	void createMeshNew(WorldMap* worldMap);
-	void createMesh(WorldMap* worldMap);
-	void createMesh(AdjacentMap& adjacentCunks, HeightMap heighMap);
-	void createMesh_flat(AdjacentMap& adjacentCunks);
 	void addTrees();
 
 	// getters
-	std::unordered_map<GLuint, FaceB_p>& getMesh();
-	glm::vec2 getPosition();
-	std::pair<Blocks, ChunkColumn*> getBlock_ChunkPos(glm::vec3 worldPosition, AdjacentMap_p& allChunks);
-	Blocks getBlock(glm::vec3 pos, GLboolean worldPos = 1, GLboolean checkEdited = 1);
+	const BufferGeom& getBuffer() const;
+	const BlockStore& getBlockStore() const;
+	const glm::vec2& getPosition() const ;
+	Blocks getBlock(glm::vec3 pos, bool worldPos = 1, bool checkEdited = 1);
 	glm::vec3 getRelativePosition(glm::vec3 worldPos);
 	glm::vec3 getWorldPosition(glm::vec3 relativePos);
-	std::tuple<std::vector<Block_Count>*, GLuint, ChunkColumn*> getHeightAt(glm::vec2 pos, GLboolean safe, AdjacentMap_p& adjacent); // mabye could be optimised
-	std::string getFileName();
-	BlockStore* getBlockStore();
-	GLboolean needsSaving();
+	std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent); // mabye could be optimised
 
 	// setters
-	void setBlockStore(BlockStore* bs);
-
-	// opertations
-	void editBlock(glm::vec3 pos, GLboolean worldPos, Blocks block, WorldMap* worldmap, AdjacentMap_p& allChunks);
-	void save(std::string name, GLuint seed);
-	void save(GLuint seed);
-	void addToMesh(Face face);
-	void removeFromMesh(Face face);
-
-	// operators
-	bool operator==(glm::vec2 pos);
-	bool operator==(ChunkColumn chunk);
+	void editBlock(glm::vec3 pos, bool worldPos, Blocks block, WorldMap* worldmap, AdjacentMap_p& allChunks);
 
 private: // functions
 	// editors
-	void addBlock(glm::vec3 position, GLboolean worldPos, Blocks block, WorldMap* worldMap);
+	void addBlock(glm::vec3 position, bool worldPos, Blocks block, WorldMap* worldMap);
 
 	// getters
-	Blocks getBlock(glm::vec3 pos, GLboolean worldPos, GLboolean safe, WorldMap* worldMap);
-};
-bool operator==(ChunkColumn* chunk, glm::vec2 pos);
-
-struct Savable_ {
-	GLfloat x, z;
-	GLuint seed;
+	Blocks getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap* worldMap);
 };
 struct Tuple1 {
 	GLubyte bufferType;
 	GLubyte textureMap;
-	GLuint size;
+	unsigned int size;
 };
 struct Tuple_ {
 	Tuple1 data;

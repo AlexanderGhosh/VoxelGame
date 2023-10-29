@@ -19,16 +19,16 @@
 #include "Player/Entity.h"
 #include "World/World.h"
 struct Character {
-	GLuint     TextureID;  // ID handle of the glyph texture
+	unsigned int     TextureID;  // ID handle of the glyph texture
 	glm::ivec2 Size;       // Size of glyph
 	glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
-	GLuint     Advance;    // Offset to advance to next glyph
+	unsigned int     Advance;    // Offset to advance to next glyph
 };
 struct GameConfig {
-	static GLboolean showFPS;
+	static bool showFPS;
 	static glm::vec3 backgroundCol;
-	static GLuint FPSlock;
-	static void setup(GLboolean showFPS = false, glm::vec3 bgCol = { 0.5, 0.5, 0.5 }, GLuint FPS = 0) {
+	static unsigned int FPSlock;
+	static void setup(bool showFPS = false, glm::vec3 bgCol = { 0.5, 0.5, 0.5 }, unsigned int FPS = 0) {
 		GameConfig::showFPS = showFPS;
 		GameConfig::backgroundCol = bgCol;
 		GameConfig::FPSlock = FPS;
@@ -38,7 +38,7 @@ class Game
 {
 public:
 	Game();
-	Game(GLboolean hasPlayer, GLboolean hasSkybox, glm::ivec2 windowDim);
+	Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim);
 	void generateWorld();
 	void setupPlayer();
 	void doLoop(glm::mat4 projection);
@@ -48,23 +48,23 @@ public:
 
 	static Camera* mainCamera;
 	static glm::vec3 mouseData;
-	static std::array<GLboolean, 1024> keys;
+	static std::array<bool, 1024> keys;
 	Ray ray;
 private:
 	GLFWwindow* window;
-	GLfloat deltaTime;
-	GLuint frameRate;
-	GLboolean gameRunning;
+	float deltaTime;
+	unsigned int frameRate;
+	bool gameRunning;
 	static World world;
 	static Entity* player;
 	static EntityHander entityHander;
 	static UI_Renderer uiRenderer;
-	GLboolean hasSkybox;
-	GLfloat lastFrameTime;
+	bool hasSkybox;
+	float lastFrameTime;
 	glm::mat4 projection, lightProjection;
-	GLuint SBVAO,LSVAO, LSVBO, depthFBO;
+	unsigned int SBVAO,LSVAO, LSVBO, depthFBO;
 	std::map<GLchar, Character> Letters;
-	GLuint depthMap;
+	unsigned int depthMap;
 	glm::ivec2 windowDim;
 
 	void showFPS();
@@ -80,7 +80,7 @@ private:
 	void makeSkybox(std::string skybox);
 	void showSkybox();
 	void setUpFreeType();
-	void showText(std::string text, glm::vec2 position, GLfloat scale = 1.0f, glm::vec3 colour = glm::vec3(1));
+	void showText(std::string text, glm::vec2 position, float scale = 1.0f, glm::vec3 colour = glm::vec3(1));
 	void createGUI();
 	void showGUI();
 

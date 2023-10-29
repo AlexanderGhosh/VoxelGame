@@ -21,6 +21,8 @@ class Buffer;
 
 #define GRAVITY 10
 #define PLAYER_SPEED 5.0
+constexpr unsigned int SEED = 32;
+
 extern glm::vec3 LIGHTPOSITION;
 extern glm::vec3 LIGHTPOSITIONOrigin;
 
@@ -29,14 +31,14 @@ enum class Blocks : uint8_t;
 using Face = std::tuple<Buffer*, Texture*, glm::vec3>;
 using Faces = std::vector<Face>;
 using Faces_P = std::vector<Face*>;
-using Block_Count = std::pair<Blocks, GLuint>;
+using Block_Count = std::pair<Blocks, unsigned int>;
 using HeightMap = std::array<std::array<std::vector<Block_Count>, CHUNK_SIZE>, CHUNK_SIZE>;
 using Chunks = std::vector<ChunkColumn>;
-using FaceB = std::tuple<Buffer, Texture*, GLuint>;
+using FaceB = std::tuple<Buffer, Texture*, unsigned int>;
 using FaceB_p = std::tuple<Buffer*, Texture*, std::vector<glm::mat4>>;
 using AdjacentMap = std::unordered_map<glm::vec2, ChunkColumn>;
-using WorldMap = std::unordered_map<glm::vec2, BlockStore>;
-using Item = GLuint;
+using WorldMap = std::unordered_map<glm::vec2, const BlockStore*>;
+using Item = unsigned int;
 
 using AdjacentMap_p = std::unordered_map<glm::vec2, ChunkColumn*>;
 
@@ -44,7 +46,7 @@ struct BlockDet {
 	std::string Name;
 	Texture* Tex;
 	Texture ItemTex;
-	GLboolean isTransparant;
+	bool isTransparant;
 };
 enum class Texture_Names {
 	GRASS,
@@ -105,10 +107,10 @@ extern const std::vector<Shader*> SHADERS;
 extern std::map<Blocks, BlockDet> BLOCKS;
 extern const std::vector<Material> MATERIALS;
 
-void reduceToMultiple(glm::ivec3& victim, GLuint multiple, const char* overload);
-void reduceToMultiple(glm::ivec2& victim, GLuint multiple, const char* overload);
-glm::ivec3 reduceToMultiple(glm::ivec3 victim, GLuint multiple);
-GLint reduceToMultiple(GLfloat victim, GLuint multiple);
+void reduceToMultiple(glm::ivec3& victim, unsigned int multiple, const char* overload);
+void reduceToMultiple(glm::ivec2& victim, unsigned int multiple, const char* overload);
+glm::ivec3 reduceToMultiple(glm::ivec3 victim, unsigned int multiple);
+int reduceToMultiple(float victim, unsigned int multiple);
 Texture_Names getTexture(Blocks block);
 Texture* getBlockTexture(Blocks block);
 GLubyte toIndex(Texture_Names tex);
@@ -143,5 +145,5 @@ public:
 	void stop();
 	void end();
 	GLulong getTime();
-	void showTime(std::string name = "", GLboolean inFrames = 0);
+	void showTime(std::string name = "", bool inFrames = 0);
 };

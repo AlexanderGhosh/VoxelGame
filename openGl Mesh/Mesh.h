@@ -39,7 +39,7 @@ namespace Mesh {
 		std::vector<GLushort> createIncides();
 		// Physics::BoxCollider& getCollider();
 	private:
-		void setupBufferStructure(GLboolean is3D = GL_TRUE);
+		void setupBufferStructure(bool is3D = GL_TRUE);
 	};
 	// FaceMesh& operator+=(FaceMesh& mesh1, const FaceMesh& mesh2);
 

@@ -4,17 +4,23 @@ Texture::Texture(std::string name, std::string overload) {
 	this->name = name;
 	created = 0;
 }
-Texture::Texture(std::string name, GLboolean is2D) {
+//Texture::Texture(std::string name, bool is2D) {
+//	this->name = name;
+//	this->is2D = is2D;
+//	if (is2D) {
+//		created = load2D(name);
+//	}
+//	else {
+//		created = load3D(name);
+//	}
+//}
+
+Texture::Texture(std::string name) {
 	this->name = name;
-	this->is2D = is2D;
-	if (is2D) {
-		created = load2D(name);
-	}
-	else {
-		created = load3D(name);
-	}
+	this->is2D = true;
+	created = load2D(name);
 }
-Texture::Texture(GLboolean loadTex) {
+Texture::Texture(bool loadTex) {
 	name = "";
 	is2D = false;
 	created = false;
@@ -22,8 +28,8 @@ Texture::Texture(GLboolean loadTex) {
 		created = load3D("grass");
 	}
 }
-GLboolean Texture::load2D(std::string& name) {
-	name = "Textures/" + name + ".png";
+bool Texture::load2D(std::string& name) {
+	name = "./Textures/" + name + ".png";
 	is2D = 1;
 	glGenTextures(1, &texMap);
 	// diffuse
@@ -31,6 +37,7 @@ GLboolean Texture::load2D(std::string& name) {
 	unsigned char* image = SOIL_load_image(name.c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
 	if (!image) {
 		std::cout << "texture error" << std::endl;
+		return false;
 	}
 	glBindTexture(GL_TEXTURE_2D, texMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dimentions.x, dimentions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
@@ -43,7 +50,7 @@ GLboolean Texture::load2D(std::string& name) {
 	created = 1;
 	return GL_TRUE;
 }
-GLboolean Texture::load3D(const std::string& name) {
+bool Texture::load3D(const std::string& name) {
 	this->name = name;
 	is2D = GL_FALSE;
 	std::vector<std::string> faces = {
@@ -60,7 +67,7 @@ GLboolean Texture::load3D(const std::string& name) {
 	// texMap = texMap;
 	unsigned char* data;
 
-	for (GLuint i = 0; i < faces.size(); i++)
+	for (unsigned int i = 0; i < faces.size(); i++)
 	{
 		data = SOIL_load_image(faces[i].c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
 		if (data)
@@ -104,10 +111,10 @@ void Texture::unBind() {
 std::string& Texture::getName() {
 	return name;
 }
-GLuint& Texture::getTexMap() {
+unsigned int& Texture::getTexMap() {
 	return texMap;
 }
-GLboolean& Texture::get2D() {
+bool& Texture::get2D() {
 	return is2D;
 }
 glm::ivec2& Texture::getDimentions() {
