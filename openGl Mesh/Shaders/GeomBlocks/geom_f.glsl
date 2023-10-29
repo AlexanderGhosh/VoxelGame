@@ -56,6 +56,7 @@ void main()
     color = vec4(lighting, colourA.a);
     // color = colourA;
     color.xyz = (Normal + 1) * 0.5;
+    color.w = 1;
 }
 
 

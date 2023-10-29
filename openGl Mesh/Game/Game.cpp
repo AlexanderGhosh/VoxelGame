@@ -185,7 +185,9 @@ void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 void Game::setupPlayer() {
-	Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
+	// Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
+	// GOD MODE VVV
+	Entity p = Entity({ 0, 0, 0 }, 0, 1);
 	p.setPosition({ 8, 26, 8 });
 	p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
 	PlayerInv& inv = p.getInventory();
@@ -284,6 +286,7 @@ void Game::processKeys() {
 		speed = 2.0f;
 		player->setMovementSpeed(PLAYER_SPEED);
 	} // walking
+	// prevents floaty behavour
 	player->setVelocity({ 0, player->getFlying() ? 0 : player->getVelocity().y, 0 });
 
 	if (k[GLFW_KEY_W]) {

@@ -83,6 +83,7 @@ void DrawableGeom::setUp(const Chunks& chunks)
 
 void DrawableGeom::draw(unsigned int depthMap, Shader* shader)
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (const DrawData& data : this->data) {
 		const BufferGeom* buffer = &data.buffer;
 		Texture* tex = data.texture;
@@ -98,4 +99,5 @@ void DrawableGeom::draw(unsigned int depthMap, Shader* shader)
 		buffer->unbind();
 		if (tex) tex->unBind();
 	}
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

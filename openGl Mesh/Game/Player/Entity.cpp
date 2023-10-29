@@ -340,7 +340,7 @@ void Entity::takeDamage(GLuint dmgTaken) {
 }
 void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>& adjacent, ChunkColumn* occupied, GLfloat deltaTime, glm::vec3 playerPos) {
 	checkDead();
-	if (!occupied) {
+	if (!occupied && isClipping) {
 		loaded = 0;
 	}
 	else {
@@ -374,6 +374,7 @@ void Entity::update(glm::mat4 projection, Camera& cam, std::vector<ChunkColumn*>
 
 glm::ivec3 Entity::determinCollision(std::vector<ChunkColumn*>& adjacesnt, glm::vec3 deltaV) {
 	glm::ivec3 res(0);
+	if (!this->isClipping) return res;
 	if (glm::all(glm::equal(deltaV, glm::vec3(0)))) return res; 
 	glm::ivec3 rounded = glm::round(pos + deltaV);
 	if (rounded == glm::ivec3(0, -1, 1)) {

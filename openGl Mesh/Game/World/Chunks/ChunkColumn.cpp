@@ -85,8 +85,8 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 		glm::vec3(0, 0, 1),
 		glm::vec3(0, 0, -1),
 
-		glm::vec3(1, 0, 0),
 		glm::vec3(-1, 0, 0),
+		glm::vec3(1, 0, 0),
 
 		glm::vec3(0, 1, 0),
 		glm::vec3(0, -1, 0),
@@ -106,14 +106,14 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 
 			for (auto itt = encodes.rbegin(); itt != encodes.rend(); itt++) {
 				Block_Count& bc = *itt;
-				if (bc.first == Blocks::AIR) {
+				if (bc.first == Blocks::AIR || bc.first == Blocks::WATER) {
 					height -= bc.second;
 					continue;
 				}
 				const BlockDet& blockDets = getDets(bc.first);
 				data.textureIndex_ = (unsigned int)bc.first;
 
-				int depth = 5;
+				int depth = 10;
 				for (unsigned int i = 0; i < (bc.second > depth ? depth : bc.second); i++) {
 					data.worldPos_ = glm::vec3(x, height--, z) + glm::vec3(position.x, 0, position.y);
 
@@ -124,7 +124,7 @@ void ChunkColumn::createMeshNew(WorldMap* worldMap) {
 
 						const BlockDet& blockDets2 = getDets(b);
 
-						if (blockDets2.isTransparant && blockDets.Name != "water" && blockDets2.Name != "water") {
+						if (blockDets2.isTransparant) {
 							data.cubeType_ = j;
 							bufferData.push_back(data);
 						}

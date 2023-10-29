@@ -20,7 +20,7 @@ class Buffer;
 #define CHUNK_SIZE 16
 
 #define GRAVITY 10
-#define PLAYER_SPEED 2.0
+#define PLAYER_SPEED 5.0
 extern glm::vec3 LIGHTPOSITION;
 extern glm::vec3 LIGHTPOSITIONOrigin;
 
