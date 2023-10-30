@@ -1,75 +1,42 @@
 #include "constants.h"
-#include "../../Buffer.h"
+#include "../../Helpers/BlockDetails.h"
 #include "../../Textures/Texture.h"
-#include "../../Mesh.h"
+#include "../../Shaders/Shader.h"
 
-const std::array<Buffer*, 6> FACES = {
-	Mesh::FaceMesh({ glm::vec3(0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(0.5) },   // FRONT
-	glm::vec3(0, 0, 1),
-	{ glm::vec3(-1, -1, 1), glm::vec3(-1), glm::vec3(-1, 1, -1), glm::vec3(-1, 1, -1), glm::vec3(-1, 1, 1), glm::vec3(-1, -1, 1) }).getBuffer(),
-
-	Mesh::FaceMesh({ glm::vec3(-0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5) },  // BACK
-	glm::vec3(0, 0, -1),
-	{ glm::vec3(-1, 1, -1), glm::vec3(-1), glm::vec3(1, -1, -1), glm::vec3(1, -1, -1), glm::vec3(1, 1, -1), glm::vec3(-1, 1, -1) }).getBuffer(),
-
-	Mesh::FaceMesh({  glm::vec3(-0.5), glm::vec3(-0.5, 0.5, -0.5), glm::vec3(-0.5, 0.5, 0.5), /**/ glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(-0.5)},  // LEFT
-	glm::vec3(-1, 0, 0),
-	{ glm::vec3(1, -1, -1), glm::vec3(1, -1, 1), glm::vec3(1), glm::vec3(1), glm::vec3(1, 1, -1), glm::vec3(1, -1, -1) }).getBuffer(),
-
-	Mesh::FaceMesh({ glm::vec3(0.5), glm::vec3(0.5, 0.5, -0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5) },     // RIGHT
-	glm::vec3(1, 0, 0),
-	{ glm::vec3(-1, -1, 1), glm::vec3(-1, 1, 1), glm::vec3(1), glm::vec3(1), glm::vec3(1, -1, 1), glm::vec3(-1, -1, 1) }).getBuffer(),
-
-	Mesh::FaceMesh({ glm::vec3(-0.5, 0.5, -0.5), glm::vec3(0.5, 0.5, -0.5),glm::vec3(0.5), glm::vec3(0.5), glm::vec3(-0.5, 0.5, 0.5), glm::vec3(-0.5, 0.5, -0.5) },	  // TOP
-	glm::vec3(0, 1, 0),
-	{ glm::vec3(1, -1, 1), glm::vec3(-1, -1, 1), glm::vec3(-1, -1, -1), glm::vec3(-1, -1, -1), glm::vec3(1, -1, -1), glm::vec3(1, -1, 1) }).getBuffer(),
-
-	Mesh::FaceMesh({ glm::vec3(0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, -0.5), glm::vec3(-0.5), /**/ glm::vec3(-0.5), glm::vec3(-0.5, -0.5, 0.5), glm::vec3(0.5, -0.5, 0.5), },   // BOTTOM
-	glm::vec3(0, -1, 0),
-	{ glm::vec3(-1, 1, -1), glm::vec3(1, 1, -1), glm::vec3(1), glm::vec3(1), glm::vec3(-1, 1, 1), glm::vec3(-1, 1, -1) }).getBuffer()
-}; 
-const std::vector<Texture*>TEXTURES = {
-	new Texture("grass", ""),
-	new Texture("player/bottom", ""),
-	new Texture("player/top", ""),
-	new Texture("skybox", ""),
-	new Texture("stone", ""),
-	new Texture("dirt", ""),
-	new Texture("water", ""),
-	new Texture("error", ""),
-	new Texture("vampire/bottom", ""), // logs
-	new Texture("leaf", ""),
-	new Texture("vampire/bottom", ""),
-	new Texture("vampire/top", ""),
-	new Texture("sand", "")
+std::vector<Texture> TEXTURES = {
+	Texture("grass", ""),
+	Texture("player/bottom", ""),
+	Texture("player/top", ""),
+	Texture("skybox", ""),
+	Texture("stone", ""),
+	Texture("dirt", ""),
+	Texture("water", ""),
+	Texture("error", ""),
+	Texture("vampire/bottom", ""), // logs
+	Texture("leaf", ""),
+	Texture("vampire/bottom", ""),
+	Texture("vampire/top", ""),
+	Texture("sand", "")
 };
-const std::vector<Texture*>TEXTURES2D = {
-	new Texture("crosshair", ""),
-	new Texture("boarders/normal", ""),
-	new Texture("boarders/selected", ""),
-	new Texture("hearts/live_heart", ""),
-	new Texture("hearts/dead_heart", "")
+std::vector<Texture> TEXTURES2D = {
+	Texture("crosshair", ""),
+	Texture("boarders/normal", ""),
+	Texture("boarders/selected", ""),
+	Texture("hearts/live_heart", ""),
+	Texture("hearts/dead_heart", "")
 };
-const std::vector<Shader*>SHADERS = {
-	new Shader("block2"),
-	new Shader("block3"),
-	new Shader("skybox"),
-	new Shader("crosshair"),
-	new Shader("glyph"),
-	new Shader("ray"),
-	new Shader("depth"),
-	new Shader("GeomBlocks/geom", true)
+std::vector<Shader> SHADERS = {
+	Shader("block2"),
+	Shader("block3"),
+	Shader("skybox"),
+	Shader("crosshair"),
+	Shader("glyph"),
+	Shader("ray"),
+	Shader("depth"),
+	Shader("GeomBlocks/geom", true)
 };
-std::map<Blocks, BlockDet> BLOCKS = {
-	{ Blocks::AIR, {} },
-	{ Blocks::GRASS, {} },
-	{ Blocks::DIRT, {} },
-	{ Blocks::STONE, {} },
-	{ Blocks::WATER, {} },
-	{ Blocks::LOG, { } },
-	{ Blocks::LEAF, { } },
-	{ Blocks::SAND, { } }
-};
+std::vector<BlockDetails> BLOCK_DETAILS = {};
+
 const std::vector<Material> MATERIALS = {
 	{ glm::vec3(0.3), glm::vec3(1), glm::vec3(0), 0 }, // grass
 	{ glm::vec3(1), glm::vec3(1), glm::vec3(1), 1 }, // player bottom
@@ -126,31 +93,31 @@ int reduceToMultiple(float victim, unsigned int multiple) {
 	}
 	return victim;
 }
-Texture_Names getTexture(Blocks block) {
+const Texture_Names getTexture(Block block) {
 	Texture_Names res = Texture_Names::ERROR;
 	switch (block)
 	{
-	case Blocks::AIR:
+	case Block::AIR:
 		break;
-	case Blocks::GRASS:
+	case Block::GRASS:
 		res = Texture_Names::GRASS;
 		break;
-	case Blocks::DIRT:
+	case Block::DIRT:
 		res = Texture_Names::DIRT;
 		break;
-	case Blocks::STONE:
+	case Block::STONE:
 		res = Texture_Names::STONE;
 		break;
-	case Blocks::WATER:
+	case Block::WATER:
 		res = Texture_Names::WATER;
 		break;
-	case Blocks::LOG:
+	case Block::LOG:
 		res = Texture_Names::LOG;
 		break;
-	case Blocks::LEAF:
+	case Block::LEAF:
 		res = Texture_Names::LEAF;
 		break;
-	case Blocks::SAND:
+	case Block::SAND:
 		res = Texture_Names::SAND;
 		break;
 	}
@@ -159,78 +126,66 @@ Texture_Names getTexture(Blocks block) {
 	}
 	return res;
 }
-Texture* getBlockTexture(Blocks block) {
-	return BLOCKS[block].Tex;
+const Texture& getBlockTexture(Block block) {
+	return BLOCK_DETAILS[(unsigned int) block].Tex;
 }
-GLubyte toIndex(Texture_Names tex) {
-	return GLubyte(tex);
+unsigned int toIndex(Texture_Names tex) {
+	return (unsigned int) tex;
 }
-GLubyte toIndex(Blocks block) {
-	return GLubyte(block);
+unsigned int toIndex(Block block) {
+	return (unsigned int) block;
 }
-Blocks toBlock(GLubyte number) {
-	return Blocks(number);
+Block toBlock(unsigned char number) {
+	return Block(number);
 }
-std::string getName(Blocks block) {
+
+const std::string getName(Block block) {
 	std::string name("null");
 	switch (block)
 	{
-	case Blocks::AIR:
+	case Block::AIR:
 		name = "air";
 		break;
-	case Blocks::GRASS:
+	case Block::GRASS:
 		name = "grass";
 		break;
-	case Blocks::DIRT:
+	case Block::DIRT:
 		name = "dirt";
 		break;
-	case Blocks::STONE:
+	case Block::STONE:
 		name = "stone";
 		break;
-	case Blocks::WATER:
+	case Block::WATER:
 		name = "water";
 		break;
-	case Blocks::LOG:
+	case Block::LOG:
 		name = "log";
 		break;
-	case Blocks::LEAF:
+	case Block::LEAF:
 		name = "leaf";
 		break;
-	case Blocks::SAND:
+	case Block::SAND:
 		name = "sand";
 		break;
 	}
 	return name;
 }
+
 glm::vec3 getTranslation(glm::mat4 matrix) {
 	return { matrix[3][0], matrix[3][1], matrix[3][2] };
 }
 
-BlockDet& getDets(Blocks block) {
-	return BLOCKS[block];
+const BlockDetails& getDetails(Block block) {
+	return BLOCK_DETAILS[(unsigned int) block];
 }
 
-BlockDet& getDets(Texture* tex) {
-	for (auto& b : BLOCKS) {
-		if (tex->getName().find(b.second.Name) != std::string::npos) {
-			return b.second;
+const BlockDetails& getDetails(Texture* tex) {
+	for (auto& b : BLOCK_DETAILS) {
+		if (tex->getName().find(b.Name) != std::string::npos) {
+			return b;
 		}
 	}
-	return BLOCKS[Blocks::AIR];
-}
-
-Material getMaterial(const Texture_Names& block)
-{
-	return MATERIALS[toIndex(block)];
-}
-
-Material getMaterial(const std::string& texName)
-{
-	for (unsigned int i = 0; i < TEXTURES.size(); i++) {
-		if (texName == TEXTURES[i]->getName()) {
-			return getMaterial(Texture_Names(i));
-		}
-	}
+	return BLOCK_DETAILS[(unsigned int) Block::AIR];
 }
 
 glm::mat4 translate(glm::mat4 mat, glm::vec3 vec) {
@@ -245,49 +200,37 @@ void translate(glm::mat4& mat, glm::vec3 vec) {
 	}
 }
 
-Blocks itemToBlock(Item item)
+Block itemToBlock(Item item)
 {
 	switch (item)
 	{
 	case 0:
-		return Blocks::AIR;
+		return Block::AIR;
 	case 1:
-		return Blocks::GRASS;
+		return Block::GRASS;
 	case 2:
-		return Blocks::DIRT;
+		return Block::DIRT;
 	case 3:
-		return Blocks::STONE; 
+		return Block::STONE; 
 	case 4:
-		return Blocks::WATER;
+		return Block::WATER;
 	case 5:
-		return Blocks::ERROR;
+		return Block::ERROR;
 	case 6:
-		return Blocks::LOG;
+		return Block::LOG;
 	case 7:
-		return Blocks::LEAF;
+		return Block::LEAF;
 	case 8:
-		return Blocks::SAND;
+		return Block::SAND;
 	}
 }
-Blocks toBlock(std::string name) {
-	for (auto& b : BLOCKS) {
-		if (name == b.second.Name) {
-			return b.first;
+Block toBlock(std::string name) {
+	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
+		if (name == BLOCK_DETAILS[i].Name) {
+			return (Block) i;
 		}
 	}
-	return Blocks::ERROR;
-}
-
-std::vector<Face> toFaces(FaceB_p face)
-{
-	std::vector<Face> res;
-	Buffer* b = std::get<0>(face);
-	Texture* t = std::get<1>(face);
-	std::vector<glm::mat4>& models = std::get<2>(face);
-	for (glm::mat4& model : models) {
-		res.push_back({ b, t, getTranslation(model) });
-	}
-	return res;
+	return Block::ERROR;
 }
 
 glm::vec3 operator+(glm::vec3 p1, glm::vec2 p2)
@@ -307,34 +250,4 @@ glm::vec3 operator-(glm::vec3 p1, glm::vec2 p2)
 glm::vec3 operator-(glm::vec2 p1, glm::vec3 p2)
 {
 	return glm::vec3(p1.x, 0, p1.y) - p2;
-}
-
-void Timer::start()
-{
-	start_ = std::chrono::high_resolution_clock::now();
-}
-
-void Timer::stop()
-{
-	stop_ = std::chrono::high_resolution_clock::now();
-}
-
-void Timer::end() {
-	stop();
-}
-
-GLulong Timer::getTime()
-{
-	return std::chrono::duration_cast<std::chrono::microseconds>(stop_ - start_).count();
-}
-
-void Timer::showTime(std::string name, bool inFrames)
-{
-	std::string unit = " secconds";
-	float time = (float)getTime() / 1000000.0f;
-	if (inFrames) {
-		time /= (1.0f / 60.0f);
-		unit = " frames";
-	}
-	std::cout << "Timer " + name + ": " + std::to_string(time) + unit << std::endl;
 }

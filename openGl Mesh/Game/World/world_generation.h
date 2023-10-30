@@ -1,6 +1,6 @@
 #pragma once
 #include "constants.h"
-#include "gtc/noise.hpp"
+
 struct NoiseOptions {
 	int octaves;
 	float amplitude;

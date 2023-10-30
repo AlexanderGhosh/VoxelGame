@@ -1,17 +1,7 @@
 #pragma once
-#include <array>
 #include <string>
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <glfw3.h>
-#include <GL/glew.h>
 
 #include <glm.hpp>
-#include <gtc/type_ptr.hpp>
-
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
 struct Material {
 	glm::vec3 ambient;
@@ -21,31 +11,29 @@ struct Material {
 };
 class Shader {
 public:
-	Shader() : program(0), name(), hasGeom(false) {
-
-	}
+	Shader();
 	Shader(std::string shaderName, bool hasGeom = false);
 	void setUp();
-	void setName(std::string name);
-	void bind();
-	void unBind();
-	bool setValue(std::string name, glm::mat4& value);
-	bool setValue(std::string name, glm::vec4& value);
-	bool setValue(std::string name, glm::vec3& value);
-	bool setValue(std::string name, glm::vec2& value);
-	bool setValue(std::string name, float& value);
-	bool setValue(std::string name, const int& value);
-	bool setValue(std::string name, Material& value);
+	void setName(const std::string& name);
+	void bind() const;
+	void unBind() const;
+	bool setValue(const std::string& name, const glm::mat4& value) const;
+	bool setValue(const std::string& name, const glm::vec4& value) const;
+	bool setValue(const std::string& name, const glm::vec3& value) const;
+	bool setValue(const std::string& name, const glm::vec2& value) const;
+	bool setValue(const std::string& name, const float& value) const;
+	bool setValue(const std::string& name, const int& value) const;
+	bool setValue(const std::string& name, const Material& value) const;
 private:
 	bool hasGeom;
 	unsigned int program;
 	std::string name;
 
-	int getLocation(std::string name);
-	void setLocation(int& location, glm::mat4& value);
-	void setLocation(int& location, glm::vec4& value);
-	void setLocation(int& location, glm::vec3& value);
-	void setLocation(int& location, glm::vec2& value);
-	void setLocation(int& location, float& value);
-	void setLocation(int& location, const int& value);
+	const int getLocation(const std::string& name) const;
+	void setLocation(const int& location, const glm::mat4& value) const;
+	void setLocation(const int& location, const glm::vec4& value) const;
+	void setLocation(const int& location, const glm::vec3& value) const;
+	void setLocation(const int& location, const glm::vec2& value) const;
+	void setLocation(const int& location, const float& value) const;
+	void setLocation(const int& location, const int& value) const;
 };

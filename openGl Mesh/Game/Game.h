@@ -1,30 +1,26 @@
 #pragma once
-#include <iostream>
-#define GLEW_STATIC
-#include <GL/glew.h>
+// #define GLEW_STATIC
+#include <glad/glad.h>
 #include <glfw3.h>
 #include <glm.hpp>
-#include <gtx/string_cast.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <vector>
+#include <map>
 #include <array>
-#include <chrono>
-#include <thread>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <time.h>
 
 #include "../Renders/UI Stuff/UI_Renderer.h"
-#include "../EntityHander.h"
-#include "Player/Entity.h"
+#include "Player/Camera.h"
 #include "World/World.h"
-#include "../Ray.h"
+
+class Camera;
+
 struct Character {
-	unsigned int     TextureID;  // ID handle of the glyph texture
+	unsigned int TextureID;  // ID handle of the glyph texture
 	glm::ivec2 Size;       // Size of glyph
 	glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
-	unsigned int     Advance;    // Offset to advance to next glyph
+	unsigned int Advance;    // Offset to advance to next glyph
 };
+
 struct GameConfig {
 	static bool showFPS;
 	static glm::vec3 backgroundCol;
@@ -35,6 +31,7 @@ struct GameConfig {
 		GameConfig::FPSlock = FPS;
 	}
 };
+
 class Game
 {
 public:
@@ -42,7 +39,7 @@ public:
 	Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim);
 	void generateWorld();
 	void setupPlayer();
-	void doLoop(glm::mat4 projection);
+	void doLoop(const glm::mat4& projection);
 
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
@@ -50,21 +47,20 @@ public:
 	static Camera* mainCamera;
 	static glm::vec3 mouseData;
 	static std::array<bool, 1024> keys;
-	Ray ray;
 private:
 	GLFWwindow* window;
 	float deltaTime;
 	unsigned int frameRate;
 	bool gameRunning;
 	static World world;
-	static Entity* player;
-	static EntityHander entityHander;
+	// static Entity* player;
+	// static EntityHander entityHander;
 	static UI_Renderer uiRenderer;
 	bool hasSkybox;
 	float lastFrameTime;
 	glm::mat4 projection, lightProjection;
 	unsigned int SBVAO,LSVAO, LSVBO, depthFBO;
-	std::map<GLchar, Character> Letters;
+	std::map<char, Character> Letters;
 	unsigned int depthMap;
 	glm::ivec2 windowDim;
 
@@ -78,10 +74,10 @@ private:
 	static void clickCallBack(GLFWwindow* window, int button, int action, int mods);
 	static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset);
 	void processKeys();
-	void makeSkybox(std::string skybox);
+	void makeSkybox(const std::string& skybox);
 	void showSkybox();
 	void setUpFreeType();
-	void showText(std::string text, glm::vec2 position, float scale = 1.0f, glm::vec3 colour = glm::vec3(1));
+	void showText(const std::string& text, const glm::vec2& position, float scale = 1.0f, const glm::vec3 colour = glm::vec3(1));
 	void createGUI();
 	void showGUI();
 

@@ -1,11 +1,11 @@
 #include "DrawableGeom.h"
-#include "../Game/Player/Camera.h"
-#include "../Shaders/Shader.h"
-#include "../Game/World/constants.h"
+
 #include "BufferGeom.h"
-#include "GeomData.h"
-#include "../Buffer.h"
+// #include "GeomData.h"
+#include "../Game/Player/Camera.h"
 #include "../Game/World/Chunks/ChunkColumn.h"
+#include "../Shaders/Shader.h"
+#include "../Textures/Texture.h"
 
 DrawableGeom::DrawableGeom() : data()
 {
@@ -22,27 +22,27 @@ void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatr
 {
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
-	Shader* shader = SHADERS[GEOMBLOCKS];
+	const Shader& shader = SHADERS[GEOMBLOCKS];
 
-	shader->bind();
+	shader.bind();
 
 	glm::mat4 viewMatrix = cam.GetViewMatrix();
-	bool t = shader->setValue("view", viewMatrix);
-	t = shader->setValue("projection", projection);
+	bool t = shader.setValue("view", viewMatrix);
+	t = shader.setValue("projection", projection);
 
 	glm::vec3 viewPos = cam.GetPosition();
-	shader->setValue("viewPos", viewPos);
-	shader->setValue("lightPos", LIGHTPOSITION);
+	shader.setValue("viewPos", viewPos);
+	shader.setValue("lightPos", LIGHTPOSITION);
 
-	shader->setValue("lightSpaceMatrix", lightMatrix);
+	shader.setValue("lightSpaceMatrix", lightMatrix);
 
-	shader->setValue("cubeMap", 0);
-	shader->setValue("shadowMap", 1);
+	shader.setValue("cubeMap", 0);
+	shader.setValue("shadowMap", 1);
 
 
 	draw(depthMap, shader);
 
-	shader->unBind();
+	shader.unBind();
 	glDisable(GL_CULL_FACE);
 }
 
@@ -54,17 +54,14 @@ void DrawableGeom::setUp(const Chunks& chunks)
 	}
 }
 
-void DrawableGeom::draw(unsigned int depthMap, Shader* shader) const
+void DrawableGeom::draw(unsigned int depthMap, const Shader& shader) const
 {
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (const DrawData& data : this->data) {
 		const BufferGeom* buffer = &data.buffer;
 		Texture* tex = data.texture;
 		if (tex) {
 			tex->bind();
-
-			Material mat = getMaterial(tex->getName());
-			shader->setValue("material", mat);
 		}
 
 		buffer->bind();
@@ -72,5 +69,5 @@ void DrawableGeom::draw(unsigned int depthMap, Shader* shader) const
 		buffer->unbind();
 		if (tex) tex->unBind();
 	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

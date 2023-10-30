@@ -1,32 +1,37 @@
 #include <iostream>
-#define GLEW_STATIC
-#include <GL/glew.h>
+// #define GLEW_STATIC
+#include <glad/glad.h>
 #include <glfw3.h>
 #include <gtc/type_ptr.hpp>
 
 #include "Game/Game.h"
-#include "Buffer.h"
+
+#include "Game/World/constants.h"
+#include "Textures/Texture.h"
+#include "Shaders/Shader.h"
+
+#include "Helpers/BlockDetails.h"
 
 glm::ivec2 DIM(1280, 720);
 
 GLFWwindow* createWindow();
 void createBlocks();
-namespace fs = std::experimental::filesystem;
+// namespace fs = std::experimental::filesystem;
 int main() {
 	GLFWwindow* window = createWindow();
 	int c = 0;
-	for (auto& face : FACES) {
+	/*for (auto& face : FACES) {
 		face->createBuffers();
 		face->type = (FACES_NAMES)(FRONT + c++);
-	}
+	}*/
 	for (auto& tex : TEXTURES) {
-		tex->load3D(tex->getName());
+		tex.load3D(tex.getName());
 	}
 	for (auto& tex : TEXTURES2D) {
-		tex->load2D(tex->getName());
+		tex.load2D(tex.getName());
 	}
 	for (auto& shader : SHADERS) {
-		shader->setUp();
+		shader.setUp();
 	}
 	createBlocks();
 
@@ -43,16 +48,17 @@ int main() {
 }
 
 void createBlocks() {
-	for (auto& block_ : BLOCKS) {
-		auto& block = block_.first;
-		auto& dets = block_.second;
+	BLOCK_DETAILS.resize((size_t) Block::SIZE);
+	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
+		Block block = (Block) i;
+		BlockDetails& dets = BLOCK_DETAILS[i];
 		dets.Name = getName(block);
-		dets.Tex = TEXTURES[(unsigned int)getTexture(block)];
+		dets.Tex = &TEXTURES[(unsigned int) getTexture(block)];
 		if(dets.Name != "air")
 			dets.ItemTex = Texture("Items/" + dets.Name);
-		dets.isTransparant = 0;
+		dets.isTransparant = false;
 		if (dets.Name == "air" || dets.Name == "leaf" || dets.Name == "water") {
-			dets.isTransparant = 1;
+			dets.isTransparant = true;
 		}
 	}
 }
@@ -77,9 +83,12 @@ GLFWwindow* createWindow() {
 		exit(EXIT_FAILURE); // stops program
 	}
 	glfwMakeContextCurrent(window);
-	if (GLEW_OK != glewInit()) {
-		std::cout << "Falid to initialise GLEW" << std::endl;
-		exit(EXIT_FAILURE);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE); // stops program
 	}
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disabel cursor visabilaty

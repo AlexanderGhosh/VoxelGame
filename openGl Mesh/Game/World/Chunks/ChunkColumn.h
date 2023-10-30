@@ -1,58 +1,33 @@
 #pragma once
-#define GLM_ENABLE_EXPERIMENTAL
-#include "gtx/hash.hpp"
 #include "../constants.h"
 #include "../../../BlockStore.h"
 #include "../../../GeomRendering/BufferGeom.h"
 
 class ChunkColumn
 {
-private: // properties
-	glm::vec2 position;
-	// HeightMap heightMap;
-	// std::unordered_map<glm::vec3, Blocks> blocksEdited;
-	BlockStore blockStore;
-	BufferGeom buffer;
 
-public: // functions
+public:
 
-   // constructors
 	ChunkColumn();
 	ChunkColumn(glm::vec2 pos, unsigned int seed);
 
 	// creators
-	void createMeshNew(WorldMap* worldMap);
+	void populateBuffer(WorldMap* worldMap);
 	void addTrees();
 
 	// getters
 	const BufferGeom& getBuffer() const;
 	const BlockStore& getBlockStore() const;
-	const glm::vec2& getPosition() const ;
-	Blocks getBlock(glm::vec3 pos, bool worldPos = 1, bool checkEdited = 1);
-	glm::vec3 getRelativePosition(glm::vec3 worldPos);
-	glm::vec3 getWorldPosition(glm::vec3 relativePos);
-	std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent); // mabye could be optimised
+	const glm::vec2& getPosition() const;
+	const Block getBlock(glm::vec3 pos, bool worldPos = true, bool checkEdited = true) const;
+	const glm::vec3 getRelativePosition(glm::vec3 worldPos) const;
+	const glm::vec3 getWorldPosition(glm::vec3 relativePos) const;
+	// const std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent) const; // mabye could be optimised
 
-private: // functions
-	// editors
-	void addBlock(glm::vec3 position, bool worldPos, Blocks block, WorldMap* worldMap);
+private:
+	glm::vec2 position;
+	BlockStore blockStore;
+	BufferGeom buffer;
 
-	// getters
-	Blocks getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap* worldMap);
+	const Block getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap* worldMap) const;
 };
-struct Tuple1 {
-	GLubyte bufferType;
-	GLubyte textureMap;
-	unsigned int size;
-};
-struct Tuple_ {
-	Tuple1 data;
-	std::vector<glm::mat4> models;
-	FaceB_p toFace();
-};
-struct BlockData {
-	glm::vec3 pos;
-	GLubyte block;
-	std::pair<glm::vec3, Blocks> toBlockD();
-};
-

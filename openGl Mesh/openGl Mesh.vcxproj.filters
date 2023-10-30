@@ -30,16 +30,10 @@
     <ClCompile Include="SOIL2\SOIL2.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Textures\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Shaders\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renders\chunkRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\World\constants.cpp">
@@ -51,28 +45,13 @@
     <ClCompile Include="Game\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Drawable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Player\Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\World\world_generation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\Physics\BoxCollider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityHander.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BlockStore.cpp">
@@ -84,21 +63,23 @@
     <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Player\Inventory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Player\PlayerInv.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeomRendering\BufferGeom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeomRendering\DrawableGeom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Helpers\BlocksEncoded.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="glew32.dll" />
     <None Include="Shaders\block3_v.gls" />
     <None Include="Shaders\block3_f.gls" />
     <None Include="Shaders\skybox_f.gls" />
@@ -172,16 +153,10 @@
     <ClInclude Include="SOIL2\stbi_pvr_c.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Buffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Textures\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shaders\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renders\chunkRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Player\Camera.h">
@@ -196,28 +171,13 @@
     <ClInclude Include="Game\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Drawable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Player\Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game\World\world_generation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Physics\BoxCollider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game\World\Chunks\ChunkColumn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityHander.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BlockStore.h">
@@ -227,12 +187,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renders\UI Stuff\UI_Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Player\Inventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Player\PlayerInv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeomRendering\BufferGeom.h">
@@ -245,6 +199,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeomRendering\DrawData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\BlocksEncoded.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\BlockDetails.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

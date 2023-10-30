@@ -1,7 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <GL/glew.h>
+// #define GLEW_STATIC
+#include <glad/glad.h>
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -110,7 +111,7 @@ public:
 		this->updateCameraVectors();
 	}
 	void updateCameraVectors() {
-		glm::vec3 front;
+		glm::vec3 front{};
 		front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 		front.y = sin(glm::radians(this->pitch));
 		front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));

@@ -1,4 +1,8 @@
 #include "UI_Element.h"
+#include <gtc/matrix_transform.hpp>
+#include "../../Textures/Texture.h"
+#include "../../Shaders/Shader.h"
+
 
 UI_Element::UI_Element() : pos(0), size(1), texture(nullptr)
 {
@@ -8,7 +12,7 @@ UI_Element::UI_Element(glm::vec2 pos, glm::vec2 size, Texture* tex, std::string 
 {
 }
 
-Texture*& UI_Element::getTexture()
+Texture* UI_Element::getTexture()
 {
 	return texture;
 }
@@ -26,7 +30,7 @@ glm::vec2& UI_Element::getSize()
 void UI_Element::bind(Shader*& shader) 
 {
 	texture->bind();
-	glm::mat4 model = translate(glm::mat4(1), glm::vec3(pos, 0));
+	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(pos, 0));
 	model = glm::scale(model, glm::vec3(size, 0));
 	shader->setValue("model", model);
 }

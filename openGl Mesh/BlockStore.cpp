@@ -1,4 +1,5 @@
 #include "BlockStore.h"
+#include "Game/World/world_generation.h"
 
 BlockStore::BlockStore() : position(), heightMap(), editedBlocks(), hasTrees(false) { }
 
@@ -18,22 +19,22 @@ const HeightMap& BlockStore::getHeightMap() const
 	return heightMap;
 }
 
-std::unordered_map<glm::vec3, Blocks>& BlockStore::getEditedBlocks()
+std::unordered_map<glm::vec3, Block>& BlockStore::getEditedBlocks()
 {
 	return editedBlocks;
 }
 
-std::vector<Block_Count>& BlockStore::getBlocksAt(glm::vec2 pos)
+const BlocksEncoded& BlockStore::getBlocksAt(glm::vec2 pos) const
 {
-	return heightMap[pos.x][pos.y];
+	return heightMap[columnIndex(pos.x, pos.y)];
 }
 
-std::vector<Block_Count>& BlockStore::getBlocksAt(float x, float z)
+const BlocksEncoded& BlockStore::getBlocksAt(float x, float z) const
 {
-	return heightMap[x][z];
+	return heightMap[columnIndex(x, z)];
 }
 
-const Blocks BlockStore::getBlock(glm::vec3 pos, bool worldPosition, bool checkEdited) const
+const Block BlockStore::getBlock(glm::vec3 pos, bool worldPosition, bool checkEdited) const
 {
 	auto getRelativePosition = [&](glm::vec3 pos) -> glm::vec3 {
 		return pos - this->getPosition();
@@ -47,18 +48,21 @@ const Blocks BlockStore::getBlock(glm::vec3 pos, bool worldPosition, bool checkE
 		}
 	}
 	// get from height map
-	std::vector<Block_Count> encodes;
+	BlocksEncoded encodes;
 	glm::vec2 hPos(relativePos.x, relativePos.z);
 	if (glm::all(glm::lessThan(hPos, glm::vec2(CHUNK_SIZE)) && glm::greaterThanEqual(hPos, { 0, 0 }))) {
-		encodes = heightMap[hPos.x][hPos.y];
+		encodes = heightMap[columnIndex(hPos.x, hPos.y)];
 	}
+	return encodes[relativePos.y];
+	/*
 	for (Block_Count& encoded : encodes) {
 		relativePos.y -= encoded.second;
 		if (relativePos.y <= 0) {
 			return encoded.first;
 		}
 	}
-	return Blocks::AIR;
+	return Block::AIR;
+	*/
 }
 
 bool BlockStore::doesHaveTrees()
@@ -76,7 +80,7 @@ void BlockStore::setHeightMap(const HeightMap& hm)
 	heightMap = hm;
 }
 
-void BlockStore::setEditedBlocks(std::unordered_map<glm::vec3, Blocks>& edited)
+void BlockStore::setEditedBlocks(std::unordered_map<glm::vec3, Block>& edited)
 {
 	editedBlocks = edited;
 }

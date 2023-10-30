@@ -1,7 +1,6 @@
 #pragma once
 #include <glm.hpp>
 #include <list>
-#include <unordered_map>
 #include "../Game/World/constants.h"
 #include "DrawData.h"
 
@@ -17,6 +16,6 @@ public:
 
 private:
 	std::list<DrawData> data;
-	void draw(unsigned int depthMap, Shader* shader) const;
+	void draw(unsigned int depthMap, const Shader& shader) const;
 };
 

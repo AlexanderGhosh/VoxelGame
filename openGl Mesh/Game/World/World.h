@@ -1,8 +1,7 @@
 #pragma once
-#include <vector>
-
 #include "constants.h"
 #include "../../GeomRendering/DrawableGeom.h"
+#include "Chunks/ChunkColumn.h"
 
 class World
 {
@@ -16,7 +15,7 @@ public:
 
 private:
 	unsigned int seed;
-	std::vector<ChunkColumn> chunks;
+	Chunks chunks;
 
 	DrawableGeom geomDrawable;
 

@@ -1,45 +1,53 @@
 #include "Shader.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+// #define GLEW_STATIC
+#include <glad/glad.h>
+#include <gtc/type_ptr.hpp>
+
+Shader::Shader() : name(), hasGeom(), program() { }
 
 Shader::Shader(std::string shaderName, bool hasGeom) : Shader() {
 	name = shaderName;
 	this->hasGeom = hasGeom;
 }
-void Shader::bind() {
+void Shader::bind() const {
 	glUseProgram(program);
 }
-void Shader::unBind() {
+void Shader::unBind() const {
 	glUseProgram(0);
 }
-int Shader::getLocation(std::string name) {
+const int Shader::getLocation(const std::string& name) const {
 	return glGetUniformLocation(program, name.c_str());
 }
 
-void Shader::setLocation(int& location, glm::mat4& value) {
+void Shader::setLocation(const int& location, const glm::mat4& value) const {
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
-void Shader::setLocation(int& location, glm::vec4& value) {
+void Shader::setLocation(const int& location, const glm::vec4& value) const {
 	glUniform4f(location, value.x, value.y, value.z, value.w);
 }
-void Shader::setLocation(int& location, glm::vec3& value) {
+void Shader::setLocation(const int& location, const glm::vec3& value) const {
 	glUniform3f(location, value.x, value.y, value.z);
 }
-void Shader::setLocation(int& location, glm::vec2& value)
+void Shader::setLocation(const int& location, const glm::vec2& value) const
 {
 	glUniform2f(location, value.x, value.y);
 }
-void Shader::setLocation(int& location, float& value) {
+void Shader::setLocation(const int& location, const float& value) const {
 	glUniform1f(location, value);
 }
-void Shader::setLocation(int& location, const int& value) {
+void Shader::setLocation(const int& location, const int& value) const {
 	glUniform1i(location, value);
 }
-bool Shader::setValue(std::string name, const int& value) {
+bool Shader::setValue(const std::string& name, const int& value) const {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-bool Shader::setValue(std::string name, Material& value)
+bool Shader::setValue(const std::string& name, const Material& value) const
 {
 	bool res = 0;
 	res = setValue(name + ".ambient", value.ambient);
@@ -51,32 +59,32 @@ bool Shader::setValue(std::string name, Material& value)
 	res = setValue(name + ".shininess", value.shininess);
 	if (!res) return 0;
 }
-bool Shader::setValue(std::string name, glm::vec4& value) {
+bool Shader::setValue(const std::string& name, const glm::vec4& value) const {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-bool Shader::setValue(std::string name, glm::vec3& value) {
+bool Shader::setValue(const std::string& name, const glm::vec3& value) const {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-bool Shader::setValue(std::string name, glm::vec2& value)
+bool Shader::setValue(const std::string& name, const glm::vec2& value) const
 {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-bool Shader::setValue(std::string name, float& value) {
+bool Shader::setValue(const std::string& name, const float& value) const {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-bool Shader::setValue(std::string name, glm::mat4& value) {
+bool Shader::setValue(const std::string& name, const glm::mat4& value) const {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;
 	setLocation(loc, value);
@@ -112,13 +120,13 @@ void Shader::setUp() {
 	catch (std::ifstream::failure e) {
 		std::cout << "Shader file faild to be read" << std::endl;
 	}
-	const GLchar* vShaderCode = vertexCode.c_str();
-	const GLchar* gShaderCode = geometryCode.c_str();
-	const GLchar* fShaderCode = fragmentCode.c_str();
+	const char* vShaderCode = vertexCode.c_str();
+	const char* gShaderCode = geometryCode.c_str();
+	const char* fShaderCode = fragmentCode.c_str();
 
 	unsigned int vertex, geometry, fragment;
 	int success;
-	GLchar infoLog[512];
+	char infoLog[512];
 
 	//vertex
 	vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -175,6 +183,6 @@ void Shader::setUp() {
 
 	glUseProgram(0);
 }
-void Shader::setName(std::string name) {
+void Shader::setName(const std::string& name) {
 	this->name = name;
 }

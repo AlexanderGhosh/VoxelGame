@@ -1,4 +1,7 @@
 #include "UI_Renderer.h"
+// #define GLEW_STATIC
+#include <glad/glad.h>
+#include "../../Shaders/Shader.h"
 
 UI_Renderer::UI_Renderer()
 {

@@ -1,36 +1,30 @@
 #include "Texture.h"
 
-Texture::Texture(std::string name, std::string overload) {
-	this->name = name;
-	created = 0;
-}
-//Texture::Texture(std::string name, bool is2D) {
-//	this->name = name;
-//	this->is2D = is2D;
-//	if (is2D) {
-//		created = load2D(name);
-//	}
-//	else {
-//		created = load3D(name);
-//	}
-//}
+#include <iostream>
+#include <vector>
 
-Texture::Texture(std::string name) {
+// #define GLEW_STATIC
+#include <glad/glad.h>
+
+Texture::Texture() :created(false), dimentions(), texMap(), is2D(), name() { }
+
+Texture::Texture(std::string name, std::string overload) : Texture() {
+	this->name = name;
+}
+
+Texture::Texture(std::string name) : Texture() {
 	this->name = name;
 	this->is2D = true;
 	created = load2D(name);
 }
-Texture::Texture(bool loadTex) {
-	name = "";
-	is2D = false;
-	created = false;
+Texture::Texture(bool loadTex) : Texture() {
 	if (loadTex) {
 		created = load3D("grass");
 	}
 }
-bool Texture::load2D(std::string& name) {
-	name = "./Textures/" + name + ".png";
-	is2D = 1;
+bool Texture::load2D(const std::string& n) {
+	std::string name = "./Textures/" + n + ".png";
+	is2D = true;
 	glGenTextures(1, &texMap);
 	// diffuse
 	// "C:\Users\ghosh\Desktop\openGl Mesh\openGl Mesh\Textures\hearts\live_heart.png"
@@ -47,12 +41,12 @@ bool Texture::load2D(std::string& name) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST_MIPMAP_NEAREST
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST_MIPMAP_NEAREST
-	created = 1;
-	return GL_TRUE;
+	created = true;
+	return true;
 }
 bool Texture::load3D(const std::string& name) {
 	this->name = name;
-	is2D = GL_FALSE;
+	is2D = false;
 	std::vector<std::string> faces = {
 		"Textures/" + name + "/left.png",	// left
 		"Textures/" + name + "/front.png",	// front
@@ -88,9 +82,9 @@ bool Texture::load3D(const std::string& name) {
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	created = true;
-	return GL_TRUE;
+	return true;
 }
-void Texture::bind() {
+void Texture::bind() const {
 	if (!created) return;
 	glActiveTexture(GL_TEXTURE0);
 	if (is2D) {
@@ -100,7 +94,7 @@ void Texture::bind() {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, texMap);
 	}
 }
-void Texture::unBind() {
+void Texture::unBind() const {
 	if (is2D) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
@@ -108,15 +102,15 @@ void Texture::unBind() {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 }
-std::string& Texture::getName() {
+const std::string& Texture::getName() const {
 	return name;
 }
-unsigned int& Texture::getTexMap() {
+const unsigned int& Texture::getTexMap() const {
 	return texMap;
 }
-bool& Texture::get2D() {
+const bool Texture::get2D() const {
 	return is2D;
 }
-glm::ivec2& Texture::getDimentions() {
+const glm::ivec2& Texture::getDimentions() const {
 	return dimentions;
 }

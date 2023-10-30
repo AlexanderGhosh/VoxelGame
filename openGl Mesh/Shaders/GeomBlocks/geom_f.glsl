@@ -73,7 +73,7 @@ void main()
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * colour;   
     color = vec4(lighting, colourA.a);
     // color = colourA;
-    //color.xyz = (Normal + 1) * 0.5;
+    color.xyz = (Normal + 1) * 0.5;
 }
 
 

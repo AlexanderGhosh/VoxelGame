@@ -1,5 +1,9 @@
 #pragma once
-#include "../../Game/World/constants.h"
+#include <glm.hpp>
+#include <string>
+
+class Texture;
+class Shader;
 class UI_Element
 {
 private: // properties
@@ -14,7 +18,7 @@ public: // functions
 	void unBind();
 
 	std::string& getName();
-	Texture*& getTexture();
+	Texture* getTexture();
 	glm::vec2& getPos();
 	glm::vec2& getSize();
 
