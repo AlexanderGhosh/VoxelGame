@@ -35,7 +35,7 @@ extern glm::vec3 LIGHTPOSITIONOrigin;
 enum class Block : uint8_t;
 
 using Chunks = std::vector<ChunkColumn>;
-using WorldMap = std::unordered_map<glm::vec2, const BlockStore*>;
+using WorldMap = std::unordered_map<glm::vec2, BlockStore>;
 using Item = unsigned int;
 
 

@@ -3,12 +3,11 @@
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Timer.h"
 
-World::World() : chunks(), geomDrawable(), seed(), worldMap() {
+World::World() : chunks(), geomDrawable(), seed() {
 }
 World::World(bool gen, bool terrain, unsigned int seed) : World() {
 	this->seed = seed;
 	if (!gen) return;
-	worldMap.reserve(RENDER_DISTANCE + 2);
 	getNewChunkPositions(!terrain);
 
 }
@@ -22,23 +21,20 @@ void World::getNewChunkPositions(bool flat) {
 
 void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	std::cout << "Started\n";
-	// files and blocks
-	Timer timer;
-	timer.start();
+
+	WorldMap worldMap;
+	worldMap.reserve(chunkPositions.size());
+	chunks.reserve(chunkPositions.size());
+
 	for (const glm::vec2& pos : chunkPositions) {
-		chunks.emplace_back(pos, seed);
-	}
-	timer.stop();
-	unsigned long avg = timer.getTime() / chunkPositions.size();
-	std::cout << avg << std::endl;
-
-	for (auto& chunk : chunks) {
-		worldMap[chunk.getPosition()] = &chunk.getBlockStore();
+		chunks.emplace_back(pos, seed, worldMap);
 	}
 
 	for (auto& chunk : chunks) {
-		chunk.populateBuffer(&worldMap);
+		chunk.populateBuffer(worldMap);
 	}
+
+	worldMap.clear();
 }
 
 void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) const {

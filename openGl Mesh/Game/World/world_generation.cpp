@@ -17,7 +17,7 @@ float world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, uns
 		xy += seed;
 
 		float noise = glm::simplex(glm::vec3{ xy.x, xy.y, seed });
-		noise = (noise + 1.0f) / 2.0f;
+		noise = (noise + 1.0f) * .5f;
 		value += noise * amplitude;
 		accumulatedAmps += amplitude;
 	}
@@ -47,19 +47,8 @@ void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, He
 			BlocksEncoded& encoded = res[columnIndex(x, y)];
 			glm::vec2 worldPos = { x, y };
 			worldPos += chunkPos;
-			float height = heightAtPositon(worldPos, firstNoise, seed);
-			float height2 = heightAtPositon(worldPos, secondNoise, seed);
-			float result = height * height2;
-			result *= firstNoise.amplitude + firstNoise.offset - 5;
-			result = abs(result);
-			if (worldPos == glm::vec2(0)) {
-				worldPos.x++;
-				height = heightAtPositon(worldPos, firstNoise, seed);
-				height2 = heightAtPositon(worldPos, secondNoise, seed);
-				result = height * height2;
-				result *= firstNoise.amplitude + firstNoise.offset - 5;
-				result = abs(result);
-			}
+			
+			float result = heightOfColumn(worldPos, seed);
 
 			float result_orig = result;
 
@@ -105,4 +94,36 @@ std::vector<glm::vec2> world_generation::getTreePositions(glm::vec2 chunkPos)
 		treeCooldown.x--;
 	}
 	return trees;
+}
+
+unsigned int world_generation::heightOfColumn(glm::vec2 worldPos, const unsigned int seed)
+{
+	NoiseOptions firstNoise{};
+	firstNoise.amplitude = 105.0f;
+	firstNoise.octaves = 6;
+	firstNoise.smoothness = 205.0f;
+	firstNoise.roughness = 0.58f;
+	firstNoise.offset = 18.0f;
+
+	NoiseOptions secondNoise{};
+	secondNoise.amplitude = 20.0f;
+	secondNoise.octaves = 4;
+	secondNoise.smoothness = 200.0f;
+	secondNoise.roughness = 0.45f;
+	secondNoise.offset = 0.0f;
+
+	float height = heightAtPositon(worldPos, firstNoise, seed);
+	float height2 = heightAtPositon(worldPos, secondNoise, seed);
+	float result = height * height2;
+	result *= firstNoise.amplitude + firstNoise.offset - 5;
+	result = abs(result);
+	if (worldPos == glm::vec2(0)) {
+		worldPos.x++;
+		height = heightAtPositon(worldPos, firstNoise, seed);
+		height2 = heightAtPositon(worldPos, secondNoise, seed);
+		result = height * height2;
+		result *= firstNoise.amplitude + firstNoise.offset - 5;
+		result = abs(result);
+	}
+	return result;
 }

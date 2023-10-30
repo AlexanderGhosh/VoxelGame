@@ -2,6 +2,7 @@
 #include <chrono>
 #include <string>
 
+// in micro secconds
 class Timer {
 private:
 	std::chrono::time_point<std::chrono::steady_clock> start_;

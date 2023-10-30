@@ -9,25 +9,25 @@ class ChunkColumn
 public:
 
 	ChunkColumn();
-	ChunkColumn(glm::vec2 pos, unsigned int seed);
+	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
 	// creators
-	void populateBuffer(WorldMap* worldMap);
-	void addTrees();
+	void populateBuffer(WorldMap& worldMap);
 
 	// getters
-	const BufferGeom& getBuffer() const;
-	const BlockStore& getBlockStore() const;
-	const glm::vec2& getPosition() const;
-	const Block getBlock(glm::vec3 pos, bool worldPos = true) const;
-	const glm::vec3 getRelativePosition(glm::vec3 worldPos) const;
-	const glm::vec3 getWorldPosition(glm::vec3 relativePos) const;
 	// const std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent) const; // mabye could be optimised
 
+	const BufferGeom& getBuffer() const;
 private:
-	BlockStore blockStore;
-	glm::vec2 position;
 	BufferGeom buffer;
+	glm::vec2 position;
 
-	const Block getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap* worldMap) const;
+	unsigned int seed;
+
+	const Block getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const;
+
+	const glm::vec2& getPosition() const;
+	const Block getBlock(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const;
+	const glm::vec3 getRelativePosition(glm::vec3 worldPos) const;
+	const glm::vec3 getWorldPosition(glm::vec3 relativePos) const;
 };
