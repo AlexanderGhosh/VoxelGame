@@ -30,7 +30,7 @@ bool Texture::load2D(const std::string& n) {
 	// "C:\Users\ghosh\Desktop\openGl Mesh\openGl Mesh\Textures\hearts\live_heart.png"
 	unsigned char* image = SOIL_load_image(name.c_str(), &dimentions.x, &dimentions.y, 0, SOIL_LOAD_RGBA);
 	if (!image) {
-		std::cout << "texture error" << std::endl;
+		std::cout << "texture error | " << name << std::endl;
 		return false;
 	}
 	glBindTexture(GL_TEXTURE_2D, texMap);

@@ -27,6 +27,8 @@ constexpr float GRAVITY = 10;
 constexpr float PLAYER_SPEED = 5;
 constexpr unsigned int SEED = 32;
 
+constexpr float VOXEL_SZIE = 1;
+
 extern glm::vec3 LIGHTPOSITION;
 extern glm::vec3 LIGHTPOSITIONOrigin;
 

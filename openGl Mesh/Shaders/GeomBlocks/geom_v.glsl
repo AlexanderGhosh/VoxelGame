@@ -7,6 +7,7 @@ layout(location = 2) in uint blockColourIndex_;
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
+uniform float voxelSize;
 
 out VS_OUT {
     uint cubeType;
@@ -16,10 +17,10 @@ out VS_OUT {
 } vs_out;
 
 void main() {
-    mat4 m = mat4(1);
-    m[3][0] = worldPos_.x - 1;
-    m[3][1] = worldPos_.y - 1;
-    m[3][2] = worldPos_.z - 1;
+    mat4 m = mat4(voxelSize);
+    m[3][0] = worldPos_.x * voxelSize - 1;
+    m[3][1] = worldPos_.y * voxelSize - 1;
+    m[3][2] = worldPos_.z * voxelSize - 1;
     vs_out.m = m;
 
     vs_out.vp = projection * view;

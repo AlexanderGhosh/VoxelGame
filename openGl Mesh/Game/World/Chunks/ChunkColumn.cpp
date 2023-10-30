@@ -32,7 +32,7 @@ const Block getBlockNew(const glm::vec3& worldPos, const WorldMap& map) {
 	}
 	auto& pair = *itt;
 	const BlockStore& chunk = *pair.second;
-	return chunk.getBlock(localPos, false, true);
+	return chunk.getBlock(localPos, true);
 }
 
 void ChunkColumn::populateBuffer(WorldMap* worldMap) {
@@ -233,7 +233,10 @@ const glm::vec2& ChunkColumn::getPosition() const
 
 const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool checkEdited) const
 {
-	return blockStore.getBlock(pos, worldPos, checkEdited);
+	if (worldPos) {
+		return blockStore.getBlock(getRelativePosition(pos), checkEdited);
+	}
+	return blockStore.getBlock(pos, checkEdited);
 }
 
 const glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)const 
@@ -314,7 +317,7 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool safe, World
 	if (worldMap->size() > 0) {
 		auto found = worldMap->find(chunkPositionToLookAt);
 		if (found == worldMap->end()) return Block::ERROR;
-		auto foundBlock = (*found).second->getBlock(relativePostion, false, true);
+		auto foundBlock = (*found).second->getBlock(relativePostion, true);
 		return foundBlock;
 	}
 	return Block::ERROR;

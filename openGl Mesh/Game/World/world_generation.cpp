@@ -24,7 +24,7 @@ float world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, uns
 	return value / accumulatedAmps;
 }
 
-HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, unsigned int biome) {
+void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
 	// doesn't generate caves
 	NoiseOptions firstNoise{};
 	firstNoise.amplitude = 105.0f;
@@ -39,8 +39,6 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int see
 	secondNoise.smoothness = 200.0f;
 	secondNoise.roughness = 0.45f;
 	secondNoise.offset = 0.0f;
-
-	HeightMap res;
 
 	for (unsigned int x = 0; x < CHUNK_SIZE; x++)
 	{
@@ -87,7 +85,6 @@ HeightMap world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int see
 			encoded.push(Block::GRASS, 1);
 		}
 	}
-	return res;
 }
 
 std::vector<glm::vec2> world_generation::getTreePositions(glm::vec2 chunkPos)

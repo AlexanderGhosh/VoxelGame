@@ -1,17 +1,11 @@
 #include "BlockStore.h"
 #include "Game/World/world_generation.h"
 
-BlockStore::BlockStore() : position(), heightMap(), editedBlocks(), hasTrees(false) { }
+BlockStore::BlockStore() : heightMap(), editedBlocks(), hasTrees(false) { }
 
 BlockStore::BlockStore(glm::vec2 pos, unsigned int seed) : BlockStore()
 {
-	position = pos;
-	heightMap = world_generation::createHeightMap(pos, seed);
-}
-
-const glm::vec2& BlockStore::getPosition() const
-{
-	return position;
+	world_generation::createHeightMap(pos, seed, heightMap);
 }
 
 const HeightMap& BlockStore::getHeightMap() const
@@ -34,12 +28,8 @@ const BlocksEncoded& BlockStore::getBlocksAt(float x, float z) const
 	return heightMap[columnIndex(x, z)];
 }
 
-const Block BlockStore::getBlock(glm::vec3 pos, bool worldPosition, bool checkEdited) const
+const Block BlockStore::getBlock(glm::vec3 relativePos, bool checkEdited) const
 {
-	auto getRelativePosition = [&](glm::vec3 pos) -> glm::vec3 {
-		return pos - this->getPosition();
-	};
-	glm::vec3 relativePos = worldPosition ? getRelativePosition(pos) : pos;
 	// check changed blocks
 	if (checkEdited) {
 		unsigned int size = editedBlocks.size();
@@ -68,11 +58,6 @@ const Block BlockStore::getBlock(glm::vec3 pos, bool worldPosition, bool checkEd
 bool BlockStore::doesHaveTrees()
 {
 	return hasTrees;
-}
-
-void BlockStore::setPosition(glm::vec2 pos)
-{
-	position = pos;
 }
 
 void BlockStore::setHeightMap(const HeightMap& hm)

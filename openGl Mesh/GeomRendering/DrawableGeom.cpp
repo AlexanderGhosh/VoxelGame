@@ -39,6 +39,8 @@ void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatr
 	shader.setValue("cubeMap", 0);
 	shader.setValue("shadowMap", 1);
 
+	shader.setValue("voxelSize", VOXEL_SZIE);
+
 
 	draw(depthMap, shader);
 
