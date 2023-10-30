@@ -275,11 +275,11 @@ void Game::processKeys() {
 	auto& k = Game::keys;
 	float speed = 9.0f;
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
-		speed = 12.0f;
+		speed = 20.0f;
 		//player->setMovementSpeed(PLAYER_SPEED * 2.5f);
 	} // running
 	else {
-		speed = 2.0f;
+		speed = 12.0f;
 		//player->setMovementSpeed(PLAYER_SPEED);
 	} // walking
 	// prevents floaty behavour
