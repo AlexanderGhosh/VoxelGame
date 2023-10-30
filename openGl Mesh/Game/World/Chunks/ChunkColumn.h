@@ -19,7 +19,7 @@ public:
 	const BufferGeom& getBuffer() const;
 	const BlockStore& getBlockStore() const;
 	const glm::vec2& getPosition() const;
-	const Block getBlock(glm::vec3 pos, bool worldPos = true, bool checkEdited = true) const;
+	const Block getBlock(glm::vec3 pos, bool worldPos = true) const;
 	const glm::vec3 getRelativePosition(glm::vec3 worldPos) const;
 	const glm::vec3 getWorldPosition(glm::vec3 relativePos) const;
 	// const std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent) const; // mabye could be optimised

@@ -1,6 +1,7 @@
 #include "World.h"
 #include <iostream>
 #include "Chunks/ChunkColumn.h"
+#include "../../Helpers/Timer.h"
 
 World::World() : chunks(), geomDrawable(), seed(), worldMap() {
 }
@@ -22,10 +23,14 @@ void World::getNewChunkPositions(bool flat) {
 void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	std::cout << "Started\n";
 	// files and blocks
+	Timer timer;
+	timer.start();
 	for (const glm::vec2& pos : chunkPositions) {
 		chunks.emplace_back(pos, seed);
-		chunks.back().addTrees();
 	}
+	timer.stop();
+	unsigned long avg = timer.getTime() / chunkPositions.size();
+	std::cout << avg << std::endl;
 
 	for (auto& chunk : chunks) {
 		worldMap[chunk.getPosition()] = &chunk.getBlockStore();

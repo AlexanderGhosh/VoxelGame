@@ -32,7 +32,7 @@ const Block getBlockNew(const glm::vec3& worldPos, const WorldMap& map) {
 	}
 	auto& pair = *itt;
 	const BlockStore& chunk = *pair.second;
-	return chunk.getBlock(localPos, true);
+	return chunk.getBlock(localPos);
 }
 
 void ChunkColumn::populateBuffer(WorldMap* worldMap) {
@@ -90,8 +90,6 @@ void ChunkColumn::populateBuffer(WorldMap* worldMap) {
 }
 
 void ChunkColumn::addTrees() {
-	if (blockStore.doesHaveTrees()) return;
-	blockStore.setHaveTrees(true);
 
 	//AdjacentMap_p adjacent;
 	//std::vector<glm::vec2> treePos = world_generation::getTreePositions(position);
@@ -231,12 +229,12 @@ const glm::vec2& ChunkColumn::getPosition() const
 	return position;
 }
 
-const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool checkEdited) const
+const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos) const
 {
 	if (worldPos) {
-		return blockStore.getBlock(getRelativePosition(pos), checkEdited);
+		return blockStore.getBlock(getRelativePosition(pos));
 	}
-	return blockStore.getBlock(pos, checkEdited);
+	return blockStore.getBlock(pos);
 }
 
 const glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)const 
@@ -317,7 +315,7 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool safe, World
 	if (worldMap->size() > 0) {
 		auto found = worldMap->find(chunkPositionToLookAt);
 		if (found == worldMap->end()) return Block::ERROR;
-		auto foundBlock = (*found).second->getBlock(relativePostion, true);
+		auto foundBlock = (*found).second->getBlock(relativePostion);
 		return foundBlock;
 	}
 	return Block::ERROR;
