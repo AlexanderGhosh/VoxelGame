@@ -5,8 +5,8 @@ class BlockStore
 {
 private: // properties
 	HeightMap heightMap;
-	std::unordered_map<glm::vec3, Block> editedBlocks;
 	bool hasTrees;
+	std::unordered_map<glm::vec3, Block> editedBlocks;
 public:
 	BlockStore();
 	BlockStore(glm::vec2 pos, unsigned int seed);

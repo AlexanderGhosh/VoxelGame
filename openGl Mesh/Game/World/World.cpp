@@ -34,8 +34,6 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	for (auto& chunk : chunks) {
 		chunk.populateBuffer(&worldMap);
 	}
-
-	std::cout << sizeof(chunks[0].getBlockStore());
 }
 
 void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) const {

@@ -25,8 +25,8 @@ public:
 	// const std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent) const; // mabye could be optimised
 
 private:
-	glm::vec2 position;
 	BlockStore blockStore;
+	glm::vec2 position;
 	BufferGeom buffer;
 
 	const Block getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap* worldMap) const;
