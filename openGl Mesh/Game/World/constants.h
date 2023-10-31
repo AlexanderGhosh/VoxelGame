@@ -59,7 +59,7 @@ enum class Texture_Names {
 	SAND
 };
 enum class Texture_Names_2D {
-	CROSSHAIR,
+	GUI,
 	BOARDER_NORM,
 	BOARDER_SELECTED,
 	LIVE_HEART,
@@ -69,7 +69,7 @@ enum SHADER_NAMES {
 	BLOCK2,
 	BLOCK3,
 	SKYBOX,
-	CROSSHAIR,
+	GUI,
 	GLYPH,
 	RAY,
 	DEPTH,

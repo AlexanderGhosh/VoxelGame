@@ -623,8 +623,8 @@ void Game::showSkybox() {
 }
 
 void Game::createGUI() {
-	uiRenderer = UI_Renderer(&SHADERS[SHADER_NAMES::CROSSHAIR]);
-	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::CROSSHAIR], "crosshair");
+	uiRenderer = UI_Renderer(&SHADERS[SHADER_NAMES::GUI]);
+	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::GUI], "crosshair");
 
 	UI_Element slot0 = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot0");
 	UI_Element slot1 = UI_Element({ -0.18, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot1");
