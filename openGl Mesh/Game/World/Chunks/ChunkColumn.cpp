@@ -34,31 +34,35 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 	GeomData data{};
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
-
 			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
 			int height = encodes.height();
+			unsigned int depth = 0;
 			for (int r = encodes.size() - 1; r >= 0; r--) {
 				const Block b1 = encodes.block(r);
 				const unsigned int count1 = encodes.count(r);
 
 				if (b1 == Block::AIR) {
 					height -= count1;
+					depth += count1;
 					continue;
+				}
+				if (b1 == Block::WATER) {
+					int t = 0;
 				}
 				const BlockDetails& blockDets1 = getDetails(b1);
 				data.textureIndex_ = (unsigned int)b1;
 				bool added = false;
 				for (unsigned int i = 0; i < count1; i++) {
-					data.worldPos_ = glm::vec3(x, height--, z) + glm::vec3(position.x, 0, position.y);
+					data.worldPos_ = glm::vec3(x, height - i, z) + glm::vec3(position.x, 0, position.y);
 					int j = 0;
 					added = false;
 					for (const glm::vec3& off : offsets) {
 						const glm::vec3 p = data.worldPos_ + off;
-						const Block& b = getBlock(p, true, true, worldMap);
+						const Block& b2 = getBlock(p, true, true, worldMap);
 
-						const BlockDetails& blockDets2 = getDetails(b);
+						const BlockDetails& blockDets2 = getDetails(b2);
 
-						if (blockDets2.isTransparant && (b1 != b)) {
+						if (blockDets2.isTransparant && b1 != b2) {
 							data.cubeType_ = j;
 							bufferData.push_back(data);
 							added = true;
@@ -67,7 +71,8 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 					}
 					if (!added) break;
 				}
-				if (!added) break;
+				height -= count1;
+				if (!added && !blockDets1.isTransparant) break;
 			}
 		}
 	}

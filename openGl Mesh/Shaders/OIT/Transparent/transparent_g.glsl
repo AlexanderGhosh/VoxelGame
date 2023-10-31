@@ -11,6 +11,7 @@ in VS_OUT {
 } vs_out[];
 
 flat out uint blockColourIndex;
+flat out vec3 fragCoords;
 
 const float size = 0.5;
 const float inv_size = 1.0 / size;
@@ -45,6 +46,7 @@ void main() {
     for (uint j = 0u; j < 4u; j++){ 
         int l = indices[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];
+        fragCoords = gl_in[0].gl_Position.rgb;
 
         gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
         EmitVertex();

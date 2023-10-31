@@ -235,7 +235,7 @@ void Game::showStuff() {
 	transparent.unBind();
 
 	// 2.3 Composite
-	oitFrameBuffer1.bind(); // render to the OIT framebuffer -------------------------------------------------CHANGED
+	oitFrameBuffer1.bind(); // render to the OIT framebuffer
 	glDepthFunc(GL_ALWAYS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

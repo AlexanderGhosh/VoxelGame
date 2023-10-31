@@ -19,7 +19,7 @@ private:
 
 	DrawableGeom geomDrawable;
 
-	const std::vector<glm::vec2> centeredPositions(glm::vec2 origin, const std::vector<glm::vec2>& exclude, int renderDist = RENDER_DISTANCE) const;
+	const std::vector<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	void getNewChunkPositions(bool flat);
 	void generateTerrain(const std::vector<glm::vec2>& chunkPositions);
 };

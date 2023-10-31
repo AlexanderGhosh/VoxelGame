@@ -25,6 +25,8 @@ void main() {
 
     vs_out.vp = projection * view;
 
+    gl_Position.rgb = worldPos_ * voxelSize - 1;
+
     vs_out.cubeType = cubeType_;
     vs_out.blockColourIndex = blockColourIndex_;
 }

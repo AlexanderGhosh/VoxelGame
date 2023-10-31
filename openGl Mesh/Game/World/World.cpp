@@ -14,7 +14,7 @@ World::World(bool gen, bool terrain, unsigned int seed) : World() {
 
 
 void World::getNewChunkPositions(bool flat) {
-	std::vector<glm::vec2> chunkPositions = centeredPositions(glm::vec2(0), {});
+	std::vector<glm::vec2> chunkPositions = centeredPositions(glm::vec2(0), RENDER_DISTANCE);
 
 	generateTerrain(chunkPositions);
 }
@@ -46,18 +46,15 @@ void World::setUpDrawable()
 	geomDrawable.setUp(chunks);
 }
 
-const std::vector<glm::vec2> World::centeredPositions(glm::vec2 origin, const std::vector<glm::vec2>& exclude, int renderDist) const {
-	origin.x = reduceToMultiple(origin.x, CHUNK_SIZE);
-	origin.y = reduceToMultiple(origin.y, CHUNK_SIZE);
-	if (renderDist % 2 == 0)  renderDist++;
-	char radius = (renderDist - 1) / 2;
+const std::vector<glm::vec2> World::centeredPositions(const glm::vec2& origin, int renderDist) const {
+
 	std::vector<glm::vec2> res;
-	for (char x = -radius; x < radius + 1; x++) {
-		for (char y = -radius; y < radius + 1; y++) {
+	for (int x = -renderDist; x < renderDist + 1; x++) {
+		int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
+		for (int y = -Y; y < Y + 1; y++) {
 			glm::vec2 pos(x, y);
 			pos *= CHUNK_SIZE;
 			pos += origin;
-			if (exclude.size() > 0 && std::find(exclude.begin(), exclude.end(), pos) != exclude.end()) continue;
 			res.push_back(pos);
 		}
 	}
