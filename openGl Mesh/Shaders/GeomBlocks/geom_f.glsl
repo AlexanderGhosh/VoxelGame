@@ -1,4 +1,6 @@
-#version 330 core
+#version 440 core
+
+layout (location = 0) out vec4 frag;
 
 struct Material {
     vec3 ambient;
@@ -7,7 +9,7 @@ struct Material {
     float shininess;
 }; 
 
-out vec4 color;
+// out vec4 color;
 
 flat in uint blockColourIndex;
 in vec3 Normal;
@@ -43,6 +45,7 @@ float ShadowCalculation(vec4 fragPosLightSpace_);
 
 void main()
 {    
+    vec4 color = vec4(0);
     vec4 colourA = texture(cubeMap, TexCoords);
     colourA = blockColours[blockColourIndex - 1u];
     material.ambient = vec3(0.25);
@@ -74,6 +77,8 @@ void main()
     color = vec4(lighting, colourA.a);
     // color = colourA;
     color.xyz = (Normal + 1) * 0.5;
+
+    frag = color;
 }
 
 

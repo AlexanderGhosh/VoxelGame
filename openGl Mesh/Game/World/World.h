@@ -9,7 +9,7 @@ public:
 	World();
 	World(bool gen, bool terrain = true, unsigned int seed = SEED);
 
-	void render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) const;
+	void render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap, Shader* shader) const;
 
 	void setUpDrawable();
 

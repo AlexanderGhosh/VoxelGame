@@ -1,7 +1,7 @@
-#version 330 core
+#version 440 core
 
 layout (points) in;
-layout (triangle_strip, max_vertices = 24) out;
+layout (triangle_strip, max_vertices = 4) out;
 
 in VS_OUT {
     uint cubeType;
@@ -15,9 +15,9 @@ flat out uint blockColourIndex;
 out vec3 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
-out vec3 FragPosLightSpace;
+out vec4 FragPosLightSpace;
 const float size = 0.5;
-const float inv_size = 1 / size;
+const float inv_size = 1.0 / size;
 
 vec3 vertices[8] = vec3[](
 	vec3(-size,-size,-size), // 0
@@ -87,45 +87,17 @@ int[] inclusions = int[] (
 
 
 void main() {
-    /*int[6] toInclude = int[](0, 0, 0, 0, 0, 0);
-    int toIncludeSize = 0;
-    int type = 0;
-    for (int i = 0; i < inclusions.length();) {
-        int count = inclusions[i];
-        for (int j = 0; j < count && type == vs_out[0].cubeType; j++){
-            toInclude[j] = inclusions[i + j + 1];
-            toIncludeSize++;
-        }
-        type++;
-        i += count;
-    }*/
-
-    /*for (int i = 0; i < toIncludeSize; i++) {
-        for (int j = 0; j < 4; j++){ 
-                int k = toInclude[i];
-                int l = indices2[k * 4 + j];
-                vec3 v = vertices[l];
-
-                FragPos = vec3(vs_out[0].m * vec4(v, 1));
-                FragPosLightSpace = vec3(lightSpaceMatrix * vec4(FragPos, 1));
-                gl_Position = vs_out[0].vp * vec4(FragPos, 1);
-
-                TexCoords = v * inv_size;
-                TexCoords.y *= -1;
-
-                Normal = normals[i];
-                EmitVertex();
-        }
-        EndPrimitive();
-    }*/
     blockColourIndex = vs_out[0].blockColourIndex;
+    if(blockColourIndex == 5u){
+        return; // will discard water
+    }
     Normal = normals[vs_out[0].cubeType];
     for (uint j = 0u; j < 4u; j++){ 
         int l = indices2[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];
 
         FragPos = vec3(vs_out[0].m * vec4(v, 1));
-        FragPosLightSpace = vec3(lightSpaceMatrix * vec4(FragPos, 1));
+        FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1);
         gl_Position = vs_out[0].vp * vec4(FragPos, 1);
 
         TexCoords = v * inv_size;
@@ -134,23 +106,4 @@ void main() {
         EmitVertex();
     }
     EndPrimitive();
-
-
-    /*for (int i = 0; i < 12; i++) {
-        for (int j = 0; j < 3; j++) {
-            int k = indices[i * 3 + j];
-            vec3 v = vertices[k];
-
-            FragPos = vec3(vs_out[0].m * vec4(v, 1));
-            FragPosLightSpace = vec3(lightSpaceMatrix * vec4(FragPos, 1));
-            gl_Position = vs_out[0].vp * vec4(FragPos, 1);
-
-            TexCoords = v * inv_size;
-            TexCoords.y *= -1;
-
-            Normal = normals[i / 2];
-            EmitVertex();
-        }
-        EndPrimitive();
-    }*/
 }

@@ -118,7 +118,7 @@ void Shader::setUp() {
 		}
 	}
 	catch (std::ifstream::failure e) {
-		std::cout << "Shader file faild to be read" << std::endl;
+		std::cout << "Shader file faild to be read" << name << std::endl;
 	}
 	const char* vShaderCode = vertexCode.c_str();
 	const char* gShaderCode = geometryCode.c_str();
@@ -135,7 +135,7 @@ void Shader::setUp() {
 	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		std::cout << "Vertex compilation failed: " << std::string(infoLog) << std::endl;
+		std::cout << "Vertex compilation failed: " << std::string(infoLog) << name << std::endl;
 	}
 
 	//geometry
@@ -146,7 +146,7 @@ void Shader::setUp() {
 		glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(geometry, 512, NULL, infoLog);
-			std::cout << "Geometry compilation failed: " << std::string(infoLog) << std::endl;
+			std::cout << "Geometry compilation failed: " << std::string(infoLog) << name << std::endl;
 		}
 	}
 
@@ -157,7 +157,7 @@ void Shader::setUp() {
 	glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-		std::cout << "Fragment compilation failed: " << std::string(infoLog) << std::endl;
+		std::cout << "Fragment compilation failed: " << std::string(infoLog) << name << std::endl;
 	}
 
 	// the program
@@ -170,7 +170,7 @@ void Shader::setUp() {
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cout << "Unable to link a shader: " << std::string(infoLog) << std::endl;
+		std::cout << "Unable to link a shader: " << std::string(infoLog) << name << std::endl;
 	}
 
 	glDetachShader(program, vertex);

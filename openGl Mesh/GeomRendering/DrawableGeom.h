@@ -11,11 +11,11 @@ class DrawableGeom
 public:
 	DrawableGeom();
 	~DrawableGeom();
-	void render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) const;
+	void render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap, Shader* shader) const;
 	void setUp(const Chunks& chunks);
 
 private:
 	std::list<DrawData> data;
-	void draw(unsigned int depthMap, const Shader& shader) const;
+	void draw() const;
 };
 

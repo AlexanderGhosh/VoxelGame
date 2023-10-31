@@ -33,7 +33,11 @@ std::vector<Shader> SHADERS = {
 	Shader("glyph"),
 	Shader("ray"),
 	Shader("depth"),
-	Shader("GeomBlocks/geom", true)
+	Shader("GeomBlocks/geom", true),
+	Shader("OIT/Opaque/opaque", true),
+	Shader("OIT/Transparent/transparent", true),
+	Shader("OIT/Composite/composite"),
+	Shader("ScreenQuad/screenQuad"),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
 

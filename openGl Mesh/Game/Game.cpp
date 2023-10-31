@@ -37,10 +37,12 @@ private:
 	glm::ivec2 windowDim;
 */
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), projection(1), lightProjection(0), SBVAO(0), LSVAO(), depthFBO(), Letters(), depthMap(), windowDim(), LSVBO() {
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(),
+projection(1), lightProjection(0), SBVAO(0), LSVAO(), depthFBO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2() {
 	Game::mainCamera = new Camera({ 0, 2, 0 });
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
+	setUpScreenQuad();
 }
 Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 	// this->hasPlayer = hasPlayer;
@@ -56,12 +58,58 @@ Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 	}
 	createGUI();
 	setUpFreeType();
+
+	FrameBufferInit detailsOIT;
+	detailsOIT.hasDepth = true;
+	detailsOIT.depthTexture = true;
+
+	ColourBufferInit opaqueOIT;
+	opaqueOIT.format = GL_HALF_FLOAT;
+	opaqueOIT.internalFormat = GL_RGBA16F;
+	opaqueOIT.type = GL_RGBA;
+
+	detailsOIT.colourBuffers = { opaqueOIT };
+
+	oitFrameBuffer1 = FrameBuffer(windowDim);
+	oitFrameBuffer1.setUp(detailsOIT);
+
+	ColourBufferInit accumOIT;
+	accumOIT.format = GL_HALF_FLOAT;
+	accumOIT.internalFormat = GL_RGBA16F;
+	accumOIT.type = GL_RGBA;
+
+	ColourBufferInit revealOIT;
+	revealOIT.format = GL_FLOAT;
+	revealOIT.internalFormat = GL_R8;
+	revealOIT.type = GL_RED;
+
+	detailsOIT.colourBuffers = { accumOIT, revealOIT };
+
+	oitFrameBuffer2 = FrameBuffer(windowDim);
+	oitFrameBuffer2.setUp(detailsOIT);
+
+
+	FrameBufferInit detailsGUI;
+
+	ColourBufferInit colourGUI;
+	colourGUI.format = GL_FLOAT;
+	colourGUI.internalFormat = GL_RGBA32F;
+	colourGUI.type = GL_RGBA;
+	
+	detailsGUI.hasDepth = false;
+	detailsGUI.depthTexture = false;
+
+
+	detailsGUI.colourBuffers = { colourGUI };
+	guiFrameBuffer = FrameBuffer(windowDim);
+	guiFrameBuffer.setUp(detailsGUI);
 }
 
 void Game::generateWorld() {
 	world = World(true, false, 32);
 	world.setUpDrawable();
 }
+
 void Game::doLoop(const glm::mat4& projection) {
 	gameRunning = true;
 	setupEventCB(window);
@@ -101,7 +149,6 @@ void Game::doLoop(const glm::mat4& projection) {
 		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);*/
 
 		showStuff();
-		showFPS();
 
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
@@ -109,6 +156,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		glfwSwapBuffers(window);
 	}
 }
+
 void Game::calcTimes() {
 	float frame = glfwGetTime();
 	deltaTime = frame - lastFrameTime;
@@ -116,17 +164,23 @@ void Game::calcTimes() {
 	lastFrameTime = frame;
 	frameRate = 1 / deltaTime;
 }
+
 void Game::showFPS() {
 	if (GameConfig::showFPS) {
 		showText("FPS: " + std::to_string(frameRate), { 5, 875 }, 0.5f);
 	}
 }
+
 std::string m;
+
 void Game::proccesEvents() {
 	glfwPollEvents();
 }
+
 const unsigned int SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
+
 void Game::showStuff() {
+	// 1. render from the lights perspective for the shadow map
 	Shader* s = &SHADERS[DEPTH];
 	s->bind();
 	// light orhto projection
@@ -145,29 +199,77 @@ void Game::showStuff() {
 
 	s->unBind();
 
-	// 2. then render scene as normal with shadow mapping (using depth map)
-	glViewport(0, 0, windowDim.x, windowDim.y);
+	// 2. render for OIT
+	oitFrameBuffer1.bind(); // render to the OIT framebuffer1
+	// 2.1 Opaque
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+	glClearColor(0, 0, 0, 0);
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	Shader& opaue = SHADERS[OIT_OPAQUE];
+	opaue.bind();
+	world.render(*mainCamera, projection, LSM, depthMap, &opaue);
+	opaue.unBind();
 
-	if (hasSkybox) {
-		showSkybox();
-	}
+	// 2.2 Transparent
+	oitFrameBuffer2.bind(); // render to the OIT framebuffer2
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunci(0, GL_ONE, GL_ONE);
+	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	glBlendEquation(GL_FUNC_ADD);
+	
+	glm::vec3 black(0);
+	glm::vec3 white(1);
+	glClearBufferfv(GL_COLOR, 0, &black[0]);
+	glClearBufferfv(GL_COLOR, 1, &white[0]);
+	
+	Shader& transparent = SHADERS[OIT_TRANSPARENT];
+	transparent.bind();
+	world.render(*mainCamera, projection, LSM, depthMap, &transparent);
+	transparent.unBind();
 
-	world.render(*mainCamera, projection, LSM, depthMap);
+	// 2.3 Composite
+	oitFrameBuffer1.bind(); // render to the OIT framebuffer -------------------------------------------------CHANGED
+	glDepthFunc(GL_ALWAYS);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	Shader& composite = SHADERS[OIT_COMPOSITE];
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer2.getColourTex(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer2.getColourTex(1));
+	
+	composite.bind();
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+	composite.unBind();
+
+	// 3. render the GUI
+	guiFrameBuffer.bind(); // use the GUI framebuffer
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	showGUI();
+	showFPS();
+
 
 	m = "Position: " + glm::to_string(mainCamera->GetPosition());
 	showText(m, { 5, 850 }, 0.5f);
-	// 
-	// m = "View Direction: " + glm::to_string(player->getCamera().GetFront());
-	// showText(m, { 5, 825 }, 0.5f);
+	
+	m = "View Direction: " + glm::to_string(mainCamera->GetFront());
+	showText(m, { 5, 825 }, 0.5f);
 	// 
 	// m = "Controlling: Player";
 	// showText(m, { 5, 80 }, 0.5f);
 
-	glm::vec2 p(0);
+	//glm::vec2 p(0);
 	// auto e = world.getChunkOccupied(player->getPosition());
 	// if (e)  p = e->getPosition();
 	// m = "Chunk Pos: " + glm::to_string(p);
@@ -177,10 +279,41 @@ void Game::showStuff() {
 	// showText(m, { 5, 750 }, 0.5f);
 
 	//ray.render(cam, projection);
+	//guiFrameBuffer.unBind();
+
+	// 4. render the screen quad
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
+
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE); // enable depth writes so glClear won't ignore clearing the depth buffer
+	glDisable(GL_BLEND);
+	
+	glViewport(0, 0, windowDim.x, windowDim.y);
+	
+	const Shader& screenQuad = SHADERS[SCREEN_QUAD];
+	screenQuad.bind();
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer1.getColourTex(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, guiFrameBuffer.getColourTex(0));
+	
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+	
+	screenQuad.unBind();
+
+	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// opaue.bind();
+	// world.render(*mainCamera, projection, LSM, depthMap, &opaue);
+	// opaue.unBind();
 }
+
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
+
 void Game::setupPlayer() {
 	// Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
 	// GOD MODE VVV
@@ -191,6 +324,7 @@ void Game::setupPlayer() {
 	//// p.setInvincable(1);
 	//entityHander.addEntity(p, 0);
 }
+
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
 		glfwSetWindowShouldClose(window, true);
@@ -217,6 +351,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		GameConfig::showFPS = !GameConfig::showFPS;
 	}
 }
+
 void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 	if ((int)Game::mouseData.z) {
 		Game::mouseData.x = xPos;
@@ -233,6 +368,7 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 
 	//Game::player->updateCamera(xOffset, yOffset);
 }
+
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		// Camera& cam = player->getCamera();
@@ -247,7 +383,9 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 		// entityHander.setTarget(cam.GetPosition());
 	}
 }
+
 std::string num = "0";
+
 void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
 {
 	int i = std::stoi(num);
@@ -265,12 +403,14 @@ void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
 	uiRenderer.appendElement(e);
 	//player->getInventory().setHotbarSelected(i);
 }
+
 void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetKeyCallback(window, Game::keyCallBack);
 	glfwSetMouseButtonCallback(window, Game::clickCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 	glfwSetScrollCallback(window, Game::scrollCallBack);
 }
+
 void Game::processKeys() {
 	auto& k = Game::keys;
 	float speed = 9.0f;
@@ -371,7 +511,36 @@ void Game::processKeys() {
 	//uiRenderer.appendElement(e);
 	//player->getInventory().setHotbarSelected(std::stoi(num));
 }
+
 void Game::cleanUp() {
+	oitFrameBuffer1.cleanUp();
+	oitFrameBuffer2.cleanUp();
+	guiFrameBuffer.cleanUp();
+
+	glDeleteVertexArrays(1, &quadVAO);
+	glDeleteBuffers(1, &quadVBO);
+	quadVAO = quadVBO = 0;
+}
+
+void Game::setUpScreenQuad()
+{
+	float vertices[] = {
+		-1, -1,
+		1, -1, 
+		-1, 1, 
+		1, 1
+	};
+	glGenVertexArrays(1, &quadVAO); // VAO
+	glGenBuffers(1, &quadVBO); // VBO
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
 }
 
 void Game::makeSkybox(const std::string& skybox) {
@@ -434,6 +603,7 @@ void Game::makeSkybox(const std::string& skybox) {
 	shader->setValue("skybox", 0);
 
 }
+
 void Game::showSkybox() {
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 	SHADERS[SKYBOX].bind();
@@ -502,8 +672,10 @@ void Game::createGUI() {
 
 	uiRenderer.appendElement(crosshair);
 }
+
 std::vector<Texture*> prevHotBar;
 int prevPlayerHealth = 100;
+
 void Game::showGUI() {
 	uiRenderer.render();
 
@@ -641,6 +813,7 @@ void Game::setUpFreeType() {
 	SHADERS[GLYPH].bind();
 	SHADERS[GLYPH].setValue("projection", projection);
 }
+
 void Game::showText(const std::string& text, const glm::vec2& position, float scale, const glm::vec3 colour) {
 	float x = position.x;
 	const float y = position.y;

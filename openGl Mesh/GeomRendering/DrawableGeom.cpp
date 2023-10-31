@@ -17,32 +17,32 @@ DrawableGeom::~DrawableGeom()
 	}
 }
 
-void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) const
+void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap, Shader* shader) const
 {
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
-	const Shader& shader = SHADERS[GEOMBLOCKS];
 
-	shader.bind();
+	if (!shader) shader = &SHADERS[GEOMBLOCKS];
+	shader->bind();
 
 	glm::mat4 viewMatrix = cam.GetViewMatrix();
-	bool t = shader.setValue("view", viewMatrix);
-	t = shader.setValue("projection", projection);
+	shader->setValue("view", viewMatrix);
+	shader->setValue("projection", projection);
 
 	glm::vec3 viewPos = cam.GetPosition();
-	shader.setValue("viewPos", viewPos);
-	shader.setValue("lightPos", LIGHTPOSITION);
+	shader->setValue("viewPos", viewPos);
+	shader->setValue("lightPos", LIGHTPOSITION);
 
-	shader.setValue("lightSpaceMatrix", lightMatrix);
+	shader->setValue("lightSpaceMatrix", lightMatrix);
 
-	shader.setValue("cubeMap", 0);
-	shader.setValue("shadowMap", 1);
+	shader->setValue("cubeMap", 0);
+	shader->setValue("shadowMap", 1);
 
-	shader.setValue("voxelSize", VOXEL_SZIE);
+	shader->setValue("voxelSize", VOXEL_SZIE);
 
-	draw(depthMap, shader);
+	draw();
 
-	shader.unBind();
+	shader->unBind();
 	glDisable(GL_CULL_FACE);
 }
 
@@ -54,7 +54,7 @@ void DrawableGeom::setUp(const Chunks& chunks)
 	}
 }
 
-void DrawableGeom::draw(unsigned int depthMap, const Shader& shader) const
+void DrawableGeom::draw() const
 {
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (const DrawData& data : this->data) {

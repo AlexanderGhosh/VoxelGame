@@ -37,8 +37,8 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	worldMap.clear();
 }
 
-void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap) const {
-	geomDrawable.render(c, projection, lightMatrix, depthMap);
+void World::render(Camera& c, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap, Shader* shader) const {
+	geomDrawable.render(c, projection, lightMatrix, depthMap, shader);
 }
 
 void World::setUpDrawable()

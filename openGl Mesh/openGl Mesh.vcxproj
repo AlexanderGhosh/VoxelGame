@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
     <ClCompile Include="BlockStore.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GeomRendering\DrawableGeom.cpp" />
     <ClCompile Include="GeomRendering\BufferGeom.cpp" />
     <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp" />
@@ -202,6 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlockStore.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GeomRendering\DrawableGeom.h" />
     <ClInclude Include="GeomRendering\BufferGeom.h" />
     <ClInclude Include="Game\World\Chunks\ChunkColumn.h" />

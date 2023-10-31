@@ -11,6 +11,7 @@
 #include "../Renders/UI Stuff/UI_Renderer.h"
 #include "Player/Camera.h"
 #include "World/World.h"
+#include "../FrameBuffer.h"
 
 class Camera;
 
@@ -44,10 +45,15 @@ public:
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
 
+	void setUpScreenQuad();
+
 	static Camera* mainCamera;
 	static glm::vec3 mouseData;
 	static std::array<bool, 1024> keys;
 private:
+	unsigned int quadVBO, quadVAO;
+
+	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer;
 	GLFWwindow* window;
 	float deltaTime;
 	unsigned int frameRate;
