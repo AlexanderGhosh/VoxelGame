@@ -3,12 +3,14 @@
 #include <vector>
 
 struct ColourBufferInit {
+	ColourBufferInit();
 	unsigned int internalFormat;
 	unsigned int format;
 	unsigned int type;
 };
 
 struct FrameBufferInit {
+	FrameBufferInit();
 	std::initializer_list<ColourBufferInit> colourBuffers;
 	bool hasDepth;
 	bool depthTexture;
@@ -33,6 +35,8 @@ public:
 
 	void bind() const;
 	void unBind() const;
+
+	const unsigned int getDepth() const;
 	const unsigned int getColourTex(const unsigned int index) const;
 };
 

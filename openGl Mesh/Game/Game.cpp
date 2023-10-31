@@ -84,6 +84,7 @@ Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 	revealOIT.type = GL_RED;
 
 	detailsOIT.colourBuffers = { accumOIT, revealOIT };
+	detailsOIT.depthBuffer = oitFrameBuffer1.getDepth();
 
 	oitFrameBuffer2 = FrameBuffer(windowDim);
 	oitFrameBuffer2.setUp(detailsOIT);

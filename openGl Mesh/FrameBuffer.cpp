@@ -78,7 +78,20 @@ void FrameBuffer::unBind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+const unsigned int FrameBuffer::getDepth() const
+{
+	return depthBuffer;
+}
+
 const unsigned int FrameBuffer::getColourTex(const unsigned int index) const
 {
 	return colourBuffers[index];
+}
+
+ColourBufferInit::ColourBufferInit() : internalFormat(0), format(0), type(0)
+{
+}
+
+FrameBufferInit::FrameBufferInit() : colourBuffers(), depthBuffer(0), depthTexture(), hasDepth()
+{
 }
