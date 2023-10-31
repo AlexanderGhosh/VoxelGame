@@ -1,7 +1,6 @@
 #include "DrawableGeom.h"
 
 #include "BufferGeom.h"
-// #include "GeomData.h"
 #include "../Game/Player/Camera.h"
 #include "../Game/World/Chunks/ChunkColumn.h"
 #include "../Shaders/Shader.h"
@@ -40,7 +39,6 @@ void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatr
 	shader.setValue("shadowMap", 1);
 
 	shader.setValue("voxelSize", VOXEL_SZIE);
-
 
 	draw(depthMap, shader);
 

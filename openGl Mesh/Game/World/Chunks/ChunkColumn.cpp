@@ -41,16 +41,17 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 				const Block b1 = encodes.block(r);
 				const unsigned int count1 = encodes.count(r);
 
-				if (b1 == Block::AIR || b1 == Block::WATER) {
+				if (b1 == Block::AIR) {
 					height -= count1;
 					continue;
 				}
 				const BlockDetails& blockDets1 = getDetails(b1);
 				data.textureIndex_ = (unsigned int)b1;
-
+				bool added = false;
 				for (unsigned int i = 0; i < count1; i++) {
 					data.worldPos_ = glm::vec3(x, height--, z) + glm::vec3(position.x, 0, position.y);
 					int j = 0;
+					added = false;
 					for (const glm::vec3& off : offsets) {
 						const glm::vec3 p = data.worldPos_ + off;
 						const Block& b = getBlock(p, true, true, worldMap);
@@ -60,11 +61,13 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 						if (blockDets2.isTransparant && (b1 != b)) {
 							data.cubeType_ = j;
 							bufferData.push_back(data);
+							added = true;
 						}
 						j++;
 					}
-
+					if (!added) break;
 				}
+				if (!added) break;
 			}
 		}
 	}
