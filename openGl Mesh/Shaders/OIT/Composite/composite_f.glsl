@@ -2,8 +2,8 @@
 
 layout (location = 0) out vec4 frag;
 
-layout (binding = 0) uniform sampler2D accum;
-layout (binding = 1) uniform sampler2D reveal;
+uniform sampler2D accum;
+uniform sampler2D reveal;
 
 // epsilon number
 const float EPSILON = 0.00001f;

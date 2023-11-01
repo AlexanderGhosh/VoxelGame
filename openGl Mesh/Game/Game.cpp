@@ -38,7 +38,7 @@ private:
 */
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(),
-projection(1), lightProjection(0), SBVAO(0), LSVAO(), depthFBO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2() {
+projection(1), lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2() {
 	Game::mainCamera = new Camera({ 0, 2, 0 });
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -104,6 +104,13 @@ Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 	detailsGUI.colourBuffers = { colourGUI };
 	guiFrameBuffer = FrameBuffer(windowDim);
 	guiFrameBuffer.setUp(detailsGUI);
+
+	FrameBufferInit detailsShadows;
+	detailsShadows.hasDepth = true;
+	detailsShadows.depthTexture = true;
+
+	shadowFramebuffer = FrameBuffer(windowDim);
+	shadowFramebuffer.setUp(detailsShadows);
 }
 
 void Game::generateWorld() {
@@ -116,14 +123,14 @@ void Game::doLoop(const glm::mat4& projection) {
 	setupEventCB(window);
 	this->projection = projection;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 50.0f);
-	mainCamera->setPosition({ 8, 30, 8 });
+	mainCamera->setPosition({ 8, 25, 15 });
 	// temp vampire
 	// Entity vampire(1);
 	// vampire.getCollider().setDimentions({ 0.85, 0.85, 0.85 }, { 0.85, 2.55, 0.85 });
 	// vampire.setPosition({ 5, 80, 0 });
 	// vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
 	
-	setupDepthFBO();
+	//setupDepthFBO();
 
 	// entityHander.addEntity(vampire);
 
@@ -182,25 +189,22 @@ const unsigned int SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
 
 void Game::showStuff() {
 	// 1. render from the lights perspective for the shadow map
-	Shader* s = &SHADERS[DEPTH];
-	s->bind();
 	// light orhto projection
 	float near_plane = 0.1f, far_plane = 100.0f;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	glm::mat4 lightView = glm::lookAt(LIGHTPOSITION, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	glm::mat4 LSM = lightProjection * lightView;
-	s->setValue("lightSpaceMatrix", LSM);
-	s->setValue("lightPos", LIGHTPOSITION);
 
-	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	// world.render(lightProjection, lightView);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	s->unBind();
+	shadowFramebuffer.bind();
+	Shader& shadows = SHADERS[SHADOW];
+	shadows.bind();
+	shadows.setValue("lightMatrix", LSM);
+	shadows.setValue("lightPos", LIGHTPOSITION);
+	world.render(&shadows);
+	shadows.unBind();
 
 	// 2. render for OIT
+	glm::mat4 viewMatrix = mainCamera->GetViewMatrix();
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer1
 	// 2.1 Opaque
 	glEnable(GL_DEPTH_TEST);
@@ -213,7 +217,9 @@ void Game::showStuff() {
 	
 	Shader& opaue = SHADERS[OIT_OPAQUE];
 	opaue.bind();
-	world.render(*mainCamera, projection, LSM, depthMap, &opaue);
+	bool b1 = opaue.setValue("view", viewMatrix);
+	bool b2 = opaue.setValue("projection", projection);
+	world.render(&opaue);
 	opaue.unBind();
 
 	// 2.2 Transparent
@@ -231,7 +237,9 @@ void Game::showStuff() {
 	
 	Shader& transparent = SHADERS[OIT_TRANSPARENT];
 	transparent.bind();
-	world.render(*mainCamera, projection, LSM, depthMap, &transparent);
+	bool b3 = transparent.setValue("view", viewMatrix);
+	bool b4 = transparent.setValue("projection", projection);
+	world.render(&transparent);
 	transparent.unBind();
 
 	// 2.3 Composite
@@ -247,6 +255,8 @@ void Game::showStuff() {
 	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer2.getColourTex(1));
 	
 	composite.bind();
+	composite.setValue("accum", 0);
+	composite.setValue("reveal", 1);
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
@@ -517,6 +527,7 @@ void Game::cleanUp() {
 	oitFrameBuffer1.cleanUp();
 	oitFrameBuffer2.cleanUp();
 	guiFrameBuffer.cleanUp();
+	shadowFramebuffer.cleanUp();
 
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
@@ -606,7 +617,7 @@ void Game::makeSkybox(const std::string& skybox) {
 }
 
 void Game::showSkybox() {
-	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer'transparent content
 	SHADERS[SKYBOX].bind();
 	// Camera& camera = player->getCamera();
 	glm::mat4 view = glm::mat4(glm::mat3(mainCamera->GetViewMatrix())); // remove translation from the view matrix
@@ -724,31 +735,6 @@ void Game::showGUI() {
 	else {
 		uiRenderer.popWhere("submerged");
 	}*/
-}
-
-void Game::setupDepthFBO()
-{
-	glGenFramebuffers(1, &depthFBO);
-
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "hhhhhhhhh\n";
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Game::setUpFreeType() {

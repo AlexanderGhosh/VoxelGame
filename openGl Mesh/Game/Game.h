@@ -53,7 +53,7 @@ public:
 private:
 	unsigned int quadVBO, quadVAO;
 
-	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer;
+	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer;
 	GLFWwindow* window;
 	float deltaTime;
 	unsigned int frameRate;
@@ -65,7 +65,7 @@ private:
 	bool hasSkybox;
 	float lastFrameTime;
 	glm::mat4 projection, lightProjection;
-	unsigned int SBVAO,LSVAO, LSVBO, depthFBO;
+	unsigned int SBVAO,LSVAO, LSVBO;
 	std::map<char, Character> Letters;
 	unsigned int depthMap;
 	glm::ivec2 windowDim;
@@ -86,6 +86,4 @@ private:
 	void showText(const std::string& text, const glm::vec2& position, float scale = 1.0f, const glm::vec3 colour = glm::vec3(1));
 	void createGUI();
 	void showGUI();
-
-	void setupDepthFBO();
 };

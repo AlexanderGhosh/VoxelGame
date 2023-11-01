@@ -2,6 +2,8 @@
 
 layout(location = 0) out vec4 frag;
 
+uniform sampler2D depthMap;
+
 // out vec4 color;
 
 flat in uint blockColourIndex;

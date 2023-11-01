@@ -6,12 +6,10 @@ layout (triangle_strip, max_vertices = 4) out;
 in VS_OUT {
     uint cubeType;
     uint blockColourIndex;
-    mat4 vp;
     mat4 m;
 } vs_out[];
 
-flat out uint blockColourIndex;
-flat out vec3 fragCoords;
+uniform mat4 lightMatrix;
 
 const float size = 0.5;
 const float inv_size = 1.0 / size;
@@ -37,20 +35,17 @@ int indices[] = int[](
     0, 2, 1, 3  // -y
 );
 
-
 void main() {
-    blockColourIndex = vs_out[0].blockColourIndex;
-    if(blockColourIndex == 4u) {
-        return; // discards water
+    if(vs_out[0].blockColourIndex == 5u){
+        return; // will discard water
     }
 
     for (uint j = 0u; j < 4u; j++){ 
         int l = indices[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];
-        v.y = size * 0.85;
-        fragCoords = gl_in[0].gl_Position.rgb;
 
-        gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
+        gl_Position = lightMatrix * vs_out[0].m * vec4(v, 1);
+
         EmitVertex();
     }
     EndPrimitive();

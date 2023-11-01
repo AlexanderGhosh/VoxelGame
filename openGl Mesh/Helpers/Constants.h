@@ -80,7 +80,8 @@ enum SHADER_NAMES : unsigned char {
 	OIT_OPAQUE,
 	OIT_TRANSPARENT,
 	OIT_COMPOSITE,
-	SCREEN_QUAD
+	SCREEN_QUAD,
+	SHADOW
 };
 
 enum class Move_Dir : unsigned char {

@@ -13,7 +13,7 @@ class DrawableGeom
 public:
 	DrawableGeom();
 	~DrawableGeom();
-	void render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap, Shader* shader) const;
+	void render(Shader* shader) const;
 	void setUp(const Chunks& chunks);
 
 private:

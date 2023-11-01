@@ -37,6 +37,7 @@ std::vector<Shader> SHADERS = {
 	Shader("OIT/Transparent/transparent", true),
 	Shader("OIT/Composite/composite"),
 	Shader("ScreenQuad/screenQuad"),
+	Shader("Shadow/shadow", true),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
 

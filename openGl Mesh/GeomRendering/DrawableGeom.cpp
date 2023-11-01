@@ -17,28 +17,17 @@ DrawableGeom::~DrawableGeom()
 	}
 }
 
-void DrawableGeom::render(Camera& cam, glm::mat4 projection, glm::mat4 lightMatrix, unsigned int depthMap, Shader* shader) const
+void DrawableGeom::render(Shader* shader) const
 {
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
 
-	if (!shader) shader = &SHADERS[GEOMBLOCKS];
-	shader->bind();
+	if (!shader) {
+		shader = &SHADERS[GEOMBLOCKS];
+		shader->bind();
+	}
 
-	glm::mat4 viewMatrix = cam.GetViewMatrix();
-	shader->setValue("view", viewMatrix);
-	shader->setValue("projection", projection);
-
-	glm::vec3 viewPos = cam.GetPosition();
-	shader->setValue("viewPos", viewPos);
-	shader->setValue("lightPos", LIGHTPOSITION);
-
-	shader->setValue("lightSpaceMatrix", lightMatrix);
-
-	shader->setValue("cubeMap", 0);
-	shader->setValue("shadowMap", 1);
-
-	shader->setValue("voxelSize", VOXEL_SZIE);
+	bool b8 = shader->setValue("voxelSize", VOXEL_SZIE);
 
 	draw();
 
