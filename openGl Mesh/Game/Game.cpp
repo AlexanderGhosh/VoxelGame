@@ -75,11 +75,11 @@ Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 
 	ColourBufferInit accumOIT;
 	accumOIT.format = GL_HALF_FLOAT;
-	accumOIT.internalFormat = GL_RGBA16F;
+	accumOIT.internalFormat = GL_RGBA;
 	accumOIT.type = GL_RGBA;
 
 	ColourBufferInit revealOIT;
-	revealOIT.format = GL_FLOAT;
+	revealOIT.format = GL_HALF_FLOAT;
 	revealOIT.internalFormat = GL_R8;
 	revealOIT.type = GL_RED;
 
@@ -446,16 +446,16 @@ void Game::processKeys() {
 	// }
 	{
 		if (k[GLFW_KEY_W]) {
-			Game::mainCamera->GetPosition() += Game::mainCamera->GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
+			Game::mainCamera->GetPosition() += glm::normalize(Game::mainCamera->GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_S]) {
-			Game::mainCamera->GetPosition() -= Game::mainCamera->GetFront() * glm::vec3(1, 0, 1) * speed * deltaTime;
+			Game::mainCamera->GetPosition() -= glm::normalize(Game::mainCamera->GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_A]) {
-			Game::mainCamera->GetPosition() -= Game::mainCamera->GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
+			Game::mainCamera->GetPosition() -= glm::normalize(Game::mainCamera->GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_D]) {
-			Game::mainCamera->GetPosition() += Game::mainCamera->GetRight() * glm::vec3(1, 0, 1) * speed * deltaTime;
+			Game::mainCamera->GetPosition() += glm::normalize(Game::mainCamera->GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_SPACE]) {
 			Game::mainCamera->GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;

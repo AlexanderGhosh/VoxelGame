@@ -1,7 +1,7 @@
 #version 440 core
 
 layout (points) in;
-layout (triangle_strip, max_vertices = 24) out;
+layout (triangle_strip, max_vertices = 4) out;
 
 in VS_OUT {
     uint cubeType;
@@ -40,9 +40,10 @@ int indices[] = int[](
 
 void main() {
     blockColourIndex = vs_out[0].blockColourIndex;
-    if(blockColourIndex != 5u) {
-        return; // discards if not water
+    if(blockColourIndex == 4u) {
+        return; // discards water
     }
+
     for (uint j = 0u; j < 4u; j++){ 
         int l = indices[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];

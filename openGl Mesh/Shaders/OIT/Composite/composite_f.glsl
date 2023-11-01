@@ -27,17 +27,21 @@ void main()
 	
 	// fragment revealage
 	float revealage = texelFetch(reveal, coords, 0).r;
-	
-	// save the blending and color texture fetch cost if there is not a transparent fragment
-	if (isApproximatelyEqual(revealage, 1.0f)) 
-		discard;
- 
 	// fragment color
 	vec4 accumulation = texelFetch(accum, coords, 0);
+
+	accumulation.rgb *= accumulation.a;
+	accumulation *= revealage;
 	
+	// save the blending and color texture fetch cost if there is not a transparent fragment
+	if (isApproximatelyEqual(revealage, 1.0f)) {
+		discard;
+	}
+ 
 	// suppress overflow
-	if (isinf(max3(abs(accumulation.rgb)))) 
+	if (isinf(max3(abs(accumulation.rgb)))) {
 		accumulation.rgb = vec3(accumulation.a);
+	}
 
 	// prevent floating point precision bug
 	vec3 average_color = accumulation.rgb / max(accumulation.a, EPSILON);
