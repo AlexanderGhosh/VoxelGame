@@ -188,14 +188,19 @@ void Game::proccesEvents() {
 const unsigned int SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
 
 void Game::showStuff() {
-	// 1. render from the lights perspective for the shadow map
 	// light orhto projection
 	float near_plane = 0.1f, far_plane = 100.0f;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	glm::mat4 lightView = glm::lookAt(LIGHTPOSITION, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	glm::mat4 LSM = lightProjection * lightView;
 
+	// 1. render from the lights perspective for the shadow map
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+
 	shadowFramebuffer.bind();
+	glClear(GL_DEPTH_BUFFER_BIT);
 	Shader& shadows = SHADERS[SHADOW];
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
@@ -207,9 +212,6 @@ void Game::showStuff() {
 	glm::mat4 viewMatrix = mainCamera->GetViewMatrix();
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer1
 	// 2.1 Opaque
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glClearColor(0, 0, 0, 0);
 	
