@@ -1,22 +1,15 @@
 #pragma once
-#include "../constants.h"
 #include "../../../BlockStore.h"
 #include "../../../GeomRendering/BufferGeom.h"
 
 class ChunkColumn
 {
-
 public:
-
 	ChunkColumn();
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
 	// creators
 	void populateBuffer(WorldMap& worldMap);
-
-	// getters
-	// const std::tuple<std::vector<Block_Count>*, unsigned int, ChunkColumn*> getHeightAt(glm::vec2 pos, bool safe, AdjacentMap_p& adjacent) const; // mabye could be optimised
-
 	const BufferGeom& getBuffer() const;
 private:
 	BufferGeom buffer;

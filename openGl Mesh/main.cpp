@@ -1,12 +1,13 @@
 #include <iostream>
-// #define GLEW_STATIC
+
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <gtc/type_ptr.hpp>
 
 #include "Game/Game.h"
 
-#include "Game/World/constants.h"
+#include "Helpers/Constants.h"
+#include "Helpers/Functions.h"
 #include "Textures/Texture.h"
 #include "Shaders/Shader.h"
 

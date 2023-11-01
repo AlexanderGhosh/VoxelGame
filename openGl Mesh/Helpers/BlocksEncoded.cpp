@@ -1,5 +1,5 @@
 #include "BlocksEncoded.h"
-#include "../Game/World/constants.h"
+#include "../Helpers/Constants.h"
 
 BlocksEncoded::BlocksEncoded() : blocks_(), counts_(), height_()
 {

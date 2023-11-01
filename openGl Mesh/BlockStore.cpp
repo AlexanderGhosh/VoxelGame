@@ -1,4 +1,5 @@
 #include "BlockStore.h"
+#include "Helpers/Functions.h"
 #include "Game/World/world_generation.h"
 
 BlockStore::BlockStore() : heightMap() { }

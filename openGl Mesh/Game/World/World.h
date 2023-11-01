@@ -1,5 +1,4 @@
 #pragma once
-#include "constants.h"
 #include "../../GeomRendering/DrawableGeom.h"
 #include "Chunks/ChunkColumn.h"
 

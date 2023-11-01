@@ -165,8 +165,9 @@
     <ClCompile Include="Game\Physics\BoxCollider.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Helpers\BlocksEncoded.cpp" />
+    <ClCompile Include="Helpers\Constants.cpp" />
+    <ClCompile Include="Helpers\Functions.cpp" />
     <ClCompile Include="Helpers\Timer.cpp" />
-    <ClCompile Include="Game\World\constants.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="SOIL2\etc1_utils.c" />
@@ -214,8 +215,9 @@
     <ClInclude Include="GeomRendering\GeomData.h" />
     <ClInclude Include="Helpers\BlockDetails.h" />
     <ClInclude Include="Helpers\BlocksEncoded.h" />
+    <ClInclude Include="Helpers\Constants.h" />
+    <ClInclude Include="Helpers\Functions.h" />
     <ClInclude Include="Helpers\Timer.h" />
-    <ClInclude Include="Game\World\constants.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SOIL2\etc1_utils.h" />
     <ClInclude Include="SOIL2\image_DXT.h" />

@@ -1,11 +1,13 @@
 #pragma once
 #include <glm.hpp>
 #include <list>
-#include "../Game/World/constants.h"
+#include "../Helpers/Constants.h"
 #include "DrawData.h"
 
 class Camera;
 class Shader;
+class DrawData;
+
 class DrawableGeom
 {
 public:

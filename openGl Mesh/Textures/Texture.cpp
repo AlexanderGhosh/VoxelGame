@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-// #define GLEW_STATIC
+
 #include <glad/glad.h>
 
 Texture::Texture() :created(false), dimentions(), texMap(), is2D(), name() { }

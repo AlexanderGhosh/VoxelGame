@@ -1,5 +1,5 @@
 #pragma once
-#include "constants.h"
+#include "../../Helpers/Constants.h"
 
 struct NoiseOptions {
 	int octaves;

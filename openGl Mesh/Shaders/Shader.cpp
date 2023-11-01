@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-// #define GLEW_STATIC
+
 #include <glad/glad.h>
 #include <gtc/type_ptr.hpp>
 

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <vector>
-// #define GLEW_STATIC
+
 #include <glad/glad.h>
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <iostream>
-#include "../World/constants.h"
+#include "../../Helpers/Constants.h"
 
 
 

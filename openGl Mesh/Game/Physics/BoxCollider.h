@@ -1,5 +1,6 @@
 #pragma once
-#include "../World/constants.h"
+#include <glm.hpp>
+
 class BoxCollider
 {
 public:

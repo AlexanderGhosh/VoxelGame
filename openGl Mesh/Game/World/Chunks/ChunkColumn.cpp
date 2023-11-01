@@ -1,5 +1,6 @@
 #include "ChunkColumn.h"
 #include <algorithm>
+#include "../../../Helpers/Functions.h"
 #include "../../../GeomRendering/GeomData.h"
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"

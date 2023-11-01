@@ -1,5 +1,5 @@
 #include "BufferGeom.h"
-// #define GLEW_STATIC
+
 #include <glad/glad.h>
 
 #include "GeomData.h"

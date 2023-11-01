@@ -1,5 +1,6 @@
 #include "world_generation.h"
 #include <gtc/noise.hpp>
+#include "../../Helpers/Functions.h"
 #include "../../Helpers/BlocksEncoded.h"
 
 glm::ivec2 world_generation::treeCooldown = glm::vec2(4);

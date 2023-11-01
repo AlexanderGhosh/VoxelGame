@@ -1,5 +1,5 @@
 #pragma once
-// #define GLEW_STATIC
+
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <glm.hpp>
