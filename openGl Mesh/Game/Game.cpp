@@ -38,7 +38,7 @@ private:
 */
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(),
-projection(1), lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2() {
+projection(1), lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox() {
 	Game::mainCamera = new Camera({ 0, 2, 0 });
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -193,6 +193,11 @@ void Game::showStuff() {
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	glm::vec3 lightPos(8, 30, 8);
 	glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+
+	shadowBox.update(*mainCamera);
+	// lightProjection = shadowBox.getProjection();
+	// lightView = shadowBox.getView(lightPos);
+
 	glm::mat4 LSM = lightProjection * lightView;
 
 	// 1. render from the lights perspective for the shadow map

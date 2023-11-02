@@ -40,7 +40,7 @@ int main() {
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
 	game.generateWorld();				 // angle, screen ratio,                    near, far
-	glm::mat4 projection = glm::perspective(45.0f, (float)DIM.x / (float)DIM.y, 0.01f, 1000.0f);
+	glm::mat4 projection = glm::perspective(FOV, ASPECT_RATIO, NEAR_PLANE, FAR_PLANE);
 	game.doLoop(projection);
 
 	glfwDestroyWindow(window);

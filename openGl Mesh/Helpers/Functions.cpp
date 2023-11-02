@@ -1,6 +1,15 @@
 #include "Functions.h"
 #include "Constants.h"
 
+
+const float radians(const float d) {
+	return (d * PI) / 180.f;
+}
+
+const float degrees(const float r) {
+	return (180.f * r) / PI;
+}
+
 const unsigned int columnIndex(const unsigned int x, const unsigned int z) {
 	return x + CHUNK_SIZE * z;
 }

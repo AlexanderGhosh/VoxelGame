@@ -167,6 +167,7 @@
     <ClCompile Include="Helpers\BlocksEncoded.cpp" />
     <ClCompile Include="Helpers\Constants.cpp" />
     <ClCompile Include="Helpers\Functions.cpp" />
+    <ClCompile Include="Helpers\ShadowBox.cpp" />
     <ClCompile Include="Helpers\Timer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Helpers\BlocksEncoded.h" />
     <ClInclude Include="Helpers\Constants.h" />
     <ClInclude Include="Helpers\Functions.h" />
+    <ClInclude Include="Helpers\ShadowBox.h" />
     <ClInclude Include="Helpers\Timer.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SOIL2\etc1_utils.h" />
