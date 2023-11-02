@@ -71,6 +71,8 @@ float inShadow() {
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);  
     vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
     projCoords = projCoords * 0.5 + 0.5;
+    if(projCoords.z > 1.0)
+        return 0.0;
     float sample_ = texture(shadowMap, projCoords.xy).r;
     float shadow = sample_ > projCoords.z - bias ? 0 : 1;
     return shadow;

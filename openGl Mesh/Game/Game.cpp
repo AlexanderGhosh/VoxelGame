@@ -196,9 +196,11 @@ void Game::showStuff() {
 	glm::mat4 LSM = lightProjection * lightView;
 
 	// 1. render from the lights perspective for the shadow map
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);
+	glFrontFace(GL_CCW);
 
 	shadowFramebuffer.bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -212,6 +214,7 @@ void Game::showStuff() {
 	glm::mat4 viewMatrix = mainCamera->GetViewMatrix();
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer1
 	// 2.1 Opaque
+	glFrontFace(GL_CW);
 	glDisable(GL_BLEND);
 	glClearColor(0, 0, 0, 0);	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -251,6 +254,7 @@ void Game::showStuff() {
 	transparent.unBind();
 
 	// 2.3 Composite
+	glDisable(GL_CULL_FACE);
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer
 	glDepthFunc(GL_ALWAYS);
 	glEnable(GL_BLEND);

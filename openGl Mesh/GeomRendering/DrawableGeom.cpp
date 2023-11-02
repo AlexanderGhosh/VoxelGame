@@ -19,9 +19,6 @@ DrawableGeom::~DrawableGeom()
 
 void DrawableGeom::render(Shader* shader) const
 {
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CW);
-
 	if (!shader) {
 		shader = &SHADERS[GEOMBLOCKS];
 		shader->bind();
@@ -32,7 +29,6 @@ void DrawableGeom::render(Shader* shader) const
 	draw();
 
 	shader->unBind();
-	glDisable(GL_CULL_FACE);
 }
 
 void DrawableGeom::setUp(const Chunks& chunks)
