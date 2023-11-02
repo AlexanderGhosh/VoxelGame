@@ -191,7 +191,8 @@ void Game::showStuff() {
 	// light orhto projection
 	float near_plane = 0.1f, far_plane = 100.0f;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-	glm::mat4 lightView = glm::lookAt(LIGHTPOSITION, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	glm::vec3 lightPos(8, 30, 8);
+	glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	glm::mat4 LSM = lightProjection * lightView;
 
 	// 1. render from the lights perspective for the shadow map
@@ -204,7 +205,6 @@ void Game::showStuff() {
 	Shader& shadows = SHADERS[SHADOW];
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
-	shadows.setValue("lightPos", LIGHTPOSITION);
 	world.render(&shadows);
 	shadows.unBind();
 
@@ -213,14 +213,19 @@ void Game::showStuff() {
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer1
 	// 2.1 Opaque
 	glDisable(GL_BLEND);
-	glClearColor(0, 0, 0, 0);
-	
+	glClearColor(0, 0, 0, 0);	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth());
 	
 	Shader& opaue = SHADERS[OIT_OPAQUE];
 	opaue.bind();
 	bool b1 = opaue.setValue("view", viewMatrix);
 	bool b2 = opaue.setValue("projection", projection);
+	bool a1 = opaue.setValue("lightMatrix", projection);
+	bool b3 = opaue.setValue("depthMap", 0);
+	bool a2 = opaue.setValue("lightPos", lightPos);
 	world.render(&opaue);
 	opaue.unBind();
 
@@ -239,8 +244,8 @@ void Game::showStuff() {
 	
 	Shader& transparent = SHADERS[OIT_TRANSPARENT];
 	transparent.bind();
-	bool b3 = transparent.setValue("view", viewMatrix);
-	bool b4 = transparent.setValue("projection", projection);
+	bool b4 = transparent.setValue("view", viewMatrix);
+	bool b5 = transparent.setValue("projection", projection);
 	world.render(&transparent);
 	transparent.unBind();
 
@@ -304,13 +309,15 @@ void Game::showStuff() {
 	glViewport(0, 0, windowDim.x, windowDim.y);
 	
 	const Shader& screenQuad = SHADERS[SCREEN_QUAD];
-	screenQuad.bind();
-	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer1.getColourTex(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, guiFrameBuffer.getColourTex(0));
+
+	screenQuad.bind();
 	
+	screenQuad.setValue("screen", 0);
+	screenQuad.setValue("qui", 1);
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);

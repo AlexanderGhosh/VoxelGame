@@ -10,8 +10,11 @@ in VS_OUT {
     mat4 m;
 } vs_out[];
 
+uniform mat4 lightMatrix;
+
 flat out uint blockColourIndex;
 flat out vec3 fragCoords;
+out vec4 fragPosLight;
 
 const float size = 0.5;
 const float inv_size = 1.0 / size;
@@ -48,6 +51,8 @@ void main() {
         int l = indices[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];
         fragCoords = gl_in[0].gl_Position.rgb;
+
+        fragPosLight = lightMatrix * vs_out[0].m * vec4(v, 1);
 
         gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
         EmitVertex();

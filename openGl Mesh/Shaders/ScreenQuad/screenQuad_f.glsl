@@ -4,8 +4,8 @@ layout(location = 0) out vec4 frag;
 
 in vec2 texCoords;
 
-layout(binding = 0) uniform sampler2D screen;
-layout(binding = 1) uniform sampler2D gui;
+uniform sampler2D screen;
+uniform sampler2D gui;
 
 void main() {
     vec3 colorWorld = texture(screen, texCoords).rgb;

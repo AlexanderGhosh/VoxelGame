@@ -13,7 +13,7 @@ class BlockDetails;
 class ChunkColumn;
 class BlockStore;
 
-constexpr unsigned int RENDER_DISTANCE = 1;
+constexpr unsigned int RENDER_DISTANCE = 3;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int WANDER_RANGE = 15;
