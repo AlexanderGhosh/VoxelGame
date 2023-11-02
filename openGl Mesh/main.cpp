@@ -13,7 +13,7 @@
 
 #include "Helpers/BlockDetails.h"
 
-glm::ivec2 DIM(WIDTH, HEIGHT);
+glm::ivec2 DIM(1280, 720);
 
 GLFWwindow* createWindow();
 void createBlocks();
@@ -39,8 +39,8 @@ int main() {
 	Game game = Game(true, true, DIM);
 	GameConfig::showFPS = 1;
 	game.setWindow(window);
-	game.generateWorld();			   // angle, screen ratio,       near, far
-	glm::mat4 projection = glm::perspective(FOV, ASPECT_RATIO, NEAR_PLANE, FAR_PLANE);
+	game.generateWorld();				 // angle, screen ratio,                    near, far
+	glm::mat4 projection = glm::perspective(45.0f, (float)DIM.x / (float)DIM.y, 0.01f, 1000.0f);
 	game.doLoop(projection);
 
 	glfwDestroyWindow(window);
