@@ -12,6 +12,7 @@
 #include "Player/Camera.h"
 #include "World/World.h"
 #include "../FrameBuffer.h"
+#include "../Helpers/ShadowBox.h"
 
 class Camera;
 
@@ -52,6 +53,7 @@ public:
 	static std::array<bool, 1024> keys;
 private:
 	unsigned int quadVBO, quadVAO;
+	ShadowBox shadowBox;
 
 	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer;
 	GLFWwindow* window;

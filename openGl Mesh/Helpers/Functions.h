@@ -9,6 +9,8 @@ enum class Texture_Names : unsigned char;
 enum class Block : unsigned char;
 
 
+const float radians(const float degrees);
+
 const unsigned int columnIndex(const unsigned int x, const unsigned int z);
 
 void reduceToMultiple(glm::ivec3& victim, const unsigned int multiple);
