@@ -15,6 +15,8 @@ uniform mat4 lightMatrix;
 flat out uint blockColourIndex;
 flat out vec3 fragCoords;
 out vec4 fragPosLight;
+out vec3 normal;
+out vec3 fragPos;
 
 const float size = 0.5;
 const float inv_size = 1.0 / size;
@@ -40,6 +42,14 @@ int indices[] = int[](
     0, 2, 1, 3  // -y
 );
 
+vec3 normals[6] = vec3[] (
+    vec3(0, 0, 1),
+    vec3(0, 0, -1),
+    vec3(-1, 0, 0),
+    vec3(1, 0, 0),
+    vec3(0, 1, 0),
+    vec3(0, -1, 0)
+);
 
 void main() {
     blockColourIndex = vs_out[0].blockColourIndex;
@@ -47,12 +57,14 @@ void main() {
         return; // discards water
     }
 
+    normal = normals[vs_out[0].cubeType];
     for (uint j = 0u; j < 4u; j++){ 
         int l = indices[vs_out[0].cubeType * 4u + j];
         vec3 v = vertices[l];
         fragCoords = gl_in[0].gl_Position.rgb;
 
-        fragPosLight = lightMatrix * vs_out[0].m * vec4(v, 1);
+        fragPos = (vs_out[0].m * vec4(v, 1)).xyz;
+        fragPosLight = lightMatrix * vec4(fragPos, 1);
 
         gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
         EmitVertex();

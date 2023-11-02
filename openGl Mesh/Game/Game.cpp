@@ -189,7 +189,7 @@ const unsigned int SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
 
 void Game::showStuff() {
 	// light orhto projection
-	float near_plane = 0.1f, far_plane = 100.0f;
+	float near_plane = 1, far_plane = 100.0f;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	glm::vec3 lightPos(8, 30, 8);
 	glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
@@ -223,9 +223,10 @@ void Game::showStuff() {
 	opaue.bind();
 	bool b1 = opaue.setValue("view", viewMatrix);
 	bool b2 = opaue.setValue("projection", projection);
-	bool a1 = opaue.setValue("lightMatrix", projection);
+	bool a1 = opaue.setValue("lightMatrix", LSM);
 	bool b3 = opaue.setValue("depthMap", 0);
 	bool a2 = opaue.setValue("lightPos", lightPos);
+	bool a3 = opaue.setValue("viewPos", mainCamera->GetPosition());
 	world.render(&opaue);
 	opaue.unBind();
 
@@ -317,7 +318,7 @@ void Game::showStuff() {
 	screenQuad.bind();
 	
 	screenQuad.setValue("screen", 0);
-	screenQuad.setValue("qui", 1);
+	screenQuad.setValue("gui", 1);
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
