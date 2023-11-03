@@ -37,7 +37,7 @@ private:
 	glm::ivec2 windowDim;
 */
 
-glm::vec3 lightPos(8000, 30000, 8000);
+glm::vec3 lightPos(0, 10000, -10000);
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(),
 projection(1), lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos) {
@@ -280,6 +280,8 @@ void Game::showStuff() {
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 	composite.unBind();
+
+	showSkybox();
 
 	// 3. render the GUI
 	guiFrameBuffer.bind(); // use the GUI framebuffer
@@ -638,6 +640,7 @@ void Game::makeSkybox(const std::string& skybox) {
 }
 
 void Game::showSkybox() {
+	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer'transparent content
 	SHADERS[SKYBOX].bind();
 	// Camera& camera = player->getCamera();
