@@ -193,7 +193,7 @@ glm::mat4 ShadowBox::getLSM(Camera& camera, const glm::mat4& proj, const glm::ve
 	float texelsPerUnit = SHADOW_MAP_SIZE / (radius * 2.f);
 
 	glm::mat4 scalar(texelsPerUnit);
-	scalar[3][3] = 1;
+	//scalar[3][3] = 1;
 	glm::vec3 lightDir = glm::normalize(-lightPos);
 	glm::mat4 lookat = glm::lookAt(glm::vec3(0), lightDir, glm::vec3(0, 1, 0));
 	lookat *= scalar;
@@ -210,7 +210,8 @@ glm::mat4 ShadowBox::getLSM(Camera& camera, const glm::mat4& proj, const glm::ve
 
 	glm::mat4 lightView = glm::lookAt(eye, frustrumCenter, glm::vec3(0, 1, 0));
 
-	glm::mat4 lightProj = glm::ortho(-radius, radius, -radius, radius, NEAR_PLANE, 12.f * radius);
+	float multi = 6;
+	glm::mat4 lightProj = glm::ortho(-radius, radius, -radius, radius, -radius * multi, radius * multi);
 
 	return lightProj * lightView;
 }

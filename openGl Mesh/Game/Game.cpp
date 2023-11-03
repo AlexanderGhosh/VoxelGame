@@ -208,10 +208,11 @@ void Game::showStuff() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);
-	glFrontFace(GL_CCW);
+	glFrontFace(GL_CCW); // this is what stops the water from rendering
 
 	shadowFramebuffer.bind();
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	Shader& shadows = SHADERS[SHADOW];
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
@@ -222,10 +223,10 @@ void Game::showStuff() {
 	glm::mat4 viewMatrix = mainCamera->GetViewMatrix();
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer1
 	// 2.1 Opaque
-	glFrontFace(GL_CW);
 	glDisable(GL_BLEND);
-	glClearColor(0, 0, 0, 0);	
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glFrontFace(GL_CW);
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth());
