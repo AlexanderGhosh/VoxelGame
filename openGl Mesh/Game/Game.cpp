@@ -37,7 +37,7 @@ private:
 	glm::ivec2 windowDim;
 */
 
-glm::vec3 lightPos(0, 10000, -10000);
+const glm::vec3 lightPos(100, 100, 100);
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(),
 projection(1), lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos) {
@@ -111,11 +111,12 @@ Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
 	detailsShadows.hasDepth = true;
 	detailsShadows.depthTexture = true;
 
-	shadowFramebuffer = FrameBuffer({ 10000 , 10000 });
+	shadowFramebuffer = FrameBuffer({ SHADOW_MAP_SIZE , SHADOW_MAP_SIZE });
 	shadowFramebuffer.setUp(detailsShadows);
 }
 
 void Game::generateWorld() {
+	srand(time(0));
 	world = World(true, false, 32);
 	world.setUpDrawable();
 }
@@ -224,7 +225,7 @@ void Game::showStuff() {
 	glFrontFace(GL_CW);
 	glDisable(GL_BLEND);
 	glClearColor(0, 0, 0, 0);	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth());
@@ -234,7 +235,7 @@ void Game::showStuff() {
 	bool b1 = opaue.setValue("view", viewMatrix);
 	bool b2 = opaue.setValue("projection", projection);
 	bool a1 = opaue.setValue("lightMatrix", LSM);
-	bool b3 = opaue.setValue("depthMap", 0);
+	bool b3 = opaue.setValue("shadowMap", 0);
 	bool a2 = opaue.setValue("lightPos", lightPos);
 	bool a3 = opaue.setValue("viewPos", mainCamera->GetPosition());
 	world.render(&opaue);

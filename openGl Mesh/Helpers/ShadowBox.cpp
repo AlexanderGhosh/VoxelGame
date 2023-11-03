@@ -1,6 +1,7 @@
 #include "ShadowBox.h"
 #include "Functions.h"
 #include "../Game/Player/Camera.h"
+#include <gtx/string_cast.hpp>
 
 
 ShadowBox::ShadowBox() : lightViewMatrix(), OFFSET(10), minX(), minY(), minZ(), maxX(), maxY(), maxZ(), farWidth(), farHeight(), nearWidth(), nearHeight() { }
@@ -157,84 +158,60 @@ glm::mat4 ShadowBox::getView(const glm::vec3& lightPos)
 	return res;
 }
 
-std::vector<glm::vec4> getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
+std::vector<glm::vec3> getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
 {
-	const auto inv = glm::inverse(proj * view);
+	std::vector<glm::vec3> frustrumCorners = {
+		glm::vec3(-1,  1, -1),
+		glm::vec3( 1,  1, -1), // maybe z = 0
+		glm::vec3( 1, -1, -1),
+		glm::vec3(-1, -1, -1),
 
-	std::vector<glm::vec4> frustumCorners;
-	for (unsigned int x = 0; x < 2; ++x)
-	{
-		for (unsigned int y = 0; y < 2; ++y)
-		{
-			for (unsigned int z = 0; z < 2; ++z)
-			{
-				const glm::vec4 pt =
-					inv * glm::vec4(
-						2.0f * x - 1.0f,
-						2.0f * y - 1.0f,
-						2.0f * z - 1.0f,
-						1.0f);
-				frustumCorners.push_back(pt / pt.w);
-			}
-		}
+		glm::vec3(-1,  1, 1),
+		glm::vec3( 1,  1, 1),
+		glm::vec3( 1, -1, 1),
+		glm::vec3(-1, -1, 1),
+	};
+
+	glm::mat4 pvInv = glm::inverse(proj * view);
+	for (glm::vec3& c : frustrumCorners) {
+		auto t = pvInv * glm::vec4(c, 1);
+		c = glm::vec3(t) / t.w;
 	}
-
-	return frustumCorners;
+	return frustrumCorners;
 }
 
 glm::mat4 ShadowBox::getLSM(Camera& camera, const glm::mat4& proj, const glm::vec3& lightPos) const
 {
-	// world positions of the camera's perspective frustrum
-	std::vector<glm::vec4> corners = getFrustumCornersWorldSpace(proj, camera.GetViewMatrix());
-
-	glm::vec3 center = glm::vec3(0, 0, 0);
-	for (const auto& v : corners)
-	{
-		center += glm::vec3(v);
+	auto corners = getFrustumCornersWorldSpace(proj, camera.GetViewMatrix());
+	glm::vec3 frustrumCenter(0);
+	for (const glm::vec3& c : corners) {
+		frustrumCenter += c;
 	}
-	center /= corners.size();
+	frustrumCenter /= 8.f;
 
+	float radius = glm::distance(corners[3], corners[5]) * .5f;
+	float texelsPerUnit = SHADOW_MAP_SIZE / (radius * 2.f);
+
+	glm::mat4 scalar(texelsPerUnit);
+	scalar[3][3] = 1;
 	glm::vec3 lightDir = glm::normalize(-lightPos);
-	const glm::mat4 lightView = glm::lookAt(center + lightDir, center, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lookat = glm::lookAt(glm::vec3(0), lightDir, glm::vec3(0, 1, 0));
+	lookat *= scalar;
+	glm::mat4 lookatInv = glm::inverse(lookat);
 
+	glm::vec4 t = lookat * glm::vec4(frustrumCenter, 1);
+	frustrumCenter = glm::vec3(t) / t.w;
+	frustrumCenter.x = floorf(frustrumCenter.x);
+	frustrumCenter.z = floorf(frustrumCenter.z);
+	t = lookatInv * glm::vec4(frustrumCenter, 1);
+	frustrumCenter = glm::vec3(t) / t.w;
 
-	float minX = std::numeric_limits<float>::max();
-	float maxX = std::numeric_limits<float>::lowest();
-	float minY = std::numeric_limits<float>::max();
-	float maxY = std::numeric_limits<float>::lowest();
-	float minZ = std::numeric_limits<float>::max();
-	float maxZ = std::numeric_limits<float>::lowest();
-	for (const auto& v : corners)
-	{
-		const auto trf = lightView * v;
-		minX = std::min(minX, trf.x);
-		maxX = std::max(maxX, trf.x);
-		minY = std::min(minY, trf.y);
-		maxY = std::max(maxY, trf.y);
-		minZ = std::min(minZ, trf.z);
-		maxZ = std::max(maxZ, trf.z);
-	}
+	glm::vec3 eye = frustrumCenter - (lightDir * radius * 2.f);
 
-	constexpr float zMult = 1.0f;
-	if (minZ < 0)
-	{
-		minZ *= zMult;
-	}
-	else
-	{
-		minZ /= zMult;
-	}
-	if (maxZ < 0)
-	{
-		maxZ /= zMult;
-	}
-	else
-	{
-		maxZ *= zMult;
-	}
+	glm::mat4 lightView = glm::lookAt(eye, frustrumCenter, glm::vec3(0, 1, 0));
 
-	const glm::mat4 lightProjection = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
+	glm::mat4 lightProj = glm::ortho(-radius, radius, -radius, radius, NEAR_PLANE, 12.f * radius);
 
-	return lightProjection * lightView;
+	return lightProj * lightView;
 }
 

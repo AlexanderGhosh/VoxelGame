@@ -46,7 +46,7 @@ void main()
     vec3 ambient = 0.3 * lightColor;
     // diffuse
     vec3 lightDir = normalize(lightPos - fragPos);
-    //lightDir = normalize(lightPos);
+    lightDir = normalize(lightPos);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * lightColor;
     // specular
@@ -55,6 +55,7 @@ void main()
     float spec = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
     spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+    spec = 0;
     vec3 specular = spec * lightColor;
     // calculate shadow
     //float shadow = ShadowCalculation(fragPosLight);
@@ -62,19 +63,20 @@ void main()
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
     
     // FragColor = vec4(lighting, 1.0);
-    if(shadow == 1){
-        lighting = vec3(1, 0, 0);
-    }
+    
+    lighting = vec3(shadow);
     frag =  vec4(lighting, 1.0);
 }
 
 float inShadow() {
     vec3 lightDir = normalize(lightPos - fragPos);
-    //lightDir = normalize(lightPos);
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);  
-    bias = 0.005;
+    lightDir = normalize(-lightPos);
+    float bias = max(0.05 * (1.0 - dot(abs(normal), lightDir)), 0.005);  
+    // bias = 0.005;
     vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
     projCoords = projCoords * 0.5 + 0.5;
+    return texture(shadowMap, projCoords.xy).r; 
+
     if(projCoords.z > 1.0)
         return 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
@@ -89,9 +91,6 @@ float inShadow() {
     }
     shadow /= 9.0;
     return shadow;
-
-
-
 }
 
 /*
