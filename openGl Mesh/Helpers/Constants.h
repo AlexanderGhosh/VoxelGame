@@ -20,7 +20,7 @@ constexpr float ASPECT_RATIO = WIDTH / HEIGHT;
 constexpr float FOV = 45;
 constexpr float NEAR_PLANE = 0.1;
 constexpr float FAR_PLANE = 100;
-constexpr float SHADOW_DISTANCE = 100;
+constexpr float SHADOW_DISTANCE = 1000;
 
 constexpr unsigned int RENDER_DISTANCE = 3;
 constexpr unsigned int PLAYER_REACH = 5;

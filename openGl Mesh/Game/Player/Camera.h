@@ -39,9 +39,6 @@ public:
 	glm::mat4 GetViewMatrix() {
 		return glm::lookAt(this->position, this->position + this->front, this->up);
 	}
-	glm::vec3 GetRight() {
-		return right;
-	}
 
 	void ProcessMovement(Move_Dir direction, float deltaTime) {
 		float velocity = this->movementSpeed * deltaTime;
@@ -128,6 +125,12 @@ public:
 	}
 	glm::vec3 GetFront() {
 		return this->front;
+	}
+	glm::vec3 GetUp() {
+		return this->up;
+	}
+	glm::vec3 GetRight() {
+		return right;
 	}
 	void setPosition(glm::vec3 position) {
 		this->position = position;

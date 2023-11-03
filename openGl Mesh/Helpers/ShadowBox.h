@@ -44,7 +44,7 @@ public:
 	 * @param camera
 	 *            - the in-game camera.
 	 */
-	ShadowBox(glm::mat4 lightViewMatrix);
+	ShadowBox(glm::vec3 lightViewMatrix);
 
 	/**
 	 * Updates the bounds of the shadow box based on the light direction and the
@@ -120,4 +120,6 @@ public:
 	// returns the orthographic projection matrix
 	glm::mat4 getProjection() const;
 	glm::mat4 getView(const glm::vec3& lightPos);
+
+	glm::mat4 getLSM(Camera& camera, const glm::mat4& proj, const glm::vec3& lightPos) const;
 };
