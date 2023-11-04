@@ -36,13 +36,18 @@ int indices[] = int[](
 );
 
 void main() {
-    for (uint j = 0u; j < 4u; j++){ 
-        int l = indices[vs_out[0].cubeType * 4u + j];
-        vec3 v = vertices[l];
+    for (uint i = 0; i < 6; i++) {
+        uint slot = vs_out[0].cubeType & (1 << i);
+        if (slot > 0) {
+            for (uint j = 0u; j < 4u; j++){ 
+                int l = indices[i * 4u + j];
+                vec3 v = vertices[l];
 
-        gl_Position = lightMatrix * vs_out[0].m * vec4(v, 1);
+                gl_Position = lightMatrix * vs_out[0].m * vec4(v, 1);
 
-        EmitVertex();
+                EmitVertex();
+            }
+            EndPrimitive();
+        }
     }
-    EndPrimitive();
 }

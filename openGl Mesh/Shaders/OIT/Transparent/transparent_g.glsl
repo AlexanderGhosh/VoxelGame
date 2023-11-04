@@ -43,15 +43,19 @@ void main() {
     if(blockColourIndex == 4u) {
         return; // discards water
     }
+    for (uint i = 0; i < 6; i++) {
+        uint slot = vs_out[0].cubeType & (1 << i);
+        if (slot > 0) {
+            for (uint j = 0u; j < 4u; j++){ 
+                int l = indices[i * 4u + j];
+                vec3 v = vertices[l];
+                v.y = size * 0.85;
+                fragCoords = gl_in[0].gl_Position.rgb;
 
-    for (uint j = 0u; j < 4u; j++){ 
-        int l = indices[vs_out[0].cubeType * 4u + j];
-        vec3 v = vertices[l];
-        v.y = size * 0.85;
-        fragCoords = gl_in[0].gl_Position.rgb;
-
-        gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
-        EmitVertex();
+                gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
+                EmitVertex();
+            }
+            EndPrimitive();
+        }
     }
-    EndPrimitive();
 }

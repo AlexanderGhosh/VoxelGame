@@ -84,7 +84,6 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 		}
 	}
 
-	std::cout << bufferData.size() << std::endl;
 	buffer.setUp(bufferData.data(), bufferData.size());
 }
 
