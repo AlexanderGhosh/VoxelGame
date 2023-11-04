@@ -65,24 +65,18 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 
 						if (blockDets2.isTransparant && b1 != b2) {
 							markSlot(data.cubeType_, j);
-							added_list.push_back(j);
-							data.cubeType_ = j;
-							bufferData.push_back(data);
-							added = true;
-							data.cubeType_ = 0;
 						}
 						j++;
 					}
-					//if (data.cubeType_) {
-					//	bufferData.push_back(data);
-					//	added = true;
-					//	data.cubeType_ = 0;
-					//	added_list.clear();
-					//}
-					//else {
-					//	break;
-					//}
-					if (!added) break;
+					if (data.cubeType_) {
+						bufferData.push_back(data);
+						added = true;
+						data.cubeType_ = 0;
+						added_list.clear();
+					}
+					else {
+						break;
+					}
 				}
 				height -= count1;
 				if (!added && !blockDets1.isTransparant) break;

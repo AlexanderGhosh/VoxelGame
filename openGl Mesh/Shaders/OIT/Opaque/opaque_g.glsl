@@ -76,28 +76,4 @@ void main() {
             EndPrimitive();
         }
     }
-    
-
-
-
-    /*
-blockColourIndex = vs_out[0].blockColourIndex;
-    if(blockColourIndex == 5u) {
-        return; // discards water
-    }
-
-    normal = normals[vs_out[0].cubeType];
-    for (uint j = 0u; j < 4u; j++){ 
-        int l = indices[vs_out[0].cubeType * 4u + j];
-        vec3 v = vertices[l];
-        fragCoords = gl_in[0].gl_Position.rgb;
-
-        fragPos = (vs_out[0].m * vec4(v, 1)).xyz;
-        fragPosLight = lightMatrix * vec4(fragPos, 1);
-
-        gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
-        EmitVertex();
-    }
-    EndPrimitive();
-    */
 }
