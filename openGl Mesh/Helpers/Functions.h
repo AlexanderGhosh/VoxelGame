@@ -8,6 +8,7 @@ class Texture;
 enum class Texture_Names : unsigned char;
 enum class Block : unsigned char;
 
+void markSlot(unsigned int& val, const unsigned int slot);
 
 const float radians(const float d);
 const float degrees(const float r);

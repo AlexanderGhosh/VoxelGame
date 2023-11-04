@@ -2,6 +2,11 @@
 #include "Constants.h"
 
 
+void markSlot(unsigned int& val, const unsigned int slot)
+{
+	val |= 1u << slot;
+}
+
 const float radians(const float d) {
 	return (d * PI) / 180.f;
 }
