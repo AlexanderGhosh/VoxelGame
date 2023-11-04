@@ -1,7 +1,7 @@
 #version 440 core
 
 layout (points) in;
-layout (triangle_strip, max_vertices = 4) out;
+layout (triangle_strip, max_vertices = 24) out;
 
 in VS_OUT {
     uint cubeType;
