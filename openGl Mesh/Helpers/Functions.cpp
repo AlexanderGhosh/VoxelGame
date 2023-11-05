@@ -2,7 +2,7 @@
 #include "Constants.h"
 
 
-void markSlot(unsigned int& val, const unsigned int slot)
+void markSlot(unsigned char& val, const unsigned int slot)
 {
 	val |= 1u << slot;
 }
