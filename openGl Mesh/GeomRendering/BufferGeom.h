@@ -8,7 +8,7 @@ public:
 	~BufferGeom();
 
 	void setUp(const GeomData* data, unsigned int size);
-	void realloc(const GeomData* data, unsigned int size) const;
+	void realloc(const GeomData* data, unsigned int size);
 
 	void bind() const;
 	void unbind() const;

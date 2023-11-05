@@ -1,11 +1,11 @@
 #pragma once
-#include "BufferGeom.h"
 
+class BufferGeom;
 class Texture;
 struct DrawData {
-	BufferGeom buffer;
+	BufferGeom* buffer;
 	Texture* texture;
 
 	DrawData() : buffer(), texture(nullptr) { }
-	DrawData(const BufferGeom& buffer, Texture* tex) : buffer(buffer), texture(tex) { }
+	DrawData(BufferGeom* buffer, Texture* tex) : buffer(buffer), texture(tex) { }
 };

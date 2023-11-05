@@ -18,9 +18,9 @@ out VS_OUT {
 
 void main() {
     mat4 m = mat4(voxelSize);
-    m[3][0] = worldPos_.x * voxelSize - 1;
-    m[3][1] = worldPos_.y * voxelSize - 1;
-    m[3][2] = worldPos_.z * voxelSize - 1;
+    m[3][0] = worldPos_.x * voxelSize;
+    m[3][1] = worldPos_.y * voxelSize;
+    m[3][2] = worldPos_.z * voxelSize;
     vs_out.m = m;
 
     vs_out.vp = projection * view;

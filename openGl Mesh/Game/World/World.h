@@ -12,6 +12,9 @@ public:
 
 	void setUpDrawable();
 
+	void placeBlock();
+	void breakBlock();
+
 private:
 	unsigned int seed;
 	Chunks chunks;

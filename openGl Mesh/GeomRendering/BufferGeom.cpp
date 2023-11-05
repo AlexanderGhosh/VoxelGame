@@ -10,13 +10,12 @@ BufferGeom::BufferGeom() : VBO(0), VAO(0), size_(0)
 
 BufferGeom::~BufferGeom()
 {
-	if (!VAO || !VBO) {
-		cleanUp();
-	}
+	cleanUp();
 }
 
 void BufferGeom::setUp(const GeomData* data, unsigned int size)
 {
+	cleanUp();
 	glGenBuffers(1, &VBO); // VBO
 	glGenVertexArrays(1, &VAO); // VAO
 	glBindVertexArray(VAO);
@@ -38,11 +37,14 @@ void BufferGeom::setUp(const GeomData* data, unsigned int size)
 	this->size_ = size;
 }
 
-void BufferGeom::realloc(const GeomData* data, unsigned int size) const
+void BufferGeom::realloc(const GeomData* data, unsigned int size)
 {
+	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	this->size_ = size;
 }
 
 void BufferGeom::bind() const
@@ -62,6 +64,7 @@ unsigned int BufferGeom::size() const
 
 void BufferGeom::cleanUp()
 {
+	if(!(VAO || VBO)) return;
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	VAO = VBO = 0;

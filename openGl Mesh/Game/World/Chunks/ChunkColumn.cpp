@@ -1,14 +1,13 @@
 #include "ChunkColumn.h"
 #include <algorithm>
 #include "../../../Helpers/Functions.h"
-#include "../../../GeomRendering/GeomData.h"
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"
 #include "../world_generation.h"
 #include "../../../Helpers/Functions.h"
 #include <iostream>
 
-ChunkColumn::ChunkColumn() : position(0), buffer(), seed()
+ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData()
 {
 	// blocks.fill(Block::AIR);
 }
@@ -33,7 +32,6 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 
 	};
 	const BlockStore& blockStore = worldMap[position];
-	std::vector<GeomData> bufferData;
 	GeomData data{};
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -90,6 +88,153 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 const BufferGeom& ChunkColumn::getBuffer() const
 {
 	return buffer;
+}
+
+BufferGeom* ChunkColumn::getBufferPtr()
+{
+	return &buffer;
+}
+
+void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
+{
+	GeomData toAdd;
+	toAdd.worldPos_ = worldPos;
+	toAdd.cubeType_ = 0x3f;
+	toAdd.textureIndex_ = (unsigned char) block;
+
+	struct RemoveFace {
+		glm::vec3 worldPos;
+		unsigned char face;
+	};
+	std::vector<RemoveFace> toRemove;
+
+
+	const std::list<glm::vec3> offsets = {
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, -1),
+
+		glm::vec3(-1, 0, 0),
+		glm::vec3(1, 0, 0),
+
+		glm::vec3(0, 1, 0),
+		glm::vec3(0, -1, 0),
+
+	};
+	unsigned char i = 0;
+	for (const glm::vec3& off : offsets) {
+		// needs to check the world map
+		RemoveFace data{};
+		data.worldPos = worldPos + off;
+		data.face = i++;
+
+		toRemove.push_back(data);
+	}
+
+
+	for (auto itt1 = bufferData.begin(); itt1 != bufferData.end();) {
+		GeomData& data = *itt1;
+		for (auto itt2 = toRemove.begin(); itt2 != toRemove.end();) {
+			const RemoveFace& remove = *itt2;
+			if (data.worldPos_ == remove.worldPos) {
+				unsigned int mask = 1 << remove.face;
+				toAdd.cubeType_ ^= mask; // sets the face to add
+
+				if (remove.face % 2 == 0) {
+					mask = 1 << remove.face + 1;
+				}
+				else {
+					mask = 1 << remove.face - 1;
+				}
+
+				mask = ~mask; // this is in the wrong slot as the face refers to the new blocks face not the neigbour the slot needs to inccremented or decrmented dependent MAYBE NOT ANY MORE
+				data.cubeType_ &= mask; // will set the slot of face to 0
+				itt2 = toRemove.erase(itt2);
+			}
+			else {
+				itt2++;
+			}
+		}
+		if (!data.cubeType_) {
+			itt1 = bufferData.erase(itt1); // deletes blocks which have no visible faces
+			continue;
+		}
+		if (toRemove.size() == 0) {
+			break;
+		}
+		itt1++;
+	}
+	// has now removed all the faces needed to place the block
+	bufferData.push_back(toAdd);
+	buffer.realloc(bufferData.data(), bufferData.size());
+}
+
+void ChunkColumn::removeBlock(const glm::vec3& worldPos)
+{
+	struct AddFaces {
+		glm::vec3 worldPos;
+		unsigned char face;
+	};
+	std::vector<AddFaces> toAdd;
+
+
+	const std::list<glm::vec3> offsets = {
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, -1),
+
+		glm::vec3(-1, 0, 0),
+		glm::vec3(1, 0, 0),
+
+		glm::vec3(0, 1, 0),
+		glm::vec3(0, -1, 0),
+
+	};
+	unsigned char i = 0;
+	for (const glm::vec3& off : offsets) {
+		// needs to check the world map
+		AddFaces data{};
+		data.worldPos = worldPos + off;
+		data.face = i++;
+		if (data.face % 2 == 0) {
+			data.face += 1;
+		}
+		else {
+			data.face -= 1;
+		}
+
+		toAdd.push_back(data);
+	}
+
+	bool removed = false;
+	for (auto itt1 = bufferData.begin(); itt1 != bufferData.end();) {
+		GeomData& data = *itt1;
+		if (data.worldPos_ == worldPos) {
+			itt1 = bufferData.erase(itt1);
+			removed = true;
+			continue;
+		}
+		for (auto itt2 = toAdd.begin(); itt2 != toAdd.end();) {
+			const AddFaces& add = *itt2;
+			if (data.worldPos_ == add.worldPos) {
+				unsigned int mask = 1 << add.face;
+
+				data.cubeType_ |= mask; // will set the slot of face to 0
+				itt2 = toAdd.erase(itt2);
+			}
+			else {
+				itt2++;
+			}
+		}
+		if (!data.cubeType_) {
+			itt1 = bufferData.erase(itt1); // deletes blocks which have no visible faces
+			continue;
+		}
+		if (toAdd.size() == 0 && removed) {
+			break;
+		}
+		itt1++;
+	}
+
+	buffer.realloc(bufferData.data(), bufferData.size());
 }
 
 const glm::vec2& ChunkColumn::getPosition() const

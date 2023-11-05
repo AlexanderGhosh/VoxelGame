@@ -46,6 +46,22 @@ void World::setUpDrawable()
 	geomDrawable.setUp(chunks);
 }
 
+void World::placeBlock()
+{
+	ChunkColumn& chunk = chunks[0];
+	const glm::vec2& chunkPos = chunk.getPosition();
+	glm::vec3 placePos(-36, 24, 2);
+	chunk.addBlock(placePos, Block::SAND);
+}
+
+void World::breakBlock()
+{
+	ChunkColumn& chunk = chunks[0];
+	const glm::vec2& chunkPos = chunk.getPosition();
+	glm::vec3 breakPos(-36, 23, 2);
+	chunk.removeBlock(breakPos);
+}
+
 const std::vector<glm::vec2> World::centeredPositions(const glm::vec2& origin, int renderDist) const {
 
 	std::vector<glm::vec2> res;

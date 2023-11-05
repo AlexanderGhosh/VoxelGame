@@ -13,7 +13,7 @@ DrawableGeom::DrawableGeom() : data()
 DrawableGeom::~DrawableGeom()
 {
 	for (auto& t : data) {
-		t.buffer.cleanUp();
+		t.buffer->cleanUp();
 	}
 }
 
@@ -31,11 +31,11 @@ void DrawableGeom::render(Shader* shader) const
 	shader->unBind();
 }
 
-void DrawableGeom::setUp(const Chunks& chunks)
+void DrawableGeom::setUp(Chunks& chunks)
 {
 	data.clear();
-	for (auto& chunk : chunks) {
-		data.emplace_back(chunk.getBuffer(), nullptr);
+	for (ChunkColumn& chunk : chunks) {
+		data.emplace_back(chunk.getBufferPtr(), nullptr);
 	}
 }
 
@@ -43,7 +43,7 @@ void DrawableGeom::draw() const
 {
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (const DrawData& data : this->data) {
-		const BufferGeom* buffer = &data.buffer;
+		BufferGeom* buffer = data.buffer;
 		Texture* tex = data.texture;
 		if (tex) {
 			tex->bind();

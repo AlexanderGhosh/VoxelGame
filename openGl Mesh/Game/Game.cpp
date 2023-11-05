@@ -386,6 +386,12 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 	if (key == GLFW_KEY_F3 && action == GLFW_RELEASE) {
 		GameConfig::showFPS = !GameConfig::showFPS;
 	}
+	if (key == GLFW_KEY_1 && action == GLFW_RELEASE) {
+		world.placeBlock();
+	}
+	if (key == GLFW_KEY_2 && action == GLFW_RELEASE) {
+		world.breakBlock();
+	}
 }
 
 void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
