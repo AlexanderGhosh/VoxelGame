@@ -16,7 +16,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 {
 	this->seed = seed;
 	position = pos;
-	map[pos] = BlockStore(pos, seed);
+	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {
@@ -51,7 +51,7 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 				data.textureIndex_ = (unsigned int)b1;
 				bool added = false;
 				for (unsigned int i = 0; i < count1; i++) {
-					data.worldPos_ = glm::vec3(x, height - i, z) + glm::vec3(position.x, 0, position.y);
+					data.worldPos_ = glm::vec3(x, height - i, z) + glm::vec3(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
 					unsigned int j = 0;
 					added = false;
 					std::vector<unsigned int> added_list;
@@ -252,12 +252,12 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, const BlockStore
 
 const glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)const 
 {
-	return worldPos - position;
+	return worldPos - position * (float) CHUNK_SIZE;
 }
 
 const glm::vec3 ChunkColumn::getWorldPosition(glm::vec3 relativePos) const
 {
-	return relativePos + position;
+	return relativePos + position * (float)CHUNK_SIZE;
 }
 
 // getters
@@ -277,20 +277,20 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool safe, World
 	glm::vec2 chunkPositionToLookAt = position;
 	if (relativePostion.x < 0) {
 		relativePostion.x += CHUNK_SIZE;
-		chunkPositionToLookAt.x -= CHUNK_SIZE;
+		chunkPositionToLookAt.x -= 1;
 	}
 	else if (relativePostion.x > CHUNK_SIZE - 1) {
 		relativePostion.x -= CHUNK_SIZE;
-		chunkPositionToLookAt.x += CHUNK_SIZE;
+		chunkPositionToLookAt.x += 1;
 	}
 
 	if (relativePostion.z < 0) {
 		relativePostion.z += CHUNK_SIZE;
-		chunkPositionToLookAt.y -= CHUNK_SIZE;
+		chunkPositionToLookAt.y -= 1;
 	}
 	else if (relativePostion.z > CHUNK_SIZE - 1) {
 		relativePostion.z -= CHUNK_SIZE;
-		chunkPositionToLookAt.y += CHUNK_SIZE;
+		chunkPositionToLookAt.y += 1;
 	}
 	if (worldMap.size() > 0) {
 		auto found = worldMap.find(chunkPositionToLookAt);

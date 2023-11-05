@@ -69,7 +69,6 @@ const std::vector<glm::vec2> World::centeredPositions(const glm::vec2& origin, i
 		int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
 		for (int y = -Y; y < Y + 1; y++) {
 			glm::vec2 pos(x, y);
-			pos *= CHUNK_SIZE;
 			pos += origin;
 			res.push_back(pos);
 		}
