@@ -1,13 +1,13 @@
 #include "ChunkColumn.h"
 #include <algorithm>
+#include <iostream>
 #include "../../../Helpers/Functions.h"
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"
-#include "../world_generation.h"
-#include "../../../Helpers/Functions.h"
-#include <iostream>
+#include "../World.h"
 
-ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData()
+
+ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
 {
 	// blocks.fill(Block::AIR);
 }
@@ -163,19 +163,15 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 		}
 		itt1++;
 	}
-	// has now removed all the faces needed to place the block
+
+	editedBlocks[worldPos] = block;
 	bufferData.push_back(toAdd);
 	buffer.realloc(bufferData.data(), bufferData.size());
 }
 
-void ChunkColumn::removeBlock(const glm::vec3& worldPos)
+void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 {
-	struct AddFaces {
-		glm::vec3 worldPos;
-		unsigned char face;
-	};
 	std::vector<AddFaces> toAdd;
-
 
 	const std::list<glm::vec3> offsets = {
 		glm::vec3(0, 0, 1),
@@ -193,6 +189,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos)
 		// needs to check the world map
 		AddFaces data{};
 		data.worldPos = worldPos + off;
+		data.offset = off;
 		data.face = i++;
 		if (data.face % 2 == 0) {
 			data.face += 1;
@@ -234,6 +231,37 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos)
 		itt1++;
 	}
 
+	std::vector<ChunkColumn*> neibours;
+	if (toAdd.size() > 0) {
+		for (const AddFaces& add : toAdd) {
+			if (outOfRange(add.worldPos - position * CHUNK_SIZE_F)) {
+				if (neibours.size()) {
+					neibours = world->getNeibours(position);
+				}
+				for (ChunkColumn* chunk : neibours) {
+					glm::vec2 newChunkPos = position + add.offset;
+					if (chunk->getPosition() == newChunkPos) {
+						chunk->addFace(add);
+					}
+				}
+			}
+			else {
+
+				// the reson why more faces are added then needed is beacuse it doesnt check to see if that blokcs had being broken before
+				const Block b = getBlock(add.worldPos);
+				if (b == Block::AIR) {
+					continue;
+				}
+				GeomData data;
+				data.worldPos_ = add.worldPos;
+				data.textureIndex_ = (unsigned char) b;
+				data.cubeType_ = 1 << add.face;
+				bufferData.push_back(data);
+			}
+		}
+	}
+	editedBlocks[worldPos] = Block::AIR;
+
 	buffer.realloc(bufferData.data(), bufferData.size());
 }
 
@@ -250,14 +278,49 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, const BlockStore
 	return blockStore.getBlock(pos);
 }
 
+const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
+	if (editedBlocks.find(worldPos) != editedBlocks.end()) {
+		return editedBlocks.at(worldPos);
+	}
+	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, seed);
+	return column[worldPos.y];
+}
+
 const glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)const 
 {
-	return worldPos - position * (float) CHUNK_SIZE;
+	return worldPos - position * CHUNK_SIZE_F;
 }
 
 const glm::vec3 ChunkColumn::getWorldPosition(glm::vec3 relativePos) const
 {
-	return relativePos + position * (float)CHUNK_SIZE;
+	return relativePos + position * CHUNK_SIZE_F;
+}
+
+
+void ChunkColumn::addFace(const AddFaces& add) {
+
+	for (GeomData& data : bufferData) {
+		if (data.worldPos_ == add.worldPos) {
+			data.cubeType_ |= 1 << add.face;
+			return;
+		}
+	}
+
+	GeomData data;
+	data.worldPos_ = add.worldPos;
+	data.cubeType_ = add.face;
+	glm::vec3 pos = data.worldPos_;
+	pos.x -= position.x;
+	pos.z -= position.y;
+	data.textureIndex_ = (unsigned char)getBlock(pos);
+
+	bufferData.push_back(data);
+	buffer.realloc(bufferData.data(), bufferData.size());
+}
+
+bool ChunkColumn::outOfRange(const glm::vec3& worldPos)
+{
+	return glm::any(glm::greaterThanEqual(worldPos, glm::vec3(CHUNK_SIZE_F, WORLD_HEIGHT, CHUNK_SIZE_F)) || glm::lessThan(worldPos, glm::vec3(0)));
 }
 
 // getters
@@ -267,7 +330,7 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool safe, World
 	const BlockStore& blockStore = worldMap[position];
 
 	if (glm::all(glm::greaterThanEqual(relativePostion, { 0, 0, 0 }))) {
-		if (glm::all(glm::lessThan(relativePostion, { CHUNK_SIZE, WORLD_HEIGHT, CHUNK_SIZE }))) {
+		if (glm::all(glm::lessThan(relativePostion, { CHUNK_SIZE_F, WORLD_HEIGHT, CHUNK_SIZE_F }))) {
 			return getBlock(pos, worldPos, blockStore);
 		}
 	}
@@ -276,20 +339,20 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool safe, World
 
 	glm::vec2 chunkPositionToLookAt = position;
 	if (relativePostion.x < 0) {
-		relativePostion.x += CHUNK_SIZE;
+		relativePostion.x += CHUNK_SIZE_F;
 		chunkPositionToLookAt.x -= 1;
 	}
-	else if (relativePostion.x > CHUNK_SIZE - 1) {
-		relativePostion.x -= CHUNK_SIZE;
+	else if (relativePostion.x > CHUNK_SIZE_F - 1) {
+		relativePostion.x -= CHUNK_SIZE_F;
 		chunkPositionToLookAt.x += 1;
 	}
 
 	if (relativePostion.z < 0) {
-		relativePostion.z += CHUNK_SIZE;
+		relativePostion.z += CHUNK_SIZE_F;
 		chunkPositionToLookAt.y -= 1;
 	}
-	else if (relativePostion.z > CHUNK_SIZE - 1) {
-		relativePostion.z -= CHUNK_SIZE;
+	else if (relativePostion.z > CHUNK_SIZE_F - 1) {
+		relativePostion.z -= CHUNK_SIZE_F;
 		chunkPositionToLookAt.y += 1;
 	}
 	if (worldMap.size() > 0) {

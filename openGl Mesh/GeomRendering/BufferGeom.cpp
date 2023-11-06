@@ -20,7 +20,7 @@ void BufferGeom::setUp(const GeomData* data, unsigned int size)
 	glGenVertexArrays(1, &VAO); // VAO
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GeomData), 0);
 
@@ -41,7 +41,7 @@ void BufferGeom::realloc(const GeomData* data, unsigned int size)
 {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	this->size_ = size;

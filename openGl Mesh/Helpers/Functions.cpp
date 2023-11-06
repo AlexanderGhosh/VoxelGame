@@ -7,6 +7,21 @@ void markSlot(unsigned char& val, const unsigned int slot)
 	val |= 1u << slot;
 }
 
+glm::vec3 argmax(const glm::vec3& a)
+{
+	glm::vec3 res(0);
+	float max = fmaxf(fmaxf(a.x, a.y), a.z);
+	for (unsigned char i = 0; i < 3; i++) {
+		res[i] = max == a[i] ? 1 : 0;
+	}
+	return res;
+}
+
+glm::vec3 argmax_abs(const glm::vec3& a)
+{
+	return argmax(glm::abs(a));
+}
+
 const float radians(const float d) {
 	return (d * PI) / 180.f;
 }
@@ -38,6 +53,20 @@ void reduceToMultiple(glm::ivec2& victim, const unsigned int multiple) {
 	while (victim.y % multiple != 0) {
 		victim.y -= 1;
 	}
+}
+
+glm::vec3 reduceToMultiple(const glm::vec3& victim)
+{
+	glm::ivec3 res = victim;
+	reduceToMultiple(res, CHUNK_SIZE);
+	return res;
+}
+
+glm::vec2 reduceToMultiple(const glm::vec2& victim)
+{
+	glm::ivec2 res = victim;
+	reduceToMultiple(res, CHUNK_SIZE);
+	return res;
 }
 
 int reduceToMultiple(float victim, const unsigned int multiple) {

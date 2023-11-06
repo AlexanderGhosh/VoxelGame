@@ -11,6 +11,7 @@ unsigned int GameConfig::FPSlock = 0;
 
 #pragma region Static Members
 Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
+glm::mat4 Game::projection(1);
 glm::vec3 Game::mouseData(0);
 std::array<bool, 1024> Game::keys = std::array<bool, 1024>();
 // Entity* Game::player = new Entity();
@@ -39,8 +40,8 @@ private:
 
 const glm::vec3 lightPos(100, 100, 100);
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(),
-projection(1), lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos) {
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), 
+lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos) {
 	Game::mainCamera = new Camera({ 0, 2, 0 });
 	Game::mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -244,6 +245,7 @@ void Game::showStuff() {
 
 	// 2.2 Transparent
 	oitFrameBuffer2.bind(); // render to the OIT framebuffer2
+	glClear(GL_COLOR_BUFFER_BIT);
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunci(0, GL_ONE, GL_ONE);
@@ -299,6 +301,23 @@ void Game::showStuff() {
 	
 	m = "View Direction: " + glm::to_string(mainCamera->GetFront());
 	showText(m, { 5, 825 }, 0.5f);
+
+	float zcoord = 0;
+	glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
+	glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
+	float z = (zcoord - 0.5f) * 2.0f;
+	glm::vec4 screenPos(0, 0, zcoord, 1); // the center of screen screen coords
+	screenPos = invPV * screenPos;
+	glm::vec3 hitPos = glm::vec3(screenPos) / screenPos.w;
+
+	glm::vec3 breakPos = round(hitPos + argmax_abs(mainCamera->GetFront()));
+	m = "Break Pos: " + glm::to_string(breakPos);
+	showText(m, { 5, 800 }, 0.5f);
+
+	glm::vec3 placePos = round(hitPos - argmax_abs(mainCamera->GetFront()));
+	m = "Place Pos: " + glm::to_string(placePos);
+	showText(m, { 5, 775 }, 0.5f);
+
 	// 
 	// m = "Controlling: Player";
 	// showText(m, { 5, 80 }, 0.5f);
@@ -339,6 +358,8 @@ void Game::showStuff() {
 	glBindVertexArray(0);
 	
 	screenQuad.unBind();
+
+	oitFrameBuffer2.bind();
 
 	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// opaue.bind();
@@ -386,11 +407,22 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 	if (key == GLFW_KEY_F3 && action == GLFW_RELEASE) {
 		GameConfig::showFPS = !GameConfig::showFPS;
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 1);
 	if (key == GLFW_KEY_1 && action == GLFW_RELEASE) {
-		world.placeBlock();
+		float zcoord = 0;
+		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
+		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
+		float z = (zcoord - 0.5f) * 2.0f;
+
+		world.breakBlock(z, invPV, mainCamera->GetFront());
 	}
 	if (key == GLFW_KEY_2 && action == GLFW_RELEASE) {
-		world.breakBlock();
+		float zcoord = 0;
+		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
+		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
+		float z = (zcoord - 0.5f) * 2.0f;
+
+		world.placeBlock(z, invPV, mainCamera->GetFront());
 	}
 }
 
@@ -412,13 +444,21 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 }
 
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		// Camera& cam = player->getCamera();
-		//Game::world.breakBlock(cam.GetPosition(), cam.GetFront());
-	}
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		// Camera& cam = player->getCamera();
-		//Game::world.placeBlock(cam.GetPosition(), cam.GetFront(), player->getInventory().getBlockHotbar(player->getInventory().getHotbarSelected()));
+		float zcoord = 0;
+		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
+		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
+		float z = (zcoord - 0.5f) * 2.0f;
+
+		world.breakBlock(z, invPV, mainCamera->GetFront());
+	}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		float zcoord = 0;
+		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
+		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
+		float z = (zcoord - 0.5f) * 2.0f;
+
+		world.placeBlock(z, invPV, mainCamera->GetFront());
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 		// Camera& cam = player->getCamera();

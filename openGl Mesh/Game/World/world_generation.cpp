@@ -49,30 +49,7 @@ void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, He
 			glm::vec2 worldPos = { x, y };
 			worldPos += chunkPos;
 			
-			float result = heightOfColumn(worldPos, seed);
-
-			float result_orig = result;
-
-			if (result < 2) {
-				encoded.push(Block::WATER, result + 1);
-				break;
-			}
-			if (result - 3 > 0) {
-				encoded.push(Block::STONE, result -= 3);
-			}
-			if (result_orig <= 20) {
-				encoded.push(Block::SAND, 3);
-				encoded.push(Block::WATER, 20 - result - 2);
-				continue;
-			}
-			if (result_orig < 23) {
-				encoded.push(Block::SAND, 3);
-				continue;
-			}
-			if (result - 2 > 0) {
-				encoded.push(Block::DIRT, 2);
-			}
-			encoded.push(Block::GRASS, 1);
+			encoded = getColumn(worldPos, seed);
 		}
 	}
 }
@@ -127,4 +104,26 @@ unsigned int world_generation::heightOfColumn(glm::vec2 worldPos, const unsigned
 		result = abs(result);
 	}
 	return result;
+}
+
+BlocksEncoded world_generation::getColumn(const glm::vec2& worldPos, unsigned int seed)
+{
+	BlocksEncoded encoded;
+	float height = heightOfColumn(worldPos, seed);
+
+	if (height - 3 > 0) {
+		encoded.push(Block::STONE, height -= 3);
+	}
+	if (height <= WATER_LEVEL) {
+		encoded.push(Block::SAND, 3);
+		encoded.push(Block::WATER, 20 - height - 2);
+	}
+	else if (height < WATER_LEVEL + 3) {
+		encoded.push(Block::SAND, 3);
+	}
+	else if (height - 2 > 0) {
+		encoded.push(Block::DIRT, 2);
+		encoded.push(Block::GRASS, 1);
+	}
+	return encoded;
 }

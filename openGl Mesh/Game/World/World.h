@@ -12,9 +12,10 @@ public:
 
 	void setUpDrawable();
 
-	void placeBlock();
-	void breakBlock();
+	void placeBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
+	void breakBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
 
+	const std::vector<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
 private:
 	unsigned int seed;
 	Chunks chunks;
@@ -24,4 +25,5 @@ private:
 	const std::vector<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	void getNewChunkPositions(bool flat);
 	void generateTerrain(const std::vector<glm::vec2>& chunkPositions);
+
 };

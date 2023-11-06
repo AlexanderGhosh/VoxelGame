@@ -10,6 +10,9 @@ enum class Block : unsigned char;
 
 void markSlot(unsigned char& val, const unsigned int slot);
 
+glm::vec3 argmax(const glm::vec3& a);
+glm::vec3 argmax_abs(const glm::vec3& a);
+
 const float radians(const float d);
 const float degrees(const float r);
 
@@ -17,6 +20,19 @@ const unsigned int columnIndex(const unsigned int x, const unsigned int z);
 
 void reduceToMultiple(glm::ivec3& victim, const unsigned int multiple);
 void reduceToMultiple(glm::ivec2& victim, const unsigned int multiple);
+
+/// <summary>
+/// Reduces each element of victim to a multiple of 16
+/// </summary>
+/// <returns></returns>
+glm::vec3 reduceToMultiple(const glm::vec3& victim);
+
+/// <summary>
+/// Reduces each element of victim to a multiple of 16
+/// </summary>
+/// <returns></returns>
+glm::vec2 reduceToMultiple(const glm::vec2& victim);
+
 int reduceToMultiple(float victim, const unsigned int multiple);
 const Texture_Names getTexture(const Block block);
 const Texture& getBlockTexture(const Block block);

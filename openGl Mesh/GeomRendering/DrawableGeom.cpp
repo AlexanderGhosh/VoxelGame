@@ -34,7 +34,7 @@ void DrawableGeom::render(Shader* shader) const
 void DrawableGeom::setUp(Chunks& chunks)
 {
 	data.clear();
-	for (ChunkColumn& chunk : chunks) {
+	for (auto& [pos, chunk] : chunks) {
 		data.emplace_back(chunk.getBufferPtr(), nullptr);
 	}
 }

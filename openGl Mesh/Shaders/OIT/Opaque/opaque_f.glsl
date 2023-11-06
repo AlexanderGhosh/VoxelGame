@@ -41,7 +41,7 @@ void main()
     vec3 color = frag.rgb + (rnd * 0.075);
 
 
-    vec3 lightColor = vec3(0.3);
+    vec3 lightColor = vec3(0.5);
     // ambient
     vec3 ambient = 0.3 * lightColor;
     // diffuse

@@ -28,8 +28,11 @@ constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int WANDER_RANGE = 15;
 constexpr unsigned int PARTS_PER_CHUNK = 16;
+constexpr unsigned unsigned int WATER_LEVEL = 20;
 
 constexpr unsigned int CHUNK_SIZE = 16;
+constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
+constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 
 constexpr float GRAVITY = 10;
 constexpr float PLAYER_SPEED = 5;
@@ -42,7 +45,7 @@ extern glm::vec3 LIGHTPOSITIONOrigin;
 
 enum class Block : unsigned char;
 
-using Chunks = std::vector<ChunkColumn>;
+using Chunks = std::unordered_map<glm::vec2, ChunkColumn>;
 using WorldMap = std::unordered_map<glm::vec2, BlockStore>;
 using Item = unsigned char;
 using HeightMap = std::array<BlocksEncoded, CHUNK_SIZE* CHUNK_SIZE>;

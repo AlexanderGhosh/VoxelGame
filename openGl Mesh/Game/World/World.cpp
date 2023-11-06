@@ -2,6 +2,8 @@
 #include <iostream>
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Timer.h"
+#include <gtx/string_cast.hpp>
+#include "../../Helpers/Functions.h"
 
 World::World() : chunks(), geomDrawable(), seed() {
 }
@@ -27,14 +29,43 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	chunks.reserve(chunkPositions.size());
 
 	for (const glm::vec2& pos : chunkPositions) {
-		chunks.emplace_back(pos, seed, worldMap);
+		ChunkColumn chunk(pos, seed, worldMap);
+		chunks.emplace(pos, chunk);
 	}
 
 	for (auto& chunk : chunks) {
-		chunk.populateBuffer(worldMap);
+		chunk.second.populateBuffer(worldMap);
 	}
 
 	worldMap.clear();
+}
+
+const std::vector<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
+{
+	std::vector<glm::vec2> offsets = {
+		glm::vec2(0, 1),
+		glm::vec2(-1, 0),
+		glm::vec2(1, 0),
+		glm::vec2(0, -1)
+	};
+	std::vector<ChunkColumn*> res;
+	res.reserve(4);
+	for (auto& [pos, chunk] : chunks) {
+		for (auto itt = offsets.begin(); itt != offsets.end();) {
+			const glm::vec2& delta = *itt;
+			const glm::vec2 cp = chunkPos + delta;
+			if (cp == pos) {
+				itt = offsets.erase(itt);
+				res.push_back(&chunk);
+			}
+			else {
+				itt++;
+			}
+		}
+	}
+
+
+	return res;
 }
 
 void World::render(Shader* shader) const {
@@ -46,20 +77,84 @@ void World::setUpDrawable()
 	geomDrawable.setUp(chunks);
 }
 
-void World::placeBlock()
+
+const std::list<glm::vec3> offsets = {
+	glm::vec3(0, 0, 1),
+	glm::vec3(0, 0, -1),
+
+	glm::vec3(-1, 0, 0),
+	glm::vec3(1, 0, 0),
+
+	glm::vec3(0, 1, 0),
+	glm::vec3(0, -1, 0),
+
+};
+
+void World::placeBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front)
 {
-	ChunkColumn& chunk = chunks[0];
-	const glm::vec2& chunkPos = chunk.getPosition();
-	glm::vec3 placePos(-36, 24, 2);
-	chunk.addBlock(placePos, Block::SAND);
+	glm::vec4 screenPos(0, 0, zCoord, 1); // the center of screen screen coords
+	screenPos = invPV * screenPos;
+	glm::vec3 hitPos = glm::vec3(screenPos) / screenPos.w;
+	
+	hitPos = floor((hitPos * 2.f) + 0.5f) * .5f;
+
+	glm::vec3 placePos(0);
+
+	glm::vec3 norm(0);
+	float dist = 0;
+	for (const glm::vec3& normal : offsets) {
+		float d = glm::dot(normal, front);
+		if (d < dist) {
+			dist = d;
+			norm = normal;
+		}
+	}
+	placePos = floor(hitPos + norm * .5f);
+
+	// std::cout << glm::to_string(placePos) << std::endl;
+
+	glm::vec3 chunkPos3 = reduceToMultiple(placePos);
+	glm::vec2 chunkPos(chunkPos3.x, chunkPos3.z);
+	chunkPos *= CHUNK_SIZE_INV;
+
+	std::cout << glm::to_string(chunkPos) << std::endl;
+	if (chunks.find(chunkPos) != chunks.end()) {
+		ChunkColumn& chunk = chunks.at(chunkPos);
+		chunk.addBlock(placePos, Block::SAND);
+	}
 }
 
-void World::breakBlock()
+void World::breakBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front)
 {
-	ChunkColumn& chunk = chunks[0];
-	const glm::vec2& chunkPos = chunk.getPosition();
-	glm::vec3 breakPos(-36, 23, 2);
-	chunk.removeBlock(breakPos);
+	glm::vec4 screenPos(0, 0, zCoord, 1); // the center of screen screen coords
+	screenPos = invPV * screenPos;
+	glm::vec3 hitPos = glm::vec3(screenPos) / screenPos.w;
+
+	hitPos = floor((hitPos * 2.f) + 0.5f) * .5f;
+
+	glm::vec3 breakPos(0);
+
+	glm::vec3 norm(0);
+	float dist = 0;
+	for (const glm::vec3& normal : offsets) {
+		float d = glm::dot(normal, front);
+		if (d < dist) {
+			dist = d;
+			norm = normal;
+		}
+	}
+	breakPos = floor(hitPos - norm * .5f);
+
+	std::cout << glm::to_string(breakPos) << std::endl;
+
+	glm::vec3 chunkPos3 = reduceToMultiple(breakPos);
+	glm::vec2 chunkPos(chunkPos3.x, chunkPos3.z);
+	chunkPos *= CHUNK_SIZE_INV;
+
+	if (chunks.find(chunkPos) != chunks.end()) {
+		ChunkColumn& chunk = chunks.at(chunkPos);
+		chunk.removeBlock(breakPos, this);
+	}
 }
 
 const std::vector<glm::vec2> World::centeredPositions(const glm::vec2& origin, int renderDist) const {

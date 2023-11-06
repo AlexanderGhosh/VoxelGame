@@ -51,6 +51,7 @@ public:
 	static Camera* mainCamera;
 	static glm::vec3 mouseData;
 	static std::array<bool, 1024> keys;
+	static glm::mat4 projection;
 private:
 	ShadowBox shadowBox;
 
@@ -67,7 +68,7 @@ private:
 	static UI_Renderer uiRenderer;
 	bool hasSkybox;
 	float lastFrameTime;
-	glm::mat4 projection, lightProjection;
+	glm::mat4 lightProjection;
 	unsigned int SBVAO,LSVAO, LSVBO;
 	std::map<char, Character> Letters;
 	unsigned int depthMap;
