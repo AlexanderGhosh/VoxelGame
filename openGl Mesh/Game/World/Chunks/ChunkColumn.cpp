@@ -8,11 +8,11 @@
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"
 #include "../World.h"
+#include "../../../Helpers/Timer.h"
 
 
 ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
 {
-	// blocks.fill(Block::AIR);
 }
 
 ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn()
@@ -20,6 +20,89 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	this->seed = seed;
 	position = pos;
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
+}
+
+void ChunkColumn::build(glm::vec2 pos, unsigned int seed, const std::vector<ChunkColumn*>& neibours)
+{
+	this->seed = seed;
+	position = pos;
+	Timer timer;
+	timer.start();
+	BlockStore bs(pos * CHUNK_SIZE_F, seed);
+	timer.end();
+	timer.showTime("Block Store", true);
+
+	timer.start();
+	populateBuffer(neibours, bs);
+	timer.end();
+	timer.showTime("Populate Buffer", true);
+}
+void ChunkColumn::populateBuffer(const std::vector<ChunkColumn*>& neibours, const BlockStore& blockStore) {
+	const std::list<glm::vec3> offsets = {
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, -1),
+
+		glm::vec3(-1, 0, 0),
+		glm::vec3(1, 0, 0),
+
+		glm::vec3(0, 1, 0),
+		glm::vec3(0, -1, 0),
+
+	};
+	GeomData data{};
+	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
+	for (int z = 0; z < CHUNK_SIZE; z++) {
+		for (int x = 0; x < CHUNK_SIZE; x++) {
+			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
+			int height = encodes.height();
+			unsigned int depth = 0;
+			for (int r = encodes.size() - 1; r >= 0; r--) {
+				const Block b1 = encodes.block(r);
+				const unsigned int count1 = encodes.count(r);
+
+				if (b1 == Block::AIR) {
+					height -= count1;
+					depth += count1;
+					continue;
+				}
+				const BlockDetails& blockDets1 = getDetails(b1);
+				data.textureIndex_ = (unsigned int)b1;
+				bool added = false;
+				for (unsigned int i = 0; i < count1; i++) {
+					glm::vec3 blockPos = glm::vec3(x, height - i, z);
+					data.setPos(blockPos);
+					unsigned int j = 0;
+					added = false;
+					std::vector<unsigned int> added_list;
+					for (const glm::vec3& off : offsets) {
+						const glm::vec3 p = blockPos + off + chunkWorldPos;
+						const Block& b2 = getBlock(p);/////////////////////
+						// const Block& b2 = getBlock(p, true, true, worldMap);
+
+						const BlockDetails& blockDets2 = getDetails(b2);
+
+						if (blockDets2.isTransparant && b1 != b2) {
+							markSlot(data.cubeType_, j);
+						}
+						j++;
+					}
+					if (data.cubeType_) {
+						bufferData.push_back(data);
+						added = true;
+						data.cubeType_ = 0;
+						added_list.clear();
+					}
+					else {
+						break;
+					}
+				}
+				height -= count1;
+				if (!added && !blockDets1.isTransparant) break;
+			}
+		}
+	}
+
+	buffer.setUp(bufferData.data(), bufferData.size());
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {
@@ -355,6 +438,24 @@ const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
 	}
 	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, seed);
 	return column[worldPos.y];
+}
+
+const Block ChunkColumn::getBlock(const glm::vec3& worldPos, const std::vector<ChunkColumn*>& neibours, const BlockStore& bs)
+{
+	if (outOfRange(worldPos)) {
+		const glm::vec3 local = toLocal(worldPos);
+		const glm::vec3 delta = sign(local - (CHUNK_SIZE_F - 1.f));
+		const glm::vec2 newChunkPos = position + glm::vec2(delta.x, delta.z);
+		for (ChunkColumn* chunk : neibours) {
+			if (chunk->getPosition() == newChunkPos) {
+				return chunk->getBlock(worldPos);
+			}
+		}
+	}
+	else {
+		return getBlock(worldPos, true, bs);
+	}
+	return Block::AIR;
 }
 
 const glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)const 

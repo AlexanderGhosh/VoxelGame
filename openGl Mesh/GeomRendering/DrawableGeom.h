@@ -15,6 +15,7 @@ public:
 	~DrawableGeom();
 	void render(Shader* shader) const;
 	void setUp(Chunks& chunks);
+	void add(ChunkColumn& chunks);
 
 private:
 	std::list<DrawData> data;

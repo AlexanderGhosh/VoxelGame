@@ -18,6 +18,7 @@ public:
 	const std::vector<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
 
 	void save() const;
+	void generateChunk(const glm::vec2& chunkPos);
 private:
 	unsigned int seed;
 	Chunks chunks;

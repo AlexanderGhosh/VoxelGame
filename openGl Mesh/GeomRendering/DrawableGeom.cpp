@@ -39,6 +39,12 @@ void DrawableGeom::setUp(Chunks& chunks)
 	}
 }
 
+void DrawableGeom::add(ChunkColumn& chunk)
+{
+	const glm::vec2& pos = chunk.getPosition();
+	data.emplace_back(chunk.getBufferPtr(), nullptr, glm::vec3(pos.x, 0, pos.y));
+}
+
 void DrawableGeom::draw(Shader* shader) const
 {
 	for (const DrawData& data : this->data) {

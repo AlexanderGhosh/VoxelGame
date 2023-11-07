@@ -47,6 +47,14 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	worldMap.clear();
 }
 
+void World::generateChunk(const glm::vec2& chunkPos)
+{
+	const auto neibours = getNeibours(chunkPos);
+	chunks[chunkPos] = ChunkColumn();
+	chunks[chunkPos].build(chunkPos, seed, neibours);
+	geomDrawable.add(chunks.at(chunkPos));
+}
+
 const std::vector<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
 {
 	std::vector<glm::vec2> offsets = {

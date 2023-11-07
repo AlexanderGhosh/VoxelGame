@@ -9,10 +9,12 @@ class ChunkColumn
 {
 public:
 	ChunkColumn();
-	ChunkColumn(const std::string& fileName);
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
 	// creators
+	// will build this chunk inplace
+	void build(glm::vec2 pos, unsigned int seed, const std::vector<ChunkColumn*>& neibours);
+	void populateBuffer(const std::vector<ChunkColumn*>& neibours, const BlockStore& blockStore);
 	void populateBuffer(WorldMap& worldMap);
 	const BufferGeom& getBuffer() const;
 	BufferGeom* getBufferPtr();
@@ -39,11 +41,12 @@ private:
 
 	const Block getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const;
 	/// <summary>
-	/// Gets the block from either the mesh or simplex noise
+	/// Gets the block from edited or simplex noise
 	/// </summary>
 	/// <param name="relativePos">ranges from (0-15)</param>
 	/// <returns>thhe found block</returns>
 	const Block getBlock(const glm::vec3& worldPos);
+	const Block getBlock(const glm::vec3& worldPos, const std::vector<ChunkColumn*>& neibours, const BlockStore& bs);
 
 	const Block getBlock(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const;
 	const glm::vec3 getRelativePosition(glm::vec3 worldPos) const;
