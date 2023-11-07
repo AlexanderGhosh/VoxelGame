@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <format>
 #include "../../../Helpers/Functions.h"
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"
@@ -281,16 +282,9 @@ const glm::vec2& ChunkColumn::getPosition() const
 
 void ChunkColumn::save() const
 {
-	// chunk pos
 	// seed
 	// size of chunk data 
 	// chunk data (will contain block edits built in)
-	union float_to_char
-	{
-		float a;
-		char b[4];
-		float_to_char(float a) :a(a) { }
-	};
 	union vec2_to_char
 	{
 		glm::vec2 a;
@@ -300,22 +294,51 @@ void ChunkColumn::save() const
 	union uint_to_char
 	{
 		unsigned int a;
-		char b[12];
+		char b[4];
 		uint_to_char(unsigned int a) :a(a) { }
 	};
-	std::ofstream fs("save_file.chunk", std::ios::out | std::ios::binary);
+	union GeomData_to_char
+	{
+		GeomData a;
+		char b[4];
+		GeomData_to_char(GeomData a) :a(a) { }
+	};
+	std::string name = std::format("Chunks/c.{}.{}.chunk", (int)position.x, (int)position.y);
+	std::ofstream fs(name, std::ios::out | std::ios::binary);
 
-	char* data = &(vec2_to_char(position).b)[0];
-	fs.write(data, 8);
-	data = &(uint_to_char(seed).b)[0];
+	char* data = &(uint_to_char(seed).b)[0];
 	fs.write(data, 4);
+
 	data = &(uint_to_char(bufferData.size()).b)[0];
 	fs.write(data, 4);
 
 	for (const GeomData& d : bufferData) {
-		
+		data = &(GeomData_to_char(d).b)[0];
+		fs.write(data, sizeof(GeomData));
 	}
 	fs.close();
+}
+
+void ChunkColumn::load(const glm::vec2& chunkPos)
+{
+	position = chunkPos;
+	std::string name = std::format("Chunks/c.{}.{}.chunk", (int)position.x, (int)position.y);
+	std::ifstream fs(name, std::ios::in | std::ios::binary);
+	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(fs), {});
+	unsigned int index = 0;
+	seed = *(reinterpret_cast<unsigned int*>(&buffer[index]));
+	index += 4;
+	unsigned int bufferDataSize = *(reinterpret_cast<unsigned int*>(&buffer[index]));
+	index += 4;
+
+	bufferData.reserve(bufferDataSize);
+
+	for (unsigned int i = index; i < buffer.size(); i += sizeof(GeomData)) {
+		GeomData* d = reinterpret_cast<GeomData*>(&buffer[i]);
+		bufferData.push_back(*d);
+	}
+
+	this->buffer.setUp(bufferData.data(), bufferData.size());
 }
 
 const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const

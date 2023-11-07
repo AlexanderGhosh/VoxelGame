@@ -16,6 +16,8 @@ public:
 	void breakBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
 
 	const std::vector<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
+
+	void save() const;
 private:
 	unsigned int seed;
 	Chunks chunks;

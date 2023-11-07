@@ -11,7 +11,6 @@ World::World(bool gen, bool terrain, unsigned int seed) : World() {
 	this->seed = seed;
 	if (!gen) return;
 	getNewChunkPositions(!terrain);
-
 }
 
 
@@ -27,6 +26,14 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	WorldMap worldMap;
 	worldMap.reserve(chunkPositions.size());
 	chunks.reserve(chunkPositions.size());
+
+	for (const glm::vec2& pos : chunkPositions) {
+		chunks.emplace(pos, ChunkColumn());
+		chunks.at(pos).load(pos);
+	}
+	worldMap.clear();
+	return;
+
 
 	for (const glm::vec2& pos : chunkPositions) {
 		ChunkColumn chunk(pos, seed, worldMap);
@@ -66,6 +73,13 @@ const std::vector<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
 
 
 	return res;
+}
+
+void World::save() const
+{
+	for (const auto& [pos, c] : chunks) {
+		c.save();
+	}
 }
 
 void World::render(Shader* shader) const {

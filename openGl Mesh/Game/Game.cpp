@@ -424,6 +424,10 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 
 		world.placeBlock(z, invPV, mainCamera->GetFront());
 	}
+	if (key == GLFW_KEY_H && action == GLFW_RELEASE) {
+		world.save();
+		std::cout << "Saved" << std::endl;
+	}
 }
 
 void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {

@@ -9,6 +9,7 @@ class ChunkColumn
 {
 public:
 	ChunkColumn();
+	ChunkColumn(const std::string& fileName);
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
 	// creators
@@ -22,6 +23,7 @@ public:
 	const glm::vec2& getPosition() const;
 
 	void save() const;
+	void load(const glm::vec2& chunkPos);
 private:
 	struct AddFaces {
 		glm::vec3 worldPos;
