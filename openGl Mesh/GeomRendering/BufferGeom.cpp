@@ -15,6 +15,7 @@ BufferGeom::~BufferGeom()
 
 void BufferGeom::setUp(const GeomData* data, unsigned int size)
 {
+	auto d = data->getPos();
 	cleanUp();
 	glGenBuffers(1, &VBO); // VBO
 	glGenVertexArrays(1, &VAO); // VAO
@@ -22,15 +23,9 @@ void BufferGeom::setUp(const GeomData* data, unsigned int size)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GeomData), 0);
-
-	glVertexAttribIPointer(1, 1, GL_UNSIGNED_BYTE, sizeof(GeomData), (void*)offsetof(GeomData, cubeType_));
-
-	glVertexAttribIPointer(2, 1, GL_UNSIGNED_BYTE, sizeof(GeomData), (void*)offsetof(GeomData, textureIndex_));
+	glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(GeomData), 0);
 
 	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
 

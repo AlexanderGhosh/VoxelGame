@@ -18,6 +18,6 @@ public:
 
 private:
 	std::list<DrawData> data;
-	void draw() const;
+	void draw(Shader* shader) const;
 };
 

@@ -2,11 +2,31 @@
 #include <glm.hpp>
 
 struct GeomData {
-	glm::vec3 worldPos_;
-	// represetns which faces are to be rendered
+	unsigned char xz;
+	unsigned char y;
 	unsigned char cubeType_;
 	unsigned char textureIndex_;
 
-	GeomData() : worldPos_(), cubeType_(), textureIndex_() { }
+
+	// represetns which faces are to be rendered
+
+	GeomData() : xz(), y(), cubeType_(), textureIndex_() { }
+
+	void setPos(const glm::vec3& pos) {
+		assert(glm::all(glm::greaterThanEqual(pos, glm::vec3(0))));
+		unsigned int x = pos.x;
+		unsigned int y = pos.y;
+		unsigned int z = pos.z;
+		xz = x << 4;
+		xz |= z;
+		this->y = y;
+	}
+	glm::vec3 getPos() const {
+		glm::vec3 res(0);
+		res.x = xz >> 4;
+		res.z = xz & 0xf;
+		res.y = y;
+		return res;
+	}
 };
 

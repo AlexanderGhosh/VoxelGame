@@ -20,6 +20,8 @@ public:
 	void removeBlock(const glm::vec3& worldPos, World* world);
 
 	const glm::vec2& getPosition() const;
+
+	void save() const;
 private:
 	struct AddFaces {
 		glm::vec3 worldPos;
@@ -48,4 +50,7 @@ private:
 	void addFace(const AddFaces& data);
 
 	static bool outOfRange(const glm::vec3& worldPos);
+
+	glm::vec3 getWorldPos() const;
+	glm::vec3 toLocal(const glm::vec3& p) const;
 };

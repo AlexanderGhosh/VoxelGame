@@ -24,9 +24,9 @@ void DrawableGeom::render(Shader* shader) const
 		shader->bind();
 	}
 
-	bool b8 = shader->setValue("voxelSize", VOXEL_SZIE);
+	shader->setValue("voxelSize", VOXEL_SZIE);
 
-	draw();
+	draw(shader);
 
 	shader->unBind();
 }
@@ -35,24 +35,24 @@ void DrawableGeom::setUp(Chunks& chunks)
 {
 	data.clear();
 	for (auto& [pos, chunk] : chunks) {
-		data.emplace_back(chunk.getBufferPtr(), nullptr);
+		data.emplace_back(chunk.getBufferPtr(), nullptr, glm::vec3(pos.x, 0, pos.y));
 	}
 }
 
-void DrawableGeom::draw() const
+void DrawableGeom::draw(Shader* shader) const
 {
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (const DrawData& data : this->data) {
 		BufferGeom* buffer = data.buffer;
 		Texture* tex = data.texture;
 		if (tex) {
 			tex->bind();
 		}
+		shader->setValue("chunkPosition", data.drawOrigin * CHUNK_SIZE_F);
+
 
 		buffer->bind();
 		glDrawArrays(GL_POINTS, 0, buffer->size());
 		buffer->unbind();
 		if (tex) tex->unBind();
 	}
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
