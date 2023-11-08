@@ -13,18 +13,19 @@
 
 #include "Helpers/BlockDetails.h"
 
+#include "EntityComponent/Entity.h"
+#include "EntityComponent/Mangers/EntityManager.h"
+#include "EntityComponent/Mangers/ComponentManager.h"
+#include <gtx/string_cast.hpp>
+
 glm::ivec2 DIM(1280, 720);
 
 GLFWwindow* createWindow();
-void createBlocks();
+void createBlockDetails();
 // namespace fs = std::experimental::filesystem;
 int main() {
 	GLFWwindow* window = createWindow();
-	int c = 0;
-	/*for (auto& face : FACES) {
-		face->createBuffers();
-		face->type = (FACES_NAMES)(FRONT + c++);
-	}*/
+
 	for (auto& tex : TEXTURES) {
 		tex.load3D(tex.getName());
 	}
@@ -34,22 +35,38 @@ int main() {
 	for (auto& shader : SHADERS) {
 		shader.setUp();
 	}
-	createBlocks();
+	createBlockDetails();
+
+	// ENTITY COMPONENT SYSTEMS
+	ComponentManager& componentManager = ComponentManager::getInstance();
+	EntityManager& entityManager = EntityManager::getInstance();
+	Entity& player = entityManager.createEntity();
+
+	Transform& playerTransform = player.getComponent<Transform>(0);
+
+	std::cout << glm::to_string(playerTransform.position) << std::endl;
+	playerTransform.position = glm::vec3(0);
+	std::cout << glm::to_string(playerTransform.position) << std::endl;
+	player = entityManager.getEntity(0);
+	playerTransform = player.getComponent<Transform>(0);
+	std::cout << glm::to_string(playerTransform.position) << std::endl;
+
 
 	Game game = Game(true, true, DIM);
-	GameConfig::showFPS = 1;
+	GameConfig::showFPS = true;
+
 	game.setWindow(window);
-	game.generateWorld();				 // angle, screen ratio,                    near, far
+	game.generateWorld();
 
 	glm::mat4 projection = glm::perspective(FOV, ASPECT_RATIO, NEAR_PLANE, FAR_PLANE);
 	game.doLoop(projection);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
-	return EXIT_SUCCESS;
+	return 0;
 }
 
-void createBlocks() {
+void createBlockDetails() {
 	BLOCK_DETAILS.resize((size_t) Block::SIZE);
 	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
 		Block block = (Block) i;
@@ -64,6 +81,7 @@ void createBlocks() {
 		}
 	}
 }
+
 GLFWwindow* createWindow() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

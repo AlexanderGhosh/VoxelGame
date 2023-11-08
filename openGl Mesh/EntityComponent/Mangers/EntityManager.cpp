@@ -13,7 +13,7 @@ Entity& EntityManager::createEntity(bool hasTransform)
 	_entities.emplace_back(_numEntitysCreated++);
 	if (hasTransform) {
 		ComponentManager& manager = ComponentManager::getInstance();
-		Transform tranform = manager.createComponent<Transform>();
+		Transform& tranform = manager.createComponent<Transform>();
 		_entities.back().addComponent(tranform);
 	}
 	return _entities.back();
@@ -36,4 +36,8 @@ Entity& EntityManager::getEntity(unsigned int id)
 const Entity& EntityManager::getEntity(unsigned int id) const
 {
 	return _entities[id];
+}
+
+void EntityManager::destroy()
+{
 }

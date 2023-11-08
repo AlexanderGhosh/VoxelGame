@@ -1,5 +1,5 @@
 #pragma once
-template<typename T>
+template<class T>
 class Manager {
 protected:
 	static T _instance;
@@ -16,17 +16,17 @@ public:
 
 
 template<typename T>
-T Manager<T>::_instance = {};
+T Manager<T>::_instance;
 
-template<typename T>
+template<class T>
 bool Manager<T>::_initalised = false;
 
-template<typename T>
+template<class T>
 inline Manager<T>::Manager()
 {
 }
 
-template<typename T>
+template<class T>
 template<typename ...Args>
 inline void Manager<T>::createInstance(Args ...args)
 {
@@ -34,7 +34,7 @@ inline void Manager<T>::createInstance(Args ...args)
 	_initalised = true;
 }
 
-template<typename T>
+template<class T>
 template<typename ...Args>
 inline T& Manager<T>::getInstance(Args ...args)
 {

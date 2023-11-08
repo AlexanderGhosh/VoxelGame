@@ -6,7 +6,6 @@ class Entity;
 
 class EntityManager : public Manager<EntityManager> {
 	friend class Manager;
-	friend class Manager;
 private:
 	std::vector<Entity> _entities;
 	unsigned int _numEntitysCreated; // used for the entity ids
@@ -17,4 +16,5 @@ public:
 
 	Entity& getEntity(unsigned int id);
 	const Entity& getEntity(unsigned int id) const;
+	void destroy();
 };

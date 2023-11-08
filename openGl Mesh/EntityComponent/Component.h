@@ -1,7 +1,7 @@
 #pragma once
 
 class Component {
-private:
+protected:
 	unsigned int _id;
 public:
 	Component();
