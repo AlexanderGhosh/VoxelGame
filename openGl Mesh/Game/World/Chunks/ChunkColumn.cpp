@@ -117,6 +117,9 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 		glm::vec3(0, -1, 0),
 
 	};
+
+	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
+
 	const BlockStore& blockStore = worldMap[position];
 	GeomData data{};
 	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
@@ -127,15 +130,15 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 			unsigned int depth = 0;
 			for (int r = encodes.size() - 1; r >= 0; r--) {
 				const Block b1 = encodes.block(r);
+
 				const unsigned int count1 = encodes.count(r);
 
+				// prob never the case due to lack of caves
 				if (b1 == Block::AIR) {
 					height -= count1;
 					depth += count1;
 					continue;
 				}
-				const BlockDetails& blockDets1 = getDetails(b1);
-				data.textureIndex_ = (unsigned int)b1;
 				bool added = false;
 				for (unsigned int i = 0; i < count1; i++) {
 					glm::vec3 blockPos = glm::vec3(x, height - i, z);
@@ -145,7 +148,15 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 					std::vector<unsigned int> added_list;
 					for (const glm::vec3& off : offsets) {
 						const glm::vec3 p = blockPos + off + chunkWorldPos;
-						const Block& b2 = getBlock(p, true, true, worldMap);
+
+						Block b2 = Block::ERROR;
+						if (exploredBlocksCache.find(p) != exploredBlocksCache.end()) {
+							b2 = exploredBlocksCache.at(p);
+						}
+						else {
+							b2 = getBlock(p, true, true, worldMap);
+							exploredBlocksCache.emplace(p, b2);
+						}
 
 						const BlockDetails& blockDets2 = getDetails(b2);
 
@@ -155,6 +166,7 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 						j++;
 					}
 					if (data.cubeType_) {
+						data.textureIndex_ = (unsigned char) b1;
 						bufferData.push_back(data);
 						added = true;
 						data.cubeType_ = 0;
@@ -165,7 +177,9 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 					}
 				}
 				height -= count1;
-				if (!added && !blockDets1.isTransparant) break;
+				const BlockDetails& blockDets1 = getDetails(b1);
+				if (!added && !blockDets1.isTransparant) 
+					break;
 			}
 		}
 	}
