@@ -267,6 +267,7 @@ void Game::showStuff() {
 	// 2.3 Composite
 	glDisable(GL_CULL_FACE);
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer
+	showSkybox();
 	glDepthFunc(GL_ALWAYS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -285,7 +286,6 @@ void Game::showStuff() {
 	glBindVertexArray(0);
 	composite.unBind();
 
-	showSkybox();
 
 	// 3. render the GUI
 	guiFrameBuffer.bind(); // use the GUI framebuffer
@@ -359,7 +359,6 @@ void Game::showStuff() {
 	
 	screenQuad.unBind();
 
-	oitFrameBuffer2.bind();
 
 	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// opaue.bind();
