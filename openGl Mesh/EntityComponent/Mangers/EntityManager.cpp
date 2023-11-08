@@ -8,6 +8,48 @@ EntityManager::EntityManager() : Manager<EntityManager>(), _entities(), _numEnti
 {
 }
 
+void EntityManager::awakeEvent()
+{
+	for (Entity& entity : _entities) {
+		entity.awake();
+	}
+}
+
+void EntityManager::startEvent()
+{
+	for (Entity& entity : _entities) {
+		entity.start();
+	}
+}
+
+void EntityManager::updateEvent()
+{
+	for (Entity& entity : _entities) {
+		entity.update();
+	}
+}
+
+void EntityManager::fixedUpdateEvent()
+{
+	for (Entity& entity : _entities) {
+		entity.fixedUpdate();
+	}
+}
+
+void EntityManager::renderEvent()
+{
+	for (Entity& entity : _entities) {
+		entity.render();
+	}
+}
+
+void EntityManager::destroyEvent()
+{
+	for (Entity& entity : _entities) {
+		entity.destroy(); 
+	}
+}
+
 Entity& EntityManager::createEntity()
 {
 	_entities.emplace_back(_numEntitysCreated++);
@@ -17,9 +59,10 @@ Entity& EntityManager::createEntity()
 void EntityManager::removeEntity(unsigned int id)
 {
 	Entity& entity = getEntity(id);
-	for (auto& componentId : entity._componentIds)
+	ComponentManager& manager = ComponentManager::getInstance();
+	for (auto& component : entity._components)
 	{
-		ComponentManager::getInstance().removeComponent(id);
+		manager.removeComponent(component->getId());
 	}
 }
 

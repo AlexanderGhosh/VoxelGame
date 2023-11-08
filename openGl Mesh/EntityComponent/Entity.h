@@ -9,18 +9,24 @@ class Entity {
 	friend class EntityManager;
 private:
 	unsigned int _id;
-	std::list<unsigned int> _componentIds;
+	std::list<Component*> _components;
 public:
 	Entity();
 	Entity(unsigned int id);
 
 	void addComponent(Component& component);
 	void addComponent(Component* component);
-
-	Component* getComponent(unsigned int index);
 	
 	template<class T>
 	T* getComponent();
+
+
+	void awake();
+	void start();
+	void update();
+	void fixedUpdate();
+	void render();
+	void destroy();
 };
 
 template<class T>
@@ -28,8 +34,7 @@ inline T* Entity::getComponent()
 {
 	ComponentManager& manager = ComponentManager::getInstance();
 
-	for (unsigned int id : _componentIds) {
-		Component* base = manager.getComponent(id);
+	for (Component* base : _components) {
 		T* component = reinterpret_cast<T*>(base);
 		if (component) {
 			return component;

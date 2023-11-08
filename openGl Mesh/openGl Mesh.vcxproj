@@ -165,6 +165,7 @@
     <ClCompile Include="EntityComponent\Entity.cpp" />
     <ClCompile Include="EntityComponent\Mangers\ComponentManager.cpp" />
     <ClCompile Include="EntityComponent\Mangers\EntityManager.cpp" />
+    <ClCompile Include="EventsSystem\Event.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GeomRendering\DrawableGeom.cpp" />
     <ClCompile Include="GeomRendering\BufferGeom.cpp" />
@@ -218,7 +219,10 @@
     <ClInclude Include="EntityComponent\Component.h" />
     <ClInclude Include="EntityComponent\Entity.h" />
     <ClInclude Include="EntityComponent\Mangers\EntityManager.h" />
+    <ClInclude Include="EventsSystem\Event.h" />
+    <ClInclude Include="EventsSystem\EventCallback.h" />
     <ClInclude Include="EntityComponent\Mangers\Manager.h" />
+    <ClInclude Include="EventsSystem\IEventCallback.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GeomRendering\DrawableGeom.h" />
     <ClInclude Include="GeomRendering\BufferGeom.h" />

@@ -102,6 +102,9 @@
     <ClCompile Include="EntityComponent\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EventsSystem\Event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -262,6 +265,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EntityComponent\ComponentTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsSystem\EventCallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsSystem\Event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsSystem\IEventCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
