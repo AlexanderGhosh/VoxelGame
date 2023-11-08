@@ -41,15 +41,8 @@ int main() {
 	ComponentManager& componentManager = ComponentManager::getInstance();
 	EntityManager& entityManager = EntityManager::getInstance();
 	Entity& player = entityManager.createEntity();
-
-	Transform& playerTransform = player.getComponent<Transform>(0);
-
-	std::cout << glm::to_string(playerTransform.position) << std::endl;
-	playerTransform.position = glm::vec3(0);
-	std::cout << glm::to_string(playerTransform.position) << std::endl;
-	player = entityManager.getEntity(0);
-	playerTransform = player.getComponent<Transform>(0);
-	std::cout << glm::to_string(playerTransform.position) << std::endl;
+	Transform playerTransform;
+	player.addComponent(playerTransform);
 
 
 	Game game = Game(true, true, DIM);
@@ -63,6 +56,8 @@ int main() {
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
+	ComponentManager::getInstance().destroy();
+	EntityManager::getInstance().destroy();
 	return 0;
 }
 

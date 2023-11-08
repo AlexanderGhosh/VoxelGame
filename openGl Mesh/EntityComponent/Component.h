@@ -1,11 +1,13 @@
 #pragma once
 
+class ComponentManager;
+
 class Component {
+	friend class ComponentManager;
 protected:
 	unsigned int _id;
 public:
 	Component();
-	Component(unsigned int id);
 
 	unsigned int getId() const;
 

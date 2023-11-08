@@ -13,21 +13,27 @@ private:
 public:
 	Entity();
 	Entity(unsigned int id);
-	template<typename T>
-	void addComponent(T component);
-	template<typename T>
-	T& getComponent(unsigned int index);
+
+	void addComponent(Component& component);
+	void addComponent(Component* component);
+
+	Component* getComponent(unsigned int index);
+	
+	template<class T>
+	T* getComponent();
 };
 
-template<typename T>
-inline void Entity::addComponent(T component)
-{
-	_componentIds.push_back(component.getId());
-}
-
-template<typename T>
-inline T& Entity::getComponent(unsigned int index)
+template<class T>
+inline T* Entity::getComponent()
 {
 	ComponentManager& manager = ComponentManager::getInstance();
-	return (T&)manager.getComponent<T>(*(_componentIds.begin()++));
+
+	for (unsigned int id : _componentIds) {
+		Component* base = manager.getComponent(id);
+		T* component = reinterpret_cast<T*>(base);
+		if (component) {
+			return component;
+		}
+	}
+	return nullptr;
 }

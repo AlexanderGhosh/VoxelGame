@@ -1,20 +1,41 @@
 #include "ComponentManager.h"
 #include "../Component.h"
 
-ComponentManager::ComponentManager() : _components(), _numComponentsCreated()
+ComponentManager::ComponentManager() : Manager<ComponentManager>(), _components(), _numComponentsCreated()
 {
+}
+
+void ComponentManager::addComponent(Component& component)
+{
+	_components.push_back(&component);
+	component._id = _numComponentsCreated++;
+}
+
+void ComponentManager::addComponent(Component* component)
+{
+	_components.push_back(component);
+	component->_id = _numComponentsCreated++;
+}
+
+Component* ComponentManager::getComponent(unsigned int id)
+{
+	return _components[id];
 }
 
 void ComponentManager::removeComponent(unsigned int id)
 {
 	auto itt = _components.begin();
 	std::advance(itt, id);
-	Component component = getComponent<Component>(id);
-	component.destroy();
+	Component* component = getComponent(id);
+	component->destroy();
 
 	_components.erase(itt);
 }
 
 void ComponentManager::destroy()
 {
+	for (Component* component : _components) {
+		component->destroy();
+	}
+	_components.clear();
 }

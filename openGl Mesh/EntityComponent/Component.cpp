@@ -1,12 +1,10 @@
 #include "Component.h"
 #include "ComponentTypes.h"
+#include "Mangers/ComponentManager.h"
 
 Component::Component() : _id()
 {
-}
-
-Component::Component(unsigned int id) : _id(id)
-{
+	ComponentManager::getInstance().addComponent(this);
 }
 
 unsigned int Component::getId() const

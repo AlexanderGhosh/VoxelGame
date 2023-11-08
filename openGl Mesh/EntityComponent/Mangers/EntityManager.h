@@ -11,7 +11,7 @@ private:
 	unsigned int _numEntitysCreated; // used for the entity ids
 	EntityManager();
 public:
-	Entity& createEntity(bool hasTransform = true);
+	Entity& createEntity();
 	void removeEntity(unsigned int id);
 
 	Entity& getEntity(unsigned int id);
