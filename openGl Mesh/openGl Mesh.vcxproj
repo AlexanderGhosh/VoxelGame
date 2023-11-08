@@ -162,6 +162,7 @@
     <ClCompile Include="BlockStore.cpp" />
     <ClCompile Include="EntityComponent\Component.cpp" />
     <ClCompile Include="EntityComponent\Components\Transform.cpp" />
+    <ClCompile Include="EntityComponent\Entity.cpp" />
     <ClCompile Include="EntityComponent\Mangers\ComponentManager.cpp" />
     <ClCompile Include="EntityComponent\Mangers\EntityManager.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />

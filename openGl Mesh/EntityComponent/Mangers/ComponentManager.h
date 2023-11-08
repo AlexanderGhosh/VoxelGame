@@ -7,6 +7,7 @@ class ComponentManager : public Manager<ComponentManager>
 {
 	friend class Manager;
 private:
+	std::vector<unsigned char> rawData;
 	std::vector<Component> _components;
 	unsigned int _numComponentsCreated; // used for the components ids
 	ComponentManager();
@@ -26,7 +27,7 @@ inline T& ComponentManager::createComponent(Args ...args)
 {
 	_components.emplace_back(_numComponentsCreated++, args...);
 	
-	return (T)_components.back();
+	return (T&)_components.back();
 }
 
 template<typename T>

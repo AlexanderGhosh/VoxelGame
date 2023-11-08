@@ -16,6 +16,7 @@ Entity& EntityManager::createEntity(bool hasTransform)
 		Transform tranform = manager.createComponent<Transform>();
 		_entities.back().addComponent(tranform);
 	}
+	return _entities.back();
 }
 
 void EntityManager::removeEntity(unsigned int id)

@@ -16,6 +16,12 @@ public:
 
 
 template<typename T>
+T Manager<T>::_instance = {};
+
+template<typename T>
+bool Manager<T>::_initalised = false;
+
+template<typename T>
 inline Manager<T>::Manager()
 {
 }
