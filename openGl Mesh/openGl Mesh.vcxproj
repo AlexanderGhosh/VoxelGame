@@ -160,6 +160,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
     <ClCompile Include="BlockStore.cpp" />
+    <ClCompile Include="EntityComponent\Component.cpp" />
+    <ClCompile Include="EntityComponent\Components\Transform.cpp" />
+    <ClCompile Include="EntityComponent\Mangers\ComponentManager.cpp" />
+    <ClCompile Include="EntityComponent\Mangers\EntityManager.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GeomRendering\DrawableGeom.cpp" />
     <ClCompile Include="GeomRendering\BufferGeom.cpp" />
@@ -207,6 +211,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlockStore.h" />
+    <ClInclude Include="EntityComponent\Components\Transform.h" />
+    <ClInclude Include="EntityComponent\ComponentTypes.h" />
+    <ClInclude Include="EntityComponent\Mangers\ComponentManager.h" />
+    <ClInclude Include="EntityComponent\Component.h" />
+    <ClInclude Include="EntityComponent\Entity.h" />
+    <ClInclude Include="EntityComponent\Mangers\EntityManager.h" />
+    <ClInclude Include="EntityComponent\Mangers\Manager.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GeomRendering\DrawableGeom.h" />
     <ClInclude Include="GeomRendering\BufferGeom.h" />
