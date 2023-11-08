@@ -27,12 +27,12 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	worldMap.reserve(chunkPositions.size());
 	chunks.reserve(chunkPositions.size());
 
-	for (const glm::vec2& pos : chunkPositions) {
-		chunks.emplace(pos, ChunkColumn());
-		chunks.at(pos).load(pos);
-	}
-	worldMap.clear();
-	return;
+	// for (const glm::vec2& pos : chunkPositions) {
+	// 	chunks.emplace(pos, ChunkColumn());
+	// 	chunks.at(pos).load(pos);
+	// }
+	// worldMap.clear();
+	// return;
 
 
 	for (const glm::vec2& pos : chunkPositions) {
