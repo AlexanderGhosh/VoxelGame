@@ -14,8 +14,9 @@ public:
 	// creators
 	// will build this chunk inplace
 	void build(glm::vec2 pos, unsigned int seed, const std::vector<ChunkColumn*>& neibours);
-	void populateBuffer(const std::vector<ChunkColumn*>& neibours, const BlockStore& blockStore);
+	void populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
 	void populateBuffer(WorldMap& worldMap);
+
 	const BufferGeom& getBuffer() const;
 	BufferGeom* getBufferPtr();
 
@@ -54,7 +55,7 @@ private:
 
 	void addFace(const AddFaces& data);
 
-	static bool outOfRange(const glm::vec3& worldPos);
+	static bool outOfRange(const glm::vec3& localPos);
 
 	glm::vec3 getWorldPos() const;
 	glm::vec3 toLocal(const glm::vec3& p) const;

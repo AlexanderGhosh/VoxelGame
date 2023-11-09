@@ -26,6 +26,7 @@ const Block BlockStore::getBlock(glm::vec3 relativePos) const
 	glm::vec2 hPos(relativePos.x, relativePos.z);
 	if (glm::all(glm::lessThan(hPos, glm::vec2(CHUNK_SIZE)) && glm::greaterThanEqual(hPos, { 0, 0 }))) {
 		encodes = heightMap[columnIndex(hPos.x, hPos.y)];
+		return encodes[relativePos.y];
 	}
-	return encodes[relativePos.y];
+	return Block::ERROR;
 }

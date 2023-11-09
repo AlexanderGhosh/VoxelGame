@@ -15,17 +15,17 @@ void Timer::end() {
 	stop();
 }
 
-unsigned long Timer::getTime()
+long long Timer::getTime()
 {
-	return std::chrono::duration_cast<std::chrono::microseconds>(stop_ - start_).count();
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(stop_ - start_).count();
 }
 
 void Timer::showTime(std::string name, bool inFrames)
 {
 	std::string unit = " secconds";
-	float time = (float)getTime() / 1000000.0f;
+	float time = (float)getTime() / 1e9;
 	if (inFrames) {
-		time /= (1.0f / 60.0f);
+		time *= 60.f;
 		unit = " frames";
 	}
 	std::cout << "Timer " + name + ": " + std::to_string(time) + unit << std::endl;

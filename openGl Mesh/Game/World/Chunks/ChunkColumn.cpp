@@ -32,12 +32,27 @@ void ChunkColumn::build(glm::vec2 pos, unsigned int seed, const std::vector<Chun
 	timer.end();
 	timer.showTime("Block Store", true);
 
+	std::list<ChunkColumn*> n(neibours.begin(), neibours.end());
 	timer.start();
-	populateBuffer(neibours, bs);
+	populateBuffer(n, bs);
 	timer.end();
-	timer.showTime("Populate Buffer", true);
+	timer.showTime("Populate   ", true);
 }
-void ChunkColumn::populateBuffer(const std::vector<ChunkColumn*>& neibours, const BlockStore& blockStore) {
+
+void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
+	auto getBlockNeibour = [&](glm::vec3 localPos, glm::vec3 offset) {
+		if (outOfRange(localPos)) {
+			glm::vec2 newChunkPos = position + glm::vec2(offset.x, offset.z);
+			glm::vec3 newLocalPos;
+			for (ChunkColumn* chunk : neibours) {
+				if (chunk->getPosition() == newChunkPos) {
+					return chunk->getBlock(newLocalPos);
+				}
+			}
+		}
+		return blockStore.getBlock(localPos);
+	};
+	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
 	const std::list<glm::vec3> offsets = {
 		glm::vec3(0, 0, 1),
 		glm::vec3(0, 0, -1),
@@ -49,35 +64,55 @@ void ChunkColumn::populateBuffer(const std::vector<ChunkColumn*>& neibours, cons
 		glm::vec3(0, -1, 0),
 
 	};
+	bufferData.reserve(CHUNK_SIZE * CHUNK_SIZE);
+
 	GeomData data{};
 	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
 			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
+
 			int height = encodes.height();
-			unsigned int depth = 0;
 			for (int r = encodes.size() - 1; r >= 0; r--) {
 				const Block b1 = encodes.block(r);
 				const unsigned int count1 = encodes.count(r);
 
 				if (b1 == Block::AIR) {
 					height -= count1;
-					depth += count1;
 					continue;
 				}
+
 				const BlockDetails& blockDets1 = getDetails(b1);
 				data.textureIndex_ = (unsigned int)b1;
 				bool added = false;
 				for (unsigned int i = 0; i < count1; i++) {
-					glm::vec3 blockPos = glm::vec3(x, height - i, z);
-					data.setPos(blockPos);
+					glm::vec3 currentLocalPos = glm::vec3(x, height - i, z);
+					data.setPos(currentLocalPos);
 					unsigned int j = 0;
 					added = false;
 					std::vector<unsigned int> added_list;
 					for (const glm::vec3& off : offsets) {
-						const glm::vec3 p = blockPos + off + chunkWorldPos;
-						const Block& b2 = getBlock(p);/////////////////////
-						// const Block& b2 = getBlock(p, true, true, worldMap);
+						const glm::vec3 p = currentLocalPos + off + chunkWorldPos;
+						Block b2 = Block::ERROR;
+
+						if (exploredBlocksCache.find(p) != exploredBlocksCache.end()) {
+							b2 = exploredBlocksCache.at(p);
+						}
+						else {
+							glm::vec3 newLocalPosition = currentLocalPos + off;
+							b2 = blockStore.getBlock(newLocalPosition);
+							if (b2 == Block::ERROR) {
+								glm::vec2 newChunkPos = position + glm::vec2(off.x, off.z);
+								glm::vec3 newLocalPos = newLocalPosition - glm::sign(newLocalPosition) * CHUNK_SIZE_F;
+								for (ChunkColumn* chunk : neibours) {
+									if (chunk->getPosition() == newChunkPos) {
+										b2 = chunk->getBlock(newLocalPos);
+										break;
+									}
+								}
+							}
+							exploredBlocksCache.emplace(p, b2);
+						}
 
 						const BlockDetails& blockDets2 = getDetails(b2);
 
@@ -101,7 +136,7 @@ void ChunkColumn::populateBuffer(const std::vector<ChunkColumn*>& neibours, cons
 			}
 		}
 	}
-
+	bufferData.shrink_to_fit();
 	buffer.setUp(bufferData.data(), bufferData.size());
 }
 
@@ -447,7 +482,7 @@ const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, const BlockStore
 }
 
 const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
-	if (editedBlocks.find(worldPos) != editedBlocks.end()) {
+	if (editedBlocks.size() > 0 && editedBlocks.find(worldPos) != editedBlocks.end()) {
 		return editedBlocks.at(worldPos);
 	}
 	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, seed);
@@ -482,7 +517,6 @@ const glm::vec3 ChunkColumn::getWorldPosition(glm::vec3 relativePos) const
 	return relativePos + position * CHUNK_SIZE_F;
 }
 
-
 void ChunkColumn::addFace(const AddFaces& add) {
 	for (GeomData& data : bufferData) {
 		if (getWorldPosition(data.getPos()) == add.worldPos) {
@@ -504,9 +538,9 @@ void ChunkColumn::addFace(const AddFaces& add) {
 	buffer.realloc(bufferData.data(), bufferData.size());
 }
 
-bool ChunkColumn::outOfRange(const glm::vec3& worldPos)
+bool ChunkColumn::outOfRange(const glm::vec3& localPos)
 {
-	return glm::any(glm::greaterThanEqual(worldPos, glm::vec3(CHUNK_SIZE_F, WORLD_HEIGHT, CHUNK_SIZE_F)) || glm::lessThan(worldPos, glm::vec3(0)));
+	return glm::any(glm::greaterThanEqual(localPos, glm::vec3(CHUNK_SIZE_F, WORLD_HEIGHT, CHUNK_SIZE_F)) || glm::lessThan(localPos, glm::vec3(0)));
 }
 
 glm::vec3 ChunkColumn::getWorldPos() const
