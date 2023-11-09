@@ -63,6 +63,11 @@ void World::tryFinishGenerateChunk(const glm::vec2& chunkPos)
 		ChunkColumn& chunk = chunks.at(chunkPos);
 		chunk.setUpBuffer();
 		geomDrawable.add(chunk);
+
+		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
+		for (ChunkColumn* chunk : neighbours) {
+			chunk->reallocBuffer();
+		}
 	}
 }
 

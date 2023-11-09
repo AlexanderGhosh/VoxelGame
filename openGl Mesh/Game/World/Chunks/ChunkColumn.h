@@ -15,6 +15,7 @@ public:
 	// generates all chunk data needed for the the buffers
 	void generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours);
 	void setUpBuffer();
+	void reallocBuffer();
 
 
 	// inital world generation
@@ -59,7 +60,7 @@ private:
 	const glm::vec3 getRelativePosition(glm::vec3 worldPos) const;
 	const glm::vec3 getWorldPosition(glm::vec3 relativePos) const;
 
-	void addFace(const AddFaces& data);
+	void addFace(const AddFaces& data, bool realoc);
 
 	static bool outOfRange(const glm::vec3& localPos);
 

@@ -106,11 +106,58 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 		}
 	}
 	bufferData.shrink_to_fit();
+
+
+	// fix seems of neibours
+	for (unsigned int i = 0; i < 4; i++) {
+		glm::vec3 off = OFFSETS_3D[i];
+		glm::vec2 neighbourChunkPos = position + glm::vec2(off.x, off.z);
+
+		glm::vec3 mask = glm::abs(off); // is 1 along the axis which is the direction of the neibour
+		glm::vec3 startPoint = glm::vec3(CHUNK_SIZE_F - 1) * mask; // is the coord of the starting point on the neibours chunk (local coords to the neibour)
+		mask = 1.f - mask; // (1 - is because need the perpendicular line)
+		mask.y = 0;
+		
+		for (ChunkColumn* chunk : neibours) {
+			if (chunk->getPosition() == neighbourChunkPos) {
+				for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
+					glm::vec3 delta(j);
+					delta *= mask; // the axis with a value is == to the axis that borders the chunk
+					glm::vec3 neighbourLocalPos = startPoint + delta;
+					glm::vec3 neighbourWorldPos = neighbourLocalPos + glm::vec3(neighbourChunkPos.x * CHUNK_SIZE_F, 0, neighbourChunkPos.y * CHUNK_SIZE_F);
+					neighbourLocalPos.y = world_generation::heightOfColumn({ neighbourWorldPos.x, neighbourWorldPos.z }, seed);
+					neighbourWorldPos.y = neighbourLocalPos.y;
+					AddFaces toAdd{};
+					toAdd.worldPos = neighbourWorldPos;
+					toAdd.face = i; // maybe needs to be the oposite face
+					if (toAdd.face % 2 == 0) {
+						toAdd.face = toAdd.face + 1;
+					}
+					else {
+						toAdd.face = toAdd.face - 1;
+					}
+					// check if the face needs to be added at all
+					glm::vec3 worldPos = neighbourWorldPos - off - getWorldPos(); // the world position of the block that is next to the nebours block
+
+					Block b = blockStore.getBlock(worldPos);
+					BlockDetails blockDets = getDetails(b);
+					if (blockDets.isTransparant) {
+						chunk->addFace(toAdd, false);
+					}
+				}
+			}
+		}
+	}
 }
 
 void ChunkColumn::setUpBuffer()
 {
 	buffer.setUp(bufferData.data(), bufferData.size());
+}
+
+void ChunkColumn::reallocBuffer()
+{
+	buffer.realloc(bufferData.data(), bufferData.size());
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {
@@ -356,7 +403,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 				newChunkPos.y += add.offset.z;
 				for (ChunkColumn* chunk : neibours) {
 					if (chunk->getPosition() == newChunkPos) {
-						chunk->addFace(add);
+						chunk->addFace(add, true);
 					}
 				}
 			}
@@ -491,11 +538,12 @@ const glm::vec3 ChunkColumn::getWorldPosition(glm::vec3 relativePos) const
 	return relativePos + position * CHUNK_SIZE_F;
 }
 
-void ChunkColumn::addFace(const AddFaces& add) {
+void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
 	for (GeomData& data : bufferData) {
 		if (getWorldPosition(data.getPos()) == add.worldPos) {
 			markSlot(data.cubeType_, add.face);
-			buffer.realloc(bufferData.data(), bufferData.size());
+			if(realoc)
+				buffer.realloc(bufferData.data(), bufferData.size());
 			return;
 		}
 	}
@@ -509,7 +557,8 @@ void ChunkColumn::addFace(const AddFaces& add) {
 		return;
 	}
 	bufferData.push_back(data);
-	buffer.realloc(bufferData.data(), bufferData.size());
+	if(realoc)
+		buffer.realloc(bufferData.data(), bufferData.size());
 }
 
 bool ChunkColumn::outOfRange(const glm::vec3& localPos)
