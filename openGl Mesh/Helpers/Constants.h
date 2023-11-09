@@ -40,6 +40,17 @@ constexpr unsigned int SEED = 32;
 
 constexpr float VOXEL_SZIE = 1;
 
+constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
+		glm::vec3(0, 0, 1),
+		glm::vec3(0, 0, -1),
+
+		glm::vec3(-1, 0, 0),
+		glm::vec3(1, 0, 0),
+
+		glm::vec3(0, 1, 0),
+		glm::vec3(0, -1, 0)
+};
+
 extern glm::vec3 LIGHTPOSITION;
 extern glm::vec3 LIGHTPOSITIONOrigin;
 

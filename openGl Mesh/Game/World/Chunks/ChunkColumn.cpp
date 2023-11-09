@@ -22,43 +22,21 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
 
-void ChunkColumn::buildBlockStore(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
+void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
 {
 	this->seed = seed;
 	position = pos;
 	BlockStore bs(pos * CHUNK_SIZE_F, seed);
-	populateBuffer(neibours, bs);
+	populateBufferFromNeibours(neibours, bs);
 }
 
-void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
-	auto getBlockNeibour = [&](glm::vec3 localPos, glm::vec3 offset) {
-		if (outOfRange(localPos)) {
-			glm::vec2 newChunkPos = position + glm::vec2(offset.x, offset.z);
-			glm::vec3 newLocalPos;
-			for (ChunkColumn* chunk : neibours) {
-				if (chunk->getPosition() == newChunkPos) {
-					return chunk->getBlock(newLocalPos);
-				}
-			}
-		}
-		return blockStore.getBlock(localPos);
-	};
+void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
 	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
-	const std::list<glm::vec3> offsets = {
-		glm::vec3(0, 0, 1),
-		glm::vec3(0, 0, -1),
 
-		glm::vec3(-1, 0, 0),
-		glm::vec3(1, 0, 0),
-
-		glm::vec3(0, 1, 0),
-		glm::vec3(0, -1, 0),
-
-	};
 	bufferData.reserve(CHUNK_SIZE * CHUNK_SIZE);
-
 	GeomData data{};
-	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
+	const glm::vec3 chunkWorldPos = getWorldPos();
+
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
 			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
@@ -81,16 +59,15 @@ void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const 
 					data.setPos(currentLocalPos);
 					unsigned int j = 0;
 					added = false;
-					std::vector<unsigned int> added_list;
-					for (const glm::vec3& off : offsets) {
-						const glm::vec3 p = currentLocalPos + off + chunkWorldPos;
+					for (const glm::vec3& off : OFFSETS_3D) {
+						glm::vec3 newLocalPosition = currentLocalPos + off;
+						const glm::vec3 newWorldPosition = newLocalPosition + chunkWorldPos;
 						Block b2 = Block::ERROR;
-						Block* b2Ptr = getValue(exploredBlocksCache, p);
+						Block* b2Ptr = getValue(exploredBlocksCache, newWorldPosition);
 						if (b2Ptr) {
 							b2 = *b2Ptr;
 						}
 						else {
-							glm::vec3 newLocalPosition = currentLocalPos + off;
 							b2 = blockStore.getBlock(newLocalPosition);
 							if (b2 == Block::ERROR) {
 								glm::vec2 newChunkPos = position + glm::vec2(off.x, off.z);
@@ -102,7 +79,7 @@ void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const 
 									}
 								}
 							}
-							exploredBlocksCache.emplace(p, b2);
+							exploredBlocksCache.emplace(newWorldPosition, b2);
 						}
 
 						const BlockDetails& blockDets2 = getDetails(b2);
@@ -116,7 +93,6 @@ void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const 
 						bufferData.push_back(data);
 						added = true;
 						data.cubeType_ = 0;
-						added_list.clear();
 					}
 					else {
 						break;
