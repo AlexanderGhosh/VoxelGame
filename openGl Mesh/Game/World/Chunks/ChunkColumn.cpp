@@ -33,7 +33,7 @@ void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std:
 void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
 	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
 
-	bufferData.reserve(CHUNK_SIZE * CHUNK_SIZE);
+	bufferData.reserve(CHUNK_SIZE * CHUNK_SIZE); // the chunk will have at least this many top faces
 	GeomData data{};
 	const glm::vec3 chunkWorldPos = getWorldPos();
 
@@ -104,7 +104,6 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 		}
 	}
 	bufferData.shrink_to_fit();
-	// setUpBuffer(bufferData);
 }
 
 void ChunkColumn::setUpBuffer()
