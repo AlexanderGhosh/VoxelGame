@@ -1,5 +1,4 @@
 #pragma once
-
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <glm.hpp>
@@ -38,21 +37,22 @@ class Game
 {
 public:
 	Game();
-	Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim);
-	void generateWorld();
-	void setupPlayer();
+	Game(glm::ivec2 windowDim);
 	void doLoop(const glm::mat4& projection);
+	void generateWorld();
 
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
-
+private:
+	void setupPlayer();
 	void setUpScreenQuad();
 
-	static Camera* mainCamera;
+	static Camera mainCamera;
 	static glm::vec3 mouseData;
 	static std::array<bool, 1024> keys;
-	static glm::mat4 projection;
-private:
+	static World world;
+	static UI_Renderer uiRenderer;
+
 	ShadowBox shadowBox;
 
 	unsigned int quadVBO, quadVAO;
@@ -62,30 +62,22 @@ private:
 	float deltaTime;
 	unsigned int frameRate;
 	bool gameRunning;
-	static World world;
-	// static Entity* player;
-	// static EntityHander entityHander;
-	static UI_Renderer uiRenderer;
-	bool hasSkybox;
 	float lastFrameTime;
-	glm::mat4 lightProjection;
 	unsigned int SBVAO,LSVAO, LSVBO;
 	std::map<char, Character> Letters;
-	unsigned int depthMap;
 	glm::ivec2 windowDim;
 
 	void showFPS();
 	void calcTimes();
-	void proccesEvents();
 	void setupEventCB(GLFWwindow* window);
-	void showStuff();
+	void showStuff(const glm::mat4& projection);
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
 	static void clickCallBack(GLFWwindow* window, int button, int action, int mods);
 	static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset);
 	void processKeys();
 	void makeSkybox(const std::string& skybox);
-	void showSkybox();
+	void showSkybox(const glm::mat4& projection);
 	void setUpFreeType();
 	void showText(const std::string& text, const glm::vec2& position, float scale = 1.0f, const glm::vec3 colour = glm::vec3(1));
 	void createGUI();

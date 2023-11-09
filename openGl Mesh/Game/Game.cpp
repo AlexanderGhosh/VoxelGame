@@ -9,56 +9,30 @@ glm::vec3 GameConfig::backgroundCol = { 0.5, 0.5, 0.5 };
 unsigned int GameConfig::FPSlock = 0;
 #pragma endregion
 
-#pragma region Static Members
-Camera* Game::mainCamera = new Camera({ 0, 2, 0 });
-glm::mat4 Game::projection(1);
-glm::vec3 Game::mouseData(0);
-std::array<bool, 1024> Game::keys = std::array<bool, 1024>();
-// Entity* Game::player = new Entity();
-World Game::world = World(0);
-// EntityHander Game::entityHander = EntityHander();
-UI_Renderer Game::uiRenderer = UI_Renderer();
-#pragma endregion
 
-
-/*
-
-	Ray ray;
-private:
-	GLFWwindow* window;
-	float deltaTime;
-	unsigned int frameRate;
-	bool gameRunning;
-	bool hasSkybox;
-	float lastFrameTime;
-	glm::mat4 projection, lightProjection;
-	unsigned int SBVAO,LSVAO, LSVBO, depthFBO;
-	std::map<GLchar, Character> Letters;
-	unsigned int depthMap;
-	glm::ivec2 windowDim;
-*/
+Camera Game::mainCamera;
+glm::vec3 Game::mouseData;
+std::array<bool, 1024> Game::keys;
+World Game::world;
+UI_Renderer Game::uiRenderer;
 
 const glm::vec3 lightPos(100, 100, 100);
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), hasSkybox(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), 
-lightProjection(0), SBVAO(0), LSVAO(), Letters(), depthMap(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos) {
-	Game::mainCamera = new Camera({ 0, 2, 0 });
-	Game::mouseData = { 0, 0, -90 };
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), 
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos) {
+	mainCamera = Camera({ 0, 2, 0 });
+	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 	setUpScreenQuad();
 }
-Game::Game(bool hasPlayer, bool hasSkybox, glm::ivec2 windowDim) : Game() {
-	// this->hasPlayer = hasPlayer;
-	this->hasSkybox = hasSkybox;
-	setupPlayer();
+
+Game::Game(glm::ivec2 windowDim) : Game() {
 	gameRunning = false;
 	Game::mouseData = { 0, 0, -90 };
 	lastFrameTime = -1.0f;
 	this->windowDim = windowDim;
-	GameConfig::setup();
-	if (hasSkybox) {
-		makeSkybox("skybox");
-	}
+
+	makeSkybox("skybox");
 	createGUI();
 	setUpFreeType();
 
@@ -125,43 +99,18 @@ void Game::generateWorld() {
 void Game::doLoop(const glm::mat4& projection) {
 	gameRunning = true;
 	setupEventCB(window);
-	this->projection = projection;
-	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 50.0f);
-	mainCamera->setPosition({ 8, 25, 15 });
-	// temp vampire
-	// Entity vampire(1);
-	// vampire.getCollider().setDimentions({ 0.85, 0.85, 0.85 }, { 0.85, 2.55, 0.85 });
-	// vampire.setPosition({ 5, 80, 0 });
-	// vampire.setTextues(Texture_Names::VAMPIRE_BOTTOM, Texture_Names::VAMPIRE_TOP);
-	
-	//setupDepthFBO();
+	mainCamera.setPosition({ 8, 25, 15 });
+		
 
-	// entityHander.addEntity(vampire);
-
-	// world.advanceGeneration();
 	while (gameRunning) {
 		calcTimes();
-		proccesEvents();
+		glfwPollEvents();
 		processKeys();
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-
-		/*std::vector<std::vector<ChunkColumn*>> adjacentChunkss;
-		std::vector<ChunkColumn*> occuped;
-		for (auto& e : entityHander.getEntitys()) {
-			glm::vec3& p = e.getPosition();
-			adjacentChunkss.push_back(world.getAdjacentChunks(p));
-			occuped.push_back(world.getChunkOccupied(p));
-		}
-		player = &entityHander.getEntitys()[0];
-
-		entityHander.update(projection, player->getCamera(), adjacentChunkss, occuped, deltaTime);*/
-
-		showStuff();
-
+		showStuff(projection);
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -183,26 +132,8 @@ void Game::showFPS() {
 	}
 }
 
-std::string m;
-
-void Game::proccesEvents() {
-	glfwPollEvents();
-}
-
-const unsigned int SHADOW_WIDTH = 3072, SHADOW_HEIGHT = 3072;
-
-void Game::showStuff() {
-	// light orhto projection
-	float near_plane = 1, far_plane = 100.0f;
-	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, NEAR_PLANE, SHADOW_DISTANCE);
-	glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-
-	shadowBox.update(*mainCamera);
-	//lightProjection = shadowBox.getProjection();
-	//lightView = shadowBox.getView(lightPos);
-
-	glm::mat4 LSM = lightProjection * lightView;
-	LSM = shadowBox.getLSM(*mainCamera, projection, lightPos);
+void Game::showStuff(const glm::mat4& projection) {
+	const glm::mat4 LSM = shadowBox.getLSM(mainCamera, projection, lightPos);
 
 	// 1. render from the lights perspective for the shadow map
 	glEnable(GL_CULL_FACE);
@@ -221,8 +152,8 @@ void Game::showStuff() {
 	shadows.unBind();
 
 	// 2. render for OIT
-	glm::mat4 viewMatrix = mainCamera->GetViewMatrix();
-	oitFrameBuffer1.bind(); // render to the OIT framebuffer1
+	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
+	oitFrameBuffer1.bind();
 	// 2.1 Opaque
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CW);
@@ -234,12 +165,12 @@ void Game::showStuff() {
 	
 	Shader& opaue = SHADERS[OIT_OPAQUE];
 	opaue.bind();
-	bool b1 = opaue.setValue("view", viewMatrix);
-	bool b2 = opaue.setValue("projection", projection);
-	bool a1 = opaue.setValue("lightMatrix", LSM);
-	bool b3 = opaue.setValue("shadowMap", 0);
-	bool a2 = opaue.setValue("lightPos", lightPos);
-	bool a3 = opaue.setValue("viewPos", mainCamera->GetPosition());
+	opaue.setValue("view", viewMatrix);
+	opaue.setValue("projection", projection);
+	opaue.setValue("lightMatrix", LSM);
+	opaue.setValue("shadowMap", 0);
+	opaue.setValue("lightPos", lightPos);
+	opaue.setValue("viewPos", mainCamera.GetPosition());
 	world.render(&opaue);
 	opaue.unBind();
 
@@ -267,7 +198,7 @@ void Game::showStuff() {
 	// 2.3 Composite
 	glDisable(GL_CULL_FACE);
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer
-	showSkybox();
+	showSkybox(projection);
 	glDepthFunc(GL_ALWAYS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -295,26 +226,26 @@ void Game::showStuff() {
 	showGUI();
 	showFPS();
 
-
-	m = "Position: " + glm::to_string(mainCamera->GetPosition());
+	std::string m;
+	m = "Position: " + glm::to_string(mainCamera.GetPosition());
 	showText(m, { 5, 850 }, 0.5f);
 	
-	m = "View Direction: " + glm::to_string(mainCamera->GetFront());
+	m = "View Direction: " + glm::to_string(mainCamera.GetFront());
 	showText(m, { 5, 825 }, 0.5f);
 
 	float zcoord = 0;
 	glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
-	glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
+	glm::mat4 invPV = glm::inverse(projection * mainCamera.GetViewMatrix());
 	float z = (zcoord - 0.5f) * 2.0f;
 	glm::vec4 screenPos(0, 0, zcoord, 1); // the center of screen screen coords
 	screenPos = invPV * screenPos;
 	glm::vec3 hitPos = glm::vec3(screenPos) / screenPos.w;
 
-	glm::vec3 breakPos = round(hitPos + argmax_abs(mainCamera->GetFront()));
+	glm::vec3 breakPos = round(hitPos + argmax_abs(mainCamera.GetFront()));
 	m = "Break Pos: " + glm::to_string(breakPos);
 	showText(m, { 5, 800 }, 0.5f);
 
-	glm::vec3 placePos = round(hitPos - argmax_abs(mainCamera->GetFront()));
+	glm::vec3 placePos = round(hitPos - argmax_abs(mainCamera.GetFront()));
 	m = "Place Pos: " + glm::to_string(placePos);
 	showText(m, { 5, 775 }, 0.5f);
 
@@ -385,19 +316,6 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
 		glfwSetWindowShouldClose(window, true);
 	}
-	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
-		//Camera& cam = player->getCamera();
-		//Ray ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH);
-		// auto e = world.getIntersectedEntity(entityHander, ray);
-		// if (!e) {
-		// 	std::cout << "No Entity found" << std::endl;
-		// }
-		// else {
-		// 	std::cout << "Entity found at: " << glm::to_string(e->getPosition()) << std::endl;
-		// 	e->takeDamage(10);
-		// }
-
-	}
 	if (key >= 0 && key < 1024) {
 		if (action == GLFW_PRESS || action == GLFW_RELEASE) {
 			Game::keys[key] ^= true;
@@ -406,7 +324,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 	if (key == GLFW_KEY_F3 && action == GLFW_RELEASE) {
 		GameConfig::showFPS = !GameConfig::showFPS;
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 1);
+	/*glBindFramebuffer(GL_FRAMEBUFFER, 1);
 	if (key == GLFW_KEY_1 && action == GLFW_RELEASE) {
 		float zcoord = 0;
 		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
@@ -422,7 +340,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		float z = (zcoord - 0.5f) * 2.0f;
 
 		world.placeBlock(z, invPV, mainCamera->GetFront());
-	}
+	}*/
 	if (key == GLFW_KEY_H && action == GLFW_RELEASE) {
 		world.save();
 		std::cout << "Saved" << std::endl;
@@ -445,13 +363,11 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 
 	Game::mouseData.x = xPos;
 	Game::mouseData.y = yPos;
-	Game::mainCamera->ProcessMouseMovement(xOffset, yOffset);
-
-	//Game::player->updateCamera(xOffset, yOffset);
+	Game::mainCamera.ProcessMouseMovement(xOffset, yOffset);
 }
 
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
-	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+	/*if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		float zcoord = 0;
 		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
 		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
@@ -466,11 +382,7 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 		float z = (zcoord - 0.5f) * 2.0f;
 
 		world.placeBlock(z, invPV, mainCamera->GetFront());
-	}
-	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
-		// Camera& cam = player->getCamera();
-		// entityHander.setTarget(cam.GetPosition());
-	}
+	}*/
 }
 
 std::string num = "0";
@@ -490,7 +402,6 @@ void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
 	UI_Element& element = uiRenderer.getWhere("slot" + num);
 	UI_Element e = UI_Element(element.getPos(), element.getSize(), &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
 	uiRenderer.appendElement(e);
-	//player->getInventory().setHotbarSelected(i);
 }
 
 void Game::setupEventCB(GLFWwindow* window) {
@@ -505,100 +416,31 @@ void Game::processKeys() {
 	float speed = 9.0f;
 	if (k[GLFW_KEY_LEFT_CONTROL]) {
 		speed = 20.0f;
-		//player->setMovementSpeed(PLAYER_SPEED * 2.5f);
 	} // running
 	else {
 		speed = 12.0f;
-		//player->setMovementSpeed(PLAYER_SPEED);
 	} // walking
-	// prevents floaty behavour
-	//player->setVelocity({ 0, player->getFlying() ? 0 : player->getVelocity().y, 0 });
-
-	// if (k[GLFW_KEY_W]) {
-	// 	player->move(Move_Dir::FORWARD);
-	// }
-	// if (k[GLFW_KEY_S]) {
-	// 	player->move(Move_Dir::BACKWARD);
-	// }
-	// if (k[GLFW_KEY_A]) {
-	// 	player->move(Move_Dir::LEFT);
-	// }
-	// if (k[GLFW_KEY_D]) {
-	// 	player->move(Move_Dir::RIGHT);
-	// }
-	// if (k[GLFW_KEY_SPACE]) {
-	// 	player->move(Move_Dir::UP);
-	// }
-	// if (k[GLFW_KEY_LEFT_SHIFT]) {
-	// 	player->move(Move_Dir::DOWN);
-	// }
+	
 	{
 		if (k[GLFW_KEY_W]) {
-			Game::mainCamera->GetPosition() += glm::normalize(Game::mainCamera->GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
+			Game::mainCamera.GetPosition() += glm::normalize(Game::mainCamera.GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_S]) {
-			Game::mainCamera->GetPosition() -= glm::normalize(Game::mainCamera->GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
+			Game::mainCamera.GetPosition() -= glm::normalize(Game::mainCamera.GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_A]) {
-			Game::mainCamera->GetPosition() -= glm::normalize(Game::mainCamera->GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
+			Game::mainCamera.GetPosition() -= glm::normalize(Game::mainCamera.GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_D]) {
-			Game::mainCamera->GetPosition() += glm::normalize(Game::mainCamera->GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
+			Game::mainCamera.GetPosition() += glm::normalize(Game::mainCamera.GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_SPACE]) {
-			Game::mainCamera->GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
+			Game::mainCamera.GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
 		}
 		if (k[GLFW_KEY_LEFT_SHIFT]) {
-			Game::mainCamera->GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
+			Game::mainCamera.GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
 		}
 	}
-	// Camera& cam = player->getCamera();
-	// if (k[GLFW_KEY_0]) {
-	// 	ray = Ray(cam.GetPosition(), cam.GetFront(), PLAYER_REACH, 1);
-	// }
-
-	//if (k[GLFW_KEY_1]) {
-	//	num = "0";
-	//	// player.setInvSlot(0);
-	//}
-	//if (k[GLFW_KEY_2]) {
-	//	num = "1";
-	//	// player.setInvSlot(1);
-	//}
-	//if (k[GLFW_KEY_3]) {
-	//	num = "2";
-	//	// player.setInvSlot(2);
-	//}
-	//if (k[GLFW_KEY_4]) {
-	//	num = "3";
-	//	// player.setInvSlot(3);
-	//}
-	//if (k[GLFW_KEY_5]) {
-	//	num = "4";
-	//	// player.setInvSlot(4);
-	//}
-	//if (k[GLFW_KEY_6]) {
-	//	num = "5";
-	//	// player.setInvSlot(5);
-	//}
-	//if (k[GLFW_KEY_7]) {
-	//	num = "6";
-	//	// player.setInvSlot(6);
-	//}
-	//if (k[GLFW_KEY_8]) {
-	//	num = "7";
-	//	// player.setInvSlot(7);
-	//}
-	//if (k[GLFW_KEY_9]) {
-	//	num = "8";
-	//	// player.setInvSlot(8);
-	//}
-	//if (num == "") return;
-	//uiRenderer.popWhere("slot_selected");
-	//UI_Element& element = uiRenderer.getWhere("slot" + num);
-	//UI_Element e = UI_Element(element.getPos(), element.getSize(), TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
-	//uiRenderer.appendElement(e);
-	//player->getInventory().setHotbarSelected(std::stoi(num));
 }
 
 void Game::cleanUp() {
@@ -691,15 +533,14 @@ void Game::makeSkybox(const std::string& skybox) {
 	auto shader = &SHADERS[SKYBOX];
 	shader->bind();
 	shader->setValue("skybox", 0);
-
 }
 
-void Game::showSkybox() {
+void Game::showSkybox(const glm::mat4& projection) {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer'transparent content
 	SHADERS[SKYBOX].bind();
 	// Camera& camera = player->getCamera();
-	glm::mat4 view = glm::mat4(glm::mat3(mainCamera->GetViewMatrix())); // remove translation from the view matrix
+	glm::mat4 view = glm::mat4(glm::mat3(mainCamera.GetViewMatrix())); // remove translation from the view matrix
 	SHADERS[SKYBOX].setValue("view", view);
 	SHADERS[SKYBOX].setValue("projection", projection);
 
@@ -769,51 +610,6 @@ int prevPlayerHealth = 100;
 
 void Game::showGUI() {
 	uiRenderer.render();
-
-	/*auto hotBar = player->getInventory().getHotBarTextures();
-	if (hotBar != prevHotBar) {
-		prevHotBar = hotBar;
-		unsigned int i = 0;
-		for (Texture* tex : hotBar) {
-			if (tex) {
-				UI_Element& slot = uiRenderer.getWhere("slot" + std::to_string(i++));
-				uiRenderer.popWhere(slot.getName() + "_block");
-				UI_Element item = UI_Element(slot.getPos(), slot.getSize(), tex, slot.getName() + "_block");
-				uiRenderer.prependElement(item);
-			}
-		}
-	}
-	int playerHealth = player->getHealth();
-	if (playerHealth != prevPlayerHealth) {
-		int diff = 100 - playerHealth;
-		diff = reduceToMultiple(diff, 10);
-		diff /= 10;
-		if (diff == 10) {
-			for (GLubyte i = 0; i < 10; i++) {
-				UI_Element& heartPos = uiRenderer.getWhere("heart" + std::to_string(i));
-				uiRenderer.popWhere(heartPos.getName() + "_dead");
-				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(unsigned int)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
-				uiRenderer.appendElement(heart);
-			}
-		}
-		else {
-			for (GLubyte i = 9; i > 9 - diff; i--) {
-				UI_Element& heartPos = uiRenderer.getWhere("heart" + std::to_string(i));
-				uiRenderer.popWhere(heartPos.getName() + "_dead");
-				UI_Element heart = UI_Element(heartPos.getPos(), heartPos.getSize(), TEXTURES2D[(unsigned int)Texture_Names_2D::DEAD_HEART], heartPos.getName() + "_dead");
-				uiRenderer.appendElement(heart);
-			}
-		}
-	}
-
-	if (player->getSubmerged()) {
-		UI_Element submerged = UI_Element({ 0, 0 }, { 16, 9 }, &getDetails(Block::WATER).ItemTex, "submerged");
-		uiRenderer.popWhere(submerged.getName());
-		uiRenderer.prependElement(submerged);
-	}
-	else {
-		uiRenderer.popWhere("submerged");
-	}*/
 }
 
 void Game::setUpFreeType() {

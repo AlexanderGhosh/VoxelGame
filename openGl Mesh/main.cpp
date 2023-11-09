@@ -45,7 +45,7 @@ int main() {
 	player.addComponent(playerTransform);
 
 
-	Game game = Game(true, true, DIM);
+	Game game = Game(DIM);
 	GameConfig::showFPS = true;
 
 	game.setWindow(window);
@@ -53,6 +53,8 @@ int main() {
 
 	glm::mat4 projection = glm::perspective(FOV, ASPECT_RATIO, NEAR_PLANE, FAR_PLANE);
 	game.doLoop(projection);
+
+	game.cleanUp();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
