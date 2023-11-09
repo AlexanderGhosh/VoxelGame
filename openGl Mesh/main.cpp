@@ -22,7 +22,7 @@ glm::ivec2 DIM(1280, 720);
 
 GLFWwindow* createWindow();
 void createBlockDetails();
-// namespace fs = std::experimental::filesystem;
+
 int main() {
 	GLFWwindow* window = createWindow();
 
@@ -58,6 +58,7 @@ int main() {
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
+
 	ComponentManager::getInstance().destroy();
 	EntityManager::getInstance().destroy();
 	return 0;

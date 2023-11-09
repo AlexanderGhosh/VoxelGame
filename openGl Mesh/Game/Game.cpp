@@ -2,6 +2,7 @@
 #include <gtx/string_cast.hpp>
 #include "../Shaders/Shader.h"
 #include "../Textures/Texture.h"
+#include "../EntityComponent/Mangers/EntityManager.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -24,6 +25,7 @@ SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameB
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 	setUpScreenQuad();
+	manager = &EntityManager::getInstance();
 }
 
 Game::Game(glm::ivec2 windowDim) : Game() {
@@ -99,13 +101,22 @@ void Game::generateWorld() {
 void Game::doLoop(const glm::mat4& projection) {
 	gameRunning = true;
 	setupEventCB(window);
+	
+	manager->awakeEvent();
+
+	manager->startEvent();
+	
 	mainCamera.setPosition({ 8, 25, 15 });
-		
+	
 
 	while (gameRunning) {
 		calcTimes();
 		glfwPollEvents();
 		processKeys();
+
+		manager->updateEvent();
+
+		manager->fixedUpdateEvent();
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -116,6 +127,8 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		glfwSwapBuffers(window);
 	}
+
+	manager->destroyEvent();
 }
 
 void Game::calcTimes() {
@@ -171,7 +184,10 @@ void Game::showStuff(const glm::mat4& projection) {
 	opaue.setValue("shadowMap", 0);
 	opaue.setValue("lightPos", lightPos);
 	opaue.setValue("viewPos", mainCamera.GetPosition());
+
 	world.render(&opaue);
+	manager->renderEvent();
+
 	opaue.unBind();
 
 	// 2.2 Transparent

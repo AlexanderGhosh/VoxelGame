@@ -13,6 +13,7 @@
 #include "../FrameBuffer.h"
 #include "../Helpers/ShadowBox.h"
 
+class EntityManager;
 class Camera;
 
 struct Character {
@@ -52,6 +53,8 @@ private:
 	static std::array<bool, 1024> keys;
 	static World world;
 	static UI_Renderer uiRenderer;
+	
+	EntityManager* manager;
 
 	ShadowBox shadowBox;
 
