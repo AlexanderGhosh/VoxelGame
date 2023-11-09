@@ -1,6 +1,7 @@
 #pragma once
 #include "../../GeomRendering/DrawableGeom.h"
 #include "Chunks/ChunkColumn.h"
+#include <future>
 
 class World
 {
@@ -8,7 +9,7 @@ public:
 	World();
 	World(bool gen, bool terrain = true, unsigned int seed = SEED);
 
-	void render(Shader* shader) const;
+	void render(Shader* shader);
 
 	void setUpDrawable();
 
@@ -18,8 +19,11 @@ public:
 	const std::vector<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
 
 	void save() const;
-	void generateChunk(const glm::vec2& chunkPos);
+	void startGenerateChunk(const glm::vec2& chunkPos);
+	void tryFinishGenerateChunk(const glm::vec2& chunkPos);
 private:
+	std::future<BlockStore> blockStoreCreated;
+	bool chunkCreationInprogress;
 	unsigned int seed;
 	Chunks chunks;
 

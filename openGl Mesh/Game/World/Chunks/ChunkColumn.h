@@ -12,8 +12,8 @@ public:
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
 	// creators
-	// will build this chunk inplace
-	void build(glm::vec2 pos, unsigned int seed, const std::vector<ChunkColumn*>& neibours);
+	// will buildBlockStore this chunk inplace
+	BlockStore buildBlockStore(glm::vec2 pos, unsigned int seed);
 	void populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
 	void populateBuffer(WorldMap& worldMap);
 

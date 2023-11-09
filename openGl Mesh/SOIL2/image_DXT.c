@@ -461,7 +461,7 @@ void LSE_master_colors_max_min(
 	/*	post multiply by the scaling factor	*/
 	dot_min *= vec_len2;
 	dot_max *= vec_len2;
-	/*	OK, build the master colors	*/
+	/*	OK, buildBlockStore the master colors	*/
 	for( i = 0; i < 3; ++i )
 	{
 		/*	color 0	*/

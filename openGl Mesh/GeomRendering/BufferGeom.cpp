@@ -15,7 +15,6 @@ BufferGeom::~BufferGeom()
 
 void BufferGeom::setUp(const GeomData* data, unsigned int size)
 {
-	auto d = data->getPos();
 	cleanUp();
 	glGenBuffers(1, &VBO); // VBO
 	glGenVertexArrays(1, &VAO); // VAO

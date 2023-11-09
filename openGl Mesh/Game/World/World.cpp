@@ -5,7 +5,7 @@
 #include <gtx/string_cast.hpp>
 #include "../../Helpers/Functions.h"
 
-World::World() : chunks(), geomDrawable(), seed() {
+World::World() : chunks(), geomDrawable(), seed(), blockStoreCreated(), chunkCreationInprogress(false) {
 }
 World::World(bool gen, bool terrain, unsigned int seed) : World() {
 	this->seed = seed;
@@ -47,12 +47,23 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	worldMap.clear();
 }
 
-void World::generateChunk(const glm::vec2& chunkPos)
+void World::startGenerateChunk(const glm::vec2& chunkPos)
 {
-	const auto neibours = getNeibours(chunkPos);
 	chunks[chunkPos] = ChunkColumn();
-	chunks[chunkPos].build(chunkPos, seed, neibours);
-	geomDrawable.add(chunks.at(chunkPos));
+	chunkCreationInprogress = true;
+	blockStoreCreated = std::async(&ChunkColumn::buildBlockStore, &chunks[chunkPos], chunkPos, seed);
+}
+
+void World::tryFinishGenerateChunk(const glm::vec2& chunkPos)
+{
+	if (chunkCreationInprogress && blockStoreCreated.valid()) {
+		chunkCreationInprogress = false;
+		BlockStore bs = blockStoreCreated.get();
+		const auto neibours = getNeibours(chunkPos);
+		std::list<ChunkColumn*> n(neibours.begin(), neibours.end());
+		chunks.at(chunkPos).populateBuffer(n, bs);
+		geomDrawable.add(chunks.at(chunkPos));
+	}
 }
 
 const std::vector<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
@@ -90,7 +101,10 @@ void World::save() const
 	}
 }
 
-void World::render(Shader* shader) const {
+void World::render(Shader* shader) {
+	if (chunkCreationInprogress) {
+		tryFinishGenerateChunk(glm::vec2(4, 0));
+	}
 	geomDrawable.render(shader);
 }
 

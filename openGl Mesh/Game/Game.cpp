@@ -362,7 +362,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		std::cout << "Saved" << std::endl;
 	}
 	if (key == GLFW_KEY_G && action == GLFW_RELEASE) {
-		world.generateChunk({ 4, 0 });
+		world.startGenerateChunk({ 4, 0 });
 		std::cout << "Generated" << std::endl;
 	}
 }

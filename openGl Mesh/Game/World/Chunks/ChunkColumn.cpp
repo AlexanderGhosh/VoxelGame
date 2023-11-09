@@ -22,28 +22,12 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
 
-void ChunkColumn::build(glm::vec2 pos, unsigned int seed, const std::vector<ChunkColumn*>& neibours)
+BlockStore ChunkColumn::buildBlockStore(glm::vec2 pos, unsigned int seed)
 {
 	this->seed = seed;
 	position = pos;
-	Timer timer;
-	timer.start();
 	BlockStore bs(pos * CHUNK_SIZE_F, seed);
-	timer.end();
-	timer.showTime("Block Store", true);
-
-	std::list<ChunkColumn*> n(neibours.begin(), neibours.end());
-	unsigned int count = 100;
-	timer.start();
-	for(unsigned int i = 0; i < count; i++)
-		populateBuffer(n, bs);
-	timer.end();
-	timer.showTime("Populate  ", true);
-	// long long t = timer.getTime();
-	// t /= (double)count;
-	// t /= 1e9;
-	// t *= 60.0;
-	// std::cout << t << std::endl;
+	return bs;
 }
 
 void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
@@ -492,6 +476,7 @@ const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
 	if (editedBlocks.size() > 0 && editedBlocks.find(worldPos) != editedBlocks.end()) {
 		return editedBlocks.at(worldPos);
 	}
+	return Block::ERROR;
 	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, seed);
 	return column[worldPos.y];
 }
