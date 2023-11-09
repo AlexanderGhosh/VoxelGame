@@ -33,10 +33,17 @@ void ChunkColumn::build(glm::vec2 pos, unsigned int seed, const std::vector<Chun
 	timer.showTime("Block Store", true);
 
 	std::list<ChunkColumn*> n(neibours.begin(), neibours.end());
+	unsigned int count = 100;
 	timer.start();
-	populateBuffer(n, bs);
+	for(unsigned int i = 0; i < count; i++)
+		populateBuffer(n, bs);
 	timer.end();
-	timer.showTime("Populate   ", true);
+	timer.showTime("Populate  ", true);
+	// long long t = timer.getTime();
+	// t /= (double)count;
+	// t /= 1e9;
+	// t *= 60.0;
+	// std::cout << t << std::endl;
 }
 
 void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
@@ -94,9 +101,9 @@ void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const 
 					for (const glm::vec3& off : offsets) {
 						const glm::vec3 p = currentLocalPos + off + chunkWorldPos;
 						Block b2 = Block::ERROR;
-
-						if (exploredBlocksCache.find(p) != exploredBlocksCache.end()) {
-							b2 = exploredBlocksCache.at(p);
+						Block* b2Ptr = getValue(exploredBlocksCache, p);
+						if (b2Ptr) {
+							b2 = *b2Ptr;
 						}
 						else {
 							glm::vec3 newLocalPosition = currentLocalPos + off;

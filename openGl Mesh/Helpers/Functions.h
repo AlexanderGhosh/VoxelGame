@@ -1,6 +1,7 @@
 #pragma once
 #include <glm.hpp>
 #include <string>
+#include <unordered_map>
 #include "BlockDetails.h"
 
 class Texture;
@@ -43,7 +44,6 @@ unsigned int toIndex(const Block block);
 const Block toBlock(const unsigned char number);
 const std::string getName(const Block block);
 glm::vec3 getTranslation(const glm::mat4& matrix);
-glm::mat4 translate(const glm::mat4& mat, glm::vec3 vec);
 const BlockDetails& getDetails(const Block block);
 const BlockDetails& getDetails(const Texture* tex);
 
@@ -54,3 +54,22 @@ glm::vec3 operator+(const glm::vec3& p1, const glm::vec2& p2);
 glm::vec3 operator+(const glm::vec2& p1, const glm::vec3& p2);
 glm::vec3 operator-(const glm::vec3& p1, const glm::vec2& p2);
 glm::vec3 operator-(const glm::vec2& p1, const glm::vec3& p2);
+
+/// <summary>
+/// Will return the value associated with the key if avaliable WILL NOT CREATE NEW KEYS
+/// null if not found
+/// </summary>
+template<typename Key, typename Value>
+Value* getValue(std::unordered_map<Key, Value>& map, const Key& key);
+
+template<typename Key, typename Value>
+inline Value* getValue(std::unordered_map<Key, Value>& map, const Key& key)
+{
+	const size_t size = map.size();
+	Value& val = map[key];
+	if (map.size() > size) {
+		map.erase(key);
+		return nullptr;
+	}
+	return &val;
+}
