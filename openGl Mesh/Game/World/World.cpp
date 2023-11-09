@@ -52,8 +52,7 @@ void World::startGenerateChunk(const glm::vec2& chunkPos)
 	chunks[chunkPos] = ChunkColumn();
 	chunkCreationInprogress = true;
 	const std::list<ChunkColumn*>& neibours = getNeibours(chunkPos);
-	// chunks.at(chunkPos).populateBuffer(neibours, bs);
-	chunkDataGenerated = std::async(&ChunkColumn::buildBlockStore, std::ref(chunks[chunkPos]), chunkPos, seed, neibours);
+	chunkDataGenerated = std::async(&ChunkColumn::generateChunkData, std::ref(chunks[chunkPos]), chunkPos, seed, neibours);
 }
 
 void World::tryFinishGenerateChunk(const glm::vec2& chunkPos)

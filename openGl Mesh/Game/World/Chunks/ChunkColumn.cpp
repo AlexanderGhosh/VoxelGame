@@ -22,7 +22,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
 
-void ChunkColumn::buildBlockStore(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
+void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
 {
 	this->seed = seed;
 	position = pos;
