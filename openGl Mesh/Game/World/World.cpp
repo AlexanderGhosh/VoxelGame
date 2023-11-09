@@ -1,26 +1,26 @@
 #include "World.h"
 #include <iostream>
+#include <algorithm>
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Timer.h"
 #include <gtx/string_cast.hpp>
 #include "../../Helpers/Functions.h"
 
-World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false) {
+World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions() {
 }
-World::World(bool gen, bool terrain, unsigned int seed) : World() {
+World::World(unsigned int seed) : World() {
 	this->seed = seed;
-	if (!gen) return;
-	getNewChunkPositions(!terrain);
+	getNewChunkPositions();
 }
 
 
-void World::getNewChunkPositions(bool flat) {
-	std::vector<glm::vec2> chunkPositions = centeredPositions(glm::vec2(0), RENDER_DISTANCE);
+void World::getNewChunkPositions() {
+	std::unordered_set<glm::vec2> chunkPositions = centeredPositions(glm::vec2(0), RENDER_DISTANCE);
 
 	generateTerrain(chunkPositions);
 }
 
-void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
+void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions) {
 	std::cout << "Started\n";
 
 	WorldMap worldMap;
@@ -47,27 +47,49 @@ void World::generateTerrain(const std::vector<glm::vec2>& chunkPositions) {
 	worldMap.clear();
 }
 
-void World::startGenerateChunk(const glm::vec2& chunkPos)
+void World::startGenerateChunks(const glm::vec2& center)
 {
-	chunks[chunkPos] = ChunkColumn();
 	chunkCreationInprogress = true;
-	const std::list<ChunkColumn*>& neibours = getNeibours(chunkPos);
-	// chunks[chunkPos].generateChunkData(chunkPos, seed, neibours);
-	chunkDataGenerated = std::async(&ChunkColumn::generateChunkData, std::ref(chunks[chunkPos]), chunkPos, seed, neibours);
+	generationPositions = centeredPositions(center, RENDER_DISTANCE);
+
+	for (auto itt = generationPositions.begin(); itt != generationPositions.end();) {
+		const glm::vec2& p = *itt;
+		if (chunks.contains(p)) {
+			itt = generationPositions.erase(itt);
+		}
+		else {
+			itt++;
+		}
+	}
+
+	// compute set difference
+	chunkDataGenerated = std::async(&World::generateNewChunks, this, center);
 }
 
-void World::tryFinishGenerateChunk(const glm::vec2& chunkPos)
+void World::tryFinishGenerateChunk()
 {
 	if (chunkCreationInprogress && chunkDataGenerated._Is_ready()) {
 		chunkCreationInprogress = false;
-		ChunkColumn& chunk = chunks.at(chunkPos);
-		chunk.setUpBuffer();
-		geomDrawable.add(chunk);
+		for (const glm::vec2& chunkPos : generationPositions) {
+			ChunkColumn& chunk = chunks.at(chunkPos);
+			chunk.setUpBuffer();
+			geomDrawable.add(chunk);
 
-		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
-		for (ChunkColumn* chunk : neighbours) {
-			chunk->reallocBuffer();
+			const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
+			for (ChunkColumn* chunk : neighbours) {
+				chunk->reallocBuffer();
+			}
 		}
+		std::cout << "Generation finished" << std::endl;
+	}
+}
+
+void World::generateNewChunks(const glm::vec2& center)
+{
+	for (const glm::vec2& chunkPos : generationPositions) {
+		chunks[chunkPos] = ChunkColumn();
+		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
+		chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
 	}
 }
 
@@ -106,7 +128,7 @@ void World::save() const
 
 void World::render(Shader* shader) {
 	if (chunkCreationInprogress) {
-		tryFinishGenerateChunk(glm::vec2(4, 0));
+		tryFinishGenerateChunk();
 	}
 	geomDrawable.render(shader);
 }
@@ -125,8 +147,7 @@ const std::list<glm::vec3> offsets = {
 	glm::vec3(1, 0, 0),
 
 	glm::vec3(0, 1, 0),
-	glm::vec3(0, -1, 0),
-
+	glm::vec3(0, -1, 0)
 };
 
 void World::placeBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front)
@@ -196,15 +217,15 @@ void World::breakBlock(const float zCoord, const glm::mat4& invPV, const glm::ve
 	}
 }
 
-const std::vector<glm::vec2> World::centeredPositions(const glm::vec2& origin, int renderDist) const {
+const std::unordered_set<glm::vec2> World::centeredPositions(const glm::vec2& origin, int renderDist) const {
 
-	std::vector<glm::vec2> res;
+	std::unordered_set<glm::vec2> res;
 	for (int x = -renderDist; x < renderDist + 1; x++) {
 		int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
 		for (int y = -Y; y < Y + 1; y++) {
 			glm::vec2 pos(x, y);
 			pos += origin;
-			res.push_back(pos);
+			res.insert(pos);
 		}
 	}
 	return res;

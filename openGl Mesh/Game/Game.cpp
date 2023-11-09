@@ -94,7 +94,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 void Game::generateWorld() {
 	srand(time(0));
-	world = World(true, false, 32);
+	world = World(32);
 	world.setUpDrawable();
 }
 
@@ -362,7 +362,11 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		std::cout << "Saved" << std::endl;
 	}
 	if (key == GLFW_KEY_G && action == GLFW_RELEASE) {
-		world.startGenerateChunk({ 4, 0 });
+		glm::vec3 p = floor(mainCamera.GetPosition());
+		glm::ivec2 c(p.x, p.z);
+		reduceToMultiple(c, CHUNK_SIZE);
+		c /= CHUNK_SIZE;
+		world.startGenerateChunks(c);
 		std::cout << "Generated" << std::endl;
 	}
 }
