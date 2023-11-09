@@ -39,6 +39,9 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
+			if (x == 0 && z == 2) {
+				int g = 0;
+			}
 			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
 
 			int height = encodes.height();
@@ -52,7 +55,7 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 				}
 
 				const BlockDetails& blockDets1 = getDetails(b1);
-				data.textureIndex_ = (unsigned int)b1;
+				data.textureIndex_ = (unsigned char)b1;
 				bool added = false;
 				for (unsigned int i = 0; i < count1; i++) {
 					glm::vec3 currentLocalPos = glm::vec3(x, height - i, z);
@@ -71,10 +74,9 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 							b2 = blockStore.getBlock(newLocalPosition);
 							if (b2 == Block::ERROR) {
 								glm::vec2 newChunkPos = position + glm::vec2(off.x, off.z);
-								glm::vec3 newLocalPos = newLocalPosition - glm::sign(newLocalPosition) * CHUNK_SIZE_F;
 								for (ChunkColumn* chunk : neibours) {
 									if (chunk->getPosition() == newChunkPos) {
-										b2 = chunk->getBlock(newLocalPos);
+										b2 = chunk->getBlock(newWorldPosition);
 										break;
 									}
 								}
@@ -456,7 +458,7 @@ const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
 	if (editedBlocks.size() > 0 && editedBlocks.find(worldPos) != editedBlocks.end()) {
 		return editedBlocks.at(worldPos);
 	}
-	return Block::ERROR;
+	//return Block::ERROR;
 	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, seed);
 	return column[worldPos.y];
 }
