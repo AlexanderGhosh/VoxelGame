@@ -5,7 +5,7 @@
 #include <gtx/string_cast.hpp>
 #include "../../Helpers/Functions.h"
 
-World::World() : chunks(), geomDrawable(), seed(), blockStoreCreated(), chunkCreationInprogress(false) {
+World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false) {
 }
 World::World(bool gen, bool terrain, unsigned int seed) : World() {
 	this->seed = seed;
@@ -51,31 +51,30 @@ void World::startGenerateChunk(const glm::vec2& chunkPos)
 {
 	chunks[chunkPos] = ChunkColumn();
 	chunkCreationInprogress = true;
-	blockStoreCreated = std::async(&ChunkColumn::buildBlockStore, &chunks[chunkPos], chunkPos, seed);
+	const std::list<ChunkColumn*>& neibours = getNeibours(chunkPos);
+	// chunks.at(chunkPos).populateBuffer(neibours, bs);
+	chunkDataGenerated = std::async(&ChunkColumn::buildBlockStore, std::ref(chunks[chunkPos]), chunkPos, seed, neibours);
 }
 
 void World::tryFinishGenerateChunk(const glm::vec2& chunkPos)
 {
-	if (chunkCreationInprogress && blockStoreCreated.valid()) {
+	if (chunkCreationInprogress && chunkDataGenerated._Is_ready()) {
 		chunkCreationInprogress = false;
-		BlockStore bs = blockStoreCreated.get();
-		const auto neibours = getNeibours(chunkPos);
-		std::list<ChunkColumn*> n(neibours.begin(), neibours.end());
-		chunks.at(chunkPos).populateBuffer(n, bs);
-		geomDrawable.add(chunks.at(chunkPos));
+		ChunkColumn& chunk = chunks.at(chunkPos);
+		chunk.setUpBuffer();
+		geomDrawable.add(chunk);
 	}
 }
 
-const std::vector<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
+const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
 {
-	std::vector<glm::vec2> offsets = {
+	std::list<glm::vec2> offsets = {
 		glm::vec2(0, 1),
 		glm::vec2(-1, 0),
 		glm::vec2(1, 0),
 		glm::vec2(0, -1)
 	};
-	std::vector<ChunkColumn*> res;
-	res.reserve(4);
+	std::list<ChunkColumn*> res;
 	for (auto& [pos, chunk] : chunks) {
 		for (auto itt = offsets.begin(); itt != offsets.end();) {
 			const glm::vec2& delta = *itt;
@@ -89,7 +88,6 @@ const std::vector<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
 			}
 		}
 	}
-
 
 	return res;
 }

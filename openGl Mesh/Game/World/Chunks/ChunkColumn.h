@@ -11,10 +11,14 @@ public:
 	ChunkColumn();
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
-	// creators
+	// runtime chunk generation
 	// will buildBlockStore this chunk inplace
-	BlockStore buildBlockStore(glm::vec2 pos, unsigned int seed);
+	void buildBlockStore(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours);
 	void populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
+	void setUpBuffer();
+
+
+	// inital world generation
 	void populateBuffer(WorldMap& worldMap);
 
 	const BufferGeom& getBuffer() const;

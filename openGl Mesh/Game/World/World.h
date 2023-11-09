@@ -16,13 +16,13 @@ public:
 	void placeBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
 	void breakBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
 
-	const std::vector<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
+	const std::list<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
 
 	void save() const;
 	void startGenerateChunk(const glm::vec2& chunkPos);
 	void tryFinishGenerateChunk(const glm::vec2& chunkPos);
 private:
-	std::future<BlockStore> blockStoreCreated;
+	std::future<void> chunkDataGenerated;
 	bool chunkCreationInprogress;
 	unsigned int seed;
 	Chunks chunks;

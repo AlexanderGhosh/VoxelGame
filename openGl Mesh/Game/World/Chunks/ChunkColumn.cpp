@@ -22,12 +22,12 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
 
-BlockStore ChunkColumn::buildBlockStore(glm::vec2 pos, unsigned int seed)
+void ChunkColumn::buildBlockStore(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
 {
 	this->seed = seed;
 	position = pos;
 	BlockStore bs(pos * CHUNK_SIZE_F, seed);
-	return bs;
+	populateBuffer(neibours, bs);
 }
 
 void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
@@ -128,6 +128,11 @@ void ChunkColumn::populateBuffer(const std::list<ChunkColumn*>& neibours, const 
 		}
 	}
 	bufferData.shrink_to_fit();
+	// setUpBuffer(bufferData);
+}
+
+void ChunkColumn::setUpBuffer()
+{
 	buffer.setUp(bufferData.data(), bufferData.size());
 }
 
@@ -362,7 +367,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 		itt1++;
 	}
 
-	std::vector<ChunkColumn*> neibours;
+	std::list<ChunkColumn*> neibours;
 	if (toAdd.size() > 0) {
 		for (const AddFaces& add : toAdd) {
 			if (outOfRange(add.worldPos - position * CHUNK_SIZE_F)) {
