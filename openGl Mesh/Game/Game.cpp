@@ -199,8 +199,8 @@ void Game::showStuff(const glm::mat4& projection) {
 	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 	glBlendEquation(GL_FUNC_ADD);
 	
-	glm::vec3 black(0);
-	glm::vec3 white(1);
+	glm::vec4 black(0);
+	glm::vec4 white(1);
 	glClearBufferfv(GL_COLOR, 0, &black[0]);
 	glClearBufferfv(GL_COLOR, 1, &white[0]);
 	

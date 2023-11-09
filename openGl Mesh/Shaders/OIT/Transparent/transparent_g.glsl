@@ -40,7 +40,7 @@ int indices[] = int[](
 
 void main() {
     blockColourIndex = vs_out[0].blockColourIndex;
-    if(blockColourIndex == 4u) {
+    if(blockColourIndex != 5u) {
         return; // discards water
     }
     for (uint i = 0; i < 6; i++) {
