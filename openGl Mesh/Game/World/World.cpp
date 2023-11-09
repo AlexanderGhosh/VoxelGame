@@ -52,6 +52,7 @@ void World::startGenerateChunk(const glm::vec2& chunkPos)
 	chunks[chunkPos] = ChunkColumn();
 	chunkCreationInprogress = true;
 	const std::list<ChunkColumn*>& neibours = getNeibours(chunkPos);
+	// chunks[chunkPos].generateChunkData(chunkPos, seed, neibours);
 	chunkDataGenerated = std::async(&ChunkColumn::generateChunkData, std::ref(chunks[chunkPos]), chunkPos, seed, neibours);
 }
 
