@@ -23,6 +23,7 @@
     <ProjectGuid>{398D763B-370C-4F89-8B14-DA2ACE3D184F}</ProjectGuid>
     <RootNamespace>openGlMesh</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>VoxelGame</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
