@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\OBJLoader;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\OBJLoader;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
