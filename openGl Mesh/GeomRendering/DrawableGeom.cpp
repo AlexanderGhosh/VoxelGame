@@ -45,6 +45,19 @@ void DrawableGeom::add(ChunkColumn& chunk)
 	data.emplace_back(chunk.getBufferPtr(), nullptr, glm::vec3(pos.x, 0, pos.y));
 }
 
+void DrawableGeom::remove(const glm::vec2& chunkPos)
+{
+	for (auto itt = data.begin(); itt != data.end();) {
+		DrawData& d = *itt;
+		if (d.drawOrigin == glm::vec3(chunkPos.x, 0, chunkPos.y)) {
+			itt = data.erase(itt);
+		}
+		else {
+			itt++;
+		}
+	}
+}
+
 void DrawableGeom::draw(Shader* shader) const
 {
 	for (const DrawData& data : this->data) {

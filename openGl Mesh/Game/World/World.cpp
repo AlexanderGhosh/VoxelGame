@@ -55,6 +55,19 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 	chunkCreationInprogress = true;
 	generationPositions = centeredPositions(center, RENDER_DISTANCE);
 
+	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
+	{
+		auto& [pos, _] = *itt;
+		if (!generationPositions.contains(pos))
+		{
+			geomDrawable.remove(pos);
+			itt = chunks.erase(itt);
+		}
+		else
+		{
+			++itt;
+		}
+	}
 	for (auto itt = generationPositions.begin(); itt != generationPositions.end();) {
 		const glm::vec2& p = *itt;
 		if (chunks.contains(p)) {
