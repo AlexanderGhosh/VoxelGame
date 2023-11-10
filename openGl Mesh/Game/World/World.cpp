@@ -47,8 +47,11 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 	worldMap.clear();
 }
 
-void World::startGenerateChunks(const glm::vec2& center)
+void World::tryStartGenerateChunks(const glm::vec2& center)
 {
+	if (chunkCreationInprogress) {
+		return;
+	}
 	chunkCreationInprogress = true;
 	generationPositions = centeredPositions(center, RENDER_DISTANCE);
 
@@ -80,7 +83,7 @@ void World::tryFinishGenerateChunk()
 				chunk->reallocBuffer();
 			}
 		}
-		std::cout << "Generation finished" << std::endl;
+		// std::cout << "Generation finished" << std::endl;
 	}
 }
 

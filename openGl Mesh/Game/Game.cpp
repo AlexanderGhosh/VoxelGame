@@ -114,6 +114,13 @@ void Game::doLoop(const glm::mat4& projection) {
 		glfwPollEvents();
 		processKeys();
 
+		glm::vec3 p = floor(mainCamera.GetPosition());
+		glm::ivec2 c(p.x, p.z);
+		reduceToMultiple(c, CHUNK_SIZE);
+		c /= CHUNK_SIZE;
+		world.tryStartGenerateChunks(c);
+		// std::cout << "Generated" << std::endl;
+
 		manager->updateEvent();
 
 		manager->fixedUpdateEvent();
@@ -366,7 +373,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		glm::ivec2 c(p.x, p.z);
 		reduceToMultiple(c, CHUNK_SIZE);
 		c /= CHUNK_SIZE;
-		world.startGenerateChunks(c);
+		world.tryStartGenerateChunks(c);
 		std::cout << "Generated" << std::endl;
 	}
 }

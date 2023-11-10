@@ -19,7 +19,7 @@ constexpr float WIDTH = 1280;
 constexpr float ASPECT_RATIO = WIDTH / HEIGHT;
 constexpr float FOV = 45;
 constexpr float NEAR_PLANE = 0.1;
-constexpr float FAR_PLANE = 200;
+constexpr float FAR_PLANE = 500;
 constexpr float SHADOW_DISTANCE = 1000;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
