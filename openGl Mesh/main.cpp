@@ -14,8 +14,8 @@
 #include "Helpers/BlockDetails.h"
 
 #include "EntityComponent/Entity.h"
-#include "EntityComponent/Mangers/EntityManager.h"
-#include "EntityComponent/Mangers/ComponentManager.h"
+#include "Mangers/EntityManager.h"
+#include "Mangers/ComponentManager.h"
 #include <gtx/string_cast.hpp>
 
 glm::ivec2 DIM(1280, 720);

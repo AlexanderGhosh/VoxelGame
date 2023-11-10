@@ -2,7 +2,7 @@
 #include <gtx/string_cast.hpp>
 #include "../Shaders/Shader.h"
 #include "../Textures/Texture.h"
-#include "../EntityComponent/Mangers/EntityManager.h"
+#include "../Mangers/EntityManager.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;

@@ -1,7 +1,7 @@
 #include "EntityManager.h"
 #include "ComponentManager.h"
-#include "../Component.h"
-#include "../Components/Transform.h"
+#include "../EntityComponent/Component.h"
+#include "../EntityComponent/Components/Transform.h"
 
 EntityManager::EntityManager() : Manager<EntityManager>(), _entities(), _numEntitysCreated(0)
 {

@@ -1,5 +1,5 @@
 #include "ComponentManager.h"
-#include "../Component.h"
+#include "../EntityComponent/Component.h"
 
 ComponentManager::ComponentManager() : Manager<ComponentManager>(), _components(), _numComponentsCreated()
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include <list>
-#include "Mangers/ComponentManager.h"
+#include "../Mangers/ComponentManager.h"
 
 class Component;
 class EntityManager;

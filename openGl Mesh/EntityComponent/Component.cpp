@@ -1,6 +1,6 @@
 #include "Component.h"
 #include "ComponentTypes.h"
-#include "Mangers/ComponentManager.h"
+#include "../Mangers/ComponentManager.h"
 
 Component::Component() : _id()
 {
