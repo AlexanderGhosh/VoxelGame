@@ -20,7 +20,7 @@ public:
 	const std::list<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
 
 	void save() const;
-	void startGenerateChunks(const glm::vec2& chunkPos);
+	void startGenerateChunks(const glm::vec2& chunkPos); 
 	void tryFinishGenerateChunk();
 
 private:
