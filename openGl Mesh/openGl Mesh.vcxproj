@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\OBJLoader;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\OBJLoader;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -164,6 +164,7 @@
     <ClCompile Include="EntityComponent\Component.cpp" />
     <ClCompile Include="EntityComponent\Components\Transform.cpp" />
     <ClCompile Include="EntityComponent\Entity.cpp" />
+    <ClCompile Include="IndexedBuffer.cpp" />
     <ClCompile Include="Mangers\ComponentManager.cpp" />
     <ClCompile Include="Mangers\EntityManager.cpp" />
     <ClCompile Include="EventsSystem\Event.cpp" />
@@ -179,6 +180,9 @@
     <ClCompile Include="Helpers\ShadowBox.cpp" />
     <ClCompile Include="Helpers\Timer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mangers\ModelManager.cpp" />
+    <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="Renders\ModelRenderer.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="SOIL2\etc1_utils.c" />
     <ClCompile Include="SOIL2\image_DXT.c" />
@@ -216,6 +220,7 @@
     <ClInclude Include="BlockStore.h" />
     <ClInclude Include="EntityComponent\Components\Transform.h" />
     <ClInclude Include="EntityComponent\ComponentTypes.h" />
+    <ClInclude Include="IndexedBuffer.h" />
     <ClInclude Include="Mangers\ComponentManager.h" />
     <ClInclude Include="EntityComponent\Component.h" />
     <ClInclude Include="EntityComponent\Entity.h" />
@@ -239,6 +244,9 @@
     <ClInclude Include="Helpers\Functions.h" />
     <ClInclude Include="Helpers\ShadowBox.h" />
     <ClInclude Include="Helpers\Timer.h" />
+    <ClInclude Include="Mangers\ModelManager.h" />
+    <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="Renders\ModelRenderer.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SOIL2\etc1_utils.h" />
     <ClInclude Include="SOIL2\image_DXT.h" />

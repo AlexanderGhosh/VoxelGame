@@ -87,12 +87,6 @@
     <ClCompile Include="Helpers\ShadowBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EntityComponent\Mangers\EntityManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityComponent\Mangers\ComponentManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EntityComponent\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,6 +97,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EventsSystem\Event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mangers\ComponentManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mangers\EntityManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mangers\ModelManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\ModelRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexedBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -252,15 +264,6 @@
     <ClInclude Include="EntityComponent\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EntityComponent\Mangers\EntityManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityComponent\Mangers\Manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityComponent\Mangers\ComponentManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EntityComponent\Components\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -274,6 +277,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EventsSystem\IEventCallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mangers\ComponentManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mangers\EntityManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mangers\Manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mangers\ModelManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\ModelRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexedBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,7 +20,7 @@ UI_Renderer Game::uiRenderer;
 const glm::vec3 lightPos(100, 100, 100);
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), 
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos) {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos), modelRenderer() {
 	mainCamera = Camera({ 0, 2, 0 });
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -129,6 +129,8 @@ void Game::doLoop(const glm::mat4& projection) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff(projection);
+		Shader* modelShader = &SHADERS[MODEL];
+		modelRenderer.render(modelShader);
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -136,6 +138,12 @@ void Game::doLoop(const glm::mat4& projection) {
 	}
 
 	manager->destroyEvent();
+
+	modelRenderer.cleanUp();
+}
+
+void Game::addModel(IndexedBuffer& buffer) {
+	modelRenderer.add(buffer);
 }
 
 void Game::calcTimes() {

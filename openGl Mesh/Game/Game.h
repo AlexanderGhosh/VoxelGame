@@ -12,6 +12,7 @@
 #include "World/World.h"
 #include "../FrameBuffer.h"
 #include "../Helpers/ShadowBox.h"
+#include "../Renders/ModelRenderer.h"
 
 class EntityManager;
 class Camera;
@@ -44,6 +45,8 @@ public:
 
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
+
+	void addModel(IndexedBuffer& buffer);
 private:
 	void setupPlayer();
 	void setUpScreenQuad();
@@ -57,6 +60,7 @@ private:
 	EntityManager* manager;
 
 	ShadowBox shadowBox;
+	ModelRenderer modelRenderer;
 
 	unsigned int quadVBO, quadVAO;
 
