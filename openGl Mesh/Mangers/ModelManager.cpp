@@ -1,17 +1,13 @@
 #include "ModelManager.h"
-#include "../IndexedBuffer.h"
+#include "../Helpers/ModelLoaders/ModelLoader.h"
+#include "../Helpers/ModelLoaders/Model.h"
 
-ModelManager::ModelManager() : loader()
+ModelManager::ModelManager()
 {
 }
-IndexedBuffer ModelManager::load(const std::string& file, bool& success)
+Model ModelManager::load(const std::string& file)
 {
-	success = loader.LoadFile(file);
-
-	objl::Mesh mesh = loader.LoadedMeshes.back();
-	IndexedBuffer res;
-	res.setUp(mesh);
-	return res;
+	return ModelLoader::Load(file);
 }
 
 void ModelManager::destroy()

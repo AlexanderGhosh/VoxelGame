@@ -14,6 +14,7 @@
 #include "../Helpers/ShadowBox.h"
 #include "../Renders/ModelRenderer.h"
 
+class Model;
 class EntityManager;
 class Camera;
 
@@ -46,7 +47,7 @@ public:
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
 
-	void addModel(IndexedBuffer& buffer);
+	void addModel(Model& model);
 private:
 	void setupPlayer();
 	void setUpScreenQuad();
@@ -57,10 +58,10 @@ private:
 	static World world;
 	static UI_Renderer uiRenderer;
 	
+	ModelRenderer modelRenderer;
 	EntityManager* manager;
 
 	ShadowBox shadowBox;
-	ModelRenderer modelRenderer;
 
 	unsigned int quadVBO, quadVAO;
 
@@ -74,6 +75,7 @@ private:
 	std::map<char, Character> Letters;
 	glm::ivec2 windowDim;
 
+	void renderModels(const glm::mat4& projection);
 	void showFPS();
 	void calcTimes();
 	void setupEventCB(GLFWwindow* window);

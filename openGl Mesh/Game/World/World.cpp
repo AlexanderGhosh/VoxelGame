@@ -1,10 +1,11 @@
 #include "World.h"
 #include <iostream>
 #include <algorithm>
+#include <gtx/string_cast.hpp>
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Timer.h"
-#include <gtx/string_cast.hpp>
 #include "../../Helpers/Functions.h"
+#include "../../Shaders/Shader.h"
 
 World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions() {
 }

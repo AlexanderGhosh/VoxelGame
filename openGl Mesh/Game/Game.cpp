@@ -3,6 +3,10 @@
 #include "../Shaders/Shader.h"
 #include "../Textures/Texture.h"
 #include "../Mangers/EntityManager.h"
+#include "../Mangers/ModelManager.h"
+#include "../IndexedBuffer.h"
+#include "../Helpers/ModelLoaders/ModelLoader.h"
+#include "../Helpers/ModelLoaders/Model.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -107,7 +111,13 @@ void Game::doLoop(const glm::mat4& projection) {
 	manager->startEvent();
 	
 	mainCamera.setPosition({ 8, 25, 15 });
-	
+
+	// LOAD MODELS
+	ModelManager& modelManager = ModelManager::getInstance();
+	auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	std::cout << "Model Loaded" << std::endl;
+	addModel(buffer);
+	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
 	while (gameRunning) {
 		calcTimes();
@@ -129,8 +139,6 @@ void Game::doLoop(const glm::mat4& projection) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff(projection);
-		Shader* modelShader = &SHADERS[MODEL];
-		modelRenderer.render(modelShader);
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -138,12 +146,10 @@ void Game::doLoop(const glm::mat4& projection) {
 	}
 
 	manager->destroyEvent();
-
-	modelRenderer.cleanUp();
 }
 
-void Game::addModel(IndexedBuffer& buffer) {
-	modelRenderer.add(buffer);
+void Game::addModel(Model& model) {
+	modelRenderer.add(model);
 }
 
 void Game::calcTimes() {
@@ -158,6 +164,15 @@ void Game::showFPS() {
 	if (GameConfig::showFPS) {
 		showText("FPS: " + std::to_string(frameRate), { 5, 875 }, 0.5f);
 	}
+}
+
+void Game::renderModels(const glm::mat4& projection) {
+	Shader* modelShader = &SHADERS[MODEL];
+	modelShader->bind();
+	modelShader->setValue("view", mainCamera.GetViewMatrix());
+	modelShader->setValue("projection", projection);
+	modelRenderer.render(modelShader);
+	modelShader->unBind();
 }
 
 void Game::showStuff(const glm::mat4& projection) {
@@ -201,6 +216,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	opaue.setValue("viewPos", mainCamera.GetPosition());
 
 	world.render(&opaue);
+	renderModels(projection);
 	manager->renderEvent();
 
 	opaue.unBind();

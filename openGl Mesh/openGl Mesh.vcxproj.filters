@@ -114,7 +114,10 @@
     <ClCompile Include="IndexedBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OBJLoader.cpp">
+    <ClCompile Include="Helpers\ModelLoaders\ModelLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers\ModelLoaders\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -297,7 +300,13 @@
     <ClInclude Include="IndexedBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OBJLoader.h">
+    <ClInclude Include="Helpers\ModelLoaders\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\ModelLoaders\ModelLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\ModelLoaders\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

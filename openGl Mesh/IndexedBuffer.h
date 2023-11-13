@@ -1,6 +1,6 @@
 #pragma once
-#include "OBJLoader.h"
 
+class Mesh;
 class IndexedBuffer
 {
 private:
@@ -8,8 +8,9 @@ private:
 	size_t _size;
 public:
 	IndexedBuffer();
+	IndexedBuffer(const Mesh& mesh);
 	~IndexedBuffer();
-	void setUp(const objl::Mesh& mesh);
+	void setUp(const Mesh& mesh);
 
 	size_t size() const;
 

@@ -7,8 +7,11 @@ layout(location = 2) in vec2 texC;
 out vec3 normal;
 out vec2 texCoords;
 
+uniform mat4 view;
+uniform mat4 projection;
+
 void main() {
-    gl_Position = vec4(vert, 1);
+    gl_Position = projection * view * vec4(vert, 1);
     normal = norm;
     texCoords = texC;
 }

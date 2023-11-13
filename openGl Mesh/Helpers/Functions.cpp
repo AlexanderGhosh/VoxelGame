@@ -2,6 +2,20 @@
 #include "Constants.h"
 
 
+std::list<std::string> splitString(std::string str, const std::string& delimiter)
+{
+	size_t pos = 0;
+	std::string token;
+	std::list<std::string> res;
+	while ((pos = str.find(delimiter)) != std::string::npos) {
+		token = str.substr(0, pos);
+		res.push_back(token);
+		str.erase(0, pos + delimiter.length());
+	}
+	res.push_back(str);
+	return res;
+}
+
 void markSlot(unsigned char& val, const unsigned int slot)
 {
 	val |= 1u << slot;

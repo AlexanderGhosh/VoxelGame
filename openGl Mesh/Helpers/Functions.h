@@ -2,12 +2,15 @@
 #include <glm.hpp>
 #include <string>
 #include <unordered_map>
+#include <list>
 #include "BlockDetails.h"
 
 class Texture;
 
 enum class Texture_Names : unsigned char;
 enum class Block : unsigned char;
+
+std::list<std::string> splitString(std::string str, const std::string& delimiter);
 
 void markSlot(unsigned char& val, const unsigned int slot);
 

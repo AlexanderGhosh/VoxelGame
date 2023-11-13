@@ -1,18 +1,18 @@
 #pragma once
 #include <list>
 
-class IndexedBuffer;
+class Model;
 class Shader;
 
 class ModelRenderer
 {
 private:
-	std::list<IndexedBuffer> buffers;
+	std::list<Model> models;
 public:
 	ModelRenderer();
 	~ModelRenderer();
 
-	void add(IndexedBuffer& buffer);
+	void add(Model& buffer);
 	
 	void render(Shader* shader);
 

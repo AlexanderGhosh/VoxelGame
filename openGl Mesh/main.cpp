@@ -19,8 +19,6 @@
 #include "Mangers/ComponentManager.h"
 #include "Mangers/ModelManager.h"
 
-#include "IndexedBuffer.h"
-
 glm::ivec2 DIM(1280, 720);
 
 GLFWwindow* createWindow();
@@ -51,11 +49,6 @@ int main() {
 	Game game = Game(DIM);
 	GameConfig::showFPS = true;
 
-	// LOAD MODELS
-	ModelManager& modelManager = ModelManager::getInstance();
-	bool success = false;
-	auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\Enterprise NCC 1701 D\\enterprise1701d.obj", success);
-	game.addModel(buffer);
 
 	game.setWindow(window);
 	game.generateWorld();
