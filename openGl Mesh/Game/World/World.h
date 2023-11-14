@@ -9,7 +9,6 @@ class World
 public:
 	World();
 	World(unsigned int seed);
-	~World();
 
 	void render(Shader* shader);
 

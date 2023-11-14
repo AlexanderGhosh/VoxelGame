@@ -14,12 +14,6 @@ World::World(unsigned int seed) : World() {
 	getNewChunkPositions();
 }
 
-World::~World()
-{
-	chunkDataGenerated.get(); // pauses the main thread until this thread has finished
-}
-
-
 void World::getNewChunkPositions() {
 	std::unordered_set<glm::vec2> chunkPositions = centeredPositions(glm::vec2(0), RENDER_DISTANCE);
 
