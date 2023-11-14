@@ -24,7 +24,7 @@ UI_Renderer Game::uiRenderer;
 const glm::vec3 lightPos(100, 100, 100);
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), 
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos), modelRenderer() {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos), modelRenderer(), gBuffer() {
 	mainCamera = Camera({ 0, 2, 0 });
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -56,18 +56,40 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	oitFrameBuffer1 = FrameBuffer(windowDim);
 	oitFrameBuffer1.setUp(detailsOIT);
 
+
+	// DEFERED RENERING
+	FrameBufferInit deffered; // may need to make this depth texture the one used by the transparancy buffer
+	deffered.hasDepth = true;
+	deffered.depthTexture = true;
+
+	ColourBufferInit albedoPos;
+	albedoPos.format = GL_FLOAT;
+	albedoPos.internalFormat = GL_RGBA;
+	albedoPos.type = GL_RGBA;
+
+	ColourBufferInit normal;
+	normal.format = GL_FLOAT;
+	normal.internalFormat = GL_RGB;
+	normal.type = GL_RGB;
+
+	deffered.colourBuffers = { albedoPos, normal };
+
+	gBuffer = FrameBuffer(windowDim);
+	gBuffer.setUp(deffered);
+
+	// TRANSPARENT BUFFER
 	ColourBufferInit accumOIT;
-	accumOIT.format = GL_HALF_FLOAT;
+	accumOIT.format = GL_FLOAT;
 	accumOIT.internalFormat = GL_RGBA;
 	accumOIT.type = GL_RGBA;
 
 	ColourBufferInit revealOIT;
-	revealOIT.format = GL_HALF_FLOAT;
+	revealOIT.format = GL_FLOAT;
 	revealOIT.internalFormat = GL_R8;
 	revealOIT.type = GL_RED;
 
 	detailsOIT.colourBuffers = { accumOIT, revealOIT };
-	detailsOIT.depthBuffer = oitFrameBuffer1.getDepth();
+	detailsOIT.depthBuffer = gBuffer.getDepth();
 
 	oitFrameBuffer2 = FrameBuffer(windowDim);
 	oitFrameBuffer2.setUp(detailsOIT);
@@ -94,6 +116,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 	shadowFramebuffer = FrameBuffer({ SHADOW_MAP_SIZE , SHADOW_MAP_SIZE });
 	shadowFramebuffer.setUp(detailsShadows);
+
 }
 
 void Game::generateWorld() {
@@ -196,30 +219,43 @@ void Game::showStuff(const glm::mat4& projection) {
 
 	// 2. render for OIT
 	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
-	oitFrameBuffer1.bind();
 	// 2.1 Opaque
+	// 2.1.1 Populate G-Buffer
+	gBuffer.bind();
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CW);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth());
-	
-	Shader& opaue = SHADERS[OIT_OPAQUE];
-	opaue.bind();
-	opaue.setValue("view", viewMatrix);
-	opaue.setValue("projection", projection);
-	opaue.setValue("lightMatrix", LSM);
-	opaue.setValue("shadowMap", 0);
-	opaue.setValue("lightPos", lightPos);
-	opaue.setValue("viewPos", mainCamera.GetPosition());
+	Shader& gbufferS = SHADERS[GBUFFER];
+	gbufferS.bind();
+	gbufferS.setValue("view", viewMatrix);
+	gbufferS.setValue("projection", projection);
+	gbufferS.setValue("numBlocks", 8.f);
 
-	world.render(&opaue);
+	world.render(&gbufferS);
 	renderModels(projection);
 	manager->renderEvent();
 
-	opaue.unBind();
+	// 2.1.2 Defferd Shading 
+	oitFrameBuffer1.bind();
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+	Shader& deffered = SHADERS[DEFFERED];
+	deffered.bind();
+	deffered.setValue("numBlocks", 8.f);
+	deffered.setValue("albedoPos", 0);
+	deffered.setValue("normals", 1);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1));
+
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 
 	// 2.2 Transparent
 	oitFrameBuffer2.bind(); // render to the OIT framebuffer2

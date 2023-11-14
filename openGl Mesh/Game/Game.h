@@ -65,7 +65,7 @@ private:
 
 	unsigned int quadVBO, quadVAO;
 
-	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer;
+	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer, gBuffer;
 	GLFWwindow* window;
 	float deltaTime;
 	unsigned int frameRate;
