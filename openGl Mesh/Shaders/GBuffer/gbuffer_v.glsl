@@ -40,7 +40,7 @@ void main() {
 
     vs_out.vp = projection * view;
 
-    gl_Position.rgb = worldPos_;
+    gl_Position.xyz = worldPos_;
 
     vs_out.cubeType = cubeType_;
     vs_out.blockColourIndex = blockColourIndex_;

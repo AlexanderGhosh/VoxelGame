@@ -69,8 +69,8 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 	ColourBufferInit normal;
 	normal.format = GL_FLOAT;
-	normal.internalFormat = GL_RGB;
-	normal.type = GL_RGB;
+	normal.internalFormat = GL_RGBA;
+	normal.type = GL_RGBA;
 
 	deffered.colourBuffers = { albedoPos, normal };
 
@@ -245,7 +245,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	deffered.bind();
 	deffered.setValue("numBlocks", 8.f);
 	deffered.setValue("albedoPos", 0);
-	deffered.setValue("normals", 1);
+	deffered.setValue("normalRnd", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));

@@ -13,6 +13,7 @@ in VS_OUT {
 flat out uint blockColourIndex;
 out vec3 normal;
 out vec3 fragPos;
+flat out vec2 rndSeed;
 
 const float size = 0.5;
 const float inv_size = 1.0 / size;
@@ -62,6 +63,7 @@ void main() {
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
 
+                rndSeed = gl_in[0].gl_Position.xy * gl_in[0].gl_Position.z;
                 fragPos = (vs_out[0].m * vec4(v, 1)).xyz;
 
                 gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
