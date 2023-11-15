@@ -12,6 +12,10 @@ Shader::Shader(std::string shaderName, bool hasGeom) : Shader() {
 	name = shaderName;
 	this->hasGeom = hasGeom;
 }
+unsigned int Shader::getId() const
+{
+	return program;
+}
 void Shader::bind() const {
 	glUseProgram(program);
 }

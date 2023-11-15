@@ -6,7 +6,8 @@ layout (triangle_strip, max_vertices = 24) out;
 in VS_OUT {
     uint cubeType;
     uint blockColourIndex;
-    mat4 vp;
+    mat4 view;
+    mat4 proj;
     mat4 m;
 } vs_out[];
 
@@ -57,16 +58,18 @@ void main() {
     
     for (uint i = 0; i < 6; i++) {
         uint slot = vs_out[0].cubeType & (1 << i);
-        if (slot > 0) {
+        if (slot > 0) {            
+            mat3 normalMatrix = transpose(inverse(mat3(vs_out[0].view * vs_out[0].m)));
             normal = normals[i];
+
             for (uint j = 0u; j < 4u; j++){ 
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
 
                 rndSeed = gl_in[0].gl_Position.xy * gl_in[0].gl_Position.z;
-                fragPos = (vs_out[0].m * vec4(v, 1)).xyz;
+                fragPos = (vs_out[0].view * vs_out[0].m * vec4(v, 1)).xyz;
 
-                gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
+                gl_Position = vs_out[0].proj * vs_out[0].view * vs_out[0].m * vec4(v, 1);
                 EmitVertex();
             }
             EndPrimitive();

@@ -11,7 +11,8 @@ uniform vec3 chunkPosition;
 out VS_OUT {
     uint cubeType;
     uint blockColourIndex;
-    mat4 vp;
+    mat4 view;
+    mat4 proj;
     mat4 m;
 } vs_out;
 
@@ -38,7 +39,9 @@ void main() {
     m[3][2] = worldPos_.z * voxelSize;
     vs_out.m = m;
 
-    vs_out.vp = projection * view;
+    // vs_out.vp = projection * view;
+    vs_out.view = view;
+    vs_out.proj = projection;
 
     gl_Position.xyz = worldPos_;
 

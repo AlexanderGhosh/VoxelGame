@@ -13,6 +13,7 @@ class Shader {
 public:
 	Shader();
 	Shader(std::string shaderName, bool hasGeom = false);
+	unsigned int getId() const;
 	void setUp();
 	void setName(const std::string& name);
 	void bind() const;

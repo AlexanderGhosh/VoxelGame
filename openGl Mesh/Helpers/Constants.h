@@ -13,6 +13,15 @@ class BlockDetails;
 class ChunkColumn;
 class BlockStore;
 
+#define SSAO
+#ifdef SSAO
+constexpr unsigned int SSAO_NUM_SAMPLES = 64;
+constexpr float SSAO_SCALE = 4;
+constexpr float SSAO_RADIUS = 0.5;
+constexpr float SSAO_BIAS = 0.025;
+#endif // SSAO
+
+
 constexpr float PI = 3.14;
 constexpr float HEIGHT = 720;
 constexpr float WIDTH = 1280;
@@ -108,7 +117,9 @@ enum SHADER_NAMES : unsigned char {
 	SHADOW,
 	MODEL,
 	GBUFFER,
-	DEFFERED
+	DEFFERED,
+	AO,
+	BLUR
 };
 
 enum class Move_Dir : unsigned char {

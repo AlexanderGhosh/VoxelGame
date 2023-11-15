@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <gtx/string_cast.hpp>
+#include <gtc/random.hpp>
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Timer.h"
 #include "../../Helpers/Functions.h"
@@ -99,6 +100,8 @@ void World::tryFinishGenerateChunk()
 		// std::cout << "Generation finished" << std::endl;
 	}
 }
+
+
 
 void World::generateNewChunks(const glm::vec2& center)
 {

@@ -7,6 +7,7 @@
 #include "../IndexedBuffer.h"
 #include "../Helpers/ModelLoaders/ModelLoader.h"
 #include "../Helpers/ModelLoaders/Model.h"
+#include <gtc/random.hpp>
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -67,12 +68,12 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	albedoPos.internalFormat = GL_RGBA;
 	albedoPos.type = GL_RGBA;
 
-	ColourBufferInit normal;
-	normal.format = GL_FLOAT;
-	normal.internalFormat = GL_RGBA;
-	normal.type = GL_RGBA;
+	ColourBufferInit normalRnd;
+	normalRnd.format = GL_FLOAT;
+	normalRnd.internalFormat = GL_RGBA;
+	normalRnd.type = GL_RGBA;
 
-	deffered.colourBuffers = { albedoPos, normal };
+	deffered.colourBuffers = { albedoPos, normalRnd };
 
 	gBuffer = FrameBuffer(windowDim);
 	gBuffer.setUp(deffered);
@@ -141,6 +142,11 @@ void Game::doLoop(const glm::mat4& projection) {
 	std::cout << "Model Loaded" << std::endl;
 	addModel(buffer);
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
+
+#ifdef SSAO
+	setUpSSAO();
+#endif // SSAO
+
 
 	while (gameRunning) {
 		calcTimes();
@@ -246,11 +252,23 @@ void Game::showStuff(const glm::mat4& projection) {
 	deffered.setValue("numBlocks", 8.f);
 	deffered.setValue("albedoPos", 0);
 	deffered.setValue("normalRnd", 1);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1));
+#ifdef SSAO
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex);
+	deffered.setValue("ssaoNoise", 2);
+	glUniform3fv(glGetUniformLocation(deffered.getId(), "ssaoSamples"), ssaoSamples.size(), &ssaoSamples[0][0]);
+	glm::vec2 noiseScale = ((glm::vec2)windowDim) / SSAO_SCALE;
+	deffered.setValue("ssaoNoiseScale", noiseScale);
+	deffered.setValue("ssaoRadius", SSAO_RADIUS);
+	deffered.setValue("ssaoBias", SSAO_BIAS);
+	deffered.setValue("projection", projection);
+	deffered.setValue("view", viewMatrix);
+#endif // SSAO
+
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -273,8 +291,8 @@ void Game::showStuff(const glm::mat4& projection) {
 	
 	Shader& transparent = SHADERS[OIT_TRANSPARENT];
 	transparent.bind();
-	bool b4 = transparent.setValue("view", viewMatrix);
-	bool b5 = transparent.setValue("projection", projection);
+	transparent.setValue("view", viewMatrix);
+	transparent.setValue("projection", projection);
 	world.render(&transparent);
 	transparent.unBind();
 
@@ -806,3 +824,38 @@ void Game::showText(const std::string& text, const glm::vec2& position, float sc
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+
+#ifdef SSAO
+void Game::setUpSSAO()
+{
+	auto lerp = [](float a, float b, float c) {
+		return a + c * (b - a);
+	};
+	// THE SAMPLES
+	float inv_num = 1.f / (float)SSAO_NUM_SAMPLES;
+	for (unsigned int i = 0; i < SSAO_NUM_SAMPLES; i++) {
+		glm::vec3 r = glm::gaussRand(glm::vec3(0, 0, .5), glm::vec3(1, 1, .5));
+		r = glm::normalize(r);
+		float s = i * inv_num;
+		s = lerp(0.1f, 1.f, s * s);
+		r *= s;
+		ssaoSamples[i] = r;
+	}
+	// THE NOISE
+	std::array<glm::vec3, (size_t)(SSAO_SCALE* SSAO_SCALE)> noiseData{};
+	for (unsigned int i = 0; i < noiseData.size(); i++) {
+		glm::vec3 r = glm::gaussRand(glm::vec3(0), glm::vec3(1));
+		r.z = 0;
+		noiseData[i] = r;
+	}
+
+	glGenTextures(1, &ssaoNoiseTex);
+	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SSAO_SCALE, SSAO_SCALE, 0, GL_RGB, GL_FLOAT, &noiseData[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
+#endif // SSAO

@@ -24,6 +24,7 @@ public:
 	void tryFinishGenerateChunk();
 
 private:
+
 	std::future<void> chunkDataGenerated;
 	bool chunkCreationInprogress;
 	std::unordered_set<glm::vec2> generationPositions;

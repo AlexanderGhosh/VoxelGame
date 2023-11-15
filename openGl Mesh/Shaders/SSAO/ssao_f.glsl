@@ -1,13 +1,11 @@
 #version 440 core
 
-layout(location = 0) out vec4 frag;
+layout(location = 1) out float ao;
 
 const int kernelSize = 64; // ssao req
 
 uniform sampler2D albedoPos;
 uniform sampler2D normalRnd;
-// uniform sampler2D ao;
-uniform float numBlocks;
 
 // SSAO Reqs
 uniform sampler2D ssaoNoise;
@@ -18,39 +16,21 @@ uniform float ssaoBias;
 uniform mat4 projection;
 uniform mat4 view;
 
-
 in vec2 texCoords;
-
-const vec4[] blockColours = vec4[] (
-    vec4(.5, 0, .5, 1),
-    vec4(0, 0.4, 0.1, 1),
-    vec4(.5, .25, .25, 1),
-    vec4(.65, .65, .65, 1),
-    vec4(0, 0.6, 1, 0.5),
-    vec4(.5, .25, .25, 1),
-    vec4(1, 0.9, 0.7, 1), // sand
-    vec4(1, 0.9, 0.7, 1)
-);
 
 void main() {
     vec4 albedoPosSample = texture(albedoPos, texCoords);
-    float colorIndexNormalised = albedoPosSample.w;
-    uint colourIndex = uint(colorIndexNormalised * numBlocks);
     vec4 normalRndSample = texture(normalRnd, texCoords);
 
-    float rndValue = normalRndSample.w;
     vec3 pos = albedoPosSample.xyz;
     vec3 normal = normalRndSample.xyz;
-    vec3 albedo = (blockColours[colourIndex]).rgb;
-    
-    // adds random variation
-    albedo += rndValue * 0.075;
     
     // ssao
     vec3 randomVec = texture(ssaoNoise, texCoords * ssaoNoiseScale).xyz; 
     vec3 tangent   = normalize(randomVec - normal * dot(randomVec, normal));
     vec3 bitangent = cross(normal, tangent);
     mat3 TBN       = mat3(tangent, bitangent, normal);  
+
 
     float occlusion = 0.0;
     for(int i = 0; i < kernelSize; i++)
@@ -71,9 +51,6 @@ void main() {
 
     occlusion = 1.0 - (occlusion / float(kernelSize));
 
-
-    // float occlusion = texture(ao, texCoords).r;
-
     // only outputs the albedo
-    frag = vec4(albedo * occlusion, 1);
+    ao = occlusion;
 }
