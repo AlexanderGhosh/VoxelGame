@@ -39,6 +39,10 @@ std::vector<Shader> SHADERS = {
 	Shader("ScreenQuad/screenQuad"),
 	Shader("Shadow/shadow", true),
 	Shader("Model/model"),
+	Shader("GBuffer/gbuffer", true),
+	Shader("Deffered/deffered"),
+	Shader("SSAO/ssao"),
+	Shader("Blur/blur"),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
 

@@ -7,6 +7,7 @@
 #include "../IndexedBuffer.h"
 #include "../Helpers/ModelLoaders/ModelLoader.h"
 #include "../Helpers/ModelLoaders/Model.h"
+#include <gtc/random.hpp>
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -23,8 +24,8 @@ UI_Renderer Game::uiRenderer;
 
 const glm::vec3 lightPos(100, 100, 100);
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), 
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos), modelRenderer() {
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos), modelRenderer(), gBuffer() {
 	mainCamera = Camera({ 0, 2, 0 });
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -56,18 +57,40 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	oitFrameBuffer1 = FrameBuffer(windowDim);
 	oitFrameBuffer1.setUp(detailsOIT);
 
+
+	// DEFERED RENERING
+	FrameBufferInit deffered; // may need to make this depth texture the one used by the transparancy buffer
+	deffered.hasDepth = true;
+	deffered.depthTexture = true;
+
+	ColourBufferInit albedoPos;
+	albedoPos.format = GL_FLOAT;
+	albedoPos.internalFormat = GL_RGBA;
+	albedoPos.type = GL_RGBA;
+
+	ColourBufferInit normalRnd;
+	normalRnd.format = GL_FLOAT;
+	normalRnd.internalFormat = GL_RGBA;
+	normalRnd.type = GL_RGBA;
+
+	deffered.colourBuffers = { albedoPos, normalRnd };
+
+	gBuffer = FrameBuffer(windowDim);
+	gBuffer.setUp(deffered);
+
+	// TRANSPARENT BUFFER
 	ColourBufferInit accumOIT;
-	accumOIT.format = GL_HALF_FLOAT;
+	accumOIT.format = GL_FLOAT;
 	accumOIT.internalFormat = GL_RGBA;
 	accumOIT.type = GL_RGBA;
 
 	ColourBufferInit revealOIT;
-	revealOIT.format = GL_HALF_FLOAT;
+	revealOIT.format = GL_FLOAT;
 	revealOIT.internalFormat = GL_R8;
 	revealOIT.type = GL_RED;
 
 	detailsOIT.colourBuffers = { accumOIT, revealOIT };
-	detailsOIT.depthBuffer = oitFrameBuffer1.getDepth();
+	detailsOIT.depthBuffer = gBuffer.getDepth();
 
 	oitFrameBuffer2 = FrameBuffer(windowDim);
 	oitFrameBuffer2.setUp(detailsOIT);
@@ -94,6 +117,25 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 	shadowFramebuffer = FrameBuffer({ SHADOW_MAP_SIZE , SHADOW_MAP_SIZE });
 	shadowFramebuffer.setUp(detailsShadows);
+
+	FrameBufferInit multiPurposeFBDetails;
+	multiPurposeFBDetails.hasDepth = false;
+	multiPurposeFBDetails.depthTexture = false;
+
+	ColourBufferInit mpInput;
+	mpInput.format = GL_FLOAT;
+	mpInput.internalFormat = GL_RGBA;
+	mpInput.type = GL_RGBA;
+
+	ColourBufferInit mpOutput;
+	mpOutput.format = GL_FLOAT;
+	mpOutput.internalFormat = GL_RGBA;
+	mpOutput.type = GL_RGBA;
+
+
+	multiPurposeFBDetails.colourBuffers = { mpOutput, mpInput };
+	multiPurposeFB = FrameBuffer(windowDim);
+	multiPurposeFB.setUp(multiPurposeFBDetails);
 }
 
 void Game::generateWorld() {
@@ -113,11 +155,16 @@ void Game::doLoop(const glm::mat4& projection) {
 	mainCamera.setPosition({ 8, 25, 15 });
 
 	// LOAD MODELS
-	ModelManager& modelManager = ModelManager::getInstance();
-	auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
-	std::cout << "Model Loaded" << std::endl;
-	addModel(buffer);
+	//ModelManager& modelManager = ModelManager::getInstance();
+	//auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	//std::cout << "Model Loaded" << std::endl;
+	//addModel(buffer);
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
+
+#ifdef SSAO
+	setUpSSAO();
+#endif // SSAO
+
 
 	while (gameRunning) {
 		calcTimes();
@@ -196,32 +243,86 @@ void Game::showStuff(const glm::mat4& projection) {
 
 	// 2. render for OIT
 	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
-	oitFrameBuffer1.bind();
 	// 2.1 Opaque
+	
+	// 2.1.1 Populate G-Buffer
+	gBuffer.bind();
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CW);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth());
-	
-	Shader& opaue = SHADERS[OIT_OPAQUE];
-	opaue.bind();
-	opaue.setValue("view", viewMatrix);
-	opaue.setValue("projection", projection);
-	opaue.setValue("lightMatrix", LSM);
-	opaue.setValue("shadowMap", 0);
-	opaue.setValue("lightPos", lightPos);
-	opaue.setValue("viewPos", mainCamera.GetPosition());
+	Shader& gbufferS = SHADERS[GBUFFER];
+	gbufferS.bind();
+	gbufferS.setValue("view", viewMatrix);
+	gbufferS.setValue("projection", projection);
+	gbufferS.setValue("numBlocks", 8.f);
 
-	world.render(&opaue);
+	world.render(&gbufferS);
 	renderModels(projection);
 	manager->renderEvent();
 
-	opaue.unBind();
+	// 2.1.2 Ambiant Occlusion (render to the oit opaque buffer)
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+	oitFrameBuffer1.bind();
+	Shader& ssao = SHADERS[AO];
+	ssao.bind();
+	ssao.setValue("numBlocks", 8.f);
+	ssao.setValue("albedoPos", 0);
+	ssao.setValue("normalRnd", 1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1));
+#ifdef SSAO
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex);
+	ssao.setValue("ssaoNoise", 2);
+	glUniform3fv(glGetUniformLocation(ssao.getId(), "ssaoSamples"), ssaoSamples.size(), &ssaoSamples[0][0]);
+	glm::vec2 noiseScale = ((glm::vec2)windowDim) / SSAO_SCALE;
+	ssao.setValue("ssaoNoiseScale", noiseScale);
+	ssao.setValue("ssaoRadius", SSAO_RADIUS);
+	ssao.setValue("ssaoBias", SSAO_BIAS);
+	ssao.setValue("projection", projection);
+	ssao.setValue("view", viewMatrix);
+#endif // SSAO
+
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	// 2.1.3 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
+	multiPurposeFB.bind();
+	Shader& blur = SHADERS[BLUR];
+	blur.bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer1.getColourTex(0));
+	blur.setValue("img", 0);
+
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	// 2.1.4 OIT Opaque (renders into the oit1 buffer and apply AO)
+	oitFrameBuffer1.bind();
+	Shader& deffered = SHADERS[DEFFERED];
+	deffered.bind();
+	deffered.setValue("numBlocks", 8.f);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1));
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0));
+	deffered.setValue("albedoPos", 0);
+	deffered.setValue("normalRnd", 1);
+	deffered.setValue("ao", 2);
+
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	// 2.2 Transparent
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	oitFrameBuffer2.bind(); // render to the OIT framebuffer2
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDepthMask(GL_FALSE);
@@ -237,15 +338,15 @@ void Game::showStuff(const glm::mat4& projection) {
 	
 	Shader& transparent = SHADERS[OIT_TRANSPARENT];
 	transparent.bind();
-	bool b4 = transparent.setValue("view", viewMatrix);
-	bool b5 = transparent.setValue("projection", projection);
+	transparent.setValue("view", viewMatrix);
+	transparent.setValue("projection", projection);
 	world.render(&transparent);
 	transparent.unBind();
 
 	// 2.3 Composite
 	glDisable(GL_CULL_FACE);
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer
-	showSkybox(projection);
+	// showSkybox(projection);
 	glDepthFunc(GL_ALWAYS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -499,6 +600,8 @@ void Game::cleanUp() {
 	oitFrameBuffer2.cleanUp();
 	guiFrameBuffer.cleanUp();
 	shadowFramebuffer.cleanUp();
+	gBuffer.cleanUp();
+	multiPurposeFB.cleanUp();
 
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
@@ -770,3 +873,38 @@ void Game::showText(const std::string& text, const glm::vec2& position, float sc
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+
+#ifdef SSAO
+void Game::setUpSSAO()
+{
+	auto lerp = [](float a, float b, float c) {
+		return a + c * (b - a);
+	};
+	// THE SAMPLES
+	float inv_num = 1.f / (float)SSAO_NUM_SAMPLES;
+	for (unsigned int i = 0; i < SSAO_NUM_SAMPLES; i++) {
+		glm::vec3 r = glm::gaussRand(glm::vec3(0, 0, .5), glm::vec3(1, 1, .5));
+		r = glm::normalize(r);
+		float s = i * inv_num;
+		s = lerp(0.1f, 1.f, s * s);
+		r *= s;
+		ssaoSamples[i] = r;
+	}
+	// THE NOISE
+	std::array<glm::vec3, (size_t)(SSAO_SCALE* SSAO_SCALE)> noiseData{};
+	for (unsigned int i = 0; i < noiseData.size(); i++) {
+		glm::vec3 r = glm::gaussRand(glm::vec3(0), glm::vec3(1));
+		r.z = 0;
+		noiseData[i] = r;
+	}
+
+	glGenTextures(1, &ssaoNoiseTex);
+	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SSAO_SCALE, SSAO_SCALE, 0, GL_RGB, GL_FLOAT, &noiseData[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
+#endif // SSAO

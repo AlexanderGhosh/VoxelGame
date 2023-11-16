@@ -65,7 +65,9 @@ private:
 
 	unsigned int quadVBO, quadVAO;
 
-	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer;
+	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer, gBuffer;
+	// Colour slot 0 is writen too
+	FrameBuffer multiPurposeFB;
 	GLFWwindow* window;
 	float deltaTime;
 	unsigned int frameRate;
@@ -91,4 +93,13 @@ private:
 	void showText(const std::string& text, const glm::vec2& position, float scale = 1.0f, const glm::vec3 colour = glm::vec3(1));
 	void createGUI();
 	void showGUI();
+
+
+	// SSAO
+#ifdef SSAO
+	std::array<glm::vec3, SSAO_NUM_SAMPLES> ssaoSamples;
+	unsigned int ssaoNoiseTex;
+	void setUpSSAO();
+#endif // SSAO
+
 };

@@ -13,6 +13,15 @@ class BlockDetails;
 class ChunkColumn;
 class BlockStore;
 
+#define SSAO
+#ifdef SSAO
+constexpr unsigned int SSAO_NUM_SAMPLES = 64;
+constexpr float SSAO_SCALE = 4;
+constexpr float SSAO_RADIUS = 0.5;
+constexpr float SSAO_BIAS = 0.025;
+#endif // SSAO
+
+
 constexpr float PI = 3.14;
 constexpr float HEIGHT = 720;
 constexpr float WIDTH = 1280;
@@ -23,6 +32,7 @@ constexpr float FAR_PLANE = 500;
 constexpr float SHADOW_DISTANCE = 1000;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
+constexpr unsigned int CHUNK_SAMPLES = 4;
 constexpr unsigned int RENDER_DISTANCE = 5;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
@@ -106,7 +116,11 @@ enum SHADER_NAMES : unsigned char {
 	OIT_COMPOSITE,
 	SCREEN_QUAD,
 	SHADOW,
-	MODEL
+	MODEL,
+	GBUFFER,
+	DEFFERED,
+	AO,
+	BLUR
 };
 
 enum class Move_Dir : unsigned char {
