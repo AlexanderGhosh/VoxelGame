@@ -65,11 +65,7 @@ private:
 
 	unsigned int quadVBO, quadVAO;
 
-	FrameBuffer guiFrameBuffer, shadowFramebuffer, gBuffer;
-	// Colour slot 0 is writen too
-	FrameBuffer multiPurposeFB;
-	// used for order independent transparancy
-	FrameBuffer oitFB;
+	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer, gBuffer;
 	GLFWwindow* window;
 	float deltaTime;
 	unsigned int frameRate;
