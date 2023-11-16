@@ -1,7 +1,7 @@
 #version 440 core
 
-layout(location = 0) out vec4 accum;
-layout(location = 1) out float reveal;
+layout(location = 1) out vec4 accum;
+layout(location = 2) out float reveal;
 
 // out vec4 color;
 
