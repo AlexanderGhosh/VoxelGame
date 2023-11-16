@@ -1,6 +1,6 @@
 #version 440 core
 
-layout(location = 1) out float ao;
+layout(location = 2) out float ao;
 
 const int kernelSize = 64; // ssao req
 
