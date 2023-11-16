@@ -155,10 +155,10 @@ void Game::doLoop(const glm::mat4& projection) {
 	mainCamera.setPosition({ 8, 25, 15 });
 
 	// LOAD MODELS
-	ModelManager& modelManager = ModelManager::getInstance();
-	auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
-	std::cout << "Model Loaded" << std::endl;
-	addModel(buffer);
+	//ModelManager& modelManager = ModelManager::getInstance();
+	//auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	//std::cout << "Model Loaded" << std::endl;
+	//addModel(buffer);
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
 #ifdef SSAO
@@ -244,7 +244,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	// 2. render for OIT
 	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
 	// 2.1 Opaque
-	// 
+	
 	// 2.1.1 Populate G-Buffer
 	gBuffer.bind();
 	glDisable(GL_BLEND);

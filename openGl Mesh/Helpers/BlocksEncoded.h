@@ -16,8 +16,12 @@ public:
 	const unsigned int count(const unsigned int i) const;
 
 	const Block operator[] (const int height) const;
+
+	const unsigned int getUnalteredHeight() const;
+	void setUnalteredHeight(const unsigned int height);
 private:
 	std::vector<Block> blocks_;
 	std::vector<unsigned int> counts_;
 	unsigned int height_;
+	unsigned int unalteredHeight_;
 };

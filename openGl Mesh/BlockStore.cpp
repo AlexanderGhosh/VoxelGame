@@ -9,6 +9,11 @@ BlockStore::BlockStore(glm::vec2 pos, unsigned int seed) : BlockStore()
 	world_generation::createHeightMap(pos, seed, heightMap);
 }
 
+BlockStore::BlockStore(glm::vec2 pos, unsigned int seed, bool limitSamples)
+{
+	world_generation::createHeightMapLimitedSamples(pos, seed, heightMap);
+}
+
 const BlocksEncoded& BlockStore::getBlocksAt(glm::vec2 pos) const
 {
 	return heightMap[columnIndex(pos.x, pos.y)];
