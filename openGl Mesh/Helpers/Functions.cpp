@@ -2,6 +2,21 @@
 #include "Constants.h"
 
 
+float bilinearInterpolation(const float x, const float y, const float& c00, const float& c01, const float& c10, const float& c11)
+{
+	/*float  a = c00 * (1 - xLen) + c10 * xLen;
+	float  b = c01 * (1 - xLen) + c11 * xLen;
+	return a - yLen + b * yLen;*/
+	float dx = 1.f - x;
+	float dy = 1.f - y;
+	float w00 = dx * dy;
+	float w01 = dx * y;
+	float w10 = x * dy;
+	float w11 = x * y;
+
+	return w00 * c00 + w10 * c10 + w01 * c01 + w11 * c11;
+}
+
 std::list<std::string> splitString(std::string str, const std::string& delimiter)
 {
 	size_t pos = 0;

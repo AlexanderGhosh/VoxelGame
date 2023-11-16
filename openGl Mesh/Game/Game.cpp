@@ -155,10 +155,10 @@ void Game::doLoop(const glm::mat4& projection) {
 	mainCamera.setPosition({ 8, 25, 15 });
 
 	// LOAD MODELS
-	ModelManager& modelManager = ModelManager::getInstance();
-	auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
-	std::cout << "Model Loaded" << std::endl;
-	addModel(buffer);
+	//ModelManager& modelManager = ModelManager::getInstance();
+	//auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	//std::cout << "Model Loaded" << std::endl;
+	//addModel(buffer);
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
 #ifdef SSAO
