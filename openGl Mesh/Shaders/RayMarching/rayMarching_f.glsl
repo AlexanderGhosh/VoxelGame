@@ -20,6 +20,7 @@ struct HitInfo {
     bool hit;
     vec3 hitPos;
     vec3 normal;
+    float steps;
 };
 
 vec3 getRayDir();
@@ -34,6 +35,7 @@ void main() {
     if(info.hit) {
         color = vec3(1, 0, 0);
         color = info.normal * .5 + .5;
+        color = vec3(info.steps);
     }
     frag = vec4(color, 1);
 }
@@ -53,6 +55,7 @@ HitInfo castRay() {
             res.hit = true;
             res.hitPos = rEnd;
             res.normal = getNormal(rEnd);
+            res.steps = float(i) / float(MAX_STEPS);
             return res;
         }
         else if (d > MAX_DIST) {
@@ -112,5 +115,5 @@ vec3 getPos(uint index) {
     uint x = (data & 0x000000f0) >> 4;
     uint y = (data & 0x0000ff00) >> 8;
 
-    return vec3(x, y, z);
+    return vec3(x, y, z) + chunkPosition;
 }

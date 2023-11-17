@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
     <ClCompile Include="BlockStore.cpp" />
+    <ClCompile Include="ChunkData.cpp" />
     <ClCompile Include="EntityComponent\Component.cpp" />
     <ClCompile Include="EntityComponent\Components\Transform.cpp" />
     <ClCompile Include="EntityComponent\Entity.cpp" />
@@ -221,6 +222,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlockStore.h" />
+    <ClInclude Include="ChunkData.h" />
     <ClInclude Include="EntityComponent\Components\Transform.h" />
     <ClInclude Include="EntityComponent\ComponentTypes.h" />
     <ClInclude Include="GeomRendering\DrawableRayMarching.h" />
