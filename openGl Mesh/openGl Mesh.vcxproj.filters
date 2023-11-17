@@ -120,6 +120,9 @@
     <ClCompile Include="Helpers\ModelLoaders\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SSBOBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -307,6 +310,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\ModelLoaders\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SSBOBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

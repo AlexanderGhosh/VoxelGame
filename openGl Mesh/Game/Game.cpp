@@ -8,6 +8,7 @@
 #include "../Helpers/ModelLoaders/ModelLoader.h"
 #include "../Helpers/ModelLoaders/Model.h"
 #include <gtc/random.hpp>
+#include "../SSBOBuffer.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -413,11 +414,24 @@ void Game::showStuff(const glm::mat4& projection) {
 	//ray.render(cam, projection);
 	//guiFrameBuffer.unBind();
 
+	std::array<GeomData, 5> ssboData;
+	ssboData[0].setPos({8, 25, 10});
+	ssboData[1].setPos({ 1, 25, 0 });
+
+	SSBOBuffer ssbo;
+	ssbo.setUp(&ssboData, sizeof(GeomData) * ssboData.size());
+	ssbo.setBindingPoint(1);
+
 
 	oitFrameBuffer1.bind();
 	Shader& rayMarching = SHADERS[RAY_MARCHING];
 	rayMarching.bind();
 	rayMarching.setValue("viewPos", mainCamera.GetPosition());
+	ssbo.bind();
+
+	//unsigned int idx = glGetProgramResourceIndex(rayMarching.getId(), GL_SHADER_STORAGE_BLOCK, "geometry");
+	//glShaderStorageBlockBinding(rayMarching.getId(), idx, 1);
+
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);

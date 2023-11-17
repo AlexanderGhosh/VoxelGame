@@ -189,6 +189,7 @@
     <ClCompile Include="SOIL2\image_DXT.c" />
     <ClCompile Include="SOIL2\image_helper.c" />
     <ClCompile Include="SOIL2\SOIL2.c" />
+    <ClCompile Include="SSBOBuffer.cpp" />
     <ClCompile Include="Textures\Texture.cpp" />
     <ClCompile Include="Game\World\World.cpp" />
     <ClCompile Include="Game\World\world_generation.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="SOIL2\stbi_pvr_c.h" />
     <ClInclude Include="SOIL2\stb_image.h" />
     <ClInclude Include="SOIL2\stb_image_write.h" />
+    <ClInclude Include="SSBOBuffer.h" />
     <ClInclude Include="Textures\Texture.h" />
     <ClInclude Include="Game\World\World.h" />
     <ClInclude Include="Game\World\world_generation.h" />
