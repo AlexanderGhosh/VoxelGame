@@ -19,7 +19,7 @@
 #include "Mangers/ComponentManager.h"
 #include "Mangers/ModelManager.h"
 
-glm::ivec2 DIM(1280, 720);
+glm::ivec2 DIM(WIDTH, HEIGHT);
 
 GLFWwindow* createWindow();
 void createBlockDetails();

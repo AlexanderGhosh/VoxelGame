@@ -23,8 +23,8 @@ constexpr float SSAO_BIAS = 0.025;
 
 
 constexpr float PI = 3.14;
-constexpr float HEIGHT = 720;
-constexpr float WIDTH = 1280;
+constexpr float HEIGHT = 600;
+constexpr float WIDTH = 600;
 constexpr float ASPECT_RATIO = WIDTH / HEIGHT;
 constexpr float FOV = 45;
 constexpr float NEAR_PLANE = 0.1;
@@ -120,7 +120,8 @@ enum SHADER_NAMES : unsigned char {
 	GBUFFER,
 	DEFFERED,
 	AO,
-	BLUR
+	BLUR,
+	RAY_MARCHING
 };
 
 enum class Move_Dir : unsigned char {

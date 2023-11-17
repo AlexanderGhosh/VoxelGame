@@ -43,6 +43,7 @@ std::vector<Shader> SHADERS = {
 	Shader("Deffered/deffered"),
 	Shader("SSAO/ssao"),
 	Shader("Blur/blur"),
+	Shader("RayMarching/rayMarching"),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
 

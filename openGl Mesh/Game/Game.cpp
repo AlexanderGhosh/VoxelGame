@@ -413,6 +413,15 @@ void Game::showStuff(const glm::mat4& projection) {
 	//ray.render(cam, projection);
 	//guiFrameBuffer.unBind();
 
+
+	oitFrameBuffer1.bind();
+	Shader& rayMarching = SHADERS[RAY_MARCHING];
+	rayMarching.bind();
+	rayMarching.setValue("viewPos", mainCamera.GetPosition());
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+
 	// 4. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
 
@@ -435,8 +444,8 @@ void Game::showStuff(const glm::mat4& projection) {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
-	
 	screenQuad.unBind();
+	
 
 
 	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
