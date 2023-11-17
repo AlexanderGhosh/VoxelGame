@@ -427,6 +427,8 @@ void Game::showStuff(const glm::mat4& projection) {
 	Shader& rayMarching = SHADERS[RAY_MARCHING];
 	rayMarching.bind();
 	rayMarching.setValue("viewPos", mainCamera.GetPosition());
+	rayMarching.setValue("resolution", windowDim);
+	rayMarching.setValue("fov", FOV);
 	ssbo.bind();
 
 	//unsigned int idx = glGetProgramResourceIndex(rayMarching.getId(), GL_SHADER_STORAGE_BLOCK, "geometry");

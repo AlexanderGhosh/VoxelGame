@@ -1,6 +1,6 @@
 #version 440 core
 #define MAX_STEPS 128
-#define MIN_DIST 0.1
+#define MIN_DIST 0.01
 #define MAX_DIST 1000
 
 layout(location = 0) out vec4 frag;
@@ -11,6 +11,8 @@ layout(std430, binding = 1) buffer geometry {
 };
 
 uniform vec3 viewPos;
+uniform vec2 resolution;
+uniform float fov;
 
 struct HitInfo {
     bool hit;
@@ -18,6 +20,7 @@ struct HitInfo {
     vec3 normal;
 };
 
+vec3 getRayDir();
 float closestDistance(vec3 p);
 HitInfo castRay();
 vec3 getPos(uint index);
@@ -27,8 +30,8 @@ void main() {
     vec3 color = vec3(0.3);
     HitInfo info = castRay();
     if(info.hit) {
-        color = vec3(1, 0, 0);
         color = info.normal * .5 + .5;
+        color = vec3(1, 0, 0);
     }
     frag = vec4(color, 1);
 }
@@ -37,7 +40,7 @@ HitInfo castRay() {
     HitInfo res;
     res.hit = false;
     vec3 rPos = viewPos;
-    vec3 rDir = normalize(vec3(texCoords * 2 - 1, -1));
+    vec3 rDir = getRayDir();
     float t = 0;
 
 
@@ -58,18 +61,30 @@ HitInfo castRay() {
     }
 }
 
+// pos relative to the camera, b bounds (not the a coner)
 float sdBox( vec3 p, vec3 b )
 {
   vec3 q = abs(p) - b;
   return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
 
+float sdSphere( vec3 p, float s )
+{
+  return length(p)-s;
+}
+
+vec3 getRayDir() {    
+    vec2 xy = gl_FragCoord.xy - resolution * .5;
+    float z = resolution.y / tan(radians(fov) * .5);
+    return normalize(vec3(xy, -z));
+}
+
 float closestDistance(vec3 p) {
     float min_ = 100000;
     for(int i = 0; i < blockData.length(); i++) {
         vec3 c = getPos(i);
-        c.z *= -1;
-        float d = length(p - c) - 1.0;
+        float d = sdBox(p - c, vec3(.5));
+        // float d = sdSphere(p - c, 1);
         min_ = min(min_, d);
     }
     return min_;
