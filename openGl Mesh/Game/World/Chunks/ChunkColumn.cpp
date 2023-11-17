@@ -157,7 +157,7 @@ void ChunkColumn::setUpBuffer()
 
 void ChunkColumn::reallocBuffer()
 {
-	buffer.realloc(bufferData.data(), bufferData.size());
+	// buffer.realloc(bufferData.data(), bufferData.size());
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {
@@ -240,15 +240,16 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 		}
 	}
 
-	buffer.setUp(bufferData.data(), bufferData.size());
+	buffer.setUp(bufferData.data(), bufferData.size() * sizeof(GeomData));
+	buffer.setBindingPoint(1);
 }
 
-const BufferGeom& ChunkColumn::getBuffer() const
+const SSBOBuffer& ChunkColumn::getBuffer() const
 {
 	return buffer;
 }
 
-BufferGeom* ChunkColumn::getBufferPtr()
+SSBOBuffer* ChunkColumn::getBufferPtr()
 {
 	return &buffer;
 }
@@ -325,7 +326,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 
 	editedBlocks[worldPos] = block;
 	bufferData.push_back(toAdd);
-	buffer.realloc(bufferData.data(), bufferData.size());
+	// buffer.realloc(bufferData.data(), bufferData.size());
 }
 
 void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
@@ -425,7 +426,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 	}
 	editedBlocks[worldPos] = Block::AIR;
 
-	buffer.realloc(bufferData.data(), bufferData.size());
+	// buffer.realloc(bufferData.data(), bufferData.size());
 }
 
 const glm::vec2& ChunkColumn::getPosition() const
@@ -544,7 +545,7 @@ void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
 		if (getWorldPosition(data.getPos()) == add.worldPos) {
 			markSlot(data.cubeType_, add.face);
 			if(realoc)
-				buffer.realloc(bufferData.data(), bufferData.size());
+				//buffer.realloc(bufferData.data(), bufferData.size());
 			return;
 		}
 	}
@@ -558,8 +559,8 @@ void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
 		return;
 	}
 	bufferData.push_back(data);
-	if(realoc)
-		buffer.realloc(bufferData.data(), bufferData.size());
+	if(realoc){}
+		//buffer.realloc(bufferData.data(), bufferData.size());
 }
 
 bool ChunkColumn::outOfRange(const glm::vec3& localPos)

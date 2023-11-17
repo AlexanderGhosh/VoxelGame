@@ -2,24 +2,24 @@
 #include <glm.hpp>
 #include <list>
 #include "../Helpers/Constants.h"
-#include "DrawData.h"
+#include "DrawDataRayMarch.h"
 
 class Camera;
 class Shader;
-struct DrawData;
 
-class DrawableGeom
+class DrawableRayMarching
 {
 public:
-	DrawableGeom();
-	~DrawableGeom();
+	DrawableRayMarching();
+	~DrawableRayMarching();
 	void render(Shader* shader) const;
 	void setUp(Chunks& chunks);
 	void add(ChunkColumn& chunks);
 	void remove(const glm::vec2& chunkPos);
-
+	void setPlane(const unsigned int vao);
 private:
-	std::list<DrawData> data;
+	unsigned int planeVAO;
+	std::list<DrawDataRayMarch> data;
 	void draw(Shader* shader) const;
 };
 

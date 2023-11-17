@@ -8,7 +8,7 @@
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
 
-World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions() {
+World::World() : chunks(), drawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions() {
 }
 World::World(unsigned int seed) : World() {
 	this->seed = seed;
@@ -50,7 +50,7 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 
 void World::tryStartGenerateChunks(const glm::vec2& center)
 {
-	if (chunkCreationInprogress) {
+	if (chunkCreationInprogress || true) {
 		return;
 	}
 	chunkCreationInprogress = true;
@@ -61,7 +61,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 		auto& [pos, _] = *itt;
 		if (!generationPositions.contains(pos))
 		{
-			geomDrawable.remove(pos);
+			drawable.remove(pos);
 			itt = chunks.erase(itt);
 		}
 		else
@@ -90,7 +90,7 @@ void World::tryFinishGenerateChunk()
 		for (const glm::vec2& chunkPos : generationPositions) {
 			ChunkColumn& chunk = chunks.at(chunkPos);
 			chunk.setUpBuffer();
-			geomDrawable.add(chunk);
+			drawable.add(chunk);
 
 			const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
 			for (ChunkColumn* chunk : neighbours) {
@@ -149,12 +149,13 @@ void World::render(Shader* shader) {
 	if (chunkCreationInprogress) {
 		tryFinishGenerateChunk();
 	}
-	geomDrawable.render(shader);
+	drawable.render(shader);
 }
 
-void World::setUpDrawable()
+void World::setUpDrawable(const unsigned int planeVAO)
 {
-	geomDrawable.setUp(chunks);
+	drawable.setPlane(planeVAO);
+	drawable.setUp(chunks);
 }
 
 

@@ -1,6 +1,6 @@
 #version 440 core
 #define MAX_STEPS 128
-#define MIN_DIST 0.01
+#define MIN_DIST 0.001
 #define MAX_DIST 1000
 
 layout(location = 0) out vec4 frag;
@@ -10,6 +10,8 @@ layout(std430, binding = 1) buffer geometry {
     uint blockData[];
 };
 
+uniform float voxelSize;
+uniform vec3 chunkPosition;
 uniform vec3 viewPos;
 uniform vec2 resolution;
 uniform float fov;
@@ -30,8 +32,8 @@ void main() {
     vec3 color = vec3(0.3);
     HitInfo info = castRay();
     if(info.hit) {
-        color = info.normal * .5 + .5;
         color = vec3(1, 0, 0);
+        color = info.normal * .5 + .5;
     }
     frag = vec4(color, 1);
 }
