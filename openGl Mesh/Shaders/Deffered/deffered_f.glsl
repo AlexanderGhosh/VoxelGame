@@ -4,11 +4,13 @@ layout(location = 0) out vec4 frag;
 
 uniform sampler2D albedoPos;
 uniform sampler2D normalRnd;
+uniform sampler2D worldPos;
 uniform sampler2D ao;
 uniform sampler2D shadowMap;
 uniform float numBlocks;
 uniform mat4 view_inv;
 uniform mat4 lightMatrix;
+uniform vec3 viewDir;
 
 in vec2 texCoords;
 
@@ -35,16 +37,19 @@ void main() {
     vec4 albedoPosSample = texture(albedoPos, texCoords);
     float colorIndexNormalised = albedoPosSample.w;
     uint colourIndex = uint(colorIndexNormalised * numBlocks);
+    // normal and rnd number
     vec4 normalRndSample = texture(normalRnd, texCoords);
+    // AO
     float occluded = texture(ao, texCoords).r;
+    // fragment world pos
+    vec4 fragPosWorld = texture(worldPos, texCoords);
 
     float rndValue = normalRndSample.w;
-    vec3 pos = albedoPosSample.xyz;
+    vec3 fragPosView = albedoPosSample.xyz;
     vec3 normal = normalRndSample.xyz;
     vec3 albedo = (blockColours[colourIndex]).rgb;
 
-    vec3 fragPos = mat3(view_inv) * pos;
-    vec4 lightFragPos = lightMatrix * vec4(fragPos, 1);
+    vec4 lightFragPos = lightMatrix * vec4(fragPosWorld.xyz, 1);
     
     // adds random variation
     albedo += rndValue * 0.075;
@@ -53,10 +58,9 @@ void main() {
     // retrieve data from gbuffer
     
     // blinn-phong (in view-space)
-    vec3 lightDir = normalize(light.Position - fragPos);
+    vec3 lightDir = normalize(light.Position - fragPosWorld.xyz);
     vec3 ambient = vec3(0.3 * albedo * occluded); // here we add occlusion factor
     vec3 lighting  = ambient;
-    vec3 viewDir  = normalize(-fragPos); // viewpos is (0.0.0) in view-space
     // diffuse
     vec3 diffuse = max(dot(normal, lightDir), 0.0) * albedo * light.Color;
     // specular
@@ -65,12 +69,16 @@ void main() {
     vec3 specular = light.Color * spec;
     
     lighting += (diffuse + specular) * (1.0 - inShadow(lightFragPos, normal, lightDir));
-    frag = vec4(lighting, 1);
+
+    vec3 projCoords = lightFragPos.xyz / lightFragPos.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    frag = vec4(texture(shadowMap, projCoords.xy).rrr , 1);
+    frag.rgb = vec3(inShadow(lightFragPos, normal, lightDir));
 }
 
 Light createLight() {
     Light light;
-    light.Position = vec3(100, 100, 100);
+    light.Position = vec3(100, 30, 100);
     light.Color = vec3(1);
     return light;
 }
