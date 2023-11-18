@@ -51,18 +51,6 @@ bool Shader::setValue(const std::string& name, const int& value) const {
 	setLocation(loc, value);
 	return GL_TRUE;
 }
-bool Shader::setValue(const std::string& name, const Material& value) const
-{
-	bool res = 0;
-	res = setValue(name + ".ambient", value.ambient);
-	if (!res) return 0;
-	res = setValue(name + ".diffuse", value.diffuse);
-	if (!res) return 0;
-	res = setValue(name + ".specular", value.specular);
-	if (!res) return 0;
-	res = setValue(name + ".shininess", value.shininess);
-	if (!res) return 0;
-}
 bool Shader::setValue(const std::string& name, const glm::vec4& value) const {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;

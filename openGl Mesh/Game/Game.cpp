@@ -722,11 +722,11 @@ void Game::showSkybox(const glm::mat4& projection) {
 	SHADERS[SKYBOX].setValue("projection", projection);
 
 	glBindVertexArray(SBVAO);
-	TEXTURES[(int)Texture_Names::SKYBOX].bind();
+	TEXTURES3D[(int)Texture_Names::SKYBOX].bind();
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	TEXTURES[(int)Texture_Names::SKYBOX].unBind();
+	TEXTURES3D[(int)Texture_Names::SKYBOX].unBind();
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 

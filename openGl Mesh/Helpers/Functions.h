@@ -33,40 +33,24 @@ void reduceToMultiple(glm::ivec2& victim, const unsigned int multiple);
 /// <returns></returns>
 glm::vec3 reduceToMultiple(const glm::vec3& victim);
 
-/// <summary>
-/// Reduces each element of victim to a multiple of 16
-/// </summary>
-/// <returns></returns>
-glm::vec2 reduceToMultiple(const glm::vec2& victim);
-
-int reduceToMultiple(float victim, const unsigned int multiple);
-const Texture_Names getTexture(const Block block);
-const Texture& getBlockTexture(const Block block);
 
 unsigned int toIndex(const Texture_Names tex);
 unsigned int toIndex(const Block block);
 
 const Block toBlock(const unsigned char number);
-const std::string getName(const Block block);
-glm::vec3 getTranslation(const glm::mat4& matrix);
 const BlockDetails& getDetails(const Block block);
-const BlockDetails& getDetails(const Texture* tex);
 
-const Block toBlock(const std::string& name);
 
 
 glm::vec3 operator+(const glm::vec3& p1, const glm::vec2& p2);
-glm::vec3 operator+(const glm::vec2& p1, const glm::vec3& p2);
+//glm::vec3 operator+(const glm::vec2& p1, const glm::vec3& p2);
 glm::vec3 operator-(const glm::vec3& p1, const glm::vec2& p2);
-glm::vec3 operator-(const glm::vec2& p1, const glm::vec3& p2);
+//glm::vec3 operator-(const glm::vec2& p1, const glm::vec3& p2);
 
 /// <summary>
 /// Will return the value associated with the key if avaliable WILL NOT CREATE NEW KEYS
 /// null if not found
 /// </summary>
-template<typename Key, typename Value>
-Value* getValue(std::unordered_map<Key, Value>& map, const Key& key);
-
 template<typename Key, typename Value>
 inline Value* getValue(std::unordered_map<Key, Value>& map, const Key& key)
 {

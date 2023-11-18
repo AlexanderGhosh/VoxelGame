@@ -22,6 +22,7 @@ constexpr float SSAO_BIAS = 0.025;
 #endif // SSAO
 
 
+constexpr bool VSYNC = false;
 constexpr float PI = 3.14;
 constexpr float HEIGHT = 720;
 constexpr float WIDTH = 1280;
@@ -72,25 +73,13 @@ using Item = unsigned char;
 using HeightMap = std::array<BlocksEncoded, CHUNK_SIZE* CHUNK_SIZE>;
 
 
-extern std::vector<Texture> TEXTURES;
+extern std::vector<Texture> TEXTURES3D;
 extern std::vector<Texture> TEXTURES2D;
 extern std::vector<Shader> SHADERS;
 extern std::vector<BlockDetails> BLOCK_DETAILS;
 
 enum class Texture_Names : unsigned char {
-	GRASS,
-	PLAYER_BOTTOM,
-	PLAYER_TOP,
-	SKYBOX,
-	STONE,
-	DIRT,
-	WATER,
-	ERROR,
-	LOG,
-	LEAF,
-	VAMPIRE_BOTTOM,
-	VAMPIRE_TOP,
-	SAND
+	SKYBOX
 };
 
 enum class Texture_Names_2D : unsigned char {
@@ -102,16 +91,10 @@ enum class Texture_Names_2D : unsigned char {
 };
 
 enum SHADER_NAMES : unsigned char {
-	BLOCK2,
-	BLOCK3,
 	SKYBOX,
 	GUI,
 	GLYPH,
-	RAY,
-	DEPTH,
-	GEOMBLOCKS,
 
-	OIT_OPAQUE,
 	OIT_TRANSPARENT,
 	OIT_COMPOSITE,
 	SCREEN_QUAD,
@@ -144,14 +127,4 @@ enum class Block : unsigned char {
 	LEAF,
 	SAND,
 	SIZE
-};
-
-enum FACES_NAMES : unsigned char {
-	FRONT,
-	BACK,
-	LEFT,
-	RIGHT,
-	TOP,
-	BOTTOM,
-	NULL_
 };

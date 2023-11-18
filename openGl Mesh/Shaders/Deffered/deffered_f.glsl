@@ -58,28 +58,26 @@ void main() {
     // retrieve data from gbuffer
     
     // blinn-phong (in view-space)
+    occluded = 1; // not occluded
     vec3 lightDir = normalize(light.Position - fragPosWorld.xyz);
     vec3 ambient = vec3(0.3 * albedo * occluded); // here we add occlusion factor
     vec3 lighting  = ambient;
     // diffuse
-    vec3 diffuse = max(dot(normal, lightDir), 0.0) * albedo * light.Color;
+    vec3 diffuse = 0.5 * max(dot(normal, lightDir), 0.0) * albedo * light.Color;
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 8.0);
     vec3 specular = light.Color * spec;
     
-    lighting += (diffuse + specular) * (1.0 - inShadow(lightFragPos, normal, lightDir));
+    lighting += diffuse + specular;
 
-    vec3 projCoords = lightFragPos.xyz / lightFragPos.w;
-    projCoords = projCoords * 0.5 + 0.5;
-    frag = vec4(texture(shadowMap, projCoords.xy).rrr , 1);
-    frag.rgb = vec3(inShadow(lightFragPos, normal, lightDir));
+    frag = vec4(lighting, 1);
 }
 
 Light createLight() {
     Light light;
-    light.Position = vec3(100, 30, 100);
-    light.Color = vec3(1);
+    light.Position = vec3(100, 100, 100);
+    light.Color = vec3(0.3);
     return light;
 }
 

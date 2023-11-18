@@ -19,11 +19,6 @@ DrawableGeom::~DrawableGeom()
 
 void DrawableGeom::render(Shader* shader) const
 {
-	if (!shader) {
-		shader = &SHADERS[GEOMBLOCKS];
-		shader->bind();
-	}
-
 	shader->setValue("voxelSize", VOXEL_SZIE);
 
 	draw(shader);

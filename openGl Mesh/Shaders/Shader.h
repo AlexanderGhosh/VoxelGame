@@ -3,12 +3,6 @@
 
 #include <glm.hpp>
 
-struct Material {
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	float shininess;
-};
 class Shader {
 public:
 	Shader();
@@ -24,7 +18,6 @@ public:
 	bool setValue(const std::string& name, const glm::vec2& value) const;
 	bool setValue(const std::string& name, const float& value) const;
 	bool setValue(const std::string& name, const int& value) const;
-	bool setValue(const std::string& name, const Material& value) const;
 private:
 	bool hasGeom;
 	unsigned int program;

@@ -17,5 +17,7 @@ void main() {
             result += texture(img, texCoords + offset).rgb;
         }
     }
-    frag = vec4(result / (4.0 * 4.0), 1);
+    result = result / (4.0 * 4.0);
+    result = all(lessThan(result, vec3(0.75))) ? vec3(0) : vec3(1);
+    frag = vec4(result, 1);
 }

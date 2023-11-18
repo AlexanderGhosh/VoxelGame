@@ -27,7 +27,7 @@ void createBlockDetails();
 int main() {
 	GLFWwindow* window = createWindow();
 
-	for (auto& tex : TEXTURES) {
+	for (auto& tex : TEXTURES3D) {
 		tex.load3D(tex.getName());
 	}
 	for (auto& tex : TEXTURES2D) {
@@ -72,14 +72,7 @@ void createBlockDetails() {
 	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
 		Block block = (Block) i;
 		BlockDetails& dets = BLOCK_DETAILS[i];
-		dets.Name = getName(block);
-		dets.Tex = &TEXTURES[(unsigned int) getTexture(block)];
-		if(dets.Name != "air")
-			dets.ItemTex = Texture("Items/" + dets.Name);
-		dets.isTransparant = false;
-		if (dets.Name == "air" || dets.Name == "leaf" || dets.Name == "water") {
-			dets.isTransparant = true;
-		}
+		dets.isTransparant = block == Block::AIR || block == Block::LEAF || block == Block::WATER;
 	}
 }
 
@@ -92,14 +85,13 @@ GLFWwindow* createWindow() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GL_TRUE);
-	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Alex's Game", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Voxel Game", nullptr, nullptr);
 
 	int w, h;
 	glfwGetFramebufferSize(window, &w, &h);
 	DIM = glm::ivec2(w, h);
 	if (nullptr == window) {
-		std::cout << "Falild to create window" << std::endl;
+		std::cout << "Failed to create window" << std::endl;
 		glfwTerminate();
 		exit(EXIT_FAILURE); // stops program
 	}
@@ -113,17 +105,12 @@ GLFWwindow* createWindow() {
 	}
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disabel cursor visabilaty
-
-	//glewExperimental = GL_TRUE; // uses the modern way of stuff
+	if(!VSYNC) glfwSwapInterval(0);
 
 	glViewport(0, 0, DIM.x, DIM.y);
-
-	glEnable(GL_DEPTH_TEST);// dont render thing behind other things
-
-	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport
 
-	glEnable(GL_MULTISAMPLE); // MSAA
+	// glEnable(GL_MULTISAMPLE); // MSAA
 
 	return window;
 }

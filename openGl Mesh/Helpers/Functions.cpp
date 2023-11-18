@@ -106,44 +106,6 @@ int reduceToMultiple(float victim, const unsigned int multiple) {
 	return victim;
 }
 
-const Texture_Names getTexture(Block block) {
-	Texture_Names res = Texture_Names::ERROR;
-	switch (block)
-	{
-	case Block::AIR:
-		break;
-	case Block::GRASS:
-		res = Texture_Names::GRASS;
-		break;
-	case Block::DIRT:
-		res = Texture_Names::DIRT;
-		break;
-	case Block::STONE:
-		res = Texture_Names::STONE;
-		break;
-	case Block::WATER:
-		res = Texture_Names::WATER;
-		break;
-	case Block::LOG:
-		res = Texture_Names::LOG;
-		break;
-	case Block::LEAF:
-		res = Texture_Names::LEAF;
-		break;
-	case Block::SAND:
-		res = Texture_Names::SAND;
-		break;
-	}
-	if (res == Texture_Names::ERROR) {
-		// std::cout << "Error Texture created\n";
-	}
-	return res;
-}
-
-const Texture& getBlockTexture(Block block) {
-	return BLOCK_DETAILS[(unsigned int)block].Tex;
-}
-
 unsigned int toIndex(Texture_Names tex) {
 	return (unsigned int)tex;
 }
@@ -192,33 +154,8 @@ glm::vec3 getTranslation(const glm::mat4& matrix) {
 	return { matrix[3][0], matrix[3][1], matrix[3][2] };
 }
 
-glm::mat4 translate(glm::mat4 mat, glm::vec3 vec) {
-	for (unsigned char i = 0; i < 3; i++) {
-		mat[3][i] = vec[i];
-	}
-	return mat;
-}
-
 const BlockDetails& getDetails(Block block) {
 	return BLOCK_DETAILS[(unsigned int)block];
-}
-
-const BlockDetails& getDetails(Texture* tex) {
-	for (auto& b : BLOCK_DETAILS) {
-		if (tex->getName().find(b.Name) != std::string::npos) {
-			return b;
-		}
-	}
-	return BLOCK_DETAILS[(unsigned int)Block::AIR];
-}
-
-const Block toBlock(const std::string& name) {
-	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
-		if (name == BLOCK_DETAILS[i].Name) {
-			return (Block)i;
-		}
-	}
-	return Block::ERROR;
 }
 
 glm::vec3 operator+(const glm::vec3& p1, const glm::vec2& p2)
@@ -226,17 +163,7 @@ glm::vec3 operator+(const glm::vec3& p1, const glm::vec2& p2)
 	return p1 + glm::vec3(p2.x, 0, p2.y);
 }
 
-glm::vec3 operator+(const glm::vec2& p1, const glm::vec3& p2)
-{
-	return p2 + glm::vec3(p1.x, 0, p1.y);
-}
-
 glm::vec3 operator-(const glm::vec3& p1, const glm::vec2& p2)
 {
 	return p1 - glm::vec3(p2.x, 0, p2.y);
-}
-
-glm::vec3 operator-(const glm::vec2& p1, const glm::vec3& p2)
-{
-	return glm::vec3(p1.x, 0, p1.y) - p2;
 }
