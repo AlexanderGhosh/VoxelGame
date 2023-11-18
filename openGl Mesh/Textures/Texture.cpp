@@ -6,7 +6,7 @@
 
 #include <glad/glad.h>
 
-Texture::Texture() :created(false), dimentions(), texMap(), is2D(), name() { }
+Texture::Texture() :created(false), dimentions(), texMap(), is2D(), name(), isCube() { }
 
 Texture::Texture(std::string name, std::string overload) : Texture() {
 	this->name = name;
@@ -17,14 +17,19 @@ Texture::Texture(std::string name) : Texture() {
 	this->is2D = true;
 	created = load2D(name);
 }
+Texture::~Texture()
+{
+	// cleanUp();
+}
 Texture::Texture(bool loadTex) : Texture() {
 	if (loadTex) {
-		created = load3D("grass");
+		created = loadCube("grass");
 	}
 }
 bool Texture::load2D(const std::string& n) {
 	std::string name = "./Textures/" + n + ".png";
 	is2D = true;
+	isCube = false;
 	glGenTextures(1, &texMap);
 	// diffuse
 	// "C:\Users\ghosh\Desktop\openGl Mesh\openGl Mesh\Textures\hearts\live_heart.png"
@@ -44,9 +49,10 @@ bool Texture::load2D(const std::string& n) {
 	created = true;
 	return true;
 }
-bool Texture::load3D(const std::string& name) {
+bool Texture::loadCube(const std::string& name) {
 	this->name = name;
 	is2D = false;
+	isCube = true;
 	std::vector<std::string> faces = {
 		"Textures/" + name + "/left.png",	// left
 		"Textures/" + name + "/front.png",	// front
@@ -84,14 +90,57 @@ bool Texture::load3D(const std::string& name) {
 	created = true;
 	return true;
 }
+bool Texture::load3D(void* data, unsigned int size, unsigned int type, unsigned int internalType)
+{
+	isCube = is2D = false;
+	glGenTextures(1, &texMap);
+
+	glBindTexture(GL_TEXTURE_3D, texMap);
+	glTexImage2D(GL_TEXTURE_3D, 0, internalType, size, size, 0, internalType, type, data);
+	glGenerateMipmap(GL_TEXTURE_3D);
+
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST_MIPMAP_NEAREST
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST_MIPMAP_NEAREST
+	created = true;
+	return true;
+}
+bool Texture::load2D(void* data, unsigned int size, unsigned int type, unsigned int internalType)
+{
+	isCube = false;
+	is2D = true;
+	glGenTextures(1, &texMap);
+
+	glBindTexture(GL_TEXTURE_2D, texMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalType, size, size, 0, internalType, type, data);
+	// glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST_MIPMAP_NEAREST
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // GL_NEAREST_MIPMAP_NEAREST
+	created = true;
+	return true;
+}
+void Texture::cleanUp()
+{
+	if (texMap) {
+		glDeleteTextures(1, &texMap);
+		texMap = 0;
+	}
+}
 void Texture::bind() const {
 	if (!created) return;
 	glActiveTexture(GL_TEXTURE0);
 	if (is2D) {
 		glBindTexture(GL_TEXTURE_2D, texMap);
 	}
-	else {
+	else if (isCube) {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, texMap);
+	}
+	else {
+		glBindTexture(GL_TEXTURE_3D, texMap);
 	}
 }
 void Texture::unBind() const {

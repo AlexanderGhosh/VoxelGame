@@ -248,5 +248,7 @@ const std::unordered_set<glm::vec2> World::centeredPositions(const glm::vec2& or
 			res.insert(pos);
 		}
 	}
+	res.clear();
+	res.insert(glm::vec2(0, 0));
 	return res;
 }

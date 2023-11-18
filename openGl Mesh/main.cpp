@@ -28,7 +28,7 @@ int main() {
 	GLFWwindow* window = createWindow();
 
 	for (auto& tex : TEXTURES) {
-		tex.load3D(tex.getName());
+		tex.loadCube(tex.getName());
 	}
 	for (auto& tex : TEXTURES2D) {
 		tex.load2D(tex.getName());

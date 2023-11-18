@@ -9,9 +9,10 @@
 #include "../../../Helpers/BlockDetails.h"
 #include "../World.h"
 #include "../../../Helpers/Timer.h"
+#include <glad/glad.h>
 
 
-ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
+ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks(), maxHeight()
 {
 }
 
@@ -152,7 +153,7 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 
 void ChunkColumn::setUpBuffer()
 {
-	buffer.setUp(bufferData.data(), bufferData.size());
+	// buffer.setUp(bufferData.data(), bufferData.size());
 }
 
 void ChunkColumn::reallocBuffer()
@@ -161,6 +162,13 @@ void ChunkColumn::reallocBuffer()
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {
+	std::array<float, CHUNK_SIZE * CHUNK_SIZE> noiseData = world_generation::generateNoise(getWorldPos(), seed, maxHeight);
+	for (unsigned int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
+		noiseData[i] /= maxHeight;
+	}
+	buffer.load2D(noiseData.data(), CHUNK_SIZE, GL_FLOAT, GL_RED);
+	return;
+	
 	const std::list<glm::vec3> offsets = {
 		glm::vec3(0, 0, 1),
 		glm::vec3(0, 0, -1),
@@ -240,16 +248,16 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 		}
 	}
 
-	buffer.setUp(bufferData.data(), bufferData.size() * sizeof(GeomData));
-	buffer.setBindingPoint(1);
+	// buffer.setUp(bufferData.data(), bufferData.size() * sizeof(GeomData));
+	// buffer.setBindingPoint(1);
 }
 
-const SSBOBuffer& ChunkColumn::getBuffer() const
+const Texture& ChunkColumn::getBuffer() const
 {
 	return buffer;
 }
 
-SSBOBuffer* ChunkColumn::getBufferPtr()
+Texture* ChunkColumn::getBufferPtr()
 {
 	return &buffer;
 }
@@ -492,7 +500,12 @@ void ChunkColumn::load(const glm::vec2& chunkPos)
 		bufferData.push_back(*d);
 	}
 
-	this->buffer.setUp(bufferData.data(), bufferData.size());
+	//this->buffer.setUp(bufferData.data(), bufferData.size());
+}
+
+const float ChunkColumn::getMaxHeight() const
+{
+	return maxHeight;
 }
 
 const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const

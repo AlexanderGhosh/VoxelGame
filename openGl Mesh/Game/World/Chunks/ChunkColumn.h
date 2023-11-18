@@ -2,7 +2,7 @@
 #include "../../../BlockStore.h"
 #include "../../../GeomRendering/BufferGeom.h"
 #include "../../../GeomRendering/GeomData.h"
-#include "../../../SSBOBuffer.h"
+#include "../../../Textures/Texture.h"
 
 class World;
 
@@ -22,8 +22,8 @@ public:
 	// inital world generation
 	void populateBuffer(WorldMap& worldMap);
 
-	const SSBOBuffer& getBuffer() const;
-	SSBOBuffer* getBufferPtr();
+	const Texture& getBuffer() const;
+	Texture* getBufferPtr();
 
 	void addBlock(const glm::vec3& worldPos, const Block block);
 	void removeBlock(const glm::vec3& worldPos, World* world);
@@ -32,6 +32,8 @@ public:
 
 	void save() const;
 	void load(const glm::vec2& chunkPos);
+
+	const float getMaxHeight() const;
 private:
 	// used for runtime genertion
 	void populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
@@ -43,8 +45,9 @@ private:
 	};
 	std::unordered_map<glm::vec3, Block> editedBlocks;
 	std::vector<GeomData> bufferData;
-	SSBOBuffer buffer;
+	Texture buffer;
 	glm::vec2 position;
+	float maxHeight;
 
 	unsigned int seed;
 

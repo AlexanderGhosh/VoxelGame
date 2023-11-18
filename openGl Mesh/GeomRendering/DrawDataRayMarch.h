@@ -1,13 +1,15 @@
 #pragma once
 #include <glm.hpp>
+#include "../Textures/Texture.h"
 
 class SSBOBuffer;
 
 class DrawDataRayMarch {
 public:
-	SSBOBuffer* buffer;
+	Texture noiseData;
 	glm::vec3 drawOrigin;
+	float maxHeight;
 
-	DrawDataRayMarch() : buffer(), drawOrigin() { }
-	DrawDataRayMarch(SSBOBuffer* buffer, glm::vec3 drawOrigin) : buffer(buffer), drawOrigin(drawOrigin) { }
+	DrawDataRayMarch() : noiseData(), drawOrigin(), maxHeight() { }
+	DrawDataRayMarch(Texture buffer, glm::vec3 drawOrigin, float maxHeight) : noiseData(buffer), drawOrigin(drawOrigin), maxHeight(maxHeight) { }
 };

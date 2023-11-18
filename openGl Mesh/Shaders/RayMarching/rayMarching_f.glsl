@@ -6,11 +6,11 @@
 layout(location = 0) out vec4 frag;
 in vec2 texCoords;
 
-layout(std430, binding = 1) buffer geometry {
-    uint blockData[];
-};
 
+uniform sampler2D geometry;
+uniform float maxHeight;
 uniform float voxelSize;
+uniform float chunkSize;
 uniform vec3 chunkPosition;
 uniform vec3 viewPos;
 uniform vec2 resolution;
@@ -26,15 +26,14 @@ struct HitInfo {
 vec3 getRayDir();
 float closestDistance(vec3 p);
 HitInfo castRay();
-vec3 getPos(uint index);
 vec3 getNormal(vec3 pos);
 
 void main() {
     vec3 color = vec3(0.3);
     HitInfo info = castRay();
     if(info.hit) {
-        color = vec3(1, 0, 0);
         color = info.normal * .5 + .5;
+        color = vec3(1, 0, 0);
         color = vec3(info.steps);
     }
     frag = vec4(color, 1);
@@ -78,21 +77,42 @@ float sdSphere( vec3 p, float s )
   return length(p)-s;
 }
 
-vec3 getRayDir() {    
+vec3 getRayDir() {
     vec2 xy = gl_FragCoord.xy - resolution * .5;
     float z = resolution.y / tan(radians(fov) * .5);
     return normalize(vec3(xy, -z));
 }
 
 float closestDistance(vec3 p) {
-    float min_ = 100000;
-    for(int i = 0; i < blockData.length(); i++) {
-        vec3 c = getPos(i);
-        float d = sdBox(p - c, vec3(.5));
-        // float d = sdSphere(p - c, 1);
-        min_ = min(min_, d);
+    
+    float min_ = MAX_DIST;
+    for (float i = 0.0; i < chunkSize; i++){
+        for (float j = 0.0; j < chunkSize; j++){
+            float x = i / chunkSize;
+            float z = j / chunkSize;
+            float height = texelFetch(geometry, ivec2(i, j), 0).r * maxHeight;
+            vec3 wp = vec3(i, 0, j);
+            wp += chunkPosition;
+            float d = sdBox(p - wp, vec3(0.5, height, 0.5));
+            min_ = min(min_, d);
+        }   
     }
     return min_;
+    
+    vec2 localPos = floor(p.xz - chunkPosition.xz); // should be relative to chunk
+    if(localPos.x >= chunkSize || localPos.y >= chunkSize || localPos.x < 0 || localPos.y < 0){
+        return MAX_DIST;
+    }
+    vec2 texPos = localPos / chunkSize;
+    float height = texture(geometry, texPos).r * maxHeight;
+
+    vec3 worldPos = vec3(p.x, height, p.z);
+    worldPos += chunkPosition;
+    worldPos = floor(worldPos);
+
+    vec3 size = vec3(0.5, 0.5, 0.5);
+
+    return sdBox(p, size);
 }
 
 vec3 getNormal(vec3 pos) {
@@ -106,14 +126,4 @@ vec3 getNormal(vec3 pos) {
     vec3 normal = vec3(gradient_x, gradient_y, gradient_z);
 
     return normalize(normal);
-}
-
-vec3 getPos(uint index) {
-    uint data = blockData[index];
-    
-    uint z = data & 0x0000000f;
-    uint x = (data & 0x000000f0) >> 4;
-    uint y = (data & 0x0000ff00) >> 8;
-
-    return vec3(x, y, z) + chunkPosition;
 }

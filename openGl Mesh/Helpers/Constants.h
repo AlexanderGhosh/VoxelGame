@@ -9,7 +9,7 @@
 
 class Texture;
 class Shader;
-class BlockDetails;
+struct BlockDetails;
 class ChunkColumn;
 class BlockStore;
 

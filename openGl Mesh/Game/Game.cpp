@@ -429,6 +429,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	rayMarching.setValue("viewPos", mainCamera.GetPosition());
 	rayMarching.setValue("resolution", windowDim);
 	rayMarching.setValue("fov", FOV);
+	rayMarching.setValue("chunkSize", CHUNK_SIZE_F);
 
 	world.render(&rayMarching);
 

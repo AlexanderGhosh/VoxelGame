@@ -168,8 +168,27 @@ unsigned int world_generation::heightOfColumn(glm::vec2 worldPos, const unsigned
 
 BlocksEncoded world_generation::getColumn(const glm::vec2& worldPos, unsigned int seed)
 {
-	float height = heightOfColumn(worldPos, seed);
+	unsigned int height = heightOfColumn(worldPos, seed);
 	return createColumn(height);
+}
+
+std::array<float, CHUNK_SIZE* CHUNK_SIZE> world_generation::generateNoise(const glm::vec2& origin, const unsigned int seed, float& maxHeight)
+{
+	std::array<float, CHUNK_SIZE* CHUNK_SIZE> res{};
+
+	for (unsigned int x = 0; x < CHUNK_SIZE; x++)
+	{
+		for (unsigned int z = 0; z < CHUNK_SIZE; z++)
+		{
+			glm::vec2 worldPos(x, z);
+			worldPos += origin;
+
+			float h = heightOfColumn(worldPos, seed);
+			res[columnIndex(x, z)] = h;
+			maxHeight = fmaxf(maxHeight, h);
+		}
+	}
+	return res;
 }
 
 BlocksEncoded world_generation::createColumn(unsigned int height)
