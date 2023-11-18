@@ -12,7 +12,6 @@ enum class Block : unsigned char;
 
 float bilinearInterpolation(const float xLen, const float yLen, const float& c00, const float& c01, const float& c10, const float& c11);
 
-std::list<std::string> splitString(std::string str, const std::string& delimiter);
 
 void markSlot(unsigned char& val, const unsigned int slot);
 

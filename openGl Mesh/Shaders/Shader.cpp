@@ -27,7 +27,7 @@ const int Shader::getLocation(const std::string& name) const {
 }
 
 void Shader::setLocation(const int& location, const glm::mat4& value) const {
-	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	glUniformMatrix4fv(location, 1, false, glm::value_ptr(value));
 }
 void Shader::setLocation(const int& location, const glm::vec4& value) const {
 	glUniform4f(location, value.x, value.y, value.z, value.w);
@@ -89,8 +89,8 @@ void Shader::setUp() {
 	gShaderFile.exceptions(std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::badbit);
 	try {
-		vShaderFile.open(("Shaders/" + name + "_v.glsl").c_str());
-		fShaderFile.open(("Shaders/" + name + "_f.glsl").c_str());
+		vShaderFile.open(("Shaders/" + name + ".vert").c_str());
+		fShaderFile.open(("Shaders/" + name + ".frag").c_str());
 		std::stringstream vShaderStream, gShaderStream, fShaderStream;
 
 		vShaderStream << vShaderFile.rdbuf();
@@ -103,7 +103,7 @@ void Shader::setUp() {
 		fragmentCode = fShaderStream.str();
 
 		if (hasGeom) {
-			gShaderFile.open(("Shaders/" + name + "_g.glsl").c_str());
+			gShaderFile.open(("Shaders/" + name + ".geom").c_str());
 			gShaderStream << gShaderFile.rdbuf();
 			gShaderFile.close();
 			geometryCode = gShaderStream.str();

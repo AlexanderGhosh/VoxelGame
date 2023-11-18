@@ -197,25 +197,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block2_f.gls" />
-    <None Include="Shaders\block2_f.glsl" />
     <None Include="Shaders\block2_v.gls" />
-    <None Include="Shaders\block2_v.glsl" />
     <None Include="Shaders\block3_f.gls" />
-    <None Include="Shaders\block3_f.glsl" />
     <None Include="Shaders\block3_v.gls" />
-    <None Include="Shaders\block3_v.glsl" />
-    <None Include="Shaders\crosshair_f.glsl" />
-    <None Include="Shaders\crosshair_v.glsl" />
-    <None Include="Shaders\depth_f.glsl" />
-    <None Include="Shaders\depth_v.glsl" />
-    <None Include="Shaders\glyph_f.glsl" />
-    <None Include="Shaders\glyph_v.glsl" />
-    <None Include="Shaders\ray_f.glsl" />
-    <None Include="Shaders\ray_v.glsl" />
+    <None Include="Shaders\crosshair.frag" />
+    <None Include="Shaders\crosshair.vert" />
+    <None Include="Shaders\glyph.frag" />
+    <None Include="Shaders\glyph.vert" />
+    <None Include="Shaders\skybox.frag" />
+    <None Include="Shaders\skybox.vert" />
     <None Include="Shaders\skybox_f.gls" />
-    <None Include="Shaders\skybox_f.glsl" />
     <None Include="Shaders\skybox_v.gls" />
-    <None Include="Shaders\skybox_v.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlockStore.h" />

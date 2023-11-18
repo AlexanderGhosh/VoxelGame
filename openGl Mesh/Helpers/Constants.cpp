@@ -27,5 +27,3 @@ std::vector<Shader> SHADERS = {
 	Shader("Blur/blur"),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
-glm::vec3 LIGHTPOSITION = glm::vec3(-8, 80, -8);
-glm::vec3 LIGHTPOSITIONOrigin = glm::vec3(-8, 80, -8);
