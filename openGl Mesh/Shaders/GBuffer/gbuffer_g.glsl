@@ -62,7 +62,7 @@ void main() {
             mat3 normalMatrix = transpose(inverse(mat3(vs_out[0].view * vs_out[0].m)));
             normal = normals[i];
 
-            for (uint j = 0u; j < 4u; j++){ 
+            for (uint j = 0u; j < 4u; j++){
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
 

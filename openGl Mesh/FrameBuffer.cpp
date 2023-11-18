@@ -43,7 +43,7 @@ void FrameBuffer::setUp(const FrameBufferInit& init)
 		if (init.depthBuffer == 0) {
 			glGenTextures(1, &depthBuffer);
 			glBindTexture(GL_TEXTURE_2D, depthBuffer);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, dimentions.x, dimentions.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, dimentions.x, dimentions.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 			
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

@@ -11,7 +11,6 @@
 #include "Player/Camera.h"
 #include "World/World.h"
 #include "../FrameBuffer.h"
-#include "../Helpers/ShadowBox.h"
 #include "../Renders/ModelRenderer.h"
 
 class Model;
@@ -60,8 +59,6 @@ private:
 	
 	ModelRenderer modelRenderer;
 	EntityManager* manager;
-
-	ShadowBox shadowBox;
 
 	unsigned int quadVBO, quadVAO;
 

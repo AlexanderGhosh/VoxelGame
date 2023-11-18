@@ -8,6 +8,8 @@
 #include "../Helpers/ModelLoaders/ModelLoader.h"
 #include "../Helpers/ModelLoaders/Model.h"
 #include <gtc/random.hpp>
+#include "../Helpers/ShadowBox.h"
+#include "../Helpers/Functions.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -25,7 +27,7 @@ UI_Renderer Game::uiRenderer;
 const glm::vec3 lightPos(100, 100, 100);
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), shadowBox(lightPos), modelRenderer(), gBuffer() {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer() {
 	mainCamera = Camera({ 0, 2, 0 });
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -223,26 +225,24 @@ void Game::renderModels(const glm::mat4& projection) {
 }
 
 void Game::showStuff(const glm::mat4& projection) {
-	const glm::mat4 LSM = shadowBox.getLSM(mainCamera, projection, lightPos);
-
+	const glm::mat4 LSM = ShadowBox::getLSM(mainCamera, projection, lightPos);
+	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
 	// 1. render from the lights perspective for the shadow map
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);
-	glFrontFace(GL_CCW); // this is what stops the water from rendering
+	//glFrontFace(GL_CCW); // this is what stops the water from rendering
 
 	shadowFramebuffer.bind();
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 	Shader& shadows = SHADERS[SHADOW];
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
 	world.render(&shadows);
 	shadows.unBind();
-
+	shadowFramebuffer.unBind();
 	// 2. render for OIT
-	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
 	// 2.1 Opaque
 	
 	// 2.1.1 Populate G-Buffer
@@ -313,9 +313,14 @@ void Game::showStuff(const glm::mat4& projection) {
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1));
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0));
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth());
 	deffered.setValue("albedoPos", 0);
 	deffered.setValue("normalRnd", 1);
 	deffered.setValue("ao", 2);
+	deffered.setValue("shadowMap", 3);
+	deffered.setValue("view_inv", glm::inverse(viewMatrix));
+	deffered.setValue("lightMatrix", LSM);
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

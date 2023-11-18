@@ -17,14 +17,6 @@ out VS_OUT {
 } vs_out;
 
 void main() {
-    /*
-    uint x = (data & 0xf0000000) >> 28;
-    uint z = (data & 0x0f000000) >> 24;
-    uint y = (data & 0x00ff0000) >> 16;
-    uint cubeType_ = data & 0x0000ff00 >> 8;
-    uint blockColourIndex_ = data & 0x000000ff;
-    vec3 worldPos_ = vec3(float(x), float(y), float(z));
-    */
     uint z = data & 0x0000000f;
     uint x = (data & 0x000000f0) >> 4;
     uint y = (data & 0x0000ff00) >> 8;
