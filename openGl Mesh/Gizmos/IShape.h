@@ -5,7 +5,7 @@ class Shader;
 namespace Gizmo {
 	// All types of gizmos
 	enum class Types : unsigned int {
-		Point, Line, Circle, Cuboide, Sphere, Triangle, Arrow
+		Point, Line, Circle, Cuboide, Sphere, Triangle, Arrow, Grid2D
 	};
 	// Interface for a Gizmo shape does its nothing by itself
 	class IShape {

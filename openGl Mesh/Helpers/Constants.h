@@ -13,6 +13,9 @@ class BlockDetails;
 class ChunkColumn;
 class BlockStore;
 
+#define DEBUG_GRID_LINES
+
+
 #define SSAO
 #ifdef SSAO
 constexpr unsigned int SSAO_NUM_SAMPLES = 64;
@@ -22,7 +25,7 @@ constexpr float SSAO_BIAS = 0.025;
 #endif // SSAO
 
 
-constexpr bool VSYNC = false;
+constexpr bool VSYNC = true;
 constexpr float PI = 3.14;
 constexpr float HEIGHT = 720;
 constexpr float WIDTH = 1280;
@@ -34,7 +37,7 @@ constexpr float FAR_PLANE = 200;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
 constexpr unsigned int CHUNK_SAMPLES = 4;
-constexpr unsigned int RENDER_DISTANCE = 5;
+constexpr unsigned int RENDER_DISTANCE = 4;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int PARTS_PER_CHUNK = 16;
@@ -59,6 +62,14 @@ constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
 		glm::vec3(0, 1, 0),
 		glm::vec3(0, -1, 0)
 };
+#ifdef DEBUG_GRID_LINES
+constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
+	glm::vec3(-.5f),
+	glm::vec3(CHUNK_SIZE - .5f, -.5f, -.5f),
+	glm::vec3(-.5f),
+	glm::vec3(-.5f, -.5f, CHUNK_SIZE - .5f)
+};
+#endif // DEBUG_GRID_LINES
 
 constexpr glm::vec3 LIGHT_POSITION(100.f);
 

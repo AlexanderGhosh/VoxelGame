@@ -11,6 +11,7 @@
 #include "../Helpers/ModelLoaders/Model.h"
 #include "../Helpers/ShadowBox.h"
 #include "../Helpers/Functions.h"
+#include "../Gizmos/Composite/Grid2D.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -174,7 +175,6 @@ void Game::doLoop(const glm::mat4& projection) {
 	setUpSSAO();
 #endif // SSAO
 
-
 	while (gameRunning) {
 		calcTimes();
 		glfwPollEvents();
@@ -183,6 +183,17 @@ void Game::doLoop(const glm::mat4& projection) {
 		glm::vec3 p = floor(mainCamera.GetPosition());
 		glm::ivec2 c(p.x, p.z);
 		reduceToMultiple(c, CHUNK_SIZE);
+
+		GizmoManager& gizmoManager = GizmoManager::getInstance();
+#ifdef DEBUG_GRID_LINES
+		unsigned int i = 0;
+		for (Gizmo::IShape* grid : gizmoManager.allGizmos) {
+			grid->setPosition(glm::vec3(c.x, 0, c.y) + GRID_LINE_POSITIONS[i++]);
+		}
+#endif // DEBUG_GRID_LINES
+
+		
+
 		c /= CHUNK_SIZE;
 		world.tryStartGenerateChunks(c);
 		// std::cout << "Generated" << std::endl;
@@ -266,6 +277,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	gbufferS.setValue("numBlocks", 8.f);
 
 	world.render(&gbufferS);
+	gizmoManager->render(projection * viewMatrix);
 	//renderModels(projection);
 	manager->renderEvent();
 
@@ -344,7 +356,6 @@ void Game::showStuff(const glm::mat4& projection) {
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	gizmoManager->render(projection* viewMatrix);
 	renderModels(projection);
 
 	// 2.2 Transparent

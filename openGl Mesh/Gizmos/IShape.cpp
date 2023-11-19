@@ -25,7 +25,7 @@ Gizmo::IShape::IShape() : position(0), colour(1), thickness(1), pointVAO(0), sha
 
 Gizmo::IShape::~IShape()
 {
-	glDeleteVertexArrays(1, &pointVAO);
+	//glDeleteVertexArrays(1, &pointVAO);
 }
 
 void Gizmo::IShape::bindShader(const glm::mat4& pv) const

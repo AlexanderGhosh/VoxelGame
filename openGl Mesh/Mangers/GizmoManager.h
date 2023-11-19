@@ -10,8 +10,8 @@ namespace Gizmo {
 class GizmoManager : public Manager<GizmoManager>
 {
 private:
-	std::list<Gizmo::IShape*> allGizmos;
 public:
+	std::list<Gizmo::IShape*> allGizmos;
 	GizmoManager();
 	void addGizmo(Gizmo::IShape* gizmo);
 	void addGizmo(Gizmo::IShape& gizmo);

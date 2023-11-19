@@ -51,4 +51,5 @@ void Gizmo::Line::setPosition(const glm::vec3& pos)
 	IShape::setPosition(pos);
 	const glm::vec3 delta = pos - position;
 	start += delta;
+	end += delta;
 }

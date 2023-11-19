@@ -19,9 +19,9 @@
 #include "Mangers/ComponentManager.h"
 #include "Mangers/ModelManager.h"
 #include "Mangers/GizmoManager.h"
-#include "Gizmos/Primatives/Circle.h"
+#include "Gizmos/Composite/Grid2D.h"
 
-glm::ivec2 DIM(1280, 720);
+glm::ivec2 DIM(WIDTH, HEIGHT);
 
 GLFWwindow* createWindow();
 void createBlockDetails();
@@ -48,9 +48,25 @@ int main() {
 	player.addComponent(playerTransform);
 
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
-	Gizmo::Circle pointA({ 0, 0, 0 }, { 1, 0 ,0 });
-	//pointA.setThickness(10);
-	gizmoManager.addGizmo(pointA);
+
+#ifdef DEBUG_GRID_LINES
+	Gizmo::Grid2D grid1({ -.5, -0.5, -.5 }, { CHUNK_SIZE, 60 }, 1, true, false);
+	grid1.setColour({ 1, 0, 1 });
+	gizmoManager.addGizmo(grid1);
+
+	Gizmo::Grid2D grid2({ CHUNK_SIZE - .5, -0.5, -.5 }, { CHUNK_SIZE, 60 }, 1, true, false);
+	grid2.setColour({ 1, 0, 1 });
+	gizmoManager.addGizmo(grid2);
+
+	Gizmo::Grid2D grid3({ -.5, -0.5, -.5 }, { CHUNK_SIZE, 60 }, 1, false, false);
+	grid3.setColour({ 1, 0, 1 });
+	gizmoManager.addGizmo(grid3);
+
+	Gizmo::Grid2D grid4({ -.5, -0.5, CHUNK_SIZE_F - .5 }, { CHUNK_SIZE, 60 }, 1, false, false);
+	grid4.setColour({ 1, 0, 1 });
+	gizmoManager.addGizmo(grid4);
+#endif // DEBUG_GRID_LINES
+
 
 	Game game = Game(DIM);
 	GameConfig::showFPS = true;

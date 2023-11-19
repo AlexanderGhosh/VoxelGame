@@ -147,6 +147,9 @@
     <ClCompile Include="Gizmos\Composite\Arrow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Gizmos\Composite\Grid2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -353,6 +356,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Gizmos\Composite\Arrow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Composite\Grid2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
