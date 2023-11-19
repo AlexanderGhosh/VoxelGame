@@ -1,13 +1,14 @@
 #include "Game.h"
 #include <gtx/string_cast.hpp>
+#include <gtc/random.hpp>
 #include "../Shaders/Shader.h"
 #include "../Textures/Texture.h"
 #include "../Mangers/EntityManager.h"
 #include "../Mangers/ModelManager.h"
+#include "../Mangers/GizmoManager.h"
 #include "../IndexedBuffer.h"
 #include "../Helpers/ModelLoaders/ModelLoader.h"
 #include "../Helpers/ModelLoaders/Model.h"
-#include <gtc/random.hpp>
 #include "../Helpers/ShadowBox.h"
 #include "../Helpers/Functions.h"
 
@@ -32,7 +33,8 @@ SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameB
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 	setUpScreenQuad();
-	manager = &EntityManager::getInstance();
+	manager = &EntityManager::getInstance(); 
+	gizmoManager = &GizmoManager::getInstance();
 }
 
 Game::Game(glm::ivec2 windowDim) : Game() {
@@ -342,6 +344,8 @@ void Game::showStuff(const glm::mat4& projection) {
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	gizmoManager->render(projection* viewMatrix);
+	renderModels(projection);
 
 	// 2.2 Transparent
 	glEnable(GL_CULL_FACE);
@@ -363,7 +367,9 @@ void Game::showStuff(const glm::mat4& projection) {
 	transparent.bind();
 	transparent.setValue("view", viewMatrix);
 	transparent.setValue("projection", projection);
+
 	world.render(&transparent);
+
 	transparent.unBind();
 
 	// 2.3 Composite

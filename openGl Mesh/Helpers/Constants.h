@@ -99,7 +99,11 @@ enum SHADER_NAMES : unsigned char {
 	GBUFFER,
 	DEFFERED,
 	AO,
-	BLUR
+	BLUR,
+	// GIZMOS
+	POINT_GIZMO,
+	LINE_GIZMO,
+	CIRCLE_GIZMO,
 };
 
 enum class Move_Dir : unsigned char {

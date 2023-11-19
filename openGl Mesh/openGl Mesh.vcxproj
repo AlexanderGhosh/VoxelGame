@@ -160,12 +160,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
+    <ClCompile Include="Gizmos\Composite\Arrow.cpp" />
     <ClCompile Include="BlockStore.cpp" />
+    <ClCompile Include="Gizmos\Primatives\Circle.cpp" />
+    <ClCompile Include="Gizmos\Composite\Cuboide.cpp" />
     <ClCompile Include="EntityComponent\Component.cpp" />
     <ClCompile Include="EntityComponent\Components\Transform.cpp" />
     <ClCompile Include="EntityComponent\Entity.cpp" />
+    <ClCompile Include="Mangers\GizmoManager.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\Model.cpp" />
     <ClCompile Include="IndexedBuffer.cpp" />
+    <ClCompile Include="Gizmos\IShape.cpp" />
+    <ClCompile Include="Gizmos\Primatives\Line.cpp" />
     <ClCompile Include="Mangers\ComponentManager.cpp" />
     <ClCompile Include="Mangers\EntityManager.cpp" />
     <ClCompile Include="EventsSystem\Event.cpp" />
@@ -183,17 +189,20 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mangers\ModelManager.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\ModelLoader.cpp" />
+    <ClCompile Include="Gizmos\Primatives\Point.cpp" />
     <ClCompile Include="Renders\ModelRenderer.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="SOIL2\etc1_utils.c" />
     <ClCompile Include="SOIL2\image_DXT.c" />
     <ClCompile Include="SOIL2\image_helper.c" />
     <ClCompile Include="SOIL2\SOIL2.c" />
+    <ClCompile Include="Gizmos\Composite\Sphere.cpp" />
     <ClCompile Include="Textures\Texture.cpp" />
     <ClCompile Include="Game\World\World.cpp" />
     <ClCompile Include="Game\World\world_generation.cpp" />
     <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp" />
     <ClCompile Include="Renders\UI Stuff\UI_Element.cpp" />
+    <ClCompile Include="Gizmos\Composite\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block2_f.gls" />
@@ -210,12 +219,18 @@
     <None Include="Shaders\skybox_v.gls" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Gizmos\Composite\Arrow.h" />
     <ClInclude Include="BlockStore.h" />
+    <ClInclude Include="Gizmos\Primatives\Circle.h" />
+    <ClInclude Include="Gizmos\Composite\Cuboide.h" />
     <ClInclude Include="EntityComponent\Components\Transform.h" />
     <ClInclude Include="EntityComponent\ComponentTypes.h" />
+    <ClInclude Include="Mangers\GizmoManager.h" />
     <ClInclude Include="Helpers\ModelLoaders\Mesh.h" />
     <ClInclude Include="Helpers\ModelLoaders\Model.h" />
     <ClInclude Include="IndexedBuffer.h" />
+    <ClInclude Include="Gizmos\IShape.h" />
+    <ClInclude Include="Gizmos\Primatives\Line.h" />
     <ClInclude Include="Mangers\ComponentManager.h" />
     <ClInclude Include="EntityComponent\Component.h" />
     <ClInclude Include="EntityComponent\Entity.h" />
@@ -241,6 +256,7 @@
     <ClInclude Include="Helpers\Timer.h" />
     <ClInclude Include="Mangers\ModelManager.h" />
     <ClInclude Include="Helpers\ModelLoaders\ModelLoader.h" />
+    <ClInclude Include="Gizmos\Primatives\Point.h" />
     <ClInclude Include="Renders\ModelRenderer.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SOIL2\etc1_utils.h" />
@@ -260,11 +276,13 @@
     <ClInclude Include="SOIL2\stbi_pvr_c.h" />
     <ClInclude Include="SOIL2\stb_image.h" />
     <ClInclude Include="SOIL2\stb_image_write.h" />
+    <ClInclude Include="Gizmos\Composite\Sphere.h" />
     <ClInclude Include="Textures\Texture.h" />
     <ClInclude Include="Game\World\World.h" />
     <ClInclude Include="Game\World\world_generation.h" />
     <ClInclude Include="Renders\UI Stuff\UI_Renderer.h" />
     <ClInclude Include="Renders\UI Stuff\UI_Element.h" />
+    <ClInclude Include="Gizmos\Composite\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />

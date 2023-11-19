@@ -25,5 +25,8 @@ std::vector<Shader> SHADERS = {
 	Shader("Deffered/deffered"),
 	Shader("SSAO/ssao"),
 	Shader("Blur/blur"),
+	Shader("Gizmos/PointShader/pointShader"),
+	Shader("Gizmos/LineShader/lineShader", true),
+	Shader("Gizmos/CircleShader/circleShader", true),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};

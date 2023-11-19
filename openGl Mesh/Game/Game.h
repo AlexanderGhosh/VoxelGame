@@ -15,6 +15,7 @@
 
 class Model;
 class EntityManager;
+class GizmoManager;
 class Camera;
 
 struct Character {
@@ -59,6 +60,7 @@ private:
 	
 	ModelRenderer modelRenderer;
 	EntityManager* manager;
+	GizmoManager* gizmoManager;
 
 	unsigned int quadVBO, quadVAO;
 

@@ -18,6 +18,8 @@
 #include "Mangers/EntityManager.h"
 #include "Mangers/ComponentManager.h"
 #include "Mangers/ModelManager.h"
+#include "Mangers/GizmoManager.h"
+#include "Gizmos/Primatives/Circle.h"
 
 glm::ivec2 DIM(1280, 720);
 
@@ -45,6 +47,10 @@ int main() {
 	Transform playerTransform;
 	player.addComponent(playerTransform);
 
+	GizmoManager& gizmoManager = GizmoManager::getInstance();
+	Gizmo::Circle pointA({ 0, 0, 0 }, { 1, 0 ,0 });
+	//pointA.setThickness(10);
+	gizmoManager.addGizmo(pointA);
 
 	Game game = Game(DIM);
 	GameConfig::showFPS = true;
@@ -64,6 +70,7 @@ int main() {
 	ComponentManager::getInstance().destroy();
 	EntityManager::getInstance().destroy();
 	ModelManager::getInstance().destroy();
+	GizmoManager::getInstance().destroy();
 	return 0;
 }
 

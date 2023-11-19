@@ -120,6 +120,33 @@
     <ClCompile Include="Helpers\ModelLoaders\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mangers\GizmoManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\IShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\Primatives\Point.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\Primatives\Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\Primatives\Circle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\Composite\Cuboide.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\Composite\Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\Composite\Triangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmos\Composite\Arrow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -299,6 +326,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\ModelLoaders\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mangers\GizmoManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\IShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Primatives\Point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Primatives\Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Primatives\Circle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Composite\Cuboide.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Composite\Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Composite\Triangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmos\Composite\Arrow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
