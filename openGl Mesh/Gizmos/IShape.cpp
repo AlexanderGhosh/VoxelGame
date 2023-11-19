@@ -2,8 +2,12 @@
 #include <glad/glad.h>
 #include "../Shaders/Shader.h"
 
-Gizmo::IShape::IShape() : position(0), colour(1), thickness(1), pointVAO(0), shader()
+unsigned int Gizmo::IShape::VBO = 0;
+unsigned int Gizmo::IShape::pointVAO = 0;
+
+Gizmo::IShape::IShape() : position(0), colour(1), thickness(1), shader()
 {
+	if (VBO) return;
 	glGenBuffers(1, &VBO);
 	glGenVertexArrays(1, &pointVAO);
 	glBindVertexArray(pointVAO);

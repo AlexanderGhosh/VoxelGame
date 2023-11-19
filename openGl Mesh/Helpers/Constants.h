@@ -37,7 +37,7 @@ constexpr float FAR_PLANE = 200;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
 constexpr unsigned int CHUNK_SAMPLES = 4;
-constexpr unsigned int RENDER_DISTANCE = 4;
+constexpr unsigned int RENDER_DISTANCE = 2;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int PARTS_PER_CHUNK = 16;

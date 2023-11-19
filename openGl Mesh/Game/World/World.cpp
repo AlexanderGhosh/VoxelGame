@@ -88,9 +88,11 @@ void World::tryFinishGenerateChunk()
 	if (chunkCreationInprogress && chunkDataGenerated._Is_ready()) {
 		chunkCreationInprogress = false;
 		for (const glm::vec2& chunkPos : generationPositions) {
-			ChunkColumn& chunk = chunks.at(chunkPos);
-			chunk.setUpBuffer();
-			geomDrawable.add(chunk);
+			ChunkColumn* chunk = getValue(chunks, chunkPos);
+			if (!chunk) continue;
+			// ChunkColumn& chunk = chunks.at(chunkPos);
+			chunk->setUpBuffer();
+			geomDrawable.add(*chunk);
 
 			const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
 			for (ChunkColumn* chunk : neighbours) {

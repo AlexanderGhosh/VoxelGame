@@ -12,7 +12,7 @@ namespace Gizmo {
 	protected:
 		glm::vec3 position, colour;
 		float thickness;
-		unsigned int pointVAO, VBO;
+		static unsigned int pointVAO, VBO;
 		Shader* shader;
 
 		IShape();
