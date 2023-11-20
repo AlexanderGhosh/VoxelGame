@@ -150,7 +150,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 void Game::generateWorld() {
 	srand(time(0));
-	world = World(32);
+	world = World(WORLD_ORIGIN, 32);
 	world.setUpDrawable();
 }
 
@@ -188,7 +188,7 @@ void Game::doLoop(const glm::mat4& projection) {
 #ifdef DEBUG_GRID_LINES
 		unsigned int i = 0;
 		for (Gizmo::IShape* grid : gizmoManager.allGizmos) {
-			grid->setPosition(glm::vec3(c.x, 0, c.y) + GRID_LINE_POSITIONS[i++]);
+			grid->setPosition(glm::vec3(c.x, -(int)WORLD_HEIGHT, c.y) + GRID_LINE_POSITIONS[i++]);
 		}
 #endif // DEBUG_GRID_LINES
 

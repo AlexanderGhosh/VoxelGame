@@ -8,7 +8,7 @@ class World
 {
 public:
 	World();
-	World(unsigned int seed);
+	World(const glm::vec3 worldOrigin, unsigned int seed);
 
 	void render(Shader* shader);
 
@@ -36,7 +36,7 @@ private:
 
 	void generateNewChunks(const glm::vec2& center);
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
-	void getNewChunkPositions();
+	void getNewChunkPositions(const glm::vec3 worldOrigin);
 	void generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions);
 
 };

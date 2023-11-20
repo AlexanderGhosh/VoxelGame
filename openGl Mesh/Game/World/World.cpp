@@ -10,13 +10,13 @@
 
 World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions() {
 }
-World::World(unsigned int seed) : World() {
+World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
 	this->seed = seed;
-	getNewChunkPositions();
+	getNewChunkPositions(worldOrigin);
 }
 
-void World::getNewChunkPositions() {
-	std::unordered_set<glm::vec2> chunkPositions = centeredPositions(glm::vec2(0), RENDER_DISTANCE);
+void World::getNewChunkPositions(const glm::vec3 worldOrigin) {
+	std::unordered_set<glm::vec2> chunkPositions = centeredPositions({ worldOrigin.x, worldOrigin .z }, RENDER_DISTANCE);
 
 	generateTerrain(chunkPositions);
 }

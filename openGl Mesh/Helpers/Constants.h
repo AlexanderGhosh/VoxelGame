@@ -50,8 +50,9 @@ constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr float PLAYER_SPEED = 5;
 constexpr unsigned int SEED = 32;
 
-constexpr float VOXEL_SZIE = 2;
+constexpr float VOXEL_SZIE = 0.5;
 constexpr float HALF_VOXEL_SZIE = VOXEL_SZIE * .5f;
+constexpr glm::vec3 WORLD_ORIGIN(0, (VOXEL_SZIE - 1) * -30.f / VOXEL_SZIE, 0);
 
 constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
 		glm::vec3(0, 0, 1),
@@ -68,7 +69,7 @@ constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
 	glm::vec3(-HALF_VOXEL_SZIE),
 	glm::vec3(VOXEL_SZIE * (CHUNK_SIZE - .5f), -HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE),
 	glm::vec3(-HALF_VOXEL_SZIE),
-	glm::vec3(-HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE, VOXEL_SZIE* (CHUNK_SIZE - .5f))
+	glm::vec3(-HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE, VOXEL_SZIE * (CHUNK_SIZE - .5f))
 };
 #endif // DEBUG_GRID_LINES
 

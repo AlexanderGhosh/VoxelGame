@@ -50,7 +50,7 @@ int main() {
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
 
 #ifdef DEBUG_GRID_LINES
-	glm::ivec2 gridDims(CHUNK_SIZE, 60);
+	glm::ivec2 gridDims(CHUNK_SIZE, WORLD_HEIGHT);
 	glm::vec3 colour(1);
 
 	Gizmo::Grid2D grid1(glm::vec3(0), gridDims, VOXEL_SZIE, true, false);
