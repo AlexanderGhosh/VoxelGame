@@ -13,6 +13,8 @@ class BlockDetails;
 class ChunkColumn;
 class BlockStore;
 
+#define GENERATE_NEW_CHUNKS false
+
 #define DEBUG_GRID_LINES
 
 
@@ -25,7 +27,7 @@ constexpr float SSAO_BIAS = 0.025;
 #endif // SSAO
 
 
-constexpr bool VSYNC = true;
+constexpr bool VSYNC = false;
 constexpr float PI = 3.14;
 constexpr float HEIGHT = 720;
 constexpr float WIDTH = 1280;
@@ -37,7 +39,7 @@ constexpr float FAR_PLANE = 200;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
 constexpr unsigned int CHUNK_SAMPLES = 4;
-constexpr unsigned int RENDER_DISTANCE = 2;
+constexpr unsigned int RENDER_DISTANCE = 20;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int PARTS_PER_CHUNK = 16;
