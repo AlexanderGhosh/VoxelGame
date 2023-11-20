@@ -107,47 +107,56 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 	}
 	bufferData.shrink_to_fit();
 
+	if (position == glm::vec2(2, -1)) {
+		int g = 0;
+	}
 
 	// fix seems of neibours
-	//for (unsigned int i = 0; i < 4; i++) {
-	//	glm::vec3 off = OFFSETS_3D[i];
-	//	glm::vec2 neighbourChunkPos = position + glm::vec2(off.x, off.z);
+	// looks along the edge of the nebour chunk that borders the generated chunk and aims to add faces to fix the seems
+	for (unsigned int i = 0; i < 4; i++) {
+		glm::vec3 off = OFFSETS_3D[i];
+		glm::vec2 neighbourChunkPos = position + glm::vec2(off.x, off.z);
 
-	//	glm::vec3 mask = glm::abs(off); // is 1 along the axis which is the direction of the neibour
-	//	glm::vec3 startPoint = glm::vec3(CHUNK_SIZE_F - 1) * mask; // is the coord of the starting point on the neibours chunk (local coords to the neibour)
-	//	mask = 1.f - mask; // (1 - is because need the perpendicular line)
-	//	mask.y = 0;
-	//	
-	//	for (ChunkColumn* chunk : neibours) {
-	//		if (chunk->getPosition() == neighbourChunkPos) {
-	//			for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
-	//				glm::vec3 delta(j);
-	//				delta *= mask; // the axis with a value is == to the axis that borders the chunk
-	//				glm::vec3 neighbourLocalPos = startPoint + delta;
-	//				glm::vec3 neighbourWorldPos = neighbourLocalPos + glm::vec3(neighbourChunkPos.x * CHUNK_SIZE_F, 0, neighbourChunkPos.y * CHUNK_SIZE_F);
-	//				neighbourLocalPos.y = world_generation::heightOfColumn({ neighbourWorldPos.x, neighbourWorldPos.z }, seed);
-	//				neighbourWorldPos.y = neighbourLocalPos.y;
-	//				AddFaces toAdd{};
-	//				toAdd.worldPos = neighbourWorldPos;
-	//				toAdd.face = i; // maybe needs to be the oposite face
-	//				if (toAdd.face % 2 == 0) {
-	//					toAdd.face = toAdd.face + 1;
-	//				}
-	//				else {
-	//					toAdd.face = toAdd.face - 1;
-	//				}
-	//				// check if the face needs to be added at all
-	//				glm::vec3 worldPos = neighbourWorldPos - off - getWorldPos(); // the world position of the block that is next to the nebours block
+		glm::vec3 mask = -off; // is +-1 along the axis which is the direction of the neibour
+		glm::vec3 startPoint = glm::max(glm::vec3(CHUNK_SIZE_F - 1) * mask, glm::vec3(0)); // is the coord of the starting point on the neibours chunk (local coords to the neibour)
+		mask = 1.f - glm::abs(mask); // (1 - is because need the perpendicular line in order to advance along)
+		mask.y = 0;
+		
+		for (ChunkColumn* chunk : neibours) {
+			if (chunk->getPosition() == neighbourChunkPos) {
 
-	//				Block b = blockStore.getBlock(worldPos);
-	//				BlockDetails blockDets = getDetails(b);
-	//				if (blockDets.isTransparant) {
-	//					chunk->addFace(toAdd, false);
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
+				for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
+					glm::vec3 delta(j);
+					delta *= mask; // the axis with a value is == to the axis that borders the chunk (this is what is incremented in the loop
+					glm::vec3 neighbourLocalPos = startPoint + delta;
+
+					glm::vec3 neighbourWorldPos = neighbourLocalPos + glm::vec3(neighbourChunkPos.x * CHUNK_SIZE_F, 0, neighbourChunkPos.y * CHUNK_SIZE_F);
+					neighbourLocalPos.y = world_generation::heightOfColumn({ neighbourWorldPos.x, neighbourWorldPos.z }, seed);
+					neighbourWorldPos.y = neighbourLocalPos.y;
+
+					// check if the face needs to be added at all
+					glm::vec3 localPos = (neighbourLocalPos - off); // the local position of the block that is next to the nebours block
+					localPos.x = (int)localPos.x % CHUNK_SIZE;
+					localPos.z = (int)localPos.z % CHUNK_SIZE;
+
+					Block b = blockStore.getBlock(localPos); // the block that is next to the neibours block in the current chunk
+					BlockDetails blockDets = getDetails(b);
+					if (blockDets.isTransparant) {
+						AddFaces toAdd{};
+						toAdd.worldPos = neighbourWorldPos;
+						toAdd.face = i; // maybe needs to be the oposite face
+						if (toAdd.face % 2 == 0) {
+							toAdd.face = toAdd.face + 1;
+						}
+						else {
+							toAdd.face = toAdd.face - 1;
+						}
+						chunk->addFace(toAdd, false);
+					}
+				}
+			}
+		}
+	}
 }
 
 void ChunkColumn::setUpBuffer()

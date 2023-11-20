@@ -85,6 +85,16 @@ extern std::vector<Texture> TEXTURES2D;
 extern std::vector<Shader> SHADERS;
 extern std::vector<BlockDetails> BLOCK_DETAILS;
 
+//enum FACES_NAMES : unsigned char {
+//	FRONT,
+//	BACK,
+//	LEFT,
+//	RIGHT,
+//	TOP,
+//	BOTTOM,
+//	NULL_
+//};
+
 enum class Texture_Names : unsigned char {
 	SKYBOX
 };
