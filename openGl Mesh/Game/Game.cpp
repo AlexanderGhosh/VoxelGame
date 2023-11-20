@@ -420,38 +420,13 @@ void Game::showStuff(const glm::mat4& projection) {
 	
 	m = "View Direction: " + glm::to_string(mainCamera.GetFront());
 	showText(m, { 5, 825 }, 0.5f);
+	glm::vec3 p = floor(mainCamera.GetPosition());
+	glm::ivec2 c(p.x, p.z);
+	reduceToMultiple(c, CHUNK_SIZE);
+	c /= CHUNK_SIZE;
 
-	float zcoord = 0;
-	glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
-	glm::mat4 invPV = glm::inverse(projection * mainCamera.GetViewMatrix());
-	float z = (zcoord - 0.5f) * 2.0f;
-	glm::vec4 screenPos(0, 0, zcoord, 1); // the center of screen screen coords
-	screenPos = invPV * screenPos;
-	glm::vec3 hitPos = glm::vec3(screenPos) / screenPos.w;
-
-	glm::vec3 breakPos = round(hitPos + argmax_abs(mainCamera.GetFront()));
-	m = "Break Pos: " + glm::to_string(breakPos);
+	m = "Chunk Pos: " + glm::to_string(c);
 	showText(m, { 5, 800 }, 0.5f);
-
-	glm::vec3 placePos = round(hitPos - argmax_abs(mainCamera.GetFront()));
-	m = "Place Pos: " + glm::to_string(placePos);
-	showText(m, { 5, 775 }, 0.5f);
-
-	// 
-	// m = "Controlling: Player";
-	// showText(m, { 5, 80 }, 0.5f);
-
-	//glm::vec2 p(0);
-	// auto e = world.getChunkOccupied(player->getPosition());
-	// if (e)  p = e->getPosition();
-	// m = "Chunk Pos: " + glm::to_string(p);
-	// showText(m, { 5, 775 }, 0.5f);
-
-	// m = "Health: " + std::to_string(player->getHealth());
-	// showText(m, { 5, 750 }, 0.5f);
-
-	//ray.render(cam, projection);
-	//guiFrameBuffer.unBind();
 
 	// 4. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer

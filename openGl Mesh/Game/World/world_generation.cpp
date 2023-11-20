@@ -176,7 +176,22 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 {
 	BlocksEncoded encoded;
 	encoded.setUnalteredHeight(height);
-	if (height - 3 > 0) {
+
+	if (height < WATER_LEVEL) {
+		// is a body of water
+		unsigned int waterDepth = WATER_LEVEL - height;
+		encoded.push(Block::STONE, height - 3);
+		encoded.push(Block::SAND, 3);
+		encoded.push(Block::WATER, waterDepth);
+	}
+	else {
+		// is a land mass
+		encoded.push(Block::STONE, height - 3);
+		encoded.push(Block::DIRT, 2);
+		encoded.push(Block::GRASS, 1);
+	}
+
+	/*if (height - 3 > 0) {
 		encoded.push(Block::STONE, height -= 3);
 	}
 	if (height <= WATER_LEVEL) {
@@ -189,6 +204,6 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 	else if (height - 2 > 0) {
 		encoded.push(Block::DIRT, 2);
 		encoded.push(Block::GRASS, 1);
-	}
+	}*/
 	return encoded;
 }
