@@ -18,19 +18,20 @@ out vec3 fragPosView;
 out vec4 fragPosModel;
 flat out vec2 rndSeed;
 
-const float size = 0.5;
-const float inv_size = 1.0 / size;
+uniform float voxelSize;
+// const float size = 0.5;
+// const float inv_size = 1.0 / size;
 
 vec3 vertices[8] = vec3[](
-	vec3(-size,-size,-size), // 0
-	vec3( size,-size,-size), // 1
-	vec3(-size,-size, size), // 2
-	vec3( size,-size, size), // 3
+	vec3(-0.5,-0.5,-0.5), // 0
+	vec3( 0.5,-0.5,-0.5), // 1
+	vec3(-0.5,-0.5, 0.5), // 2
+	vec3( 0.5,-0.5, 0.5), // 3
 
-	vec3(-size, size,-size), // 4
-	vec3( size, size,-size), // 5
-	vec3( size, size, size), // 6
-	vec3(-size, size, size)  // 7
+	vec3(-0.5, 0.5,-0.5), // 4
+	vec3( 0.5, 0.5,-0.5), // 5
+	vec3( 0.5, 0.5, 0.5), // 6
+	vec3(-0.5, 0.5, 0.5)  // 7
 );
 
 int indices[] = int[](
@@ -69,7 +70,7 @@ void main() {
                 vec3 v = vertices[l];
 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                fragPosModel = vs_out[0].m * vec4(v, 1);
+                fragPosModel = vs_out[0].m * vec4(v * voxelSize, 1);
                 fragPosView = (vs_out[0].view * fragPosModel).xyz;
 
                 gl_Position = vs_out[0].proj * vs_out[0].view * fragPosModel;

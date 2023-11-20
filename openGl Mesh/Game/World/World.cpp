@@ -50,7 +50,7 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 
 void World::tryStartGenerateChunks(const glm::vec2& center)
 {
-	if (chunkCreationInprogress) {
+	if (chunkCreationInprogress || true) {
 		return;
 	}
 	chunkCreationInprogress = true;

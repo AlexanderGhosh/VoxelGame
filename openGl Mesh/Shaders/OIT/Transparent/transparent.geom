@@ -3,6 +3,8 @@
 layout (points) in;
 layout (triangle_strip, max_vertices = 24) out;
 
+uniform float voxelSize;
+
 in VS_OUT {
     uint cubeType;
     uint blockColourIndex;
@@ -13,19 +15,17 @@ in VS_OUT {
 flat out uint blockColourIndex;
 flat out vec3 fragCoords;
 
-const float size = 0.5;
-const float inv_size = 1.0 / size;
 
 vec3 vertices[8] = vec3[](
-	vec3(-size,-size,-size), // 0
-	vec3( size,-size,-size), // 1
-	vec3(-size,-size, size), // 2
-	vec3( size,-size, size), // 3
+	vec3(-0.5,-0.5,-0.5), // 0
+	vec3( 0.5,-0.5,-0.5), // 1
+	vec3(-0.5,-0.5, 0.5), // 2
+	vec3( 0.5,-0.5, 0.5), // 3
 
-	vec3(-size, size,-size), // 4
-	vec3( size, size,-size), // 5
-	vec3( size, size, size), // 6
-	vec3(-size, size, size)  // 7
+	vec3(-0.5, 0.5,-0.5), // 4
+	vec3( 0.5, 0.5,-0.5), // 5
+	vec3( 0.5, 0.5, 0.5), // 6
+	vec3(-0.5, 0.5, 0.5)  // 7
 );
 
 int indices[] = int[](
@@ -49,10 +49,10 @@ void main() {
             for (uint j = 0u; j < 4u; j++){ 
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
-                v.y = size * 0.85;
+                v.y *= 0.75;
                 fragCoords = gl_in[0].gl_Position.rgb;
 
-                gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v, 1);
+                gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v * voxelSize, 1);
                 EmitVertex();
             }
             EndPrimitive();

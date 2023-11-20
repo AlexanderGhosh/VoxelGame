@@ -182,7 +182,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		glm::vec3 p = floor(mainCamera.GetPosition());
 		glm::ivec2 c(p.x, p.z);
-		reduceToMultiple(c, CHUNK_SIZE);
+		reduceToMultiple(c, CHUNK_SIZE * VOXEL_SZIE);
 
 		GizmoManager& gizmoManager = GizmoManager::getInstance();
 #ifdef DEBUG_GRID_LINES
@@ -194,7 +194,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		
 
-		c /= CHUNK_SIZE;
+		c /= CHUNK_SIZE * VOXEL_SZIE;
 		world.tryStartGenerateChunks(c);
 		// std::cout << "Generated" << std::endl;
 

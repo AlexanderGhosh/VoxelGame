@@ -50,20 +50,24 @@ int main() {
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
 
 #ifdef DEBUG_GRID_LINES
-	Gizmo::Grid2D grid1({ -.5, -0.5, -.5 }, { CHUNK_SIZE, 60 }, 1, true, false);
-	grid1.setColour({ 1, 0, 1 });
+	glm::ivec2 gridDims(CHUNK_SIZE, 60);
+	glm::vec3 colour(1);
+
+	Gizmo::Grid2D grid1(glm::vec3(0), gridDims, VOXEL_SZIE, true, false);
+	grid1.setColour(colour);
+
+	Gizmo::Grid2D grid2(glm::vec3(0), gridDims, VOXEL_SZIE, true, false);
+	grid2.setColour(colour);
+
+	Gizmo::Grid2D grid3(glm::vec3(0), gridDims, VOXEL_SZIE, false, false);
+	grid3.setColour(colour);
+
+	Gizmo::Grid2D grid4(glm::vec3(0), gridDims, VOXEL_SZIE, false, false);
+	grid4.setColour(colour);
+
 	gizmoManager.addGizmo(grid1);
-
-	Gizmo::Grid2D grid2({ CHUNK_SIZE - .5, -0.5, -.5 }, { CHUNK_SIZE, 60 }, 1, true, false);
-	grid2.setColour({ 1, 0, 1 });
 	gizmoManager.addGizmo(grid2);
-
-	Gizmo::Grid2D grid3({ -.5, -0.5, -.5 }, { CHUNK_SIZE, 60 }, 1, false, false);
-	grid3.setColour({ 1, 0, 1 });
 	gizmoManager.addGizmo(grid3);
-
-	Gizmo::Grid2D grid4({ -.5, -0.5, CHUNK_SIZE_F - .5 }, { CHUNK_SIZE, 60 }, 1, false, false);
-	grid4.setColour({ 1, 0, 1 });
 	gizmoManager.addGizmo(grid4);
 #endif // DEBUG_GRID_LINES
 

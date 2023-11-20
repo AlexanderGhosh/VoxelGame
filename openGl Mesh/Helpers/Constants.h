@@ -50,7 +50,8 @@ constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr float PLAYER_SPEED = 5;
 constexpr unsigned int SEED = 32;
 
-constexpr float VOXEL_SZIE = 1;
+constexpr float VOXEL_SZIE = 2;
+constexpr float HALF_VOXEL_SZIE = VOXEL_SZIE * .5f;
 
 constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
 		glm::vec3(0, 0, 1),
@@ -64,10 +65,10 @@ constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
 };
 #ifdef DEBUG_GRID_LINES
 constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
-	glm::vec3(-.5f),
-	glm::vec3(CHUNK_SIZE - .5f, -.5f, -.5f),
-	glm::vec3(-.5f),
-	glm::vec3(-.5f, -.5f, CHUNK_SIZE - .5f)
+	glm::vec3(-HALF_VOXEL_SZIE),
+	glm::vec3(VOXEL_SZIE * (CHUNK_SIZE - .5f), -HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE),
+	glm::vec3(-HALF_VOXEL_SZIE),
+	glm::vec3(-HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE, VOXEL_SZIE* (CHUNK_SIZE - .5f))
 };
 #endif // DEBUG_GRID_LINES
 
