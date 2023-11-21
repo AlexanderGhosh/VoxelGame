@@ -137,12 +137,6 @@ const std::string getName(Block block) {
 	case Block::WATER:
 		name = "water";
 		break;
-	case Block::LOG:
-		name = "log";
-		break;
-	case Block::LEAF:
-		name = "leaf";
-		break;
 	case Block::SAND:
 		name = "sand";
 		break;
@@ -156,6 +150,41 @@ glm::vec3 getTranslation(const glm::mat4& matrix) {
 
 const BlockDetails& getDetails(Block block) {
 	return BLOCK_DETAILS[(unsigned int)block];
+}
+
+std::vector<std::string> split(const std::string& str, const std::string& delim)
+{
+	std::vector<std::string> tokens;
+	size_t prev = 0, pos = 0;
+	do
+	{
+		pos = str.find(delim, prev);
+		if (pos == std::string::npos) pos = str.length();
+		std::string token = str.substr(prev, pos - prev);
+		if (!token.empty()) tokens.push_back(token);
+		prev = pos + delim.length();
+	} while (pos < str.length() && prev < str.length());
+	return tokens;
+}
+
+bool contains(const std::string& a, const std::string& b) {
+	const short s = b.size();
+	for (short i = 0; i < a.size() - b.size(); i++) {
+		const std::string& sub = a.substr(i, s);
+		if (sub == b) {
+			return true;
+		}
+	}
+	return false;
+}
+
+std::string replaceAll(std::string str, std::string from, std::string to) {
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+	return str;
 }
 
 glm::vec3 operator+(const glm::vec3& p1, const glm::vec2& p2)

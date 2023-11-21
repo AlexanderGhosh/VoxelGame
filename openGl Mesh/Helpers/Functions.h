@@ -39,7 +39,14 @@ unsigned int toIndex(const Block block);
 const Block toBlock(const unsigned char number);
 const BlockDetails& getDetails(const Block block);
 
+// returns str split at the delimeter
+std::vector<std::string> split(const std::string& str, const std::string& delim);
 
+// true if a contains b otherwise false
+bool contains(const std::string& a, const std::string& b);
+
+// replaces all occorances of from with to in str
+std::string replaceAll(std::string str, std::string from, std::string to);
 
 glm::vec3 operator+(const glm::vec3& p1, const glm::vec2& p2);
 //glm::vec3 operator+(const glm::vec2& p1, const glm::vec3& p2);

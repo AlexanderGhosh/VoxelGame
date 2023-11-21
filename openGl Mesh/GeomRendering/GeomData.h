@@ -4,6 +4,7 @@
 struct GeomData {
 	unsigned char xz;
 	unsigned char y;
+	// 1 in the slot that is to be shown slot order can be found in constants.h
 	unsigned char cubeType_;
 	unsigned char textureIndex_;
 

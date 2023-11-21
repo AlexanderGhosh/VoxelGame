@@ -7,23 +7,22 @@ uniform sampler2D normalRnd;
 uniform sampler2D worldPos;
 uniform sampler2D ao;
 uniform sampler2D shadowMap;
-uniform float numBlocks;
 uniform mat4 view_inv;
 uniform mat4 lightMatrix;
 uniform vec3 viewDir;
 
+struct Material{
+    vec4 albedo;
+};
+
+layout (std140, binding = 0) uniform Mats
+{
+    Material[6] materials;
+};
+
+
 in vec2 texCoords;
 
-const vec4[] blockColours = vec4[] (
-    vec4(.5, 0, .5, 1),
-    vec4(0, 0.4, 0.1, 1),
-    vec4(.5, .25, .25, 1),
-    vec4(.65, .65, .65, 1),
-    vec4(0, 0.6, 1, 0.5),
-    vec4(.5, .25, .25, 1),
-    vec4(1, 0.9, 0.7, 1), // sand
-    vec4(1, 0.9, 0.7, 1)
-);
 struct Light {
     vec3 Position;
     vec3 Color;
@@ -35,8 +34,7 @@ float inShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir);
 void main() {
     Light light = createLight();
     vec4 albedoPosSample = texture(albedoPos, texCoords);
-    float colorIndexNormalised = albedoPosSample.w;
-    uint colourIndex = uint(colorIndexNormalised * numBlocks);
+    uint colourIndex = uint(albedoPosSample.w);
     // normal and rnd number
     vec4 normalRndSample = texture(normalRnd, texCoords);
     // AO
@@ -47,13 +45,12 @@ void main() {
     float rndValue = normalRndSample.w;
     vec3 fragPosView = albedoPosSample.xyz;
     vec3 normal = normalRndSample.xyz;
-    vec3 albedo = (blockColours[colourIndex]).rgb;
+    vec3 albedo = (materials[colourIndex]).albedo.rgb;
 
     vec4 lightFragPos = lightMatrix * vec4(fragPosWorld.xyz, 1);
     
     // adds random variation
     albedo += rndValue * 0.075;
-        // pow(occluded, 3.0)
 
     // retrieve data from gbuffer
     

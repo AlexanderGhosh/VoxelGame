@@ -18,6 +18,7 @@ public:
 	bool setValue(const std::string& name, const glm::vec2& value) const;
 	bool setValue(const std::string& name, const float& value) const;
 	bool setValue(const std::string& name, const int& value) const;
+	bool setValueUBO(const std::string& name, const int& location) const;
 private:
 	bool hasGeom;
 	unsigned int program;

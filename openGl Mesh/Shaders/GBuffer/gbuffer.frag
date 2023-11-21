@@ -6,8 +6,6 @@ layout(location = 2) out vec4 worldPos;
 
 uniform float numBlocks;
 
-// out vec4 color;
-
 flat in uint blockColourIndex;
 in vec3 normal;
 in vec3 fragPosView;
@@ -18,7 +16,7 @@ float rand(vec2 seed);
 void main()
 {
     // normalises block index such that it can later be multiplyed back into an int
-    albedoPos = vec4(fragPosView, float(blockColourIndex - 1u) / numBlocks);
+    albedoPos = vec4(fragPosView, blockColourIndex);
     normalRnd.xyz = normal;
     normalRnd.w = rand(rndSeed);
     worldPos = fragPosModel;

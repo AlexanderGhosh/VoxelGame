@@ -99,7 +99,7 @@ void createBlockDetails() {
 	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
 		Block block = (Block) i;
 		BlockDetails& dets = BLOCK_DETAILS[i];
-		dets.isTransparant = block == Block::AIR || block == Block::LEAF || block == Block::WATER;
+		dets.isTransparant = block == Block::AIR || block == Block::WATER;
 	}
 }
 

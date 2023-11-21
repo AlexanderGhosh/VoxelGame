@@ -51,6 +51,12 @@ bool Shader::setValue(const std::string& name, const int& value) const {
 	setLocation(loc, value);
 	return GL_TRUE;
 }
+bool Shader::setValueUBO(const std::string& name, const int& location) const
+{
+	unsigned int loc = glGetUniformBlockIndex(program, name.c_str());
+	if (loc == -1) return false;
+	glUniformBlockBinding(program, loc, 0);
+}
 bool Shader::setValue(const std::string& name, const glm::vec4& value) const {
 	int loc = getLocation(name);
 	if (loc == -1) return GL_FALSE;

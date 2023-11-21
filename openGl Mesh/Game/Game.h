@@ -12,6 +12,7 @@
 #include "World/World.h"
 #include "../FrameBuffer.h"
 #include "../Renders/ModelRenderer.h"
+#include "../UniformBuffer.h"
 
 class Model;
 class EntityManager;
@@ -58,6 +59,7 @@ private:
 	static World world;
 	static UI_Renderer uiRenderer;
 	
+	UniformBuffer materialsBuffer;
 	ModelRenderer modelRenderer;
 	EntityManager* manager;
 	GizmoManager* gizmoManager;
