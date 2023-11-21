@@ -191,6 +191,7 @@
     <ClCompile Include="Mangers\ModelManager.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\ModelLoader.cpp" />
     <ClCompile Include="Gizmos\Primatives\Point.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Renders\ModelRenderer.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="SOIL2\etc1_utils.c" />
@@ -204,6 +205,7 @@
     <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp" />
     <ClCompile Include="Renders\UI Stuff\UI_Element.cpp" />
     <ClCompile Include="Gizmos\Composite\Triangle.cpp" />
+    <ClCompile Include="UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block2_f.gls" />
@@ -259,6 +261,7 @@
     <ClInclude Include="Mangers\ModelManager.h" />
     <ClInclude Include="Helpers\ModelLoaders\ModelLoader.h" />
     <ClInclude Include="Gizmos\Primatives\Point.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Renders\ModelRenderer.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SOIL2\etc1_utils.h" />
@@ -285,6 +288,7 @@
     <ClInclude Include="Renders\UI Stuff\UI_Renderer.h" />
     <ClInclude Include="Renders\UI Stuff\UI_Element.h" />
     <ClInclude Include="Gizmos\Composite\Triangle.h" />
+    <ClInclude Include="UniformBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />

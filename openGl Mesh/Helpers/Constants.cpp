@@ -1,6 +1,7 @@
 #include "Constants.h"
 #include "../Textures/Texture.h"
 #include "../Shaders/Shader.h"
+#include "../Material.h"
 
 std::vector<Texture> TEXTURES3D = {
 	Texture("skybox", ""),
@@ -30,3 +31,11 @@ std::vector<Shader> SHADERS = {
 	Shader("Gizmos/CircleShader/circleShader", true),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
+std::vector<Material> MATERIALS = {
+	Material(0, 0, 0, 1), // error
+	Material(0, .4, .1, 1), // grass
+	Material(.5, .25, .25, 1), // dirt
+	Material(.5, .5, .5, 1), // stone
+	Material(.4, .1, 0, 1), // sand
+	Material(0, 0.6, 1, .75), // water
+};

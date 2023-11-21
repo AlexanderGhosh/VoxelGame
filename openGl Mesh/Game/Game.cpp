@@ -12,6 +12,7 @@
 #include "../Helpers/ShadowBox.h"
 #include "../Helpers/Functions.h"
 #include "../Gizmos/Composite/Grid2D.h"
+#include "../Material.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -29,13 +30,16 @@ UI_Renderer Game::uiRenderer;
 const glm::vec3 lightPos(100, 30, 100);
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer() {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer(), materialsBuffer() {
 	mainCamera = Camera({ 0, 2, 0 });
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 	setUpScreenQuad();
 	manager = &EntityManager::getInstance(); 
 	gizmoManager = &GizmoManager::getInstance();
+
+	materialsBuffer.allocate(sizeof(Material) * MATERIALS.size(), 0);
+	materialsBuffer.fill(0, sizeof(Material) * MATERIALS.size(), MATERIALS.data());
 }
 
 Game::Game(glm::ivec2 windowDim) : Game() {
@@ -70,12 +74,12 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 	ColourBufferInit albedoPos;
 	albedoPos.format = GL_FLOAT;
-	albedoPos.internalFormat = GL_RGBA;
+	albedoPos.internalFormat = GL_RGBA32F;
 	albedoPos.type = GL_RGBA;
 
 	ColourBufferInit normalRnd;
 	normalRnd.format = GL_FLOAT;
-	normalRnd.internalFormat = GL_RGBA;
+	normalRnd.internalFormat = GL_RGBA16F;
 	normalRnd.type = GL_RGBA;
 
 	ColourBufferInit worldPos;
@@ -289,7 +293,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Shader& ssao = SHADERS[AO];
 	ssao.bind();
-	ssao.setValue("numBlocks", 8.f);
+	ssao.setValue("numBlocks", (float) MATERIALS.size());
 	ssao.setValue("albedoPos", 0);
 	ssao.setValue("normalRnd", 1);
 	glActiveTexture(GL_TEXTURE0);
@@ -329,7 +333,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Shader& deffered = SHADERS[DEFFERED];
 	deffered.bind();
-	deffered.setValue("numBlocks", 8.f);
+	deffered.setValue("numBlocks", (float)MATERIALS.size());
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));
 
@@ -353,6 +357,8 @@ void Game::showStuff(const glm::mat4& projection) {
 	deffered.setValue("viewDir", mainCamera.GetFront());
 	deffered.setValue("view_inv", glm::inverse(viewMatrix));
 	deffered.setValue("lightMatrix", LSM);
+	materialsBuffer.bind();
+	deffered.setValueUBO("Mats", 0);
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

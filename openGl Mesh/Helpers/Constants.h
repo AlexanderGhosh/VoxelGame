@@ -12,10 +12,11 @@ class Shader;
 class BlockDetails;
 class ChunkColumn;
 class BlockStore;
+class Material;
 
 #define GENERATE_NEW_CHUNKS false
 
-#define DEBUG_GRID_LINES
+// #define DEBUG_GRID_LINES
 
 
 #define SSAO
@@ -27,7 +28,7 @@ constexpr float SSAO_BIAS = 0.025;
 #endif // SSAO
 
 
-constexpr bool VSYNC = false;
+constexpr bool VSYNC = true;
 constexpr float PI = 3.14;
 constexpr float HEIGHT = 720;
 constexpr float WIDTH = 1280;
@@ -39,7 +40,7 @@ constexpr float FAR_PLANE = 200;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
 constexpr unsigned int CHUNK_SAMPLES = 4;
-constexpr unsigned int RENDER_DISTANCE = 20;
+constexpr unsigned int RENDER_DISTANCE = 3;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int PARTS_PER_CHUNK = 16;
@@ -88,6 +89,7 @@ extern std::vector<Texture> TEXTURES3D;
 extern std::vector<Texture> TEXTURES2D;
 extern std::vector<Shader> SHADERS;
 extern std::vector<BlockDetails> BLOCK_DETAILS;
+extern std::vector<Material> MATERIALS;
 
 //enum FACES_NAMES : unsigned char {
 //	FRONT,
@@ -142,14 +144,13 @@ enum class Move_Dir : unsigned char {
 };
 
 enum class Block : unsigned char {
-	AIR,
 	ERROR,
 	GRASS,
 	DIRT,
 	STONE,
-	WATER,
-	LOG,
-	LEAF,
 	SAND,
+	WATER,
+
+	AIR,
 	SIZE
 };

@@ -228,6 +228,7 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 					}
 					if (data.cubeType_) {
 						data.textureIndex_ = (unsigned char) b1;
+						//data.textureIndex_ = (unsigned char)Block::DIRT;
 						bufferData.push_back(data);
 						added = true;
 						data.cubeType_ = 0;
