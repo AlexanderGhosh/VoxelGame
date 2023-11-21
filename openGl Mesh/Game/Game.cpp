@@ -77,7 +77,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 	ColourBufferInit normalRnd;
 	normalRnd.format = GL_FLOAT;
-	normalRnd.internalFormat = GL_RGBA;
+	normalRnd.internalFormat = GL_RGBA16F;
 	normalRnd.type = GL_RGBA;
 
 	ColourBufferInit albedo;
