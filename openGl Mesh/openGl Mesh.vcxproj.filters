@@ -150,6 +150,12 @@
     <ClCompile Include="Gizmos\Composite\Grid2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UniformBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -164,6 +170,7 @@
     <None Include="Shaders\glyph.frag" />
     <None Include="Shaders\crosshair.vert" />
     <None Include="Shaders\crosshair.frag" />
+    <None Include="..\..\..\SOURCE\FastNoise2\Win32\bin\FastNoise.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">
@@ -361,6 +368,12 @@
     <ClInclude Include="Gizmos\Composite\Grid2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UniformBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png">
@@ -402,5 +415,8 @@
     <Image Include="Textures\crosshair.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="..\..\..\SOURCE\FastNoise2\Win32\bin\FastNoiseD.dll" />
   </ItemGroup>
 </Project>

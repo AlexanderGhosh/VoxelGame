@@ -40,7 +40,7 @@ constexpr float FAR_PLANE = 200;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
 constexpr unsigned int CHUNK_SAMPLES = 4;
-constexpr unsigned int RENDER_DISTANCE = 5;
+constexpr unsigned int RENDER_DISTANCE = 1;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int PARTS_PER_CHUNK = 16; 
@@ -50,6 +50,10 @@ constexpr unsigned unsigned int SNOW_LEVEL = 47;
 constexpr unsigned int CHUNK_SIZE = 16;
 constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
 constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
+constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
+
+// used to convert from world space to 'noise space' (noise space is the space used in the noise generator)
+constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * 0.1;
 
 constexpr float PLAYER_SPEED = 5;
 constexpr unsigned int SEED = 32;
@@ -83,7 +87,7 @@ enum class Block : unsigned char;
 
 using Chunks = std::unordered_map<glm::vec2, ChunkColumn>;
 using WorldMap = std::unordered_map<glm::vec2, BlockStore>;
-using HeightMap = std::array<BlocksEncoded, CHUNK_SIZE* CHUNK_SIZE>;
+using HeightMap = std::array<BlocksEncoded, CHUNK_AREA>;
 
 
 extern std::vector<Texture> TEXTURES3D;

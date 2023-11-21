@@ -20,6 +20,9 @@
 #include "Mangers/ModelManager.h"
 #include "Mangers/GizmoManager.h"
 #include "Gizmos/Composite/Grid2D.h"
+#include <FastNoise/FastNoise.h>
+#include "Game/World/world_generation.h"
+#include "Helpers/Timer.h"
 
 glm::ivec2 DIM(WIDTH, HEIGHT);
 
@@ -27,6 +30,7 @@ GLFWwindow* createWindow();
 void createBlockDetails();
 
 int main() {
+
 	GLFWwindow* window = createWindow();
 
 	for (auto& tex : TEXTURES3D) {
@@ -39,6 +43,7 @@ int main() {
 		shader.setUp();
 	}
 	createBlockDetails();
+	world_generation::setUp();
 
 	// ENTITY COMPONENT SYSTEMS
 	ComponentManager& componentManager = ComponentManager::getInstance();
@@ -95,9 +100,9 @@ int main() {
 }
 
 void createBlockDetails() {
-	BLOCK_DETAILS.resize((size_t) Block::SIZE);
+	BLOCK_DETAILS.resize((size_t)Block::SIZE);
 	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
-		Block block = (Block) i;
+		Block block = (Block)i;
 		BlockDetails& dets = BLOCK_DETAILS[i];
 		dets.isTransparant = block == Block::AIR || block == Block::WATER;
 	}
@@ -132,7 +137,7 @@ GLFWwindow* createWindow() {
 	}
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disabel cursor visabilaty
-	if(!VSYNC) glfwSwapInterval(0);
+	if (!VSYNC) glfwSwapInterval(0);
 
 	glViewport(0, 0, DIM.x, DIM.y);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport

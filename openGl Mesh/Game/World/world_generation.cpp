@@ -3,7 +3,27 @@
 #include "../../Helpers/Functions.h"
 #include "../../Helpers/BlocksEncoded.h"
 
+
+FastNoise::SmartNode<FastNoise::Simplex> world_generation::noiseSource;
+FastNoise::SmartNode<FastNoise::FractalFBm> world_generation::noiseGenerator;
+std::vector<float> world_generation::xs(CHUNK_AREA), world_generation::ys(CHUNK_AREA);
 glm::ivec2 world_generation::treeCooldown = glm::vec2(4);
+
+void world_generation::setUp()
+{
+	noiseSource = FastNoise::New<FastNoise::Simplex>();
+	noiseGenerator = FastNoise::New<FastNoise::FractalFBm>();
+
+	noiseGenerator->SetSource(noiseSource);
+	noiseGenerator->SetOctaveCount(5);
+	unsigned int x = 0, y = 0;
+	for (float i = 0; i < CHUNK_SIZE; i++) {
+		for (float j = 0; j < CHUNK_SIZE; j++) {
+			xs[x++] = j * NOISE_FACTOR;
+			ys[y++] = i * NOISE_FACTOR;
+		}
+	}
+}
 
 float world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, unsigned int seed) {
 
@@ -26,31 +46,14 @@ float world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, uns
 }
 
 void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
-	// doesn't generate caves
-	NoiseOptions firstNoise{};
-	firstNoise.amplitude = 105.0f;
-	firstNoise.octaves = 6;
-	firstNoise.smoothness = 205.0f;
-	firstNoise.roughness = 0.58f;
-	firstNoise.offset = 18.0f;
+	std::vector<float> noiseOutput(CHUNK_AREA);
 
-	NoiseOptions secondNoise{};
-	secondNoise.amplitude = 20.0f;
-	secondNoise.octaves = 4;
-	secondNoise.smoothness = 200.0f;
-	secondNoise.roughness = 0.45f;
-	secondNoise.offset = 0.0f;
+	chunkPos *= NOISE_FACTOR;
+	noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
 
-	for (unsigned int x = 0; x < CHUNK_SIZE; x++)
+	for (unsigned int i = 0; i < CHUNK_AREA; i++)
 	{
-		for (unsigned int y = 0; y < CHUNK_SIZE; y++)
-		{
-			BlocksEncoded& encoded = res[columnIndex(x, y)];
-			glm::vec2 worldPos = { x, y };
-			worldPos += chunkPos;
-			
-			encoded = getColumn(worldPos, seed);
-		}
+		res[i] = createColumn((noiseOutput[i] + 1.f) * .5f * WORLD_HEIGHT);
 	}
 }
 
