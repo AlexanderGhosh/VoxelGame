@@ -187,8 +187,14 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 	else {
 		// is a land mass
 		encoded.push(Block::STONE, height - 3);
-		encoded.push(Block::DIRT, 2);
-		encoded.push(Block::GRASS, 1);
+		if (height > SNOW_LEVEL) {
+			// is mountain
+			encoded.push(Block::SNOW, 3);
+		}
+		else {
+			encoded.push(Block::DIRT, 2);
+			encoded.push(Block::GRASS, 1);
+		}
 	}
 
 	/*if (height - 3 > 0) {

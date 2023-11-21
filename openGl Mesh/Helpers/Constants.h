@@ -43,8 +43,9 @@ constexpr unsigned int CHUNK_SAMPLES = 4;
 constexpr unsigned int RENDER_DISTANCE = 5;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
-constexpr unsigned int PARTS_PER_CHUNK = 16;
+constexpr unsigned int PARTS_PER_CHUNK = 16; 
 constexpr unsigned unsigned int WATER_LEVEL = 20;
+constexpr unsigned unsigned int SNOW_LEVEL = 47;
 
 constexpr unsigned int CHUNK_SIZE = 16;
 constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
@@ -150,6 +151,7 @@ enum class Block : unsigned char {
 	STONE,
 	SAND,
 	WATER,
+	SNOW,
 
 	AIR,
 	SIZE

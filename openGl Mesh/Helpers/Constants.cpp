@@ -38,4 +38,5 @@ std::vector<Material> MATERIALS = {
 	Material(.5, .5, .5, 1), // stone
 	Material(.4, .1, 0, 1), // sand
 	Material(0, 0.6, 1, .75), // water
+	Material(1, 1, 1, 1), // show
 };
