@@ -40,7 +40,7 @@ constexpr float FAR_PLANE = 200;
 constexpr float SHADOW_MAP_SIZE = 4098;
 
 constexpr unsigned int CHUNK_SAMPLES = 4;
-constexpr unsigned int RENDER_DISTANCE = 3;
+constexpr unsigned int RENDER_DISTANCE = 5;
 constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned int PARTS_PER_CHUNK = 16;
@@ -76,7 +76,7 @@ constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
 };
 #endif // DEBUG_GRID_LINES
 
-constexpr glm::vec3 LIGHT_POSITION(100.f);
+constexpr glm::vec3 LIGHT_POSITION(0, 1000, -1000);
 
 enum class Block : unsigned char;
 

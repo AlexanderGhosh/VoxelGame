@@ -1,6 +1,6 @@
 #version 440 core
 
-layout(location = 0) out vec4 frag;
+layout(location = 0) out float frag;
 
 uniform sampler2D img;
 
@@ -18,6 +18,5 @@ void main() {
         }
     }
     result = result / (4.0 * 4.0);
-    result = all(lessThan(result, vec3(0.75))) ? vec3(0) : vec3(1);
-    frag = vec4(result, 1);
+    frag = result.r;
 }

@@ -13,9 +13,7 @@ in VS_OUT {
 
 flat out uint blockColourIndex;
 out vec3 normal;
-out vec3 fragPos;
-out vec3 fragPosView;
-out vec4 fragPosModel;
+out vec4 fragPos_;
 flat out vec2 rndSeed;
 
 uniform float voxelSize;
@@ -70,10 +68,9 @@ void main() {
                 vec3 v = vertices[l];
 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                fragPosModel = vs_out[0].m * vec4(v * voxelSize, 1);
-                fragPosView = (vs_out[0].view * fragPosModel).xyz;
+                fragPos_ = vs_out[0].view * vs_out[0].m * vec4(v * voxelSize, 1);
 
-                gl_Position = vs_out[0].proj * vs_out[0].view * fragPosModel;
+                gl_Position = vs_out[0].proj * fragPos_;
                 EmitVertex();
             }
             EndPrimitive();

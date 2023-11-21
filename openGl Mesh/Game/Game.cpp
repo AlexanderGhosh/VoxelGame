@@ -27,8 +27,6 @@ std::array<bool, 1024> Game::keys;
 World Game::world;
 UI_Renderer Game::uiRenderer;
 
-const glm::vec3 lightPos(100, 30, 100);
-
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
 SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer(), materialsBuffer() {
 	mainCamera = Camera({ 0, 2, 0 });
@@ -72,22 +70,22 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	gBufferDetails.hasDepth = true;
 	gBufferDetails.depthTexture = true;
 
-	ColourBufferInit albedoPos;
-	albedoPos.format = GL_FLOAT;
-	albedoPos.internalFormat = GL_RGBA32F;
-	albedoPos.type = GL_RGBA;
+	ColourBufferInit fragPos;
+	fragPos.format = GL_FLOAT;
+	fragPos.internalFormat = GL_RGBA16F;
+	fragPos.type = GL_RGBA;
 
 	ColourBufferInit normalRnd;
 	normalRnd.format = GL_FLOAT;
-	normalRnd.internalFormat = GL_RGBA16F;
+	normalRnd.internalFormat = GL_RGBA;
 	normalRnd.type = GL_RGBA;
 
-	ColourBufferInit worldPos;
-	worldPos.format = GL_FLOAT;
-	worldPos.internalFormat = GL_RGBA;
-	worldPos.type = GL_RGBA;
+	ColourBufferInit albedo;
+	albedo.format = GL_FLOAT;
+	albedo.internalFormat = GL_R16F;
+	albedo.type = GL_RED;
 
-	gBufferDetails.colourBuffers = { albedoPos, normalRnd, worldPos };
+	gBufferDetails.colourBuffers = { fragPos, normalRnd, albedo };
 
 	gBuffer = FrameBuffer(windowDim);
 	gBuffer.setUp(gBufferDetails);
@@ -247,7 +245,7 @@ void Game::renderModels(const glm::mat4& projection) {
 }
 
 void Game::showStuff(const glm::mat4& projection) {
-	const glm::mat4 LSM = ShadowBox::getLSM(mainCamera, projection, lightPos);
+	const glm::mat4 LSM = ShadowBox::getLSM(mainCamera, projection, LIGHT_POSITION);
 	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
 	// 1. render from the lights perspective for the shadow map
 	glEnable(GL_CULL_FACE);
@@ -292,16 +290,16 @@ void Game::showStuff(const glm::mat4& projection) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Shader& ssao = SHADERS[AO];
 	ssao.bind();
-	ssao.setValue("albedoPos", 0);
+	ssao.setValue("fragPosTex", 0);
 	ssao.setValue("normalRnd", 1);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1));
-#ifdef SSAO
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex);
 	ssao.setValue("ssaoNoise", 2);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0)); // fragPos model
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // normal
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex); // random-ness
+
 	glUniform3fv(glGetUniformLocation(ssao.getId(), "ssaoSamples"), ssaoSamples.size(), &ssaoSamples[0][0]);
 	glm::vec2 noiseScale = ((glm::vec2)windowDim) / SSAO_SCALE;
 	ssao.setValue("ssaoNoiseScale", noiseScale);
@@ -309,13 +307,13 @@ void Game::showStuff(const glm::mat4& projection) {
 	ssao.setValue("ssaoBias", SSAO_BIAS);
 	ssao.setValue("projection", projection);
 	ssao.setValue("view", viewMatrix);
-#endif // SSAO
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	// 2.1.3 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
 	multiPurposeFB.bind();
+	glClear(GL_COLOR_BUFFER_BIT);
 	Shader& blur = SHADERS[BLUR];
 	blur.bind();
 	glActiveTexture(GL_TEXTURE0);
@@ -332,28 +330,29 @@ void Game::showStuff(const glm::mat4& projection) {
 	Shader& deffered = SHADERS[DEFFERED];
 	deffered.bind();
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0));
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0)); // fragPos
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1));
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // normal rnd
 
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2));
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2)); // albedo index
 
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0));
+	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // blured ao
 
 	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth());
+	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth()); // shadow map
 
-	deffered.setValue("albedoPos", 0);
+	deffered.setValue("fragPosTex", 0);
 	deffered.setValue("normalRnd", 1);
-	deffered.setValue("worldPos", 2);
+	deffered.setValue("materialIndex", 2);
 	deffered.setValue("ao", 3);
 	deffered.setValue("shadowMap", 4);
 	deffered.setValue("viewDir", mainCamera.GetFront());
 	deffered.setValue("view_inv", glm::inverse(viewMatrix));
 	deffered.setValue("lightMatrix", LSM);
+	deffered.setValue("lightPos", LIGHT_POSITION);
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

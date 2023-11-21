@@ -2,14 +2,15 @@
 
 layout(location = 0) out vec4 frag;
 
-uniform sampler2D albedoPos;
+uniform sampler2D fragPosTex;
 uniform sampler2D normalRnd;
-uniform sampler2D worldPos;
+uniform sampler2D materialIndex;
 uniform sampler2D ao;
 uniform sampler2D shadowMap;
 uniform mat4 view_inv;
 uniform mat4 lightMatrix;
 uniform vec3 viewDir;
+uniform vec3 lightPos;
 
 struct Material{
     vec4 albedo;
@@ -33,21 +34,20 @@ float inShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir);
 
 void main() {
     Light light = createLight();
-    vec4 albedoPosSample = texture(albedoPos, texCoords);
-    uint colourIndex = uint(albedoPosSample.w);
+    vec4 fragPos_view = texture(fragPosTex, texCoords);
+    vec3 fragPos = (view_inv * fragPos_view).xyz;
+    uint colourIndex = uint(texture(materialIndex, texCoords).r);
     // normal and rnd number
     vec4 normalRndSample = texture(normalRnd, texCoords);
     // AO
     float occluded = texture(ao, texCoords).r;
     // fragment world pos
-    vec4 fragPosWorld = texture(worldPos, texCoords);
 
     float rndValue = normalRndSample.w;
-    vec3 fragPosView = albedoPosSample.xyz;
     vec3 normal = normalRndSample.xyz;
     vec3 albedo = (materials[colourIndex]).albedo.rgb;
 
-    vec4 lightFragPos = lightMatrix * vec4(fragPosWorld.xyz, 1);
+    vec4 lightFragPos = lightMatrix * vec4(fragPos, 1);
     
     // adds random variation
     albedo += rndValue * 0.075;
@@ -55,8 +55,8 @@ void main() {
     // retrieve data from gbuffer
     
     // blinn-phong (in view-space)
-    occluded = 1; // not occluded
-    vec3 lightDir = normalize(light.Position - fragPosWorld.xyz);
+    vec3 lightDir = normalize(light.Position - fragPos);
+    float shadow = inShadow(lightFragPos, normal, lightDir);
     vec3 ambient = vec3(0.3 * albedo * occluded); // here we add occlusion factor
     vec3 lighting  = ambient;
     // diffuse
@@ -66,14 +66,14 @@ void main() {
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 8.0);
     vec3 specular = light.Color * spec;
     
-    lighting += diffuse + specular;
+    lighting += (diffuse + specular) * (1.0 - shadow);
 
     frag = vec4(lighting, 1);
 }
 
 Light createLight() {
     Light light;
-    light.Position = vec3(100, 100, 100);
+    light.Position = lightPos;
     light.Color = vec3(0.3);
     return light;
 }
