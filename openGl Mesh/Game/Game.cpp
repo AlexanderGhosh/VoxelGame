@@ -50,6 +50,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	createGUI();
 	setUpFreeType();
 
+	// OPAQUE OIT BUFFER (and used for SSAO)
 	FrameBufferInit detailsOIT;
 	detailsOIT.hasDepth = true;
 	detailsOIT.depthTexture = true;
@@ -80,12 +81,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	normalRnd.internalFormat = GL_RGBA16F;
 	normalRnd.type = GL_RGBA;
 
-	ColourBufferInit albedo;
-	albedo.format = GL_FLOAT;
-	albedo.internalFormat = GL_R16F;
-	albedo.type = GL_RED;
-
-	gBufferDetails.colourBuffers = { fragPos, normalRnd, albedo };
+	gBufferDetails.colourBuffers = { fragPos, normalRnd };
 
 	gBuffer = FrameBuffer(windowDim);
 	gBuffer.setUp(gBufferDetails);
@@ -107,7 +103,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	oitFrameBuffer2 = FrameBuffer(windowDim);
 	oitFrameBuffer2.setUp(detailsOIT);
 
-
+	// GUI BUFFER
 	FrameBufferInit detailsGUI;
 
 	ColourBufferInit colourGUI;
@@ -123,6 +119,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	guiFrameBuffer = FrameBuffer(windowDim);
 	guiFrameBuffer.setUp(detailsGUI);
 
+	// SHADOW MAP BUFFER
 	FrameBufferInit detailsShadows;
 	detailsShadows.hasDepth = true;
 	detailsShadows.depthTexture = true;
@@ -130,6 +127,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	shadowFramebuffer = FrameBuffer({ SHADOW_MAP_SIZE , SHADOW_MAP_SIZE });
 	shadowFramebuffer.setUp(detailsShadows);
 
+	// BLUR BUFFER
 	FrameBufferInit multiPurposeFBDetails;
 	multiPurposeFBDetails.hasDepth = false;
 	multiPurposeFBDetails.depthTexture = false;
@@ -336,19 +334,16 @@ void Game::showStuff(const glm::mat4& projection) {
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // normal rnd
 
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2)); // albedo index
-
-	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // blured ao
 
-	glActiveTexture(GL_TEXTURE4);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth()); // shadow map
 
 	deffered.setValue("fragPosTex", 0);
 	deffered.setValue("normalRnd", 1);
-	deffered.setValue("materialIndex", 2);
-	deffered.setValue("ao", 3);
-	deffered.setValue("shadowMap", 4);
+	// deffered.setValue("materialIndex", 2);
+	deffered.setValue("ao", 2);
+	deffered.setValue("shadowMap", 3);
 	deffered.setValue("viewDir", mainCamera.GetFront());
 	deffered.setValue("view_inv", glm::inverse(viewMatrix));
 	deffered.setValue("lightMatrix", LSM);

@@ -4,7 +4,6 @@ layout(location = 0) out vec4 frag;
 
 uniform sampler2D fragPosTex;
 uniform sampler2D normalRnd;
-uniform sampler2D materialIndex;
 uniform sampler2D ao;
 uniform sampler2D shadowMap;
 uniform mat4 view_inv;
@@ -36,7 +35,7 @@ void main() {
     Light light = createLight();
     vec4 fragPos_view = texture(fragPosTex, texCoords);
     vec3 fragPos = (view_inv * fragPos_view).xyz;
-    uint colourIndex = uint(texture(materialIndex, texCoords).r);
+    uint colourIndex = uint(fragPos_view.w);
     // normal and rnd number
     vec4 normalRndSample = texture(normalRnd, texCoords);
     // AO
