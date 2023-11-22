@@ -8,7 +8,8 @@
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"
 #include "../World.h"
-#include "../../../Helpers/Timer.h"
+#include "../../../Helpers/Timers/TimerGroup.h"
+#include "../../../Helpers/Timers/Timer.h"
 
 
 ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
@@ -183,6 +184,8 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 	const BlockStore& blockStore = worldMap[position];
 	GeomData data{};
 	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
+
+	TimerGroup mainGroup("Create Mesh");
 
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {

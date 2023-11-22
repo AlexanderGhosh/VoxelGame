@@ -186,7 +186,7 @@
     <ClCompile Include="Helpers\Constants.cpp" />
     <ClCompile Include="Helpers\Functions.cpp" />
     <ClCompile Include="Helpers\ShadowBox.cpp" />
-    <ClCompile Include="Helpers\Timer.cpp" />
+    <ClCompile Include="Helpers\Timers\Timer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mangers\ModelManager.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\ModelLoader.cpp" />
@@ -205,6 +205,7 @@
     <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp" />
     <ClCompile Include="Renders\UI Stuff\UI_Element.cpp" />
     <ClCompile Include="Gizmos\Composite\Triangle.cpp" />
+    <ClCompile Include="Helpers\Timers\TimerGroup.cpp" />
     <ClCompile Include="UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -265,7 +266,7 @@
     <ClInclude Include="Helpers\Constants.h" />
     <ClInclude Include="Helpers\Functions.h" />
     <ClInclude Include="Helpers\ShadowBox.h" />
-    <ClInclude Include="Helpers\Timer.h" />
+    <ClInclude Include="Helpers\Timers\Timer.h" />
     <ClInclude Include="Mangers\ModelManager.h" />
     <ClInclude Include="Helpers\ModelLoaders\ModelLoader.h" />
     <ClInclude Include="Gizmos\Primatives\Point.h" />
@@ -296,6 +297,7 @@
     <ClInclude Include="Renders\UI Stuff\UI_Renderer.h" />
     <ClInclude Include="Renders\UI Stuff\UI_Element.h" />
     <ClInclude Include="Gizmos\Composite\Triangle.h" />
+    <ClInclude Include="Helpers\Timers\TimerGroup.h" />
     <ClInclude Include="UniformBuffer.h" />
   </ItemGroup>
   <ItemGroup>

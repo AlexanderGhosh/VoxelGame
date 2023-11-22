@@ -1,26 +1,23 @@
 #pragma once
 #include <chrono>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 // in nano secconds
 // asumes 60 fps
+class TimerGroup;
 class Timer {
+	friend class TimerGroup;
 private:
-	struct MarkPoint {
-		std::string name;
-		// nanosecconds
-		long long duration;
-	};
-
 	std::string name;
 	std::chrono::time_point<std::chrono::high_resolution_clock> start_;
 	std::chrono::time_point<std::chrono::high_resolution_clock> stop_;
-	std::vector<MarkPoint> markedPoints;
+	std::unordered_map<std::string, long long> markedPoints;
 
 	void printTime(std::string name, bool inFrames) const;
-	// pads all names (marked points and the timer name)
-	void normaliseNameSizes(std::string& a);
+	unsigned int maxSize();
+	// pads all a untill its size is == size
+	static void normaliseNameSize(std::string& a, unsigned int size);
 public:
 	Timer();
 	// creates a timer and starts it

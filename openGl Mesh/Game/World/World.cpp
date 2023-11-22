@@ -4,7 +4,7 @@
 #include <gtx/string_cast.hpp>
 #include <gtc/random.hpp>
 #include "Chunks/ChunkColumn.h"
-#include "../../Helpers/Timer.h"
+#include "../../Helpers/Timers/Timer.h"
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
 

@@ -22,7 +22,6 @@
 #include "Gizmos/Composite/Grid2D.h"
 #include <FastNoise/FastNoise.h>
 #include "Game/World/world_generation.h"
-#include "Helpers/Timer.h"
 
 glm::ivec2 DIM(WIDTH, HEIGHT);
 

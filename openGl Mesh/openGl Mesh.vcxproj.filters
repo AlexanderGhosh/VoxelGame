@@ -69,7 +69,7 @@
     <ClCompile Include="Helpers\BlocksEncoded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\Timer.cpp">
+    <ClCompile Include="Helpers\Timers\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c">
@@ -156,6 +156,9 @@
     <ClCompile Include="UniformBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Helpers\Timers\TimerGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -170,7 +173,6 @@
     <None Include="Shaders\glyph.frag" />
     <None Include="Shaders\crosshair.vert" />
     <None Include="Shaders\crosshair.frag" />
-    <None Include="..\..\..\SOURCE\FastNoise2\Win32\bin\FastNoise.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SOIL2\etc1_utils.h">
@@ -272,7 +274,7 @@
     <ClInclude Include="Helpers\BlocksEncoded.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\Timer.h">
+    <ClInclude Include="Helpers\Timers\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\BlockDetails.h">
@@ -374,6 +376,9 @@
     <ClInclude Include="UniformBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Helpers\Timers\TimerGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png">
@@ -418,5 +423,6 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\..\..\SOURCE\FastNoise2\Win32\bin\FastNoiseD.dll" />
+    <CopyFileToFolders Include="..\..\..\SOURCE\FastNoise2\Win32\bin\FastNoise.dll" />
   </ItemGroup>
 </Project>

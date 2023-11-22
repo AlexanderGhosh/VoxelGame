@@ -17,22 +17,19 @@ void Timer::printTime(std::string name, bool inFrames) const
 	std::cout << "Timer " + name + ": " + std::to_string(time) + unit << std::endl;
 }
 
-void Timer::normaliseNameSizes(std::string& a)
+unsigned int Timer::maxSize()
 {
-	unsigned int max_ = name.size();
-	for (const auto& mp : markedPoints) {
-		max_ = std::max(mp.name.size(), max_);
+	unsigned int max_ = std::max(name.size(), std::string("Average").size());
+	for (const auto& [name, _] : markedPoints) {
+		max_ = std::max(max_, name.size());
 	}
-	while (name.size() < max_) {
-		name += " ";
-	}
-	while (a.size() < max_) {
+	return max_;
+}
+
+void Timer::normaliseNameSize(std::string& a, unsigned int size)
+{
+	while (a.size() < size) {
 		a += " ";
-	}
-	for (auto& mp : markedPoints) {
-		while (mp.name.size() < max_) {
-			mp.name += " ";
-		}
 	}
 }
 
@@ -66,10 +63,7 @@ void Timer::log(std::string name, bool inFrames)
 void Timer::mark(std::string name)
 {
 	stop();
-	MarkPoint mp;
-	mp.name = name;
-	mp.duration = getTime();
-	markedPoints.push_back(mp);
+	markedPoints.emplace(name, getTime());
 }
 
 long long Timer::getTime() const
@@ -91,24 +85,27 @@ void Timer::showDetails(unsigned int ammount)
 	double totalSecconds = total * 1e-9;
 	double totalFrames = totalSecconds * 60.;
 
+	const unsigned int maxSize = this->maxSize();
+	normaliseNameSize(name, maxSize);
 	std::string avg_name = "Average";
-	normaliseNameSizes(avg_name);
+	normaliseNameSize(avg_name, maxSize);
 
 	std::cout << std::setprecision(3) << std::fixed;
 	std::cout << "-----------------------------------------------------------------------------------------------------------------" << std::endl;
 	std::cout << name << ": " << totalSecconds << " Secconds | " << totalFrames << " Frames" << std::endl;
 	std::cout << "--------------------------------------------------------" << std::endl;
 	double prevDuration = 0;
-	for (unsigned int i = 0; i < markedPoints.size(); i++) {
-		const MarkPoint& mp = markedPoints[i];
-		double currentDuration = mp.duration - prevDuration;
-		prevDuration = mp.duration;
+	for (const auto& [mp_name, mp_duration] : markedPoints) {
+		double currentDuration = mp_duration - prevDuration;
+		prevDuration = mp_duration;
 		double percent = currentDuration;
 		percent /= total;
 		percent *= 100.f;
 		double secconds = currentDuration * 1e-9;
 		double frames = secconds * 60.;
-		std::cout << mp.name << ": " << secconds << " Secconds | " << frames << " Frames | " << percent << "%" << std::endl;		
+		std::string mp_nameCopy(mp_name);
+		normaliseNameSize(mp_nameCopy, maxSize);
+		std::cout << mp_nameCopy << ": " << secconds << " Secconds | " << frames << " Frames | " << percent << "%" << std::endl;
 	}
 	double avgSecconds = totalSecconds / (double)ammount;
 	double avgFrames = totalFrames / (double)ammount;
