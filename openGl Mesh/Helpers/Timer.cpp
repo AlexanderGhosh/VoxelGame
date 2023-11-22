@@ -22,6 +22,7 @@ long long Timer::getTime()
 
 void Timer::showTime(std::string name, bool inFrames)
 {
+	end();
 	std::string unit = " secconds";
 	float time = (float)getTime() / 1e9;
 	if (inFrames) {

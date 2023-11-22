@@ -34,16 +34,19 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 	// }
 	// worldMap.clear();
 	// return;
-
-
+	Timer timer;
+	timer.start();
 	for (const glm::vec2& pos : chunkPositions) {
 		ChunkColumn chunk(pos, seed, worldMap);
 		chunks.emplace(pos, chunk);
 	}
-
+	timer.showTime("Constuctor");
+	timer.start();
 	for (auto& chunk : chunks) {
 		chunk.second.populateBuffer(worldMap);
 	}
+	timer.showTime("Buffer");
+	std::cout << chunks.size() << std::endl;
 
 	worldMap.clear();
 }

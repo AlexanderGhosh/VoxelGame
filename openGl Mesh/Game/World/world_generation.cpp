@@ -1,5 +1,4 @@
 #include "world_generation.h"
-#include <gtc/noise.hpp>
 #include "../../Helpers/Functions.h"
 #include "../../Helpers/BlocksEncoded.h"
 
@@ -24,36 +23,16 @@ void world_generation::setUp()
 		}
 	}
 }
-
-float world_generation::heightAtPositon(glm::vec2 pos, NoiseOptions options, unsigned int seed) {
-
-	// Begin iterating through the octaves
-	float value = 0;
-	float accumulatedAmps = 0;
-	for (int i = 0; i < options.octaves; i++) {
-		float frequency = glm::pow(2.0f, i);
-		float amplitude = glm::pow(options.roughness, i);
-
-		glm::vec2 xy = (pos * frequency) / options.smoothness;
-		xy += seed;
-
-		float noise = glm::simplex(glm::vec3{ xy.x, xy.y, seed });
-		noise = (noise + 1.0f) * .5f;
-		value += noise * amplitude;
-		accumulatedAmps += amplitude;
-	}
-	return value / accumulatedAmps;
-}
-
 void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
 	std::vector<float> noiseOutput(CHUNK_AREA);
 
 	chunkPos *= NOISE_FACTOR;
-	noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
+	auto minMax = noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
 
 	for (unsigned int i = 0; i < CHUNK_AREA; i++)
 	{
-		res[i] = createColumn((noiseOutput[i] + 1.f) * .5f * WORLD_HEIGHT);
+		unsigned int height = noiseToHeight(noiseOutput[i], minMax);
+		res[i] = createColumn(height);
 	}
 }
 
@@ -117,56 +96,13 @@ void world_generation::createHeightMapLimitedSamples(glm::vec2 chunkPos, unsigne
 	}
 }
 
-std::vector<glm::vec2> world_generation::getTreePositions(glm::vec2 chunkPos)
-{
-	std::vector <glm::vec2> trees;
-	treeCooldown = { 4, 4 };
-	for (unsigned int x = 2; x < CHUNK_SIZE-2; x++)
-	{
-		for (unsigned int z = 2; z < CHUNK_SIZE-2; z++)
-		{
-			if (rand() / double(RAND_MAX) < 0.05 && glm::all(glm::lessThanEqual(treeCooldown, glm::ivec2(0)))) {
-				// place tree at
-				trees.push_back({ x, z });
-				treeCooldown = { 4, 4 };
-			}
-			treeCooldown.y--;
-		}
-		treeCooldown.x--;
-	}
-	return trees;
-}
-
 unsigned int world_generation::heightOfColumn(glm::vec2 worldPos, const unsigned int seed)
 {
-	NoiseOptions firstNoise{};
-	firstNoise.amplitude = 105.0f;
-	firstNoise.octaves = 6;
-	firstNoise.smoothness = 205.0f;
-	firstNoise.roughness = 0.58f;
-	firstNoise.offset = 18.0f;
-
-	NoiseOptions secondNoise{};
-	secondNoise.amplitude = 20.0f;
-	secondNoise.octaves = 4;
-	secondNoise.smoothness = 200.0f;
-	secondNoise.roughness = 0.45f;
-	secondNoise.offset = 0.0f;
-
-	float height = heightAtPositon(worldPos, firstNoise, seed);
-	float height2 = heightAtPositon(worldPos, secondNoise, seed);
-	float result = height * height2;
-	result *= firstNoise.amplitude + firstNoise.offset - 5;
-	result = abs(result);
-	if (worldPos == glm::vec2(0)) {
-		worldPos.x++;
-		height = heightAtPositon(worldPos, firstNoise, seed);
-		height2 = heightAtPositon(worldPos, secondNoise, seed);
-		result = height * height2;
-		result *= firstNoise.amplitude + firstNoise.offset - 5;
-		result = abs(result);
-	}
-	return result;
+	worldPos *= NOISE_FACTOR;
+	float noise = noiseGenerator->GenSingle2D(worldPos.x, worldPos.y, seed);
+	FastNoise::OutputMinMax minMax;
+	unsigned int height = noiseToHeight(noise, minMax);
+	return height;
 }
 
 BlocksEncoded world_generation::getColumn(const glm::vec2& worldPos, unsigned int seed)
@@ -215,4 +151,9 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 		encoded.push(Block::GRASS, 1);
 	}*/
 	return encoded;
+}
+
+unsigned int world_generation::noiseToHeight(const float noise, const FastNoise::OutputMinMax& minMax)
+{
+	return (noise + 1.f) * .5f * 30;
 }
