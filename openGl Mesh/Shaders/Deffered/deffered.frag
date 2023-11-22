@@ -53,7 +53,7 @@ void main() {
 
     // retrieve data from gbuffer
     
-    // blinn-phong (in view-space)
+    // blinn-phong (in model-space)
     vec3 lightDir = normalize(light.Position - fragPos);
     float shadow = inShadow(lightFragPos, normal, lightDir);
     vec3 ambient = vec3(0.3 * albedo * occluded); // here we add occlusion factor
