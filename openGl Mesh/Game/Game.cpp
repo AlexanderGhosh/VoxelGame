@@ -13,6 +13,7 @@
 #include "../Helpers/Functions.h"
 #include "../Gizmos/Composite/Grid2D.h"
 #include "../Material.h"
+#include "../Helpers/Timers/Timer.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -175,6 +176,8 @@ void Game::doLoop(const glm::mat4& projection) {
 	setUpSSAO();
 #endif // SSAO
 
+	unsigned int numFrames = 0;
+	Timer timer("Loop Time");
 	while (gameRunning) {
 		calcTimes();
 		glfwPollEvents();
@@ -210,7 +213,9 @@ void Game::doLoop(const glm::mat4& projection) {
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
 		glfwSwapBuffers(window);
+		numFrames++;
 	}
+	timer.showDetails(numFrames);
 
 	manager->destroyEvent();
 }
