@@ -67,7 +67,7 @@ void main() {
     
     lighting += (diffuse + specular) * (1.0 - shadow);
 
-    frag = vec4(lighting, 1);
+    frag = vec4(specular, 1);
 }
 
 Light createLight() {

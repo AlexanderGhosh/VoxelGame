@@ -8,12 +8,14 @@ uniform float voxelSize;
 in VS_OUT {
     uint cubeType;
     uint blockColourIndex;
-    mat4 vp;
+    mat4 pv;
     mat4 m;
 } vs_out[];
 
 flat out uint blockColourIndex;
-flat out vec3 fragCoords;
+flat out vec2 rndSeed;
+out vec3 fragPos;
+out vec3 normal;
 
 
 vec3 vertices[8] = vec3[](
@@ -39,9 +41,10 @@ int indices[] = int[](
 
 
 void main() {
+    normal = vec3(0, 1, 0);
     blockColourIndex = vs_out[0].blockColourIndex;
     if(blockColourIndex != 5u) {
-        return; // discards water
+        return; // discards all but water
     }
     for (uint i = 0; i < 6; i++) {
         uint slot = vs_out[0].cubeType & (1 << i);
@@ -50,9 +53,10 @@ void main() {
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
                 v.y *= 0.75;
-                fragCoords = gl_in[0].gl_Position.rgb;
-
-                gl_Position = vs_out[0].vp * vs_out[0].m * vec4(v * voxelSize, 1);
+                
+                rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
+                fragPos = (vs_out[0].m * vec4(v * voxelSize, 1)).xyz;
+                gl_Position = vs_out[0].pv * vec4(fragPos, 1);
                 EmitVertex();
             }
             EndPrimitive();

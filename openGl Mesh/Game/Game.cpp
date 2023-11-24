@@ -376,8 +376,13 @@ void Game::showStuff(const glm::mat4& projection) {
 	
 	Shader& transparent = SHADERS[OIT_TRANSPARENT];
 	transparent.bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
 	transparent.setValue("view", viewMatrix);
 	transparent.setValue("projection", projection);
+	transparent.setValue("ao", 0);
+	transparent.setValue("viewDir", mainCamera.GetFront());
+	transparent.setValue("lightPos", LIGHT_POSITION);
 
 	world.render(&transparent);
 

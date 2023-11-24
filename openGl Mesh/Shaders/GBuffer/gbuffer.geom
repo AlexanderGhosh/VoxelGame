@@ -55,7 +55,6 @@ void main() {
     if(blockColourIndex == 5u) {
         return; // discards water
     }
-
     
     for (uint i = 0; i < 6; i++) {
         uint slot = vs_out[0].cubeType & (1 << i);
