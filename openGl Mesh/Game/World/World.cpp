@@ -8,7 +8,7 @@
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
 
-World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions() {
+World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions(), pool() {
 }
 World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
 	this->seed = seed;
@@ -57,7 +57,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 		return;
 	}
 	chunkCreationInprogress = true;
-	generationPositions = centeredPositions(center, RENDER_DISTANCE);
+	generationPositions = centeredPositions(center, RENDER_DISTANCE+5);
 
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
@@ -81,6 +81,8 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 			itt++;
 		}
 	}
+	auto fp = &World::generateNewChunks;
+	void (World::*a)(const glm::vec2&) = &World::generateNewChunks;
 
 	// compute set difference
 	chunkDataGenerated = std::async(&World::generateNewChunks, this, center);

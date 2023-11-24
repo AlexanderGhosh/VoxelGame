@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include "../../GeomRendering/DrawableGeom.h"
 #include "Chunks/ChunkColumn.h"
+#include "../../Helpers/Async/AsyncPool.h"
 
 class World
 {
@@ -24,7 +25,7 @@ public:
 	void tryFinishGenerateChunk();
 
 private:
-
+	AsyncPool<void, 4> pool;
 	std::future<void> chunkDataGenerated;
 	bool chunkCreationInprogress;
 	std::unordered_set<glm::vec2> generationPositions;

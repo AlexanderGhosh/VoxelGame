@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
+    <ClCompile Include="Helpers\Async\AsyncPool.cpp" />
     <ClCompile Include="Gizmos\Composite\Arrow.cpp" />
     <ClCompile Include="BlockStore.cpp" />
     <ClCompile Include="Gizmos\Primatives\Circle.cpp" />
@@ -231,6 +232,7 @@
     <None Include="Shaders\skybox_v.gls" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Helpers\Async\AsyncPool.h" />
     <ClInclude Include="Gizmos\Composite\Arrow.h" />
     <ClInclude Include="BlockStore.h" />
     <ClInclude Include="Gizmos\Primatives\Circle.h" />
