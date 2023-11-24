@@ -3,7 +3,7 @@
 #include <unordered_set>
 #include "../../GeomRendering/DrawableGeom.h"
 #include "Chunks/ChunkColumn.h"
-#include "../../Helpers/Async/AsyncPool.h"
+#include "../../Helpers/Async/DynamicAsyncPool.h"
 
 class World
 {
@@ -25,17 +25,19 @@ public:
 	void tryFinishGenerateChunk();
 
 private:
-	AsyncPool<void, 4> pool;
-	std::future<void> chunkDataGenerated;
-	bool chunkCreationInprogress;
-	std::unordered_set<glm::vec2> generationPositions;
+	DynamicAsyncPool<std::unordered_set<glm::vec2>> pool;
+	// set of all the chunk positions that are currently being created in the dyamic pool
+	std::unordered_set<glm::vec2> positionsBeingGenerated;
+	// spilts the set into n parts and calls 'generateNewChunks'
+	void launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, const unsigned int n);
 
 	unsigned int seed;
 	Chunks chunks;
 
 	DrawableGeom geomDrawable;
-
-	void generateNewChunks(const glm::vec2& center);
+	// only genertes chunk buffer data can be called async
+	// returns a list of chunk positions that it will generate
+	std::unordered_set<glm::vec2> generateNewChunks(const std::unordered_set < glm::vec2>& positions);
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	void getNewChunkPositions(const glm::vec3 worldOrigin);
 	void generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions);

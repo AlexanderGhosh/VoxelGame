@@ -8,7 +8,7 @@
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
 
-World::World() : chunks(), geomDrawable(), seed(), chunkDataGenerated(), chunkCreationInprogress(false), generationPositions(), pool() {
+World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool() {
 }
 World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
 	this->seed = seed;
@@ -28,12 +28,6 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 	worldMap.reserve(chunkPositions.size());
 	chunks.reserve(chunkPositions.size());
 
-	// for (const glm::vec2& pos : chunkPositions) {
-	// 	chunks.emplace(pos, ChunkColumn());
-	// 	chunks.at(pos).load(pos);
-	// }
-	// worldMap.clear();
-	// return;
 	Timer timer("Inital Chunk Loading");
 
 	for (const glm::vec2& pos : chunkPositions) {
@@ -53,16 +47,15 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 
 void World::tryStartGenerateChunks(const glm::vec2& center)
 {
-	if (chunkCreationInprogress || !GENERATE_NEW_CHUNKS) {
+	if (!GENERATE_NEW_CHUNKS) {
 		return;
 	}
-	chunkCreationInprogress = true;
-	generationPositions = centeredPositions(center, RENDER_DISTANCE+5);
+	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
 
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
 		auto& [pos, _] = *itt;
-		if (!generationPositions.contains(pos))
+		if (!toGenerate.contains(pos))
 		{
 			geomDrawable.remove(pos);
 			itt = chunks.erase(itt);
@@ -72,51 +65,86 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 			++itt;
 		}
 	}
-	for (auto itt = generationPositions.begin(); itt != generationPositions.end();) {
+	for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
 		const glm::vec2& p = *itt;
 		if (chunks.contains(p)) {
-			itt = generationPositions.erase(itt);
+			itt = toGenerate.erase(itt);
 		}
 		else {
 			itt++;
 		}
 	}
-	auto fp = &World::generateNewChunks;
-	void (World::*a)(const glm::vec2&) = &World::generateNewChunks;
+	for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
+		const glm::vec2& p = *itt;
+		if (positionsBeingGenerated.contains(p)) {
+			itt = toGenerate.erase(itt);
+		}
+		else {
+			itt++;
+		}
+	}
+
+	positionsBeingGenerated.insert(toGenerate.begin(), toGenerate.end());
 
 	// compute set difference
-	chunkDataGenerated = std::async(&World::generateNewChunks, this, center);
+	launchAsyncs(toGenerate, 3);
 }
 
 void World::tryFinishGenerateChunk()
 {
-	if (chunkCreationInprogress && chunkDataGenerated._Is_ready() && GENERATE_NEW_CHUNKS) {
-		chunkCreationInprogress = false;
-		for (const glm::vec2& chunkPos : generationPositions) {
-			ChunkColumn* chunk = getValue(chunks, chunkPos);
+	if (!GENERATE_NEW_CHUNKS) return;
+
+	auto allDone = pool.getAllDone(true);
+	for (auto& generated : allDone) {
+		for (auto itt = generated.begin(); itt != generated.end(); itt++) {
+			ChunkColumn* chunk = getValue(chunks, *itt);
 			if (!chunk) continue;
+			
+			positionsBeingGenerated.erase(*itt);
 			// ChunkColumn& chunk = chunks.at(chunkPos);
 			chunk->setUpBuffer();
 			geomDrawable.add(*chunk);
 
-			const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
+			const std::list<ChunkColumn*>& neighbours = getNeibours(*itt);
 			for (ChunkColumn* chunk : neighbours) {
 				chunk->reallocBuffer();
 			}
 		}
-		// std::cout << "Generation finished" << std::endl;
+	}
+}
+
+void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, const unsigned int n)
+{
+	unsigned int size = allChunkPoss.size() / n;
+	std::unordered_set<glm::vec2> accumulator; // accumulates the positions to run async is then cleared
+	unsigned int i = 0;
+	for (auto itt = allChunkPoss.begin(); itt != allChunkPoss.end(); itt++) {
+		accumulator.insert(*itt);
+		if (i == size) {
+			pool.add() = std::async(&World::generateNewChunks, this, accumulator);
+			i = 0;
+			accumulator.clear();
+			continue;
+		}
+		i++;
+	}
+	if (accumulator.size() > 0) {
+		// runs the rest (happends if allChunkPoss.size() % n != 0
+		pool.add() = std::async(&World::generateNewChunks, this, accumulator);
 	}
 }
 
 
 
-void World::generateNewChunks(const glm::vec2& center)
+std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
 {
-	for (const glm::vec2& chunkPos : generationPositions) {
+	// can throw error if the chunk is removed from chunks while its being generated
+	for (const glm::vec2& chunkPos : positions) {
 		chunks[chunkPos] = ChunkColumn();
 		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
 		chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
 	}
+	return positions;
 }
 
 const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
@@ -153,9 +181,7 @@ void World::save() const
 }
 
 void World::render(Shader* shader) {
-	if (chunkCreationInprogress) {
-		tryFinishGenerateChunk();
-	}
+	tryFinishGenerateChunk();
 	geomDrawable.render(shader);
 }
 
