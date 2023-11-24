@@ -3,11 +3,8 @@
 #include <FastNoise/FastNoise.h>
 
 struct NoiseOptions {
-	int octaves;
-	float amplitude;
-	float smoothness;
-	float roughness;
-	float offset;
+	unsigned int octaves;
+	float frequency;
 };
 class world_generation
 {
@@ -28,5 +25,6 @@ private:
 
 	static glm::ivec2 treeCooldown;
 	static std::vector<float> xs, ys;
+	static NoiseOptions options;
 };
 

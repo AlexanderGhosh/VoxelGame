@@ -171,7 +171,6 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 	GeomData data{};
 	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
 
-
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
 			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
@@ -182,7 +181,7 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 
 				const unsigned int count1 = encodes.count(r);
 
-				// prob never the case due to lack of caves
+				// never the case due to lack of caves
 				if (b1 == Block::AIR) {
 					height -= count1;
 					depth += count1;
