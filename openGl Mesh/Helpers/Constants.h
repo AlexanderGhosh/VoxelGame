@@ -14,7 +14,7 @@ class ChunkColumn;
 class BlockStore;
 class Material;
 
-#define GENERATE_NEW_CHUNKS true
+#define GENERATE_NEW_CHUNKS false
 
 // #define DEBUG_GRID_LINES
 

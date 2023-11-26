@@ -51,21 +51,6 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	createGUI();
 	setUpFreeType();
 
-	// OPAQUE OIT BUFFER (and used for SSAO)
-	FrameBufferInit detailsOIT;
-	detailsOIT.hasDepth = true;
-	detailsOIT.depthTexture = true;
-
-	ColourBufferInit opaqueOIT;
-	opaqueOIT.format = GL_HALF_FLOAT;
-	opaqueOIT.internalFormat = GL_RGBA16F;
-	opaqueOIT.type = GL_RGBA;
-
-	detailsOIT.colourBuffers = { opaqueOIT };
-
-	oitFrameBuffer1 = FrameBuffer(windowDim);
-	oitFrameBuffer1.setUp(detailsOIT);
-
 
 	// DEFERED RENERING
 	FrameBufferInit gBufferDetails; // may need to make this depth texture the one used by the transparancy buffer
@@ -86,6 +71,22 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 	gBuffer = FrameBuffer(windowDim);
 	gBuffer.setUp(gBufferDetails);
+
+	// OPAQUE OIT BUFFER (and used for SSAO)
+	FrameBufferInit detailsOIT;
+	detailsOIT.hasDepth = true;
+	detailsOIT.depthTexture = true;
+
+	ColourBufferInit opaqueOIT;
+	opaqueOIT.format = GL_HALF_FLOAT;
+	opaqueOIT.internalFormat = GL_RGBA16F;
+	opaqueOIT.type = GL_RGBA;
+
+	detailsOIT.colourBuffers = { opaqueOIT };
+	detailsOIT.depthBuffer = gBuffer.getDepth();
+
+	oitFrameBuffer1 = FrameBuffer(windowDim);
+	oitFrameBuffer1.setUp(detailsOIT);
 
 	// TRANSPARENT BUFFER
 	ColourBufferInit accumOIT;
@@ -357,6 +358,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	renderModels(projection);
+	showSkybox(projection);
 
 	// 2.2 Transparent
 	glEnable(GL_CULL_FACE);
@@ -391,7 +393,6 @@ void Game::showStuff(const glm::mat4& projection) {
 	// 2.3 Composite
 	glDisable(GL_CULL_FACE);
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer
-	// showSkybox(projection);
 	glDepthFunc(GL_ALWAYS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

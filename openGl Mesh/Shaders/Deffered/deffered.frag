@@ -45,11 +45,11 @@ void main() {
     float rndValue = normalRndSample.w;
     vec3 normal = normalRndSample.xyz;
     vec3 albedo = (materials[colourIndex]).albedo.rgb;
+    // adds random variation
+    albedo += rndValue * 0.075;
 
     vec4 lightFragPos = lightMatrix * vec4(fragPos, 1);
     
-    // adds random variation
-    albedo += rndValue * 0.075;
 
     // retrieve data from gbuffer
     
@@ -67,7 +67,7 @@ void main() {
     
     lighting += (diffuse + specular) * (1.0 - shadow);
 
-    frag = vec4(specular, 1);
+    frag = vec4(lighting, 1);
 }
 
 Light createLight() {

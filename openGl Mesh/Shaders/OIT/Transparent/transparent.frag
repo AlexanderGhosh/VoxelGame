@@ -53,6 +53,7 @@ void main()
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 8.0);
+    spec = max(spec, 0.5);
     vec3 specular = light.Color * spec;
     
     vec3 lighting = ambient;
