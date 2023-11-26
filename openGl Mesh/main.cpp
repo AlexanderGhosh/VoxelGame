@@ -55,7 +55,7 @@ int main() {
 
 #ifdef DEBUG_GRID_LINES
 	glm::ivec2 gridDims(CHUNK_SIZE, WORLD_HEIGHT);
-	glm::vec3 colour(1);
+	glm::vec3 colour(0.4);
 
 	Gizmo::Grid2D grid1(glm::vec3(0), gridDims, VOXEL_SZIE, true, false);
 	grid1.setColour(colour);

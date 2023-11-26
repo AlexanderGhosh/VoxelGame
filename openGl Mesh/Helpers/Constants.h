@@ -16,7 +16,7 @@ class Material;
 
 #define GENERATE_NEW_CHUNKS false
 
-// #define DEBUG_GRID_LINES
+#define DEBUG_GRID_LINES
 
 
 #define SSAO

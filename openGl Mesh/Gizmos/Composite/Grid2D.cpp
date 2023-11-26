@@ -20,12 +20,14 @@ Gizmo::Grid2D::Grid2D(const glm::vec3& position, const glm::ivec2& dim, const fl
 		for (unsigned int i = 0; i < dim.x + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(0, 0, size);
 			Line line(s, s + glm::vec3(0, size * dim.y, 0));
+			line.setColour(colour);
 			lines.push_back(line);
 		}
 		// horizontal
 		for (unsigned int i = 0; i < dim.y + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(0, size, 0);
 			Line line(s, s + glm::vec3(0, 0, size * dim.x));
+			line.setColour(colour);
 			lines.push_back(line);
 		}
 	}
@@ -34,12 +36,14 @@ Gizmo::Grid2D::Grid2D(const glm::vec3& position, const glm::ivec2& dim, const fl
 		for (unsigned int i = 0; i < dim.x + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(size, 0, 0);
 			Line line(s, s + glm::vec3(0, size * dim.y, 0));
+			line.setColour(colour);
 			lines.push_back(line);
 		}
 		// horizontal
 		for (unsigned int i = 0; i < dim.y + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(0, size, 0);
 			Line line(s, s + glm::vec3(size * dim.x, 0, 0));
+			line.setColour(colour);
 			lines.push_back(line);
 		}
 	}
@@ -87,37 +91,28 @@ void Gizmo::Grid2D::setPosition(const glm::vec3& position)
 		// verticle lines
 		for (unsigned int i = 0; i < dimentions.x + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(0, 0, squareSize);
-			Line line(s, s + glm::vec3(0, squareSize * dimentions.y, 0));
-
-			//lines[i].cleanUp();
-			lines[i] = line;
-			// lines.push_back(line);
+			lines[i].setStart(s);
+			lines[i].setEnd(s + glm::vec3(0, squareSize * dimentions.y, 0));
 		}
 		// horizontal
 		for (unsigned int i = 0; i < dimentions.y + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(0, squareSize, 0);
-			Line line(s, s + glm::vec3(0, 0, squareSize * dimentions.x));
-
-			//lines[i + dimentions.x + 1].cleanUp();
-			lines[i + dimentions.x + 1] = line;
+			lines[i + dimentions.x + 1].setStart(s);
+			lines[i + dimentions.x + 1].setEnd(s + glm::vec3(0, 0, squareSize * dimentions.x));
 		}
 	}
 	else {
 		// verticle lines
 		for (unsigned int i = 0; i < dimentions.x + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(squareSize, 0, 0);
-			Line line(s, s + glm::vec3(0, squareSize * dimentions.y, 0));
-
-			//lines[i].cleanUp();
-			lines[i] = line;
+			lines[i].setStart(s);
+			lines[i].setEnd(s + glm::vec3(0, squareSize * dimentions.y, 0));
 		}
 		// horizontal
 		for (unsigned int i = 0; i < dimentions.y + 1; i++) {
 			glm::vec3 s = position + (float)i * glm::vec3(0, squareSize, 0);
-			Line line(s, s + glm::vec3(squareSize * dimentions.x, 0, 0));
-
-			//lines[i + dimentions.x + 1].cleanUp();
-			lines[i + dimentions.x + 1] = line;
+			lines[i + dimentions.x + 1].setStart(s);
+			lines[i + dimentions.x + 1].setEnd(s + glm::vec3(squareSize * dimentions.x, 0, 0));
 		}
 	}
 }

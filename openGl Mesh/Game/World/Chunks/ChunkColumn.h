@@ -20,8 +20,6 @@ public:
 
 	// inital world generation
 	void populateBuffer(WorldMap& worldMap);
-	// rarther than looking for sold then placing this looks for air then places
-	void populateBuffer_Air(WorldMap& worldMap);
 
 	const BufferGeom& getBuffer() const;
 	BufferGeom* getBufferPtr();
@@ -33,10 +31,9 @@ public:
 
 	void save() const;
 	void load(const glm::vec2& chunkPos);
-	bool meshDataGenerated;
 private:
-	// generates a list of seed positions (a seed pos is a pos that if you sample the surounding 4 poses that no other seed block (on the same xz plane) will also sample that block)
-	// used for runtime genertion
+
+	// used for runtime genertion doesnt do any opengl funcs
 	void populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
 
 	struct AddFaces {

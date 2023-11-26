@@ -10,7 +10,7 @@
 #include "../World.h"
 
 
-ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks(), meshDataGenerated(false)
+ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
 {
 }
 
@@ -152,8 +152,6 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 			}
 		}
 	}
-
-	meshDataGenerated = true;
 }
 
 void ChunkColumn::setUpBuffer()
@@ -234,7 +232,6 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 			}
 		}
 	}
-	meshDataGenerated = true;
 
 	setUpBuffer();
 }
