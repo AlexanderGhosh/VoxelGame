@@ -10,7 +10,7 @@ uniform vec3 chunkPosition;
 
 out VS_OUT {
     uint cubeType;
-    uint blockColourIndex;
+    uint colourIndex;
     mat4 pv;
     mat4 m;
 } vs_out;
@@ -20,7 +20,7 @@ void main() {
     uint x = (data & 0x000000f0) >> 4;
     uint y = (data & 0x0000ff00) >> 8;
     uint cubeType_ = (data & 0x00ff0000) >> 16;
-    uint blockColourIndex_ = (data & 0xff000000) >> 24;
+    uint colourIndex = (data & 0xff000000) >> 24;
     vec3 worldPos_ = vec3(float(x), float(y), float(z));
 
     worldPos_ += chunkPosition;
@@ -36,5 +36,5 @@ void main() {
     gl_Position.rgb = worldPos_;
 
     vs_out.cubeType = cubeType_;
-    vs_out.blockColourIndex = blockColourIndex_;
+    vs_out.colourIndex = colourIndex;
 }

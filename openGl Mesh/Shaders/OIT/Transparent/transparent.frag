@@ -9,7 +9,8 @@ uniform vec3 viewDir;
 
 
 struct Material{
-    vec4 albedo;
+    vec4 albedo1;
+    vec4 albedo2;
 };
 struct Light {
     vec3 Position;
@@ -23,7 +24,7 @@ layout (std140, binding = 0) uniform Matrices
 
 // out vec4 color;
 
-flat in uint blockColourIndex;
+flat in uint colourIndex;
 flat in vec2 rndSeed;
 in vec3 fragPos;
 in vec3 normal;
@@ -37,10 +38,11 @@ float rand(vec2 co){
 void main()
 {
     Light light = createLight();
-    vec4 albedo = materials[blockColourIndex].albedo;
-
     float rnd = rand(rndSeed);
-    albedo.rgb += rnd * 0.075;
+    vec4 albedo1 = (materials[colourIndex]).albedo1;
+    vec4 albedo2 = (materials[colourIndex]).albedo2;
+    vec4 albedo = mix(albedo1, albedo2, rnd);
+
     // AO
     float occluded = texture(ao, gl_FragCoord.xy).r;
     occluded = 1.0;

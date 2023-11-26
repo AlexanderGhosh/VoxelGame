@@ -12,7 +12,8 @@ uniform vec3 viewDir;
 uniform vec3 lightPos;
 
 struct Material{
-    vec4 albedo;
+    vec4 albedo1;
+    vec4 albedo2;
 };
 
 layout (std140, binding = 0) uniform Mats
@@ -44,9 +45,9 @@ void main() {
 
     float rndValue = normalRndSample.w;
     vec3 normal = normalRndSample.xyz;
-    vec3 albedo = (materials[colourIndex]).albedo.rgb;
-    // adds random variation
-    albedo += rndValue * 0.075;
+    vec3 albedo1 = (materials[colourIndex]).albedo1.rgb;
+    vec3 albedo2 = (materials[colourIndex]).albedo2.rgb;
+    vec3 albedo = mix(albedo1, albedo2, rndValue);
 
     vec4 lightFragPos = lightMatrix * vec4(fragPos, 1);
     
@@ -63,6 +64,7 @@ void main() {
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 8.0);
+    spec = min(spec, 0.0);
     vec3 specular = light.Color * spec;
     
     lighting += (diffuse + specular) * (1.0 - shadow);

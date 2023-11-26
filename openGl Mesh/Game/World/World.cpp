@@ -50,7 +50,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 	if (!GENERATE_NEW_CHUNKS) {
 		return;
 	}
-	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
+	auto toGenerate = centeredPositions(center, RENDER_DISTANCE + 5);
 
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
@@ -87,7 +87,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 	positionsBeingGenerated.insert(toGenerate.begin(), toGenerate.end());
 
 	// compute set difference
-	launchAsyncs(toGenerate, 3);
+	launchAsyncs(toGenerate, 4);
 }
 
 void World::tryFinishGenerateChunk()

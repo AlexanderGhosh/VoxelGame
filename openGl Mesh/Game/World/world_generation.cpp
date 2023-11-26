@@ -12,18 +12,19 @@ NoiseOptions world_generation::options = {};
 void world_generation::setUp()
 {
 	options.octaves = 5;
+	options.frequency = 0.7;
 	
 	noiseSource = FastNoise::New<FastNoise::Simplex>();
 	noiseGenerator = FastNoise::New<FastNoise::FractalFBm>();
 
 	noiseGenerator->SetSource(noiseSource);
 	noiseGenerator->SetOctaveCount(options.octaves);
-	noiseGenerator->SetLacunarity(2);
+	noiseGenerator->SetLacunarity(1.5);
 	unsigned int x = 0, y = 0;
 	for (float i = 0; i < CHUNK_SIZE; i++) {
 		for (float j = 0; j < CHUNK_SIZE; j++) {
-			xs[x++] = j * NOISE_FACTOR;
-			ys[y++] = i * NOISE_FACTOR;
+			xs[x++] = j * NOISE_FACTOR * options.frequency;
+			ys[y++] = i * NOISE_FACTOR * options.frequency;
 		}
 	}
 
@@ -32,7 +33,7 @@ void world_generation::setUp()
 void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
 	std::vector<float> noiseOutput(CHUNK_AREA);
 
-	chunkPos *= NOISE_FACTOR;
+	chunkPos *= NOISE_FACTOR * options.frequency;
 	auto minMax = noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
 
 	for (unsigned int i = 0; i < CHUNK_AREA; i++)
@@ -48,7 +49,7 @@ void world_generation::createHeightMapLimitedSamples(glm::vec2 chunkPos, unsigne
 
 unsigned int world_generation::heightOfColumn(glm::vec2 worldPos, const unsigned int seed)
 {
-	worldPos *= NOISE_FACTOR;
+	worldPos *= NOISE_FACTOR * options.frequency;
 	float noise = noiseGenerator->GenSingle2D(worldPos.x, worldPos.y, seed);
 	FastNoise::OutputMinMax minMax;
 	unsigned int height = noiseToHeight(noise, minMax);

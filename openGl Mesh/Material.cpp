@@ -1,25 +1,29 @@
 #include "Material.h"
 
-Material::Material() : albedo(0)
+Material::Material() : albedo1(0), albedo2(0)
 {
 }
-
-Material::Material(const float a_x, const float a_y, const float a_z, const float a_a) : Material()
+Material::Material(const glm::vec4& albedo1, const glm::vec4& albedo2) : Material()
 {
-	albedo = glm::vec4(a_x, a_y, a_z, a_a);
+	this->albedo1 = albedo1;
+	this->albedo2 = albedo2;
 }
 
-Material::Material(const glm::vec4& albedo) : Material()
+const glm::vec4& Material::getAlbedo1() const
 {
-	this->albedo = albedo;
+	return albedo1;
 }
 
-const glm::vec4& Material::getAlbedo() const
+const glm::vec4& Material::getAlbedo2() const
 {
-	return albedo;
+	return albedo2;
 }
 
-void Material::setAlbedo(const glm::vec4& albedo)
+void Material::setAlbedo1(const glm::vec4& albedo)
 {
-	this->albedo = albedo;
+	this->albedo1 = albedo;
+}
+void Material::setAlbedo2(const glm::vec4& albedo)
+{
+	this->albedo2 = albedo;
 }

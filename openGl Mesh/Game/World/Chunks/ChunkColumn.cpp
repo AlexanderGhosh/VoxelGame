@@ -236,21 +236,6 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 	setUpBuffer();
 }
 
-void ChunkColumn::populateBuffer_Skip(WorldMap& worldMap)
-{
-	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
-
-	const BlockStore& blockStore = worldMap[position];
-	GeomData data{};
-	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
-
-	for (unsigned int x = 0; x < CHUNK_SIZE; x += 2) {
-		for (unsigned int z = 0; z < CHUNK_SIZE; z += 2) {
-
-		}
-	}
-}
-
 const BufferGeom& ChunkColumn::getBuffer() const
 {
 	return buffer;

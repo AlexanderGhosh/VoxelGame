@@ -16,7 +16,7 @@ class Material;
 
 #define GENERATE_NEW_CHUNKS false
 
-#define DEBUG_GRID_LINES
+// #define DEBUG_GRID_LINES
 
 
 #define SSAO
@@ -39,28 +39,25 @@ constexpr float FAR_PLANE = 200;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr unsigned int CHUNK_SAMPLES = 4;
 constexpr unsigned int RENDER_DISTANCE = 4;
-constexpr unsigned int PLAYER_REACH = 5;
 constexpr unsigned int WORLD_HEIGHT = 256;
-constexpr unsigned int PARTS_PER_CHUNK = 16; 
 constexpr unsigned unsigned int WATER_LEVEL = 20;
-constexpr unsigned unsigned int SNOW_LEVEL = 47;
+constexpr unsigned unsigned int SNOW_LEVEL = 38;
 
 constexpr unsigned int CHUNK_SIZE = 16;
 constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
 constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
 
-// used to convert from world space to 'noise space' (noise space is the space used in the noise generator)
-constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * 0.1;
 
 constexpr float PLAYER_SPEED = 5;
-constexpr unsigned int SEED = 32;
 
 constexpr float VOXEL_SZIE = 0.5;
 constexpr float HALF_VOXEL_SZIE = VOXEL_SZIE * .5f;
 constexpr glm::vec3 WORLD_ORIGIN(0, (VOXEL_SZIE - 1) * -30.f / VOXEL_SZIE, 0);
+
+// used to convert from world space to 'noise space' (noise space is the space used in the noise generator)
+constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * VOXEL_SZIE;
 
 constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
 		glm::vec3(0, 0, 1),

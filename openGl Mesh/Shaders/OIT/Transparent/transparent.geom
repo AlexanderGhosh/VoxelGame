@@ -7,12 +7,12 @@ uniform float voxelSize;
 
 in VS_OUT {
     uint cubeType;
-    uint blockColourIndex;
+    uint colourIndex;
     mat4 pv;
     mat4 m;
 } vs_out[];
 
-flat out uint blockColourIndex;
+flat out uint colourIndex;
 flat out vec2 rndSeed;
 out vec3 fragPos;
 out vec3 normal;
@@ -42,8 +42,8 @@ int indices[] = int[](
 
 void main() {
     normal = vec3(0, 1, 0);
-    blockColourIndex = vs_out[0].blockColourIndex;
-    if(blockColourIndex != 5u) {
+    colourIndex = vs_out[0].colourIndex;
+    if(colourIndex != 5u) {
         return; // discards all but water
     }
     for (uint i = 0; i < 6; i++) {

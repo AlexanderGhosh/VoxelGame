@@ -32,11 +32,11 @@ std::vector<Shader> SHADERS = {
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
 std::vector<Material> MATERIALS = {
-	Material(0, 0, 0, 1), // error
-	Material(0, .4, .1, 1), // grass
-	Material(.5, .25, .25, 1), // dirt
-	Material(.5, .5, .5, 1), // stone
-	Material(.4, .1, 0, 1), // sand
-	Material(0, 0.6, 1, .65), // water
-	Material(1, 1, 1, 1), // show
+	Material(glm::vec4(0), glm::vec4(0)), // error
+	Material(glm::vec4(0, .4, .1, 1), glm::vec4(0, .5, .2, 1)), // grass
+	Material(glm::vec4(.5, .25, .25, 1), glm::vec4(.6, .2, .2, 1)), // dirt
+	Material(glm::vec4(.4, .4, .4, 1), glm::vec4(.7, .7, .7, 1)), // stone
+	Material(glm::vec4(.5, .4, 0, 1), glm::vec4(.6, .5, 0, 1)), // sand
+	Material(glm::vec4(0, .6, 1, .65), glm::vec4(.1, .4, 1, .65)), // water
+	Material(glm::vec4(1), glm::vec4(.9)), // snow
 };
