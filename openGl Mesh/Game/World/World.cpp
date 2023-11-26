@@ -55,7 +55,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
 		auto& [pos, _] = *itt;
-		if (!toGenerate.contains(pos))
+		if (!toGenerate.contains(pos) && !positionsBeingGenerated.contains(pos))
 		{
 			geomDrawable.remove(pos);
 			itt = chunks.erase(itt);
