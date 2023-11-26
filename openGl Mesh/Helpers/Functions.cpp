@@ -2,6 +2,20 @@
 #include "Constants.h"
 
 
+float randRange(float lower, float upper) {
+	float v = rand();
+	v /= RAND_MAX;
+	float range = upper - lower;
+	v *= range;
+	v += lower;
+	return v;
+}
+
+int randInt(int lower, int upper) {
+	int v = randRange(lower, upper);
+	return v;
+}
+
 float bilinearInterpolation(const float x, const float y, const float& c00, const float& c01, const float& c10, const float& c11)
 {
 	/*float  a = c00 * (1 - xLen) + c10 * xLen;

@@ -1,6 +1,7 @@
 #include "world_generation.h"
 #include "../../Helpers/Functions.h"
 #include "../../Helpers/BlocksEncoded.h"
+#include <iostream>
 
 
 FastNoise::SmartNode<FastNoise::Simplex> world_generation::noiseSource;
@@ -76,13 +77,14 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 	}
 	else {
 		// is a land mass
-		encoded.push(Block::STONE, height - 3);
+		int h = randInt(2, 4);
+		encoded.push(Block::STONE, height - h);
 		if (height > SNOW_LEVEL) {
 			// is mountain
-			encoded.push(Block::SNOW, 3);
+			encoded.push(Block::SNOW, h);
 		}
 		else {
-			encoded.push(Block::DIRT, 2);
+			encoded.push(Block::DIRT, h - 1);
 			encoded.push(Block::GRASS, 1);
 		}
 	}

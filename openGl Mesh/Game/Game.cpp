@@ -151,8 +151,9 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 }
 
 void Game::generateWorld() {
-	srand(time(0));
-	world = World(WORLD_ORIGIN, 32);
+	unsigned int seed = 32;
+	srand(seed);
+	world = World(WORLD_ORIGIN, seed);
 	world.setUpDrawable();
 }
 

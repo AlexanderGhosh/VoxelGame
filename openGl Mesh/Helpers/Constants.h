@@ -16,6 +16,8 @@ class Material;
 
 #define GENERATE_NEW_CHUNKS false
 
+#define RRC(x) (float(x) / 255.f)
+
 // #define DEBUG_GRID_LINES
 
 

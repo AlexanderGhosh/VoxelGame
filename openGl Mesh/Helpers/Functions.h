@@ -10,6 +10,9 @@ class Texture;
 enum class Texture_Names : unsigned char;
 enum class Block : unsigned char;
 
+float randRange(float lower, float upper);
+int randInt(int lower, int upper);
+
 float bilinearInterpolation(const float xLen, const float yLen, const float& c00, const float& c01, const float& c10, const float& c11);
 
 
