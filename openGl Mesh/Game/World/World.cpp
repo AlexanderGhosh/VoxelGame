@@ -12,7 +12,7 @@ World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), po
 }
 World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
 	this->seed = seed;
-	getNewChunkPositions(worldOrigin);
+	//getNewChunkPositions(worldOrigin);
 }
 
 void World::getNewChunkPositions(const glm::vec3 worldOrigin) {

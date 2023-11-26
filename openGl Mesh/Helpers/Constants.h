@@ -14,7 +14,7 @@ class ChunkColumn;
 class BlockStore;
 class Material;
 
-#define GENERATE_NEW_CHUNKS false
+#define GENERATE_NEW_CHUNKS true
 
 #define RRC(x) (float(x) / 255.f)
 
