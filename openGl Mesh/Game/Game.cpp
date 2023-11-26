@@ -192,7 +192,7 @@ void Game::doLoop(const glm::mat4& projection) {
 #ifdef DEBUG_GRID_LINES
 		unsigned int i = 0;
 		for (Gizmo::IShape* grid : gizmoManager.allGizmos) {
-			grid->setPosition(glm::vec3(c.x, -(int)WORLD_HEIGHT, c.y) + GRID_LINE_POSITIONS[i++]);
+			grid->setPosition(glm::vec3(c.x, 0, c.y) + GRID_LINE_POSITIONS[i++]);
 		}
 #endif // DEBUG_GRID_LINES
 
@@ -282,7 +282,6 @@ void Game::showStuff(const glm::mat4& projection) {
 	gbufferS.setValue("projection", projection);
 
 	world.render(&gbufferS);
-	gizmoManager->render(projection * viewMatrix);
 	//renderModels(projection);
 	manager->renderEvent();
 
@@ -409,6 +408,8 @@ void Game::showStuff(const glm::mat4& projection) {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+
+	gizmoManager->render(projection* viewMatrix);
 	composite.unBind();
 
 

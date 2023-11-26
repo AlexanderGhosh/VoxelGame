@@ -56,7 +56,6 @@ void Gizmo::IShape::drawGeneral()
 	glLineWidth(thickness);
 	bindVAO();
 	glDrawArrays(GL_POINTS, 0, 1);
-	unbindVAO();
 	glPointSize(1);
 	glLineWidth(1);
 }
