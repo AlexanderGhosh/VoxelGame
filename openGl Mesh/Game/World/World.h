@@ -21,7 +21,7 @@ public:
 	const std::list<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
 
 	void save() const;
-	void tryStartGenerateChunks(const glm::vec2& chunkPos); 
+	void tryStartGenerateChunks(const glm::vec2& chunkPos, const glm::vec3& frustrumCenter, const float frustrumRadius); 
 	void tryFinishGenerateChunk();
 
 private:

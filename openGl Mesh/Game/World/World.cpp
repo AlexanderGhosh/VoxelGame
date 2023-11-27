@@ -45,17 +45,19 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 	worldMap.clear();
 }
 
-void World::tryStartGenerateChunks(const glm::vec2& center)
+void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& frustrumCenter, const float frustrumRadius)
 {
 	if (!GENERATE_NEW_CHUNKS) {
 		return;
 	}
 	auto toGenerate = centeredPositions(center, RENDER_DISTANCE + 5);
 
+	const float maxDist = sqrtf(2.f * CHUNK_AREA) + frustrumRadius;
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
 		auto& [pos, _] = *itt;
-		if (!toGenerate.contains(pos) && !positionsBeingGenerated.contains(pos))
+		float dist = glm::distance(pos * CHUNK_SIZE_F, { frustrumCenter.x, frustrumCenter.z });
+		if (!toGenerate.contains(pos) && !positionsBeingGenerated.contains(pos) || dist > maxDist)
 		{
 			geomDrawable.remove(pos);
 			itt = chunks.erase(itt);
@@ -65,9 +67,11 @@ void World::tryStartGenerateChunks(const glm::vec2& center)
 			++itt;
 		}
 	}
+
 	for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
 		const glm::vec2& p = *itt;
-		if (chunks.contains(p)) {
+		float dist = glm::distance(p*CHUNK_SIZE_F, { frustrumCenter.x, frustrumCenter.z });
+		if (chunks.contains(p) || dist > maxDist) {
 			itt = toGenerate.erase(itt);
 		}
 		else {

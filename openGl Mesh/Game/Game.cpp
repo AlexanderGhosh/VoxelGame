@@ -197,10 +197,12 @@ void Game::doLoop(const glm::mat4& projection) {
 		}
 #endif // DEBUG_GRID_LINES
 
+		glm::vec3 frustrumCenter = mainCamera.GetPosition() + mainCamera.GetFront() * FAR_PLANE * .5f;
+		float frustrumRadius = FAR_PLANE * .5f;
 		
 
 		c /= CHUNK_SIZE * VOXEL_SZIE;
-		world.tryStartGenerateChunks(c);
+		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);
 		// std::cout << "Generated" << std::endl;
 
 		manager->updateEvent();
@@ -515,14 +517,6 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 	if (key == GLFW_KEY_H && action == GLFW_RELEASE) {
 		world.save();
 		std::cout << "Saved" << std::endl;
-	}
-	if (key == GLFW_KEY_G && action == GLFW_RELEASE) {
-		glm::vec3 p = floor(mainCamera.GetPosition());
-		glm::ivec2 c(p.x, p.z);
-		reduceToMultiple(c, CHUNK_SIZE);
-		c /= CHUNK_SIZE;
-		world.tryStartGenerateChunks(c);
-		std::cout << "Generated" << std::endl;
 	}
 }
 
