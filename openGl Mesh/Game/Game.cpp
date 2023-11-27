@@ -187,7 +187,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		glm::vec3 p = floor(mainCamera.GetPosition());
 		glm::ivec2 c(p.x, p.z);
-		reduceToMultiple(c, CHUNK_SIZE * VOXEL_SZIE);
+		reduceToMultiple(c, CHUNK_SIZE);
 
 		GizmoManager& gizmoManager = GizmoManager::getInstance();
 #ifdef DEBUG_GRID_LINES
@@ -197,11 +197,12 @@ void Game::doLoop(const glm::mat4& projection) {
 		}
 #endif // DEBUG_GRID_LINES
 
-		glm::vec3 frustrumCenter = mainCamera.GetPosition() + mainCamera.GetFront() * FAR_PLANE * .5f;
+		glm::vec3 f = glm::normalize(glm::vec3(mainCamera.GetFront().x, 0, mainCamera.GetFront().z)); // removes y component
+		glm::vec3 frustrumCenter = mainCamera.GetPosition() + f * FAR_PLANE * .5f;
 		float frustrumRadius = FAR_PLANE * .5f;
 		
 
-		c /= CHUNK_SIZE * VOXEL_SZIE;
+		c /= CHUNK_SIZE;
 		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);
 		// std::cout << "Generated" << std::endl;
 
