@@ -197,7 +197,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		}
 #endif // DEBUG_GRID_LINES
 
-		glm::vec3 f = glm::normalize(glm::vec3(mainCamera.GetFront().x, 0, mainCamera.GetFront().z)); // removes y component
+		glm::vec3 f = glm::normalize(glm::vec3(mainCamera.GetFront().x, 0, mainCamera.GetFront().z));
 		glm::vec3 frustrumCenter = mainCamera.GetPosition() + f * FAR_PLANE * .5f;
 		float frustrumRadius = FAR_PLANE * .5f;
 		

@@ -41,7 +41,7 @@ constexpr float FAR_PLANE = 200;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr unsigned int RENDER_DISTANCE = 4;
+constexpr unsigned int RENDER_DISTANCE = 9;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned unsigned int WATER_LEVEL = 20;
 constexpr unsigned unsigned int SNOW_LEVEL = 38;
@@ -54,7 +54,7 @@ constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
 
 constexpr float PLAYER_SPEED = 5;
 
-constexpr float VOXEL_SZIE = 0.5;
+constexpr float VOXEL_SZIE = 1;
 constexpr float HALF_VOXEL_SZIE = VOXEL_SZIE * .5f;
 constexpr glm::vec3 WORLD_ORIGIN(0, (VOXEL_SZIE - 1) * -30.f / VOXEL_SZIE, 0);
 
