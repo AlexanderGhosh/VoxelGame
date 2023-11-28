@@ -10,6 +10,8 @@ class Texture;
 enum class Texture_Names : unsigned char;
 enum class Block : unsigned char;
 
+float radiusOfCube(const glm::vec3& scale, const glm::vec3& dir);
+
 float randRange(float lower, float upper);
 int randInt(int lower, int upper);
 
@@ -18,7 +20,10 @@ float bilinearInterpolation(const float xLen, const float yLen, const float& c00
 
 void markSlot(unsigned char& val, const unsigned int slot);
 
+// returns a vec3 with a one in the arg max slot and 0 in the rest
 glm::vec3 argmax(const glm::vec3& a);
+// returns a vec3 with a one in the arg max slot and 0 in the rest
+// abs(a) prior to argmax
 glm::vec3 argmax_abs(const glm::vec3& a);
 
 const float radians(const float d);

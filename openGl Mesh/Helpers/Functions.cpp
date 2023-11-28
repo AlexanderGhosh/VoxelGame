@@ -2,6 +2,21 @@
 #include "Constants.h"
 
 
+// scale is the size of the cube
+// dir is the direction pointing away from the cubes center
+float radiusOfCube(const glm::vec3& scale, const glm::vec3& dir)
+{
+	const glm::vec3 d = glm::normalize(dir);
+	glm::vec3 a = argmax_abs(d); // 1 in the max magnitude slot
+	glm::vec3 res = a * scale * -.5f;
+	a = abs(a - 1.f); // 0 in the max slot 1 every were else
+	a *= scale;
+	a *= d;
+	a *= 0.1f;
+	res += a;
+	return glm::length(res);
+}
+
 float randRange(float lower, float upper) {
 	float v = rand();
 	v /= RAND_MAX;
