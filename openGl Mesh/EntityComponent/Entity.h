@@ -45,7 +45,7 @@ public:
 	void componentsFixedUpdate();
 	// called after entity functions
 	void componentsRender();
-	// called after entity functions
+	// called after entity functions (likly redundent as it will be cassed after the componets destructor
 	void componentsDestroy();
 
 	const unsigned int getId() const;
@@ -54,10 +54,8 @@ public:
 template<class T>
 inline T* Entity::getComponent()
 {
-	ComponentManager& manager = ComponentManager::getInstance();
-
 	for (Component* base : _components) {
-		T* component = reinterpret_cast<T*>(base);
+		T* component = dynamic_cast<T*>(base);
 		if (component) {
 			return component;
 		}

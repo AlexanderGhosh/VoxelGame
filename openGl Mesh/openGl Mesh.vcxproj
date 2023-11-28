@@ -161,7 +161,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
     <ClCompile Include="EntityComponent\Components\Camera.cpp" />
-    <ClCompile Include="EntityComponent\Entity\Player.cpp" />
+    <ClCompile Include="EntityComponent\Entities\Player.cpp" />
     <ClCompile Include="Gizmos\Composite\Arrow.cpp" />
     <ClCompile Include="BlockStore.cpp" />
     <ClCompile Include="Gizmos\Primatives\Circle.cpp" />
@@ -235,7 +235,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EntityComponent\Components\Camera.h" />
-    <ClInclude Include="EntityComponent\Entity\Player.h" />
+    <ClInclude Include="EntityComponent\Entities\Player.h" />
     <ClInclude Include="Helpers\Async\DynamicAsyncPool.h" />
     <ClInclude Include="Helpers\Async\StaticAsyncPool.h" />
     <ClInclude Include="Gizmos\Composite\Arrow.h" />

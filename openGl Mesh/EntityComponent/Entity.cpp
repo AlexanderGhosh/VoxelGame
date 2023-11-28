@@ -1,8 +1,10 @@
 #include "Entity.h"
 #include "Component.h"
+#include "../Mangers/EntityManager.h"
 
 Entity::Entity() : _id(0)
 {
+    EntityManager::getInstance().addEntity(this);
 }
 
 Entity::Entity(unsigned int id) : _id(id)

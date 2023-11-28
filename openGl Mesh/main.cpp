@@ -15,12 +15,16 @@
 #include "Helpers/BlockDetails.h"
 
 #include "EntityComponent/Entity.h"
+#include "EntityComponent/Entities/Player.h"
+#include "EntityComponent/Components/Transform.h"
+#include "EntityComponent/Components/Camera.h"
+#include "EntityComponent/Components/FlightControls.h"
+
 #include "Mangers/EntityManager.h"
 #include "Mangers/ComponentManager.h"
 #include "Mangers/ModelManager.h"
 #include "Mangers/GizmoManager.h"
 #include "Gizmos/Composite/Grid2D.h"
-#include <FastNoise/FastNoise.h>
 #include "Game/World/world_generation.h"
 
 glm::ivec2 DIM(WIDTH, HEIGHT);
@@ -47,9 +51,15 @@ int main() {
 	// ENTITY COMPONENT SYSTEMS
 	ComponentManager& componentManager = ComponentManager::getInstance();
 	EntityManager& entityManager = EntityManager::getInstance();
-	Entity& player = entityManager.createEntity();
-	Transform playerTransform;
+
+	Entities::Player player;
+	Components::Transform playerTransform;
+	Components::Camera playerCamera;
+	Components::FlightControls playerControler(PLAYER_SPEED);
+
 	player.addComponent(playerTransform);
+	player.addComponent(playerCamera);
+	player.addComponent(playerControler);
 
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
 
@@ -78,6 +88,8 @@ int main() {
 
 	Game game = Game(DIM);
 	GameConfig::showFPS = true;
+
+	game.setPlayer(&player);
 
 
 	game.setWindow(window);

@@ -15,7 +15,6 @@ namespace Components {
 	class Camera : public Component {
 	public:
 		Camera();
-		Camera(unsigned int id);
 
 		const glm::mat4 getViewMatrix(const glm::vec3& eye) const;
 

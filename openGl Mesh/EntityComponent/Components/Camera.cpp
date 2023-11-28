@@ -3,13 +3,8 @@
 
 using namespace Components;
 
-Camera::Camera() : Component(), _front(), _right(), _up(), _mouseSensitivaty(), _pitch(), _yaw()
+Camera::Camera() : Component(), _front(0, 0, 1), _right(-1, 0, 0), _up(0, 1, 0), _mouseSensitivaty(), _pitch(), _yaw()
 {
-}
-
-Components::Camera::Camera(unsigned int id) : Camera()
-{
-	_id = id;
 }
 
 const glm::mat4 Camera::getViewMatrix(const glm::vec3& eye) const

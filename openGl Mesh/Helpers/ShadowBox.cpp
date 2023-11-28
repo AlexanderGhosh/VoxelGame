@@ -1,7 +1,6 @@
 #include "ShadowBox.h"
 #include <gtx/string_cast.hpp>
 #include "Functions.h"
-#include "../Game/Player/Camera.h"
 #include "Constants.h"
 #include "Functions.h"
 
@@ -27,9 +26,9 @@ std::vector<glm::vec3> getFrustumCornersWorldSpace(const glm::mat4& proj, const 
 	return frustrumCorners;
 }
 
-glm::mat4 ShadowBox::getLSM(Camera& camera, const glm::mat4& proj, const glm::vec3& lightPos)
+glm::mat4 ShadowBox::getLSM(const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos)
 {
-	auto corners = getFrustumCornersWorldSpace(proj, camera.GetViewMatrix());
+	auto corners = getFrustumCornersWorldSpace(proj, view);
 	glm::vec3 frustrumCenter(0);
 	for (const glm::vec3& c : corners) {
 		frustrumCenter += c;

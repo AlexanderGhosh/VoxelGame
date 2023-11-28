@@ -8,7 +8,7 @@ class Entity;
 class EntityManager : public Manager<EntityManager> {
 	friend class Manager;
 private:
-	std::list<Entity> _entities;
+	std::list<Entity*> _entities;
 	unsigned int _numEntitysCreated; // used for the entity ids
 	EntityManager();
 public:
@@ -19,11 +19,9 @@ public:
 	void renderEvent();
 	void destroyEvent();
 
-	Entity& createEntity();
-	template<class T>
-		requires std::is_base_of<Entity, T>::value
-	T& createEntity();
 	void removeEntity(unsigned int id);
+
+	void addEntity(Entity* entity);
 
 	Entity& getEntity(unsigned int id);
 	const Entity& getEntity(unsigned int id) const;
@@ -37,14 +35,6 @@ public:
 
 	void destroy() override;
 };
-
-template<class T>
-	requires std::is_base_of<Entity, T>::value
-T& EntityManager::createEntity() {
-	_entities.emplace_back(_numEntitysCreated++);
-	return *reinterpret_cast<T*>(&_entities.back());
-}
-
 
 template<class T>
 	requires std::is_base_of<Entity, T>::value

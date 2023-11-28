@@ -8,7 +8,6 @@
 #include FT_FREETYPE_H
 
 #include "../Renders/UI Stuff/UI_Renderer.h"
-#include "Player/Camera.h"
 #include "World/World.h"
 #include "../FrameBuffer.h"
 #include "../Renders/ModelRenderer.h"
@@ -37,6 +36,9 @@ struct GameConfig {
 	}
 };
 
+namespace Entities {
+	class Player;
+}
 class Game
 {
 public:
@@ -49,12 +51,12 @@ public:
 	void cleanUp();
 
 	void addModel(Model& model);
+	void setPlayer(Entities::Player* player);
 private:
-	void setupPlayer();
 	void setUpScreenQuad();
 
-	static Camera mainCamera;
 	static glm::vec3 mouseData;
+	static glm::vec2 mouseOffset;
 	static std::array<bool, 1024> keys;
 	static World world;
 	static UI_Renderer uiRenderer;
@@ -66,6 +68,7 @@ private:
 
 	unsigned int quadVBO, quadVAO;
 
+	Entities::Player* _player;
 	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer, gBuffer;
 	// Colour slot 0 is writen too
 	FrameBuffer multiPurposeFB;
@@ -78,6 +81,9 @@ private:
 	std::map<char, Character> Letters;
 	glm::ivec2 windowDim;
 
+	// is updated every frame with the current camera's view matrix
+	glm::mat4 cameraView;
+
 	void renderModels(const glm::mat4& projection);
 	void showFPS();
 	void calcTimes();
@@ -87,7 +93,7 @@ private:
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
 	static void clickCallBack(GLFWwindow* window, int button, int action, int mods);
 	static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset);
-	void processKeys();
+
 	void makeSkybox(const std::string& skybox);
 	void showSkybox(const glm::mat4& projection);
 	void setUpFreeType();

@@ -15,7 +15,7 @@ namespace Components{
         FlightControls(const float speed);
 
         // fwd is not front it is the direction that is considered forward
-        void processKeys(const std::array<bool, 1024>& keysPressed, const glm::vec3& fwd);
+        void processKeys(const std::array<bool, 1024>& keysPressed, const glm::vec3& fwd, const float deltaTime);
 
         void setTransform(Transform* transform);
         void setSpeed(const float speed);

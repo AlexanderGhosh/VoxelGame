@@ -159,7 +159,7 @@
     <ClCompile Include="Helpers\Timers\TimerGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EntityComponent\Entity\Player.cpp">
+    <ClCompile Include="EntityComponent\Entities\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EntityComponent\Components\Camera.cpp">
@@ -391,7 +391,7 @@
     <ClInclude Include="Helpers\Async\StaticAsyncPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EntityComponent\Entity\Player.h">
+    <ClInclude Include="EntityComponent\Entities\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EntityComponent\Components\Camera.h">

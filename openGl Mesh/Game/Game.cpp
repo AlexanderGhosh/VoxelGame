@@ -14,6 +14,9 @@
 #include "../Gizmos/Composite/Grid2D.h"
 #include "../Material.h"
 #include "../Helpers/Timers/Timer.h"
+#include "../EntityComponent/Entities/Player.h"
+#include <iostream>
+
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -22,15 +25,14 @@ unsigned int GameConfig::FPSlock = 0;
 #pragma endregion
 
 
-Camera Game::mainCamera;
 glm::vec3 Game::mouseData;
+glm::vec2 Game::mouseOffset;
 std::array<bool, 1024> Game::keys;
 World Game::world;
 UI_Renderer Game::uiRenderer;
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer(), materialsBuffer() {
-	mainCamera = Camera({ 0, 2, 0 });
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(), cameraView(),
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer(), materialsBuffer(), _player() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 	setUpScreenQuad();
@@ -165,7 +167,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	manager->startEvent();
 	
-	mainCamera.setPosition({ CHUNK_SIZE_F * VOXEL_SZIE * .5f, 25, CHUNK_SIZE_F * VOXEL_SZIE * .5f });
+	_player->setPosition({ CHUNK_SIZE_F * VOXEL_SZIE * .5f, 25, CHUNK_SIZE_F * VOXEL_SZIE * .5f });
 
 	// LOAD MODELS
 	//ModelManager& modelManager = ModelManager::getInstance();
@@ -179,30 +181,31 @@ void Game::doLoop(const glm::mat4& projection) {
 #endif // SSAO
 
 	unsigned int numFrames = 0;
+	GizmoManager& gizmoManager = GizmoManager::getInstance();
 	Timer timer("Loop Time");
 	while (gameRunning) {
 		calcTimes();
 		glfwPollEvents();
-		processKeys();
+		_player->processMouse(mouseOffset);
+		_player->processKeys(keys, deltaTime);
 
-		glm::vec3 p = floor(mainCamera.GetPosition());
-		glm::ivec2 c(p.x, p.z);
-		reduceToMultiple(c, CHUNK_SIZE);
+		cameraView = _player->getViewMatrix();
 
-		GizmoManager& gizmoManager = GizmoManager::getInstance();
+		glm::ivec2 c = _player->getChunkPosition();
+
 #ifdef DEBUG_GRID_LINES
 		unsigned int i = 0;
 		for (Gizmo::IShape* grid : gizmoManager.allGizmos) {
-			grid->setPosition(glm::vec3(c.x, 0, c.y) + GRID_LINE_POSITIONS[i++]);
+			grid->setPosition(glm::vec3(c.x * CHUNK_SIZE_F, 0, c.y * CHUNK_SIZE_F) + GRID_LINE_POSITIONS[i++]);
 		}
 #endif // DEBUG_GRID_LINES
 
-		glm::vec3 f = glm::normalize(glm::vec3(mainCamera.GetFront().x, 0, mainCamera.GetFront().z));
-		glm::vec3 frustrumCenter = mainCamera.GetPosition() + f * FAR_PLANE * .5f;
+		// glm::vec3 f = glm::normalize(glm::vec3(mainCamera.GetFront().x, 0, mainCamera.GetFront().z));
+		// glm::vec3 frustrumCenter = mainCamera.GetPosition() + f * FAR_PLANE * .5f;
+		glm::vec3 frustrumCenter(0, 0, 0);
 		float frustrumRadius = FAR_PLANE * .5f;
 		
 
-		c /= CHUNK_SIZE;
 		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);
 		// std::cout << "Generated" << std::endl;
 
@@ -219,6 +222,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		glfwSwapBuffers(window);
 		numFrames++;
+		mouseOffset = glm::vec2(0);
 	}
 	timer.showDetails(numFrames);
 
@@ -246,15 +250,14 @@ void Game::showFPS() {
 void Game::renderModels(const glm::mat4& projection) {
 	Shader* modelShader = &SHADERS[MODEL];
 	modelShader->bind();
-	modelShader->setValue("view", mainCamera.GetViewMatrix());
+	modelShader->setValue("view", cameraView);
 	modelShader->setValue("projection", projection);
 	modelRenderer.render(modelShader);
 	modelShader->unBind();
 }
 
 void Game::showStuff(const glm::mat4& projection) {
-	const glm::mat4 LSM = ShadowBox::getLSM(mainCamera, projection, LIGHT_POSITION);
-	const glm::mat4 viewMatrix = mainCamera.GetViewMatrix();
+	const glm::mat4 LSM = ShadowBox::getLSM(cameraView, projection, LIGHT_POSITION);
 	// 1. render from the lights perspective for the shadow map
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -282,7 +285,7 @@ void Game::showStuff(const glm::mat4& projection) {
 
 	Shader& gbufferS = SHADERS[GBUFFER];
 	gbufferS.bind();
-	gbufferS.setValue("view", viewMatrix);
+	gbufferS.setValue("view", cameraView);
 	gbufferS.setValue("projection", projection);
 
 	world.render(&gbufferS);
@@ -313,7 +316,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	ssao.setValue("ssaoRadius", SSAO_RADIUS);
 	ssao.setValue("ssaoBias", SSAO_BIAS);
 	ssao.setValue("projection", projection);
-	ssao.setValue("view", viewMatrix);
+	ssao.setValue("view", cameraView);
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -353,8 +356,8 @@ void Game::showStuff(const glm::mat4& projection) {
 	// deffered.setValue("materialIndex", 2);
 	deffered.setValue("ao", 2);
 	deffered.setValue("shadowMap", 3);
-	deffered.setValue("viewDir", mainCamera.GetFront());
-	deffered.setValue("view_inv", glm::inverse(viewMatrix));
+	deffered.setValue("viewDir", _player->getViewDirection());
+	deffered.setValue("view_inv", glm::inverse(cameraView));
 	deffered.setValue("lightMatrix", LSM);
 	deffered.setValue("lightPos", LIGHT_POSITION);
 
@@ -383,10 +386,10 @@ void Game::showStuff(const glm::mat4& projection) {
 	transparent.bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
-	transparent.setValue("view", viewMatrix);
+	transparent.setValue("view", cameraView);
 	transparent.setValue("projection", projection);
 	transparent.setValue("ao", 0);
-	transparent.setValue("viewDir", mainCamera.GetFront());
+	transparent.setValue("viewDir", _player->getViewDirection());
 	transparent.setValue("lightPos", LIGHT_POSITION);
 
 	world.render(&transparent);
@@ -413,7 +416,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 
-	gizmoManager->render(projection* viewMatrix);
+	gizmoManager->render(projection* cameraView);
 	composite.unBind();
 
 
@@ -426,18 +429,17 @@ void Game::showStuff(const glm::mat4& projection) {
 	showFPS();
 
 	std::string m;
-	m = "Position: " + glm::to_string(mainCamera.GetPosition());
+	m = "Position: " + glm::to_string(_player->getPosition());
 	showText(m, { 5, 850 }, 0.5f);
-	
-	m = "View Direction: " + glm::to_string(mainCamera.GetFront());
-	showText(m, { 5, 825 }, 0.5f);
-	glm::vec3 p = floor(mainCamera.GetPosition());
-	glm::ivec2 c(p.x, p.z);
-	reduceToMultiple(c, CHUNK_SIZE);
-	c /= CHUNK_SIZE;
 
-	m = "Chunk Pos: " + glm::to_string(c);
+	m = "Block Position: " + glm::to_string(glm::floor(_player->getPosition()));
+	showText(m, { 5, 825 }, 0.5f);
+	
+	m = "View Direction: " + glm::to_string(_player->getViewDirection());
 	showText(m, { 5, 800 }, 0.5f);
+
+	m = "Chunk Pos: " + glm::to_string(_player->getChunkPosition());
+	showText(m, { 5, 775 }, 0.5f);
 
 	// 4. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
@@ -463,27 +465,15 @@ void Game::showStuff(const glm::mat4& projection) {
 	glBindVertexArray(0);
 	
 	screenQuad.unBind();
-
-
-	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	// opaue.bind();
-	// world.render(*mainCamera, projection, LSM, depthMap, &opaue);
-	// opaue.unBind();
 }
 
 void Game::setWindow(GLFWwindow* window) {
 	this->window = window;
 }
 
-void Game::setupPlayer() {
-	// Entity p = Entity({ 0, 1.25f, 0 }, 1, 0);
-	// GOD MODE VVV
-	//Entity p = Entity({ 0, 0, 0 }, 0, 1);
-	//p.setPosition({ 8, 26, 8 });
-	//p.setTextues(Texture_Names::PLAYER_BOTTOM, Texture_Names::PLAYER_TOP);
-	//PlayerInv& inv = p.getInventory();
-	//// p.setInvincable(1);
-	//entityHander.addEntity(p, 0);
+void Game::setPlayer(Entities::Player* player)
+{
+	_player = player;
 }
 
 void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
@@ -528,12 +518,11 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 		Game::mouseData.z = false;
 	}
 
-	float xOffset = xPos - Game::mouseData.x;
-	float yOffset = Game::mouseData.y - yPos;
+	Game::mouseOffset.x = xPos - Game::mouseData.x;
+	Game::mouseOffset.y = Game::mouseData.y - yPos;
 
 	Game::mouseData.x = xPos;
 	Game::mouseData.y = yPos;
-	Game::mainCamera.ProcessMouseMovement(xOffset, yOffset);
 }
 
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
@@ -579,38 +568,6 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetMouseButtonCallback(window, Game::clickCallBack);
 	glfwSetCursorPosCallback(window, Game::mouseCallBack);
 	glfwSetScrollCallback(window, Game::scrollCallBack);
-}
-
-void Game::processKeys() {
-	auto& k = Game::keys;
-	float speed = 9.0f;
-	if (k[GLFW_KEY_LEFT_CONTROL]) {
-		speed = 20.0f;
-	} // running
-	else {
-		speed = 12.0f;
-	} // walking
-	
-	{
-		if (k[GLFW_KEY_W]) {
-			Game::mainCamera.GetPosition() += glm::normalize(Game::mainCamera.GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_S]) {
-			Game::mainCamera.GetPosition() -= glm::normalize(Game::mainCamera.GetFront() * glm::vec3(1, 0, 1)) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_A]) {
-			Game::mainCamera.GetPosition() -= glm::normalize(Game::mainCamera.GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_D]) {
-			Game::mainCamera.GetPosition() += glm::normalize(Game::mainCamera.GetRight() * glm::vec3(1, 0, 1)) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_SPACE]) {
-			Game::mainCamera.GetPosition() += glm::vec3(0, 1, 0) * speed * deltaTime;
-		}
-		if (k[GLFW_KEY_LEFT_SHIFT]) {
-			Game::mainCamera.GetPosition() += glm::vec3(0, -1, 0) * speed * deltaTime;
-		}
-	}
 }
 
 void Game::cleanUp() {
@@ -712,7 +669,7 @@ void Game::showSkybox(const glm::mat4& projection) {
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer'transparent content
 	SHADERS[SKYBOX].bind();
 	// Camera& camera = player->getCamera();
-	glm::mat4 view = glm::mat4(glm::mat3(mainCamera.GetViewMatrix())); // remove translation from the view matrix
+	glm::mat4 view = glm::mat4(glm::mat3(cameraView)); // remove translation from the view matrix
 	SHADERS[SKYBOX].setValue("view", view);
 	SHADERS[SKYBOX].setValue("projection", projection);
 
