@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "Component.h"
 
 Entity::Entity() : _id(0)
 {
@@ -20,42 +21,77 @@ void Entity::addComponent(Component* component)
 
 void Entity::awake()
 {
+}
+
+void Entity::start()
+{
+}
+
+void Entity::update()
+{
+}
+
+void Entity::fixedUpdate()
+{
+}
+
+void Entity::render()
+{
+}
+
+void Entity::destroy()
+{
+}
+
+void Entity::componentsAwake()
+{
+    awake();
     for (auto& component : _components) {
         component->awake();
     }
 }
 
-void Entity::start()
+void Entity::componentsStart()
 {
+    start();
     for (auto& component : _components) {
         component->start();
     }
 }
 
-void Entity::update()
+void Entity::componentsUpdate()
 {
+    update();
     for (auto& component : _components) {
         component->update();
     }
 }
 
-void Entity::fixedUpdate()
+void Entity::componentsFixedUpdate()
 {
+    fixedUpdate();
     for (auto& component : _components) {
         component->fixedUpdate();
     }
 }
 
-void Entity::render()
+void Entity::componentsRender()
 {
+    render();
     for (auto& component : _components) {
         component->render();
     }
 }
 
-void Entity::destroy()
+void Entity::componentsDestroy()
 {
+    destroy();
     for (auto& component : _components) {
         component->destroy();
     }
+}
+
+const unsigned int Entity::getId() const
+{
+    return _id;
 }

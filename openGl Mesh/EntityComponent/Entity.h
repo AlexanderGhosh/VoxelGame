@@ -20,13 +20,35 @@ public:
 	template<class T>
 	T* getComponent();
 
+	// called before componet functions
+	// idea is to be used for resources that are used by componets
+	virtual void awake();
+	// called before componet functions
+	// idea is to be used for initalising variables which require the componets to already exist
+	virtual void start();
+	// called before componet functions
+	virtual void update();
+	// called before componet functions
+	virtual void fixedUpdate();
+	// called before componet functions
+	virtual void render();
+	// called before componet functions
+	virtual void destroy();
 
-	void awake();
-	void start();
-	void update();
-	void fixedUpdate();
-	void render();
-	void destroy();
+	// called after entity functions
+	void componentsAwake();
+	// called after entity functions
+	void componentsStart();
+	// called after entity functions
+	void componentsUpdate();
+	// called after entity functions
+	void componentsFixedUpdate();
+	// called after entity functions
+	void componentsRender();
+	// called after entity functions
+	void componentsDestroy();
+
+	const unsigned int getId() const;
 };
 
 template<class T>

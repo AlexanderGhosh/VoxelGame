@@ -1,5 +1,7 @@
 #include "Transform.h"
 
+using namespace Components;
+
 Transform::Transform() : Component(), position(), scale()
 {
 }

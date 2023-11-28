@@ -1,8 +1,6 @@
 #pragma once
 #include <vector>
 #include "Manager.h"
-#include "../EntityComponent/Component.h"
-#include "../EntityComponent/Components/Transform.h"
 
 class ComponentManager : public Manager<ComponentManager>
 {

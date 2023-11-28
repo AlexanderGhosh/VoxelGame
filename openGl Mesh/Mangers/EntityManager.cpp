@@ -67,12 +67,16 @@ void EntityManager::removeEntity(unsigned int id)
 
 Entity& EntityManager::getEntity(unsigned int id)
 {
-	return _entities[id];
+	auto itt = _entities.begin();
+	std::advance(itt, id);
+	return *itt;
 }
 
 const Entity& EntityManager::getEntity(unsigned int id) const
 {
-	return _entities[id];
+	auto itt = _entities.begin();
+	std::advance(itt, id);
+	return *itt;
 }
 
 void EntityManager::destroy()
