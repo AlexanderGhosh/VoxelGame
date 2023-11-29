@@ -55,10 +55,21 @@ void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, co
 	fwd.y = 0;
 	fwd = glm::normalize(fwd);
 	// ^^^
-	const glm::vec3 prevPos = _transform->position;
+	glm::vec3 prevPos = _transform->position;
 	_controls->processKeys(keysPressed, fwd, deltaTime);
 
+	if (_noClip) {
+		return;
+	}
 	// reverts movement if it has caused a collision
+	for (ChunkColumn* chunk : neighbours) {
+		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition())) {
+			_transform->position = prevPos;
+			break;
+		}
+	}
+	prevPos = _transform->position;
+	_transform->position.y -= 10 * deltaTime;
 	for (ChunkColumn* chunk : neighbours) {
 		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition())) {
 			_transform->position = prevPos;
