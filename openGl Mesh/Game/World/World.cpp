@@ -108,6 +108,16 @@ void World::tryFinishGenerateChunk()
 	}
 }
 
+const ChunkColumn& World::getChunk(const glm::vec2& chunkPos, bool& success) const
+{
+	if (chunks.contains(chunkPos)) {
+		success = true;
+		return chunks.at(chunkPos);
+	}
+	success = false;
+	return {};
+}
+
 void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, const unsigned int n)
 {
 	unsigned int size = allChunkPoss.size() / n;
@@ -142,7 +152,7 @@ std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<
 	return positions;
 }
 
-const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
+const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool includeSelf)
 {
 	std::list<glm::vec2> offsets = {
 		glm::vec2(0, 1),
@@ -150,6 +160,9 @@ const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos)
 		glm::vec2(1, 0),
 		glm::vec2(0, -1)
 	};
+	if (includeSelf) {
+		offsets.push_back(glm::vec2(0));
+	}
 	std::list<ChunkColumn*> res;
 	for (auto& [pos, chunk] : chunks) {
 		for (auto itt = offsets.begin(); itt != offsets.end();) {

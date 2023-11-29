@@ -18,11 +18,13 @@ public:
 	void placeBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
 	void breakBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
 
-	const std::list<ChunkColumn*> getNeibours(const glm::vec2& chunkPos);
+	const std::list<ChunkColumn*> getNeibours(const glm::vec2& chunkPos, bool includeSelf = false);
 
 	void save() const;
 	void tryStartGenerateChunks(const glm::vec2& chunkPos, const glm::vec3& frustrumCenter, const float frustrumRadius); 
 	void tryFinishGenerateChunk();
+
+	const ChunkColumn& getChunk(const glm::vec2& chunkPos, bool& success) const;
 
 private:
 	DynamicAsyncPool<std::unordered_set<glm::vec2>> pool;

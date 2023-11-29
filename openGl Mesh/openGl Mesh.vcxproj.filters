@@ -45,9 +45,6 @@
     <ClCompile Include="Game\World\world_generation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Physics\BoxCollider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,6 +165,12 @@
     <ClCompile Include="EntityComponent\Components\FlightControls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EntityComponent\Components\BoxCollider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mangers\CollisionManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -248,9 +251,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\World\world_generation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Physics\BoxCollider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\World\Chunks\ChunkColumn.h">
@@ -398,6 +398,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EntityComponent\Components\FlightControls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityComponent\Components\BoxCollider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mangers\CollisionManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,6 +10,6 @@ namespace Components {
 		Transform(unsigned int id);
 
 		glm::vec3 position;
-		float scale;
+		glm::vec3 scale;
 	};
 }

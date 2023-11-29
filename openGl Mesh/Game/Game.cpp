@@ -187,11 +187,15 @@ void Game::doLoop(const glm::mat4& projection) {
 		calcTimes();
 		glfwPollEvents();
 		_player->processMouse(mouseOffset);
-		_player->processKeys(keys, deltaTime);
+
+		glm::ivec2 c = _player->getChunkPosition();
+		
+		std::list<ChunkColumn*> neibours = world.getNeibours(c, true);
+
+		_player->processKeys(keys, deltaTime, neibours);
 
 		cameraView = _player->getViewMatrix();
 
-		glm::ivec2 c = _player->getChunkPosition();
 
 #ifdef DEBUG_GRID_LINES
 		unsigned int i = 0;

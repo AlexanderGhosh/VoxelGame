@@ -426,6 +426,11 @@ const glm::vec2& ChunkColumn::getPosition() const
 	return position;
 }
 
+const glm::vec2 ChunkColumn::getWorldPosition() const
+{
+	return position * CHUNK_SIZE_F * VOXEL_SZIE;
+}
+
 void ChunkColumn::save() const
 {
 	// seed
@@ -485,6 +490,11 @@ void ChunkColumn::load(const glm::vec2& chunkPos)
 	}
 
 	this->buffer.setUp(bufferData.data(), bufferData.size());
+}
+
+const std::vector<GeomData>& ChunkColumn::getMeshData() const
+{
+	return bufferData;
 }
 
 const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const

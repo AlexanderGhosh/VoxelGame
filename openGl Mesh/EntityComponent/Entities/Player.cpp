@@ -2,12 +2,20 @@
 #include "../Components/Transform.h"
 #include "../Components/Camera.h"
 #include "../Components/FlightControls.h"
+#include "../Components/BoxCollider.h"
 #include "../../Helpers/Functions.h"
+#include "../../Mangers/CollisionManager.h"
+#include "../../Game/World/Chunks/ChunkColumn.h"
 
 using namespace Entities;
 
-Player::Player() : Entity(), _transform(), _camera(), _controls()
+Player::Player() : Entity(), _transform(), _camera(), _controls(), _collider(), _noClip(false)
 {
+}
+
+Entities::Player::Player(bool noClip) : Player()
+{
+	_noClip = noClip;
 }
 
 const glm::mat4 Player::getViewMatrix() const
@@ -39,14 +47,24 @@ const glm::vec3& Entities::Player::getPosition() const
 	return _transform->position;
 }
 
-void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, const float deltaTime)
+void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, const float deltaTime, const std::list<ChunkColumn*>& neighbours)
 {
+	CollisionManager& manager = CollisionManager::getInstance();
 	// prevents the player from moving up or down with out space or shift
 	glm::vec3 fwd = _camera->getFront();
 	fwd.y = 0;
 	fwd = glm::normalize(fwd);
 	// ^^^
+	const glm::vec3 prevPos = _transform->position;
 	_controls->processKeys(keysPressed, fwd, deltaTime);
+
+	// reverts movement if it has caused a collision
+	for (ChunkColumn* chunk : neighbours) {
+		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition())) {
+			_transform->position = prevPos;
+			break;
+		}
+	}
 }
 
 void Entities::Player::processMouse(const glm::vec2& mouseOffsets)
@@ -59,6 +77,8 @@ void Entities::Player::start()
 	_transform = getComponent<Components::Transform>();
 	_camera = getComponent<Components::Camera>();
 	_controls = getComponent<Components::FlightControls>();
+	_collider = getComponent<Components::BoxCollider>();
 
 	_controls->setTransform(_transform);
+	_collider->setTransform(_transform);
 }

@@ -28,9 +28,12 @@ public:
 	void removeBlock(const glm::vec3& worldPos, World* world);
 
 	const glm::vec2& getPosition() const;
+	const glm::vec2 getWorldPosition() const;
 
 	void save() const;
 	void load(const glm::vec2& chunkPos);
+
+	const std::vector<GeomData>& getMeshData() const;
 private:
 
 	// used for runtime genertion doesnt do any opengl funcs

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -160,6 +160,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
+    <ClCompile Include="Mangers\CollisionManager.cpp" />
+    <ClCompile Include="EntityComponent\Components\BoxCollider.cpp" />
     <ClCompile Include="EntityComponent\Components\Camera.cpp" />
     <ClCompile Include="EntityComponent\Entities\Player.cpp" />
     <ClCompile Include="Gizmos\Composite\Arrow.cpp" />
@@ -183,7 +185,6 @@
     <ClCompile Include="GeomRendering\DrawableGeom.cpp" />
     <ClCompile Include="GeomRendering\BufferGeom.cpp" />
     <ClCompile Include="Game\World\Chunks\ChunkColumn.cpp" />
-    <ClCompile Include="Game\Physics\BoxCollider.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Helpers\BlocksEncoded.cpp" />
     <ClCompile Include="Helpers\Constants.cpp" />
@@ -234,6 +235,8 @@
     <None Include="Shaders\skybox_v.gls" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Mangers\CollisionManager.h" />
+    <ClInclude Include="EntityComponent\Components\BoxCollider.h" />
     <ClInclude Include="EntityComponent\Components\Camera.h" />
     <ClInclude Include="EntityComponent\Entities\Player.h" />
     <ClInclude Include="Helpers\Async\DynamicAsyncPool.h" />
@@ -264,7 +267,6 @@
     <ClInclude Include="GeomRendering\DrawableGeom.h" />
     <ClInclude Include="GeomRendering\BufferGeom.h" />
     <ClInclude Include="Game\World\Chunks\ChunkColumn.h" />
-    <ClInclude Include="Game\Physics\BoxCollider.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="GeomRendering\DrawData.h" />
     <ClInclude Include="GeomRendering\GeomData.h" />

@@ -2,7 +2,7 @@
 
 using namespace Components;
 
-Transform::Transform() : Component(), position(), scale()
+Transform::Transform() : Component(), position(), scale(1)
 {
 }
 
