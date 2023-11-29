@@ -215,21 +215,21 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 	if (!chunks.contains(occupiedChunkPos)) {
 		return;
 	}
-	const ChunkColumn& occupiedChunk = chunks.at(occupiedChunkPos);
 	glm::vec3 placePos(0);
 	float minD = FLT_MAX;
-	for (const GeomData& data : occupiedChunk.getMeshData()) {
-		glm::vec3 worldBlockPos = data.getPos();
-		if (worldBlockPos.x == 8 && worldBlockPos.z == 13) {
-			int g = 0;
-		}
-		worldBlockPos.x += occupiedChunkPos.x;
-		worldBlockPos.z += occupiedChunkPos.y;
-		if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
-			const float d = glm::distance(ro, worldBlockPos);
-			if (d < minD) {
-				minD = d;
-				placePos = worldBlockPos - rd * VOXEL_SZIE;
+	auto chunk_s = getNeibours(occupiedChunkPos, true);
+	for (auto chunk : chunk_s) {
+		for (const GeomData& data : chunk->getMeshData()) {
+			glm::vec3 worldBlockPos = data.getPos();
+
+			worldBlockPos.x += chunk->getWorldPosition().x;
+			worldBlockPos.z += chunk->getWorldPosition().y;
+			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
+				const float d = glm::distance(ro, worldBlockPos);
+				if (d < minD) {
+					minD = d;
+					placePos = worldBlockPos - rd * VOXEL_SZIE;
+				}
 			}
 		}
 	}
