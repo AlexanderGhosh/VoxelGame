@@ -134,7 +134,7 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 		i++;
 	}
 	if (accumulator.size() > 0) {
-		// runs the rest (happends if allChunkPoss.size() % n != 0
+		// runs the rest (happends if allChunkPoss.size() % n != 0)
 		pool.add() = std::async(&World::generateNewChunks, this, accumulator);
 	}
 }

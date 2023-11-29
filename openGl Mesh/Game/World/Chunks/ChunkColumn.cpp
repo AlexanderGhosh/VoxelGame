@@ -38,9 +38,6 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
-			if (x == 0 && z == 2) {
-				int g = 0;
-			}
 			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
 
 			int height = encodes.height();
@@ -134,20 +131,29 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 					localPos.x = (int)localPos.x % CHUNK_SIZE;
 					localPos.z = (int)localPos.z % CHUNK_SIZE;
 
-					Block b = blockStore.getBlock(localPos); // the block that is next to the neibours block in the current chunk
-					BlockDetails blockDets = getDetails(b);
-					if (blockDets.isTransparant) {
-						AddFaces toAdd{};
-						toAdd.worldPos = neighbourWorldPos;
-						toAdd.face = i; // maybe needs to be the oposite face
-						if (toAdd.face % 2 == 0) {
-							toAdd.face = toAdd.face + 1;
+					for (unsigned int k = localPos.y; k > 0; k--) {
+						neighbourWorldPos.y = k;
+						localPos.y = k;
+
+						Block b = blockStore.getBlock(localPos); // the block that is next to the neibours block in the current chunk
+						BlockDetails blockDets = getDetails(b);
+						if (blockDets.isTransparant) {
+							AddFaces toAdd{};
+							toAdd.worldPos = neighbourWorldPos;
+							toAdd.face = i; // maybe needs to be the oposite face
+							if (toAdd.face % 2 == 0) {
+								toAdd.face++;
+							}
+							else {
+								toAdd.face--;
+							}
+							chunk->addFace(toAdd, false);
 						}
 						else {
-							toAdd.face = toAdd.face - 1;
+							break;
 						}
-						chunk->addFace(toAdd, false);
 					}
+
 				}
 			}
 		}

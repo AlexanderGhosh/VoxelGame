@@ -79,6 +79,8 @@ void Entities::Player::start()
 	_controls = getComponent<Components::FlightControls>();
 	_collider = getComponent<Components::BoxCollider>();
 
+	_transform->scale = glm::vec3(1, 2, 1);
+
 	_controls->setTransform(_transform);
 	_collider->setTransform(_transform);
 }
