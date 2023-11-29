@@ -7,6 +7,7 @@ namespace Components {
 	class Camera;
 	class FlightControls;
 	class BoxCollider;
+	class RigidBody;
 }
 class ChunkColumn;
 
@@ -17,6 +18,7 @@ namespace Entities {
 		Components::Camera* _camera;
 		Components::FlightControls* _controls;
 		Components::BoxCollider* _collider;
+		Components::RigidBody* _rigidbody;
 		bool _noClip;
 	public:
 		Player();

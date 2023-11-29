@@ -197,6 +197,7 @@
     <ClCompile Include="Gizmos\Primatives\Point.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Renders\ModelRenderer.cpp" />
+    <ClCompile Include="EntityComponent\Components\RigidBody.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="SOIL2\etc1_utils.c" />
     <ClCompile Include="SOIL2\image_DXT.c" />
@@ -281,6 +282,7 @@
     <ClInclude Include="Gizmos\Primatives\Point.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Renders\ModelRenderer.h" />
+    <ClInclude Include="EntityComponent\Components\RigidBody.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SOIL2\etc1_utils.h" />
     <ClInclude Include="SOIL2\image_DXT.h" />

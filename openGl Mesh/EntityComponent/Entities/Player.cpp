@@ -3,13 +3,14 @@
 #include "../Components/Camera.h"
 #include "../Components/FlightControls.h"
 #include "../Components/BoxCollider.h"
+#include "../Components/RigidBody.h"
 #include "../../Helpers/Functions.h"
 #include "../../Mangers/CollisionManager.h"
 #include "../../Game/World/Chunks/ChunkColumn.h"
 
 using namespace Entities;
 
-Player::Player() : Entity(), _transform(), _camera(), _controls(), _collider(), _noClip(false)
+Player::Player() : Entity(), _transform(), _camera(), _controls(), _collider(), _rigidbody(), _noClip(false)
 {
 }
 
@@ -89,9 +90,11 @@ void Entities::Player::start()
 	_camera = getComponent<Components::Camera>();
 	_controls = getComponent<Components::FlightControls>();
 	_collider = getComponent<Components::BoxCollider>();
+	_rigidbody = getComponent<Components::RigidBody>();
 
 	_transform->scale = glm::vec3(1, 2, 1);
 
 	_controls->setTransform(_transform);
 	_collider->setTransform(_transform);
+	_rigidbody->setTransform(_transform);
 }

@@ -1,15 +1,29 @@
 #pragma once
 #include <list>
-#include "../Mangers/ComponentManager.h"
+#include "Component.h"
 
-class Component;
 class EntityManager;
 
 class Entity {
 	friend class EntityManager;
 private:
-	unsigned int _id;
 	std::list<Component*> _components;
+	unsigned int _id;
+protected:
+	// called before componet functions
+	// idea is to be used for resources that are used by componets
+	virtual void awake();
+	// called before componet functions
+	// idea is to be used for initalising variables which require the componets to already exist
+	virtual void start();
+	// called before componet functions
+	virtual void update(const float detlaTime);
+	// called before componet functions
+	virtual void fixedUpdate();
+	// called before componet functions
+	virtual void render();
+	// called before componet functions
+	virtual void destroy();
 public:
 	Entity();
 	Entity(unsigned int id);
@@ -20,33 +34,18 @@ public:
 	template<class T>
 	T* getComponent();
 
-	// called before componet functions
-	// idea is to be used for resources that are used by componets
-	virtual void awake();
-	// called before componet functions
-	// idea is to be used for initalising variables which require the componets to already exist
-	virtual void start();
-	// called before componet functions
-	virtual void update();
-	// called before componet functions
-	virtual void fixedUpdate();
-	// called before componet functions
-	virtual void render();
-	// called before componet functions
-	virtual void destroy();
-
 	// called after entity functions
-	void componentsAwake();
+	void awakeEvent();
 	// called after entity functions
-	void componentsStart();
+	void startEvent();
 	// called after entity functions
-	void componentsUpdate();
+	void updateEvent(const float deltaTime);
 	// called after entity functions
-	void componentsFixedUpdate();
+	void fixedUpdateEvent();
 	// called after entity functions
-	void componentsRender();
+	void renderEvent();
 	// called after entity functions (likly redundent as it will be cassed after the componets destructor
-	void componentsDestroy();
+	void destroyEvent();
 
 	const unsigned int getId() const;
 };

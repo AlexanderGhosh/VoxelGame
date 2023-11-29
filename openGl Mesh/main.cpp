@@ -20,6 +20,7 @@
 #include "EntityComponent/Components/Camera.h"
 #include "EntityComponent/Components/FlightControls.h"
 #include "EntityComponent/Components/BoxCollider.h"
+#include "EntityComponent/Components/RigidBody.h"
 
 #include "Mangers/EntityManager.h"
 #include "Mangers/ComponentManager.h"
@@ -58,11 +59,13 @@ int main() {
 	Components::Camera playerCamera;
 	Components::FlightControls playerControler(PLAYER_SPEED);
 	Components::BoxCollider playerCollider;
+	Components::RigidBody playerRB;
 
 	player.addComponent(playerTransform);
 	player.addComponent(playerCamera);
 	player.addComponent(playerControler);
 	player.addComponent(playerCollider);
+	player.addComponent(playerRB);
 
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
 

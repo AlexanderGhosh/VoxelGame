@@ -14,7 +14,7 @@ private:
 public:
 	void awakeEvent();
 	void startEvent();
-	void updateEvent();
+	void updateEvent(const float deltaTime);
 	void fixedUpdateEvent();
 	void renderEvent();
 	void destroyEvent();

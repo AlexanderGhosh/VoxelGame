@@ -10,42 +10,42 @@ EntityManager::EntityManager() : Manager<EntityManager>(), _entities(), _numEnti
 void EntityManager::awakeEvent()
 {
 	for (Entity* entity : _entities) {
-		entity->awake();
+		entity->awakeEvent();
 	}
 }
 
 void EntityManager::startEvent()
 {
 	for (Entity* entity : _entities) {
-		entity->start();
+		entity->startEvent();
 	}
 }
 
-void EntityManager::updateEvent()
+void EntityManager::updateEvent(const float deltaTime)
 {
 	for (Entity* entity : _entities) {
-		entity->update();
+		entity->updateEvent(deltaTime);
 	}
 }
 
 void EntityManager::fixedUpdateEvent()
 {
 	for (Entity* entity : _entities) {
-		entity->fixedUpdate();
+		entity->fixedUpdateEvent();
 	}
 }
 
 void EntityManager::renderEvent()
 {
 	for (Entity* entity : _entities) {
-		entity->render();
+		entity->renderEvent();
 	}
 }
 
 void EntityManager::destroyEvent()
 {
 	for (Entity* entity : _entities) {
-		entity->destroy();
+		entity->destroyEvent();
 	}
 }
 

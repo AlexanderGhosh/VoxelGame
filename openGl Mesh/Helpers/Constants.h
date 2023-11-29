@@ -61,6 +61,8 @@ constexpr glm::vec3 WORLD_ORIGIN(0, (VOXEL_SZIE - 1) * -30.f / VOXEL_SZIE, 0);
 // used to convert from world space to 'noise space' (noise space is the space used in the noise generator)
 constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * VOXEL_SZIE;
 
+constexpr glm::vec3 GRAVITY(0, 0, 0);
+
 constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
 		glm::vec3(0, 0, 1),
 		glm::vec3(0, 0, -1),

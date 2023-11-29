@@ -20,7 +20,7 @@ void Component::start()
 {
 }
 
-void Component::update()
+void Component::update(const float detlaTime)
 {
 }
 

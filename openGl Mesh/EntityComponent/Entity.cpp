@@ -29,7 +29,7 @@ void Entity::start()
 {
 }
 
-void Entity::update()
+void Entity::update(const float detlaTime)
 {
 }
 
@@ -45,7 +45,7 @@ void Entity::destroy()
 {
 }
 
-void Entity::componentsAwake()
+void Entity::awakeEvent()
 {
     awake();
     for (auto& component : _components) {
@@ -53,7 +53,7 @@ void Entity::componentsAwake()
     }
 }
 
-void Entity::componentsStart()
+void Entity::startEvent()
 {
     start();
     for (auto& component : _components) {
@@ -61,15 +61,15 @@ void Entity::componentsStart()
     }
 }
 
-void Entity::componentsUpdate()
+void Entity::updateEvent(const float deltaTime)
 {
-    update();
+    update(deltaTime);
     for (auto& component : _components) {
-        component->update();
+        component->update(deltaTime);
     }
 }
 
-void Entity::componentsFixedUpdate()
+void Entity::fixedUpdateEvent()
 {
     fixedUpdate();
     for (auto& component : _components) {
@@ -77,7 +77,7 @@ void Entity::componentsFixedUpdate()
     }
 }
 
-void Entity::componentsRender()
+void Entity::renderEvent()
 {
     render();
     for (auto& component : _components) {
@@ -85,7 +85,7 @@ void Entity::componentsRender()
     }
 }
 
-void Entity::componentsDestroy()
+void Entity::destroyEvent()
 {
     destroy();
     for (auto& component : _components) {

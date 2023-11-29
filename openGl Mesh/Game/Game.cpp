@@ -213,7 +213,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);
 		// std::cout << "Generated" << std::endl;
 
-		manager->updateEvent();
+		manager->updateEvent(deltaTime);
 
 		manager->fixedUpdateEvent();
 
