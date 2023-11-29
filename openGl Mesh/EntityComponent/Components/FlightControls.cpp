@@ -29,10 +29,10 @@ void Components::FlightControls::processKeys(const std::array<bool, 1024>& keysP
 	}
 
 	if (keysPressed[GLFW_KEY_SPACE]) {
-		_transform->position.y += _speed * 10 * deltaTime;
+		_transform->position.y += _speed * deltaTime;
 	}
 	if (keysPressed[GLFW_KEY_LEFT_SHIFT]) {
-		_transform->position.y -= _speed * 10 * deltaTime;
+		_transform->position.y -= _speed * deltaTime;
 	}
 }
 

@@ -2,6 +2,35 @@
 #include "Constants.h"
 
 
+bool rayCubeIntersection(const glm::vec3& ro, const glm::vec3& rd, const glm::vec3& lp, const glm::vec3& up)
+{
+	const glm::vec3 dirInv = 1.f / rd;
+
+	float t1 = (lp.x - ro.x) * dirInv.x;
+	float t2 = (up.x - ro.x) * dirInv.x;
+	float t3 = (lp.y - ro.y) * dirInv.y;
+	float t4 = (up.y - ro.y) * dirInv.y;
+	float t5 = (lp.z - ro.z) * dirInv.z;
+	float t6 = (up.z - ro.z) * dirInv.z;
+
+	float tmin = fmaxf(fmaxf(fminf(t1, t2), fminf(t3, t4)), fminf(t5, t6));
+	float tmax = fminf(fminf(fmaxf(t1, t2), fmaxf(t3, t4)), fmaxf(t5, t6));
+
+	// if tmax < 0, ray (line) is intersecting AABB, but the whole AABB is behind us
+	return !(tmax < 0 || tmin > tmax);
+
+	// if (tmax < 0)
+	// {
+	// 	return false;
+	// }
+	// // if tmin > tmax, ray doesn't intersect AABB
+	// if (tmin > tmax)
+	// {
+	// 	return false;
+	// }
+	// return true;
+}
+
 // scale is the size of the cube
 // dir is the direction pointing away from the cubes center
 float radiusOfCube(const glm::vec3& scale, const glm::vec3& dir)

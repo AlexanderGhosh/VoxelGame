@@ -24,7 +24,10 @@ public:
 	const BufferGeom& getBuffer() const;
 	BufferGeom* getBufferPtr();
 
+	// doesnt check other chunks
 	void addBlock(const glm::vec3& worldPos, const Block block);
+
+	// doesnt check other chunks
 	void removeBlock(const glm::vec3& worldPos, World* world);
 
 	const glm::vec2& getPosition() const;

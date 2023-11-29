@@ -12,6 +12,7 @@
 #include "../FrameBuffer.h"
 #include "../Renders/ModelRenderer.h"
 #include "../UniformBuffer.h"
+#include "../EventsSystem/Event.h"
 
 class Model;
 class EntityManager;
@@ -60,6 +61,12 @@ private:
 	static std::array<bool, 1024> keys;
 	static World world;
 	static UI_Renderer uiRenderer;
+	static Event leftClickRelease;
+	static Event rightClickRelease;
+
+	void placeBlock();
+	void breakBlock();
+
 	
 	UniformBuffer materialsBuffer;
 	ModelRenderer modelRenderer;
@@ -82,20 +89,20 @@ private:
 	glm::ivec2 windowDim;
 
 	// is updated every frame with the current camera's view matrix
-	glm::mat4 cameraView;
+	glm::mat4 cameraView, cameraProjection;
 
-	void renderModels(const glm::mat4& projection);
+	void renderModels();
 	void showFPS();
 	void calcTimes();
 	void setupEventCB(GLFWwindow* window);
-	void showStuff(const glm::mat4& projection);
+	void showStuff();
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
 	static void clickCallBack(GLFWwindow* window, int button, int action, int mods);
 	static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset);
 
 	void makeSkybox(const std::string& skybox);
-	void showSkybox(const glm::mat4& projection);
+	void showSkybox();
 	void setUpFreeType();
 	void showText(const std::string& text, const glm::vec2& position, float scale = 1.0f, const glm::vec3 colour = glm::vec3(1));
 	void createGUI();

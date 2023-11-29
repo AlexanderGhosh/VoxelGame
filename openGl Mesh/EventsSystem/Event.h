@@ -14,6 +14,8 @@ public:
 	void operator()();
 	void operator+=(IEventCallback* listener);
 	void operator-=(IEventCallback* listener);
+	void operator+=(IEventCallback& listener);
+	void operator-=(IEventCallback& listener);
 
 private:
 	std::vector<IEventCallback*> listeners;

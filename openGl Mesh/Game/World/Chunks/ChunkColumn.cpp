@@ -140,7 +140,7 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 						if (blockDets.isTransparant) {
 							AddFaces toAdd{};
 							toAdd.worldPos = neighbourWorldPos;
-							toAdd.face = i; // maybe needs to be the oposite face
+							toAdd.face = i; // turns it to the oposite face
 							if (toAdd.face % 2 == 0) {
 								toAdd.face++;
 							}
@@ -256,7 +256,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 {
 	GeomData toAdd;
 	toAdd.setPos(toLocal(worldPos));
-	toAdd.cubeType_ = 0x3f;
+	toAdd.cubeType_ = 0x3f; // all faces
 	toAdd.textureIndex_ = (unsigned char) block;
 
 	struct RemoveFace {
@@ -265,20 +265,8 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 	};
 	std::vector<RemoveFace> toRemove;
 
-
-	const std::list<glm::vec3> offsets = {
-		glm::vec3(0, 0, 1),
-		glm::vec3(0, 0, -1),
-
-		glm::vec3(-1, 0, 0),
-		glm::vec3(1, 0, 0),
-
-		glm::vec3(0, 1, 0),
-		glm::vec3(0, -1, 0),
-
-	};
 	unsigned char i = 0;
-	for (const glm::vec3& off : offsets) {
+	for (const glm::vec3& off : OFFSETS_3D) {
 		// needs to check the world map
 		RemoveFace data{};
 		data.worldPos = worldPos + off;
@@ -294,7 +282,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 		for (auto itt2 = toRemove.begin(); itt2 != toRemove.end();) {
 			const RemoveFace& remove = *itt2;
 			if (dataWorldPos == remove.worldPos) {
-				unsigned int mask = 1 << remove.face;
+				unsigned int mask = 1u << remove.face;
 				toAdd.cubeType_ ^= mask; // sets the face to add
 
 				if (remove.face % 2 == 0) {
@@ -307,6 +295,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 				mask = ~mask; // this is in the wrong slot as the face refers to the new blocks face not the neigbour the slot needs to inccremented or decrmented dependent MAYBE NOT ANY MORE
 				data.cubeType_ &= mask; // will set the slot of face to 0
 				itt2 = toRemove.erase(itt2);
+				break;
 			}
 			else {
 				itt2++;
@@ -332,30 +321,20 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 	glm::vec3 localPos = toLocal(worldPos);
 	std::vector<AddFaces> toAdd;
 
-	const std::list<glm::vec3> offsets = {
-		glm::vec3(0, 0, 1),
-		glm::vec3(0, 0, -1),
-
-		glm::vec3(-1, 0, 0),
-		glm::vec3(1, 0, 0),
-
-		glm::vec3(0, 1, 0),
-		glm::vec3(0, -1, 0),
-
-	};
 	unsigned char i = 0;
-	for (const glm::vec3& off : offsets) {
+	for (const glm::vec3& off : OFFSETS_3D) {
 		// needs to check the world map
 		AddFaces data{};
 		data.worldPos = worldPos + off;
 		data.offset = off;
-		data.face = i++;
+		data.face = i++; // swaps face
 		if (data.face % 2 == 0) {
-			data.face += 1;
+			data.face++;
 		}
 		else {
-			data.face -= 1;
+			data.face--;
 		}
+		//face is the index of the face to add relative to the block to add it too
 
 		toAdd.push_back(data);
 	}
@@ -365,17 +344,18 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 		GeomData& data = *itt1;
 		glm::vec3 dataWorldPos = data.getPos() + getWorldPos();
 		if (dataWorldPos == worldPos) {
+			// the block its self
 			itt1 = bufferData.erase(itt1);
 			removed = true;
 			continue;
 		}
+
 		for (auto itt2 = toAdd.begin(); itt2 != toAdd.end();) {
 			const AddFaces& add = *itt2;
 			if (dataWorldPos == add.worldPos) {
-				unsigned int mask = 1 << add.face;
-
-				data.cubeType_ |= mask; // will set the slot of face to 0
+				markSlot(data.cubeType_, add.face);
 				itt2 = toAdd.erase(itt2);
+				break;
 			}
 			else {
 				itt2++;
@@ -391,37 +371,37 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 		itt1++;
 	}
 
-	std::list<ChunkColumn*> neibours;
-	if (toAdd.size() > 0) {
-		for (const AddFaces& add : toAdd) {
-			if (outOfRange(add.worldPos - position * CHUNK_SIZE_F)) {
-				if (!neibours.size()) {
-					neibours = world->getNeibours(position);
-				}
-				glm::vec2 newChunkPos = position;
-				newChunkPos.x += add.offset.x;
-				newChunkPos.y += add.offset.z;
-				for (ChunkColumn* chunk : neibours) {
-					if (chunk->getPosition() == newChunkPos) {
-						chunk->addFace(add, true);
-					}
-				}
-			}
-			else {
+	//std::list<ChunkColumn*> neibours;
+	//if (toAdd.size() > 0) {
+	//	for (const AddFaces& add : toAdd) {
+	//		if (outOfRange(add.worldPos - position * CHUNK_SIZE_F)) {
+	//			if (!neibours.size()) {
+	//				neibours = world->getNeibours(position);
+	//			}
+	//			glm::vec2 newChunkPos = position;
+	//			newChunkPos.x += add.offset.x;
+	//			newChunkPos.y += add.offset.z;
+	//			for (ChunkColumn* chunk : neibours) {
+	//				if (chunk->getPosition() == newChunkPos) {
+	//					chunk->addFace(add, true);
+	//				}
+	//			}
+	//		}
+	//		else {
 
-				// the reson why more faces are added then needed is beacuse it doesnt check to see if that blokcs had being broken before
-				const Block b = getBlock(add.worldPos);
-				if (b == Block::AIR) {
-					continue;
-				}
-				GeomData data;
-				data.setPos(toLocal(add.worldPos));
-				data.textureIndex_ = (unsigned char) b;
-				data.cubeType_ = 1 << add.face;
-				bufferData.push_back(data);
-			}
-		}
-	}
+	//			// the reson why more faces are added then needed is beacuse it doesnt check to see if that blokcs had being broken before
+	//			const Block b = getBlock(add.worldPos);
+	//			if (b == Block::AIR) {
+	//				continue;
+	//			}
+	//			GeomData data;
+	//			data.setPos(toLocal(add.worldPos));
+	//			data.textureIndex_ = (unsigned char) b;
+	//			data.cubeType_ = 1 << add.face;
+	//			bufferData.push_back(data);
+	//		}
+	//	}
+	//}
 	editedBlocks[worldPos] = Block::AIR;
 
 	buffer.realloc(bufferData.data(), bufferData.size());

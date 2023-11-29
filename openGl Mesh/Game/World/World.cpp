@@ -82,7 +82,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 	positionsBeingGenerated.insert(toGenerate.begin(), toGenerate.end());
 
 	// compute set difference
-	launchAsyncs(toGenerate, 1);
+	launchAsyncs(toGenerate, 4);
 }
 
 void World::tryFinishGenerateChunk()
@@ -210,34 +210,34 @@ const std::list<glm::vec3> offsets = {
 	glm::vec3(0, -1, 0)
 };
 
-void World::placeBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front)
+void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)
 {
-	glm::vec4 screenPos(0, 0, zCoord, 1); // the center of screen screen coords
-	screenPos = invPV * screenPos;
-	glm::vec3 hitPos = glm::vec3(screenPos) / screenPos.w;
-	
-	hitPos = floor((hitPos * 2.f) + 0.5f) * .5f;
-
+	if (!chunks.contains(occupiedChunkPos)) {
+		return;
+	}
+	const ChunkColumn& occupiedChunk = chunks.at(occupiedChunkPos);
 	glm::vec3 placePos(0);
-
-	glm::vec3 norm(0);
-	float dist = 0;
-	for (const glm::vec3& normal : offsets) {
-		float d = glm::dot(normal, front);
-		if (d < dist) {
-			dist = d;
-			norm = normal;
+	float minD = FLT_MAX;
+	for (const GeomData& data : occupiedChunk.getMeshData()) {
+		glm::vec3 worldBlockPos = data.getPos();
+		if (worldBlockPos.x == 8 && worldBlockPos.z == 13) {
+			int g = 0;
+		}
+		worldBlockPos.x += occupiedChunkPos.x;
+		worldBlockPos.z += occupiedChunkPos.y;
+		if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
+			const float d = glm::distance(ro, worldBlockPos);
+			if (d < minD) {
+				minD = d;
+				placePos = worldBlockPos - rd * VOXEL_SZIE;
+			}
 		}
 	}
-	placePos = floor(hitPos + norm * .5f);
-
-	// std::cout << glm::to_string(placePos) << std::endl;
-
+	placePos = round(placePos);
 	glm::vec3 chunkPos3 = reduceToMultiple(placePos);
 	glm::vec2 chunkPos(chunkPos3.x, chunkPos3.z);
 	chunkPos *= CHUNK_SIZE_INV;
 
-	std::cout << glm::to_string(chunkPos) << std::endl;
 	if (chunks.find(chunkPos) != chunks.end()) {
 		ChunkColumn& chunk = chunks.at(chunkPos);
 		chunk.addBlock(placePos, Block::SAND);

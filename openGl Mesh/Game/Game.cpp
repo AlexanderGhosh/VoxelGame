@@ -16,6 +16,7 @@
 #include "../Helpers/Timers/Timer.h"
 #include "../EntityComponent/Entities/Player.h"
 #include <iostream>
+#include "../EventsSystem/EventCallback.h"
 
 
 #pragma region GameConfig
@@ -29,7 +30,9 @@ glm::vec3 Game::mouseData;
 glm::vec2 Game::mouseOffset;
 std::array<bool, 1024> Game::keys;
 World Game::world;
-UI_Renderer Game::uiRenderer;
+UI_Renderer Game::uiRenderer; 
+Event Game::leftClickRelease;
+Event Game::rightClickRelease;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(), cameraView(),
 SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer(), materialsBuffer(), _player() {
@@ -162,12 +165,13 @@ void Game::generateWorld() {
 void Game::doLoop(const glm::mat4& projection) {
 	gameRunning = true;
 	setupEventCB(window);
+	cameraProjection = projection;
 	
 	manager->awakeEvent();
 
 	manager->startEvent();
 	
-	_player->setPosition({ CHUNK_SIZE_F * VOXEL_SZIE * .5f, 110, CHUNK_SIZE_F * VOXEL_SZIE * .5f });
+	_player->setPosition({ CHUNK_SIZE_F * VOXEL_SZIE * .5f, 25, CHUNK_SIZE_F * VOXEL_SZIE * .5f });
 
 	// LOAD MODELS
 	//ModelManager& modelManager = ModelManager::getInstance();
@@ -179,6 +183,12 @@ void Game::doLoop(const glm::mat4& projection) {
 #ifdef SSAO
 	setUpSSAO();
 #endif // SSAO
+
+	// EventCallback<Game>* callback = new EventCallback<Game>(this, &Game::placeBlock);
+	EventCallback<Game> leftReleaseCB(this, &Game::breakBlock);
+	leftClickRelease += leftReleaseCB;
+	EventCallback<Game> rightReleaseCB(this, &Game::placeBlock);
+	rightClickRelease += rightReleaseCB;
 
 	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
@@ -220,7 +230,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		showStuff(projection);
+		showStuff();
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
@@ -251,17 +261,17 @@ void Game::showFPS() {
 	}
 }
 
-void Game::renderModels(const glm::mat4& projection) {
+void Game::renderModels() {
 	Shader* modelShader = &SHADERS[MODEL];
 	modelShader->bind();
 	modelShader->setValue("view", cameraView);
-	modelShader->setValue("projection", projection);
+	modelShader->setValue("projection", cameraProjection);
 	modelRenderer.render(modelShader);
 	modelShader->unBind();
 }
 
-void Game::showStuff(const glm::mat4& projection) {
-	const glm::mat4 LSM = ShadowBox::getLSM(cameraView, projection, LIGHT_POSITION);
+void Game::showStuff() {
+	const glm::mat4 LSM = ShadowBox::getLSM(cameraView, cameraProjection, LIGHT_POSITION);
 	// 1. render from the lights perspective for the shadow map
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -290,7 +300,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	Shader& gbufferS = SHADERS[GBUFFER];
 	gbufferS.bind();
 	gbufferS.setValue("view", cameraView);
-	gbufferS.setValue("projection", projection);
+	gbufferS.setValue("projection", cameraProjection);
 
 	world.render(&gbufferS);
 	//renderModels(projection);
@@ -319,7 +329,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	ssao.setValue("ssaoNoiseScale", noiseScale);
 	ssao.setValue("ssaoRadius", SSAO_RADIUS);
 	ssao.setValue("ssaoBias", SSAO_BIAS);
-	ssao.setValue("projection", projection);
+	ssao.setValue("projection", cameraProjection);
 	ssao.setValue("view", cameraView);
 
 	glBindVertexArray(quadVAO);
@@ -367,8 +377,8 @@ void Game::showStuff(const glm::mat4& projection) {
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	renderModels(projection);
-	showSkybox(projection);
+	renderModels();
+	showSkybox();
 
 	// 2.2 Transparent
 	glEnable(GL_CULL_FACE);
@@ -391,7 +401,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
 	transparent.setValue("view", cameraView);
-	transparent.setValue("projection", projection);
+	transparent.setValue("projection", cameraProjection);
 	transparent.setValue("ao", 0);
 	transparent.setValue("viewDir", _player->getViewDirection());
 	transparent.setValue("lightPos", LIGHT_POSITION);
@@ -420,7 +430,7 @@ void Game::showStuff(const glm::mat4& projection) {
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 
-	gizmoManager->render(projection* cameraView);
+	gizmoManager->render(cameraProjection * cameraView);
 	composite.unBind();
 
 
@@ -499,7 +509,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
 		float z = (zcoord - 0.5f) * 2.0f;
 
-		world.breakBlock(z, invPV, mainCamera->GetFront());
+		world.placeBlock(z, invPV, mainCamera->GetFront());
 	}
 	if (key == GLFW_KEY_2 && action == GLFW_RELEASE) {
 		float zcoord = 0;
@@ -530,13 +540,21 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 }
 
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
+	if (action == GLFW_RELEASE) {
+		if (button == GLFW_MOUSE_BUTTON_LEFT) {
+			leftClickRelease.fire();
+		}
+		if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+			rightClickRelease.fire();
+		}
+	}
 	/*if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		float zcoord = 0;
 		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
 		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
 		float z = (zcoord - 0.5f) * 2.0f;
 
-		world.breakBlock(z, invPV, mainCamera->GetFront());
+		world.placeBlock(z, invPV, mainCamera->GetFront());
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		float zcoord = 0;
@@ -608,6 +626,26 @@ void Game::setUpScreenQuad()
 	glBindVertexArray(0);
 }
 
+void Game::placeBlock()
+{
+	float zcoord = 0;
+	glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
+	glm::mat4 invPV = glm::inverse(cameraProjection * cameraView);
+	float z = (zcoord - 0.5f) * 2.0f;
+
+	world.placeBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
+}
+
+void Game::breakBlock()
+{
+	float zcoord = 0;
+	glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
+	glm::mat4 invPV = glm::inverse(cameraProjection * cameraView);
+	float z = (zcoord - 0.5f) * 2.0f;
+
+	world.breakBlock(z, invPV, _player->getFront());
+}
+
 void Game::makeSkybox(const std::string& skybox) {
 	float skyboxVertices[] = {
 		// positions          
@@ -668,14 +706,14 @@ void Game::makeSkybox(const std::string& skybox) {
 	shader->setValue("skybox", 0);
 }
 
-void Game::showSkybox(const glm::mat4& projection) {
+void Game::showSkybox() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer'transparent content
 	SHADERS[SKYBOX].bind();
 	// Camera& camera = player->getCamera();
 	glm::mat4 view = glm::mat4(glm::mat3(cameraView)); // remove translation from the view matrix
 	SHADERS[SKYBOX].setValue("view", view);
-	SHADERS[SKYBOX].setValue("projection", projection);
+	SHADERS[SKYBOX].setValue("projection", cameraProjection);
 
 	glBindVertexArray(SBVAO);
 	TEXTURES3D[(int)Texture_Names::SKYBOX].bind();

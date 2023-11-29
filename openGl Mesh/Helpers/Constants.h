@@ -52,7 +52,7 @@ constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
 
 
-constexpr float PLAYER_SPEED = 5;
+constexpr float PLAYER_SPEED = 10;
 
 constexpr float VOXEL_SZIE = 1;
 constexpr float HALF_VOXEL_SZIE = VOXEL_SZIE * .5f;

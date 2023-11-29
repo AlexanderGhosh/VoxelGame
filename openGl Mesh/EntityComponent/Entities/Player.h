@@ -33,6 +33,7 @@ namespace Entities {
 		const glm::vec3& getViewDirection() const;
 
 		const glm::vec3& getPosition() const;
+		const glm::vec3& getFront() const;
 		// will check if colliding before processing movement
 		void processKeys(const std::array<bool, 1024>& keysPressed, const float deltaTime, const std::list<ChunkColumn*>& neighbours);
 		void processMouse(const glm::vec2& mouseOffsets);

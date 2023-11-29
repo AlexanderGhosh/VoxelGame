@@ -48,6 +48,11 @@ const glm::vec3& Entities::Player::getPosition() const
 	return _transform->position;
 }
 
+const glm::vec3& Entities::Player::getFront() const
+{
+	return _camera->getFront();
+}
+
 void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, const float deltaTime, const std::list<ChunkColumn*>& neighbours)
 {
 	CollisionManager& manager = CollisionManager::getInstance();

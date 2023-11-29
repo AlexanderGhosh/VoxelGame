@@ -10,6 +10,8 @@ class Texture;
 enum class Texture_Names : unsigned char;
 enum class Block : unsigned char;
 
+bool rayCubeIntersection(const glm::vec3& ro, const glm::vec3& rd, const glm::vec3& lp, const glm::vec3& up);
+
 float radiusOfCube(const glm::vec3& scale, const glm::vec3& dir);
 
 float randRange(float lower, float upper);

@@ -36,3 +36,13 @@ void Event::operator-=(IEventCallback* listener)
 {
 	removeListener(listener);
 }
+
+void Event::operator+=(IEventCallback& listener)
+{
+	addListener(&listener);
+}
+
+void Event::operator-=(IEventCallback& listener)
+{
+	removeListener(&listener);
+}
