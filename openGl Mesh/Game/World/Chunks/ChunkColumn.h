@@ -30,7 +30,9 @@ public:
 	// doesnt check other chunks
 	void removeBlock(const glm::vec3& worldPos, World* world);
 
+	// returns the unscaled chunk position 2D
 	const glm::vec2& getPosition() const;
+	// returns the scaled chunk position 2D
 	const glm::vec2 getWorldPosition() const;
 
 	void save() const;
@@ -71,6 +73,9 @@ private:
 
 	static bool outOfRange(const glm::vec3& localPos);
 
+	// returns the unscaled chunk position 3D
 	glm::vec3 getWorldPos() const;
+	// returns the position relative to this chunk 3D
+	// doesnt check bounds
 	glm::vec3 toLocal(const glm::vec3& p) const;
 };

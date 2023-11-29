@@ -244,29 +244,30 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 	}
 }
 
-void World::breakBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front)
+void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)
 {
-	glm::vec4 screenPos(0, 0, zCoord, 1); // the center of screen screen coords
-	screenPos = invPV * screenPos;
-	glm::vec3 hitPos = glm::vec3(screenPos) / screenPos.w;
-
-	hitPos = floor((hitPos * 2.f) + 0.5f) * .5f;
-
+	if (!chunks.contains(occupiedChunkPos)) {
+		return;
+	}
 	glm::vec3 breakPos(0);
+	float minD = FLT_MAX;
+	auto chunk_s = getNeibours(occupiedChunkPos, true);
+	for (auto chunk : chunk_s) {
+		for (const GeomData& data : chunk->getMeshData()) {
+			glm::vec3 worldBlockPos = data.getPos();
 
-	glm::vec3 norm(0);
-	float dist = 0;
-	for (const glm::vec3& normal : offsets) {
-		float d = glm::dot(normal, front);
-		if (d < dist) {
-			dist = d;
-			norm = normal;
+			worldBlockPos.x += chunk->getWorldPosition().x;
+			worldBlockPos.z += chunk->getWorldPosition().y;
+			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
+				const float d = glm::distance(ro, worldBlockPos);
+				if (d < minD) {
+					minD = d;
+					breakPos = worldBlockPos;
+				}
+			}
 		}
 	}
-	breakPos = floor(hitPos - norm * .5f);
-
-	std::cout << glm::to_string(breakPos) << std::endl;
-
+	breakPos = round(breakPos);
 	glm::vec3 chunkPos3 = reduceToMultiple(breakPos);
 	glm::vec2 chunkPos(chunkPos3.x, chunkPos3.z);
 	chunkPos *= CHUNK_SIZE_INV;

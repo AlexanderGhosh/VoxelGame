@@ -16,7 +16,7 @@ public:
 	void setUpDrawable();
 
 	void placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunk);
-	void breakBlock(const float zCoord, const glm::mat4& invPV, const glm::vec3& front);
+	void breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos);
 
 	const std::list<ChunkColumn*> getNeibours(const glm::vec2& chunkPos, bool includeSelf = false);
 

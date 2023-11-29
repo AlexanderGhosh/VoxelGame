@@ -628,22 +628,12 @@ void Game::setUpScreenQuad()
 
 void Game::placeBlock()
 {
-	float zcoord = 0;
-	glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
-	glm::mat4 invPV = glm::inverse(cameraProjection * cameraView);
-	float z = (zcoord - 0.5f) * 2.0f;
-
 	world.placeBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
 }
 
 void Game::breakBlock()
 {
-	float zcoord = 0;
-	glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
-	glm::mat4 invPV = glm::inverse(cameraProjection * cameraView);
-	float z = (zcoord - 0.5f) * 2.0f;
-
-	world.breakBlock(z, invPV, _player->getFront());
+	world.breakBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
 }
 
 void Game::makeSkybox(const std::string& skybox) {

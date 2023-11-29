@@ -52,7 +52,9 @@ void main() {
             for (uint j = 0u; j < 4u; j++){ 
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
-                v.y *= 0.75;
+                if(v.y > 0){
+                    v.y *= 0.75;
+                }
                 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
                 fragPos = (vs_out[0].m * vec4(v * voxelSize, 1)).xyz;

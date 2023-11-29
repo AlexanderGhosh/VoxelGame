@@ -371,38 +371,42 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 		itt1++;
 	}
 
-	//std::list<ChunkColumn*> neibours;
-	//if (toAdd.size() > 0) {
-	//	for (const AddFaces& add : toAdd) {
-	//		if (outOfRange(add.worldPos - position * CHUNK_SIZE_F)) {
-	//			if (!neibours.size()) {
-	//				neibours = world->getNeibours(position);
-	//			}
-	//			glm::vec2 newChunkPos = position;
-	//			newChunkPos.x += add.offset.x;
-	//			newChunkPos.y += add.offset.z;
-	//			for (ChunkColumn* chunk : neibours) {
-	//				if (chunk->getPosition() == newChunkPos) {
-	//					chunk->addFace(add, true);
-	//				}
-	//			}
-	//		}
-	//		else {
+	std::list<ChunkColumn*> neibours;
+	for (const AddFaces& add : toAdd) {
+		if (outOfRange(toLocal(add.worldPos))) {
+			if (!neibours.size()) {
+				neibours = world->getNeibours(position);
+			}
+			glm::vec2 newChunkPos = position;
+			newChunkPos.x += add.offset.x;
+			newChunkPos.y += add.offset.z;
+			for (ChunkColumn* chunk : neibours) {
+				if (chunk->getPosition() == newChunkPos) {
+					chunk->addFace(add, true);
+					break;
+				}
+			}
+		}
+		else {
+			// the reson why more faces are added then needed is beacuse it doesnt check to see if that blokcs had being broken before DONT THINK THIS IS THE CASE ANYMORE
+			const Block b = getBlock(add.worldPos);
+			if (b == Block::AIR) {
+				continue;
+			}
+			GeomData data;
+			data.setPos(toLocal(add.worldPos));
+			data.textureIndex_ = (unsigned char) b;
+			markSlot(data.cubeType_, add.face);
+			bufferData.push_back(data);
+		}
+	}
 
-	//			// the reson why more faces are added then needed is beacuse it doesnt check to see if that blokcs had being broken before
-	//			const Block b = getBlock(add.worldPos);
-	//			if (b == Block::AIR) {
-	//				continue;
-	//			}
-	//			GeomData data;
-	//			data.setPos(toLocal(add.worldPos));
-	//			data.textureIndex_ = (unsigned char) b;
-	//			data.cubeType_ = 1 << add.face;
-	//			bufferData.push_back(data);
-	//		}
-	//	}
-	//}
-	editedBlocks[worldPos] = Block::AIR;
+	if (editedBlocks.contains(worldPos)) {
+		editedBlocks.erase(worldPos);
+	}
+	else {
+		editedBlocks[worldPos] = Block::AIR;
+	}
 
 	buffer.realloc(bufferData.data(), bufferData.size());
 }
@@ -525,25 +529,26 @@ const glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)const
 
 const glm::vec3 ChunkColumn::getWorldPosition(glm::vec3 relativePos) const
 {
-	return relativePos + position * CHUNK_SIZE_F;
+	return relativePos + getWorldPos();
 }
 
 void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
+	glm::vec3 localPos = toLocal(add.worldPos);
 	for (GeomData& data : bufferData) {
-		if (getWorldPosition(data.getPos()) == add.worldPos) {
+		if (data.getPos() == localPos) {
 			markSlot(data.cubeType_, add.face);
 			if(realoc)
 				buffer.realloc(bufferData.data(), bufferData.size());
 			return;
 		}
 	}
-	// will reach hear if the block doesnt exist in the mesh
+	// will reach here if the block doesnt exist in the mesh
 	GeomData data;
-	data.setPos(toLocal(add.worldPos));
+	data.setPos(localPos);
 	markSlot(data.cubeType_, add.face);;
 	glm::vec3 pos = data.getPos();
-	data.textureIndex_ = (unsigned char)getBlock(add.worldPos);
-	if (data.textureIndex_ == (unsigned char) Block::AIR || data.textureIndex_ == (unsigned char)Block::ERROR) {
+	data.textureIndex_ = (unsigned char) getBlock(add.worldPos);
+	if (data.textureIndex_ == (unsigned char) Block::AIR || data.textureIndex_ == (unsigned char) Block::ERROR) {
 		return;
 	}
 	bufferData.push_back(data);
@@ -558,7 +563,7 @@ bool ChunkColumn::outOfRange(const glm::vec3& localPos)
 
 glm::vec3 ChunkColumn::getWorldPos() const
 {
-	return glm::vec3(position.x, 0, position.y) * CHUNK_SIZE_F;
+	return glm::vec3(position.x, 0, position.y) * CHUNK_SIZE_F * VOXEL_SZIE;
 }
 
 glm::vec3 ChunkColumn::toLocal(const glm::vec3& p) const
