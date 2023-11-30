@@ -105,15 +105,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\AssimpCompiled\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\ReactPhysics3D\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\AssimpCompiled\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\lib;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\release static\vs2015-2022\win64;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Lib\64Bit;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FastNoiseD.lib;opengl32.lib;glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\ReactPhysics3D\lib;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\lib;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\release static\vs2015-2022\win64;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Lib\64Bit;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>reactphysics3d.lib;FastNoiseD.lib;opengl32.lib;glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

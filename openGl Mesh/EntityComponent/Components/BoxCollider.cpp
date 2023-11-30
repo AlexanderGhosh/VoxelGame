@@ -25,8 +25,8 @@ bool Components::BoxCollider::colliding(const glm::vec3& pos) const
 {
 	const glm::vec3 aMin = _transform->position - _transform->scale * .5f;
 	const glm::vec3 aMax = _transform->position + _transform->scale * .5f;
-	const glm::vec3 bMin = pos - glm::vec3(VOXEL_SZIE) * .5f;
-	const glm::vec3 bMax = pos + glm::vec3(VOXEL_SZIE) * .5f;
+	const glm::vec3 bMin = pos - glm::vec3(VOXEL_SIZE) * .5f;
+	const glm::vec3 bMax = pos + glm::vec3(VOXEL_SIZE) * .5f;
 
 	return aMin.x <= bMax.x && aMax.x >= bMin.x
 		&& aMin.y <= bMax.y && aMax.y >= bMin.y

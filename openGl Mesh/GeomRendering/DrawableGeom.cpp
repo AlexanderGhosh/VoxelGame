@@ -19,7 +19,7 @@ DrawableGeom::~DrawableGeom()
 
 void DrawableGeom::render(Shader* shader) const
 {
-	shader->setValue("voxelSize", VOXEL_SZIE);
+	shader->setValue("voxelSize", VOXEL_SIZE);
 
 	draw(shader);
 
@@ -60,7 +60,7 @@ void DrawableGeom::draw(Shader* shader) const
 		if (tex) {
 			tex->bind();
 		}
-		shader->setValue("chunkPosition", data.drawOrigin * CHUNK_SIZE_SCALED);
+		shader->setValue("chunkPosition", data.drawOrigin * CHUNK_SIZE_F);
 
 
 		buffer->bind();

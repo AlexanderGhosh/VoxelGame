@@ -14,7 +14,7 @@ class ChunkColumn;
 class BlockStore;
 class Material;
 
-#define GENERATE_NEW_CHUNKS true
+#define GENERATE_NEW_CHUNKS false
 
 #define RRC(x) (float(x) / 255.f)
 
@@ -54,14 +54,15 @@ constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
 
 constexpr float PLAYER_SPEED = 10;
 
-constexpr float VOXEL_SZIE = 1;
-constexpr float HALF_VOXEL_SZIE = VOXEL_SZIE * .5f;
-constexpr glm::vec3 WORLD_ORIGIN(0, (VOXEL_SZIE - 1) * -30.f / VOXEL_SZIE, 0);
+constexpr float VOXEL_SIZE = 0.5;
+constexpr float VOXEL_SIZE_INV = 1.f / VOXEL_SIZE;
+constexpr float HALF_VOXEL_SZIE = VOXEL_SIZE * .5f;
+constexpr glm::vec3 WORLD_ORIGIN(0, 0, 0);
 
-constexpr float CHUNK_SIZE_SCALED = CHUNK_SIZE_F * VOXEL_SZIE;
+constexpr float CHUNK_SIZE_SCALED = CHUNK_SIZE_F * VOXEL_SIZE;
 
 // used to convert from world space to 'noise space' (noise space is the space used in the noise generator)
-constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * VOXEL_SZIE;
+constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * VOXEL_SIZE;
 
 constexpr glm::vec3 GRAVITY(0, 0, 0);
 
@@ -85,9 +86,9 @@ constexpr std::array<glm::vec2, 4> OFFSETS_2D = {
 #ifdef DEBUG_GRID_LINES
 constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
 	glm::vec3(-HALF_VOXEL_SZIE),
-	glm::vec3(VOXEL_SZIE * (CHUNK_SIZE - .5f), -HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE),
+	glm::vec3(VOXEL_SIZE * (CHUNK_SIZE - .5f), -HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE),
 	glm::vec3(-HALF_VOXEL_SZIE),
-	glm::vec3(-HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE, VOXEL_SZIE * (CHUNK_SIZE - .5f))
+	glm::vec3(-HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE, VOXEL_SIZE * (CHUNK_SIZE - .5f))
 };
 #endif // DEBUG_GRID_LINES
 

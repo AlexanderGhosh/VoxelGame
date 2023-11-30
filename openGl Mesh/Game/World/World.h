@@ -31,6 +31,7 @@ public:
 	const ChunkColumn& getChunk(const glm::vec2& chunkPos, bool& success) const;
 
 private:
+	bool generated; // used to genrated the world async first
 	DynamicAsyncPool<std::unordered_set<glm::vec2>> pool;
 	// set of all the chunk positions that are currently being created in the dyamic pool
 	// local unscaled positions

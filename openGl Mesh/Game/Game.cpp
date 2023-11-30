@@ -171,7 +171,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	manager->startEvent();
 	
-	_player->setPosition({ 8, 25, 8 });
+	_player->setPosition({ 0, 25, 0 });
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();

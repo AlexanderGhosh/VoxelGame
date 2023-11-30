@@ -73,16 +73,16 @@ int main() {
 	glm::ivec2 gridDims(CHUNK_SIZE, WORLD_HEIGHT);
 	glm::vec3 colour(0.4);
 
-	Gizmo::Grid2D grid1(glm::vec3(0), gridDims, VOXEL_SZIE, true, false);
+	Gizmo::Grid2D grid1(glm::vec3(0), gridDims, VOXEL_SIZE, true, false);
 	grid1.setColour(colour);
 
-	Gizmo::Grid2D grid2(glm::vec3(0), gridDims, VOXEL_SZIE, true, false);
+	Gizmo::Grid2D grid2(glm::vec3(0), gridDims, VOXEL_SIZE, true, false);
 	grid2.setColour(colour);
 
-	Gizmo::Grid2D grid3(glm::vec3(0), gridDims, VOXEL_SZIE, false, false);
+	Gizmo::Grid2D grid3(glm::vec3(0), gridDims, VOXEL_SIZE, false, false);
 	grid3.setColour(colour);
 
-	Gizmo::Grid2D grid4(glm::vec3(0), gridDims, VOXEL_SZIE, false, false);
+	Gizmo::Grid2D grid4(glm::vec3(0), gridDims, VOXEL_SIZE, false, false);
 	grid4.setColour(colour);
 
 	gizmoManager.addGizmo(grid1);

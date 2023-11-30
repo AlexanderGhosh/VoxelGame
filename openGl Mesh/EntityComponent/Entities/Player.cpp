@@ -31,10 +31,10 @@ void Entities::Player::setPosition(const glm::vec3& pos)
 
 const glm::ivec2 Entities::Player::getChunkPosition() const
 {
-	glm::vec3 p = glm::floor(_transform->position);
+	glm::vec3 p = glm::floor(_transform->position * VOXEL_SIZE_INV); // my * VOXEL_SIZE_INV it translates world space to unscaled space
 	glm::ivec2 pos(p.x, p.z);
-	reduceToMultiple(pos, CHUNK_SIZE); // chunk pos world space (scaled)
-	pos /= CHUNK_SIZE; // unscaled space
+	reduceToMultiple(pos, CHUNK_SIZE); // chunk pos world space
+	pos /= CHUNK_SIZE; // local space
 	return pos;
 }
 

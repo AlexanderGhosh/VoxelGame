@@ -8,7 +8,7 @@
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
 
-World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool() {
+World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false) {
 }
 
 World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
@@ -48,13 +48,14 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& frustrumCenter, const float frustrumRadius)
 {
 	// distance calculations performed in scaled world space
-	if (!GENERATE_NEW_CHUNKS) {
+	if (generated && !GENERATE_NEW_CHUNKS) {
 		return;
 	}
+	generated = true;
 	// local unscaled
 	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
 
-	float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SZIE) + frustrumRadius;
+	float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SIZE) + frustrumRadius;
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
 		// pos unscaled local chunk pos
@@ -91,8 +92,6 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 
 void World::tryFinishGenerateChunk()
 {
-	if (!GENERATE_NEW_CHUNKS) return;
-
 	auto allDone = pool.getAllDone(true);
 	for (auto& generated : allDone) {
 		for (auto itt = generated.begin(); itt != generated.end(); itt++) {
@@ -218,7 +217,7 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 				const float d = glm::distance(ro, worldBlockPos);
 				if (d < minD) {
 					minD = d;
-					placePos = worldBlockPos - rd * VOXEL_SZIE;
+					placePos = worldBlockPos - rd * VOXEL_SIZE;
 				}
 			}
 		}

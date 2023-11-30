@@ -7,7 +7,7 @@
 FastNoise::SmartNode<FastNoise::Simplex> world_generation::noiseSource;
 FastNoise::SmartNode<FastNoise::FractalFBm> world_generation::noiseGenerator;
 std::vector<float> world_generation::xs(CHUNK_AREA), world_generation::ys(CHUNK_AREA);
-glm::ivec2 world_generation::treeCooldown = glm::vec2(4);
+glm::ivec2 world_generation::treeCooldown(4);
 NoiseOptions world_generation::options = {};
 
 void world_generation::setUp()
