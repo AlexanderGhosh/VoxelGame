@@ -5,6 +5,7 @@ class Texture;
 struct DrawData {
 	BufferGeom* buffer;
 	Texture* texture;
+	// the local position of the chunk unscaled
 	glm::vec3 drawOrigin;
 
 	DrawData() : buffer(), texture(nullptr), drawOrigin() { }

@@ -5,6 +5,7 @@
 
 class World;
 
+// all operations are unscaled unless otherwise stated
 class ChunkColumn
 {
 public:
@@ -19,6 +20,7 @@ public:
 
 
 	// inital world generation
+	// NOT UPDATED
 	void populateBuffer(WorldMap& worldMap);
 
 	const BufferGeom& getBuffer() const;
@@ -31,9 +33,13 @@ public:
 	void removeBlock(const glm::vec3& worldPos, World* world);
 
 	// returns the unscaled chunk position 2D
-	const glm::vec2& getPosition() const;
-	// returns the scaled chunk position 2D
-	const glm::vec2 getWorldPosition() const;
+	const glm::vec2& getPosition2D() const;
+	// returns the unscaled chunk position 3D
+	const glm::vec3 getPosition3D() const;
+	// returns the world chunk position 2D
+	const glm::vec2 getWorldPosition2D() const;
+	// returns the world chunk position 3D
+	const glm::vec3 getWorldPosition3D() const;
 
 	void save() const;
 	void load(const glm::vec2& chunkPos);
@@ -52,30 +58,28 @@ private:
 	std::unordered_map<glm::vec3, Block> editedBlocks;
 	std::vector<GeomData> bufferData;
 	BufferGeom buffer;
+	// unscaled local pos 
 	glm::vec2 position;
 
 	unsigned int seed;
 
-	const Block getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const;
-	/// <summary>
-	/// Gets the block from edited or simplex noise
-	/// </summary>
-	/// <param name="relativePos">ranges from (0-15)</param>
-	/// <returns>thhe found block</returns>
+	// Gets the block from edited or simplex noise in the world pos
+	// all getBlock s resovel to this
 	const Block getBlock(const glm::vec3& worldPos);
-	const Block getBlock(const glm::vec3& worldPos, const std::vector<ChunkColumn*>& neibours, const BlockStore& bs);
-
-	const Block getBlock(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const;
-	const glm::vec3 getRelativePosition(glm::vec3 worldPos) const;
-	const glm::vec3 getWorldPosition(glm::vec3 relativePos) const;
+	// returns the block found at the position will check the neibour chunks (sourced from world map) if out of bounds
+	const Block getBlock_WorldMap(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const;
+	// returns the block found at in the provided block store
+	// does no bounds checing
+	const Block getBlock_BlockStore(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const;
 
 	void addFace(const AddFaces& data, bool realoc);
 
 	static bool outOfRange(const glm::vec3& localPos);
 
-	// returns the unscaled chunk position 3D
-	glm::vec3 getWorldPos() const;
 	// returns the position relative to this chunk 3D
 	// doesnt check bounds
 	glm::vec3 toLocal(const glm::vec3& p) const;
+	// returns the position relative to the world
+	// doesnt check bounds
+	glm::vec3 toWorld(const glm::vec3& p) const;
 };

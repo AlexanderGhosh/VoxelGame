@@ -32,9 +32,9 @@ void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std:
 void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
 	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
 
-	bufferData.reserve(CHUNK_SIZE * CHUNK_SIZE); // the chunk will have at least this many top faces
+	bufferData.reserve(CHUNK_AREA); // the chunk will have at least this many top faces
 	GeomData data{};
-	const glm::vec3 chunkWorldPos = getWorldPos();
+	const glm::vec3 chunkWorldPos_U = getWorldPosition3D();
 
 	for (int z = 0; z < CHUNK_SIZE; z++) {
 		for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -60,24 +60,25 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 					added = false;
 					for (const glm::vec3& off : OFFSETS_3D) {
 						glm::vec3 newLocalPosition = currentLocalPos + off;
-						const glm::vec3 newWorldPosition = newLocalPosition + chunkWorldPos;
+						const glm::vec3 newWorldPosition_U = newLocalPosition + chunkWorldPos_U;
 						Block b2 = Block::ERROR;
-						Block* b2Ptr = getValue(exploredBlocksCache, newWorldPosition);
+						Block* b2Ptr = getValue(exploredBlocksCache, newWorldPosition_U);
 						if (b2Ptr) {
 							b2 = *b2Ptr;
 						}
 						else {
 							b2 = blockStore.getBlock(newLocalPosition);
-							if (b2 == Block::ERROR) {
+							if (b2 == Block::ERROR) { //  means that it is outside this chunk
+								// when this chunk has a face visble from an other chunk eg it is ataller
 								glm::vec2 newChunkPos = position + glm::vec2(off.x, off.z);
 								for (ChunkColumn* chunk : neibours) {
-									if (chunk->getPosition() == newChunkPos) {
-										b2 = chunk->getBlock(newWorldPosition);
+									if (chunk->getPosition2D() == newChunkPos) {
+										b2 = chunk->getBlock(newWorldPosition_U);
 										break;
 									}
 								}
 							}
-							exploredBlocksCache.emplace(newWorldPosition, b2);
+							exploredBlocksCache.emplace(newWorldPosition_U, b2);
 						}
 
 						const BlockDetails& blockDets2 = getDetails(b2);
@@ -102,29 +103,29 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 		}
 	}
 	bufferData.shrink_to_fit();
-
 	// fix seems of neibours
 	// looks along the edge of the nebour chunk that borders the generated chunk and aims to add faces to fix the seems
 	for (unsigned int i = 0; i < 4; i++) {
 		glm::vec3 off = OFFSETS_3D[i];
-		glm::vec2 neighbourChunkPos = position + glm::vec2(off.x, off.z);
+		const glm::vec2 neighbourChunkPos = position + glm::vec2(off.x, off.z);
 
 		glm::vec3 mask = -off; // is +-1 along the axis which is the direction of the neibour
-		glm::vec3 startPoint = glm::max(glm::vec3(CHUNK_SIZE_F - 1) * mask, glm::vec3(0)); // is the coord of the starting point on the neibours chunk (local coords to the neibour)
+		// start point in unscaled local coords
+		const glm::vec3 startPoint = glm::max(glm::vec3(CHUNK_SIZE_F - 1) * mask, glm::vec3(0)); // is the coord of the starting point on the neibours chunk (local coords to the neibour)
 		mask = 1.f - glm::abs(mask); // (1 - is because need the perpendicular line in order to advance along)
 		mask.y = 0;
 		
 		for (ChunkColumn* chunk : neibours) {
-			if (chunk->getPosition() == neighbourChunkPos) {
+			if (chunk->getPosition2D() == neighbourChunkPos) {
 
 				for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
 					glm::vec3 delta(j);
 					delta *= mask; // the axis with a value is == to the axis that borders the chunk (this is what is incremented in the loop
 					glm::vec3 neighbourLocalPos = startPoint + delta;
 
-					glm::vec3 neighbourWorldPos = neighbourLocalPos + glm::vec3(neighbourChunkPos.x * CHUNK_SIZE_F, 0, neighbourChunkPos.y * CHUNK_SIZE_F);
-					neighbourLocalPos.y = world_generation::heightOfColumn({ neighbourWorldPos.x, neighbourWorldPos.z }, seed);
-					neighbourWorldPos.y = neighbourLocalPos.y;
+					glm::vec3 neighbourWorldPos_U = neighbourLocalPos + glm::vec3(neighbourChunkPos.x * CHUNK_SIZE_F, 0, neighbourChunkPos.y * CHUNK_SIZE_F);
+					neighbourLocalPos.y = world_generation::heightOfColumn({ neighbourWorldPos_U.x, neighbourWorldPos_U.z }, seed);
+					neighbourWorldPos_U.y = neighbourLocalPos.y;
 
 					// check if the face needs to be added at all
 					glm::vec3 localPos = (neighbourLocalPos - off); // the local position of the block that is next to the nebours block
@@ -132,14 +133,14 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 					localPos.z = (int)localPos.z % CHUNK_SIZE;
 
 					for (unsigned int k = localPos.y; k > 0; k--) {
-						neighbourWorldPos.y = k;
 						localPos.y = k;
 
 						Block b = blockStore.getBlock(localPos); // the block that is next to the neibours block in the current chunk
 						BlockDetails blockDets = getDetails(b);
 						if (blockDets.isTransparant) {
 							AddFaces toAdd{};
-							toAdd.worldPos = neighbourWorldPos;
+							toAdd.worldPos = neighbourWorldPos_U; // the scaled world pos to the block to add
+							toAdd.worldPos.y = k;
 							toAdd.face = i; // turns it to the oposite face
 							if (toAdd.face % 2 == 0) {
 								toAdd.face++;
@@ -208,7 +209,7 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 							b2 = exploredBlocksCache.at(p);
 						}
 						else {
-							b2 = getBlock(p, true, true, worldMap);
+							b2 = getBlock_WorldMap(p, true, true, worldMap);
 							exploredBlocksCache.emplace(p, b2);
 						}
 
@@ -278,7 +279,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 
 	for (auto itt1 = bufferData.begin(); itt1 != bufferData.end();) {
 		GeomData& data = *itt1;
-		glm::vec3 dataWorldPos = data.getPos() + getWorldPos();
+		glm::vec3 dataWorldPos = toWorld(data.getPos());
 		for (auto itt2 = toRemove.begin(); itt2 != toRemove.end();) {
 			const RemoveFace& remove = *itt2;
 			if (dataWorldPos == remove.worldPos) {
@@ -318,7 +319,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 
 void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 {
-	glm::vec3 localPos = toLocal(worldPos);
+	const glm::vec3 localPos = toLocal(worldPos);
 	std::vector<AddFaces> toAdd;
 
 	unsigned char i = 0;
@@ -342,7 +343,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 	bool removed = false;
 	for (auto itt1 = bufferData.begin(); itt1 != bufferData.end();) {
 		GeomData& data = *itt1;
-		glm::vec3 dataWorldPos = data.getPos() + getWorldPos();
+		const glm::vec3 dataWorldPos = toWorld(data.getPos());
 		if (dataWorldPos == worldPos) {
 			// the block its self
 			itt1 = bufferData.erase(itt1);
@@ -381,7 +382,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 			newChunkPos.x += add.offset.x;
 			newChunkPos.y += add.offset.z;
 			for (ChunkColumn* chunk : neibours) {
-				if (chunk->getPosition() == newChunkPos) {
+				if (chunk->getPosition2D() == newChunkPos) {
 					chunk->addFace(add, true);
 					break;
 				}
@@ -411,14 +412,19 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 	buffer.realloc(bufferData.data(), bufferData.size());
 }
 
-const glm::vec2& ChunkColumn::getPosition() const
+const glm::vec2& ChunkColumn::getPosition2D() const
 {
 	return position;
 }
 
-const glm::vec2 ChunkColumn::getWorldPosition() const
+const glm::vec3 ChunkColumn::getPosition3D() const
 {
-	return position * CHUNK_SIZE_F * VOXEL_SZIE;
+	return glm::vec3(position.x, 0, position.y);
+}
+
+const glm::vec2 ChunkColumn::getWorldPosition2D() const
+{
+	return position * CHUNK_SIZE_F;
 }
 
 void ChunkColumn::save() const
@@ -487,10 +493,10 @@ const std::vector<GeomData>& ChunkColumn::getMeshData() const
 	return bufferData;
 }
 
-const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const
+const Block ChunkColumn::getBlock_BlockStore(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const
 {
 	if (worldPos) {
-		return blockStore.getBlock(getRelativePosition(pos));
+		return blockStore.getBlock(toLocal(pos));
 	}
 	return blockStore.getBlock(pos);
 }
@@ -504,36 +510,26 @@ const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
 	return column[worldPos.y];
 }
 
-const Block ChunkColumn::getBlock(const glm::vec3& worldPos, const std::vector<ChunkColumn*>& neibours, const BlockStore& bs)
-{
-	if (outOfRange(worldPos)) {
-		const glm::vec3 local = toLocal(worldPos);
-		const glm::vec3 delta = sign(local - (CHUNK_SIZE_F - 1.f));
-		const glm::vec2 newChunkPos = position + glm::vec2(delta.x, delta.z);
-		for (ChunkColumn* chunk : neibours) {
-			if (chunk->getPosition() == newChunkPos) {
-				return chunk->getBlock(worldPos);
-			}
-		}
-	}
-	else {
-		return getBlock(worldPos, true, bs);
-	}
-	return Block::AIR;
-}
-
-const glm::vec3 ChunkColumn::getRelativePosition(glm::vec3 worldPos)const 
-{
-	return worldPos - position * CHUNK_SIZE_F;
-}
-
-const glm::vec3 ChunkColumn::getWorldPosition(glm::vec3 relativePos) const
-{
-	return relativePos + getWorldPos();
-}
+//const Block ChunkColumn::getBlock_BlockStore(const glm::vec3& worldPos, const std::vector<ChunkColumn*>& neibours, const BlockStore& bs)
+//{
+//	if (outOfRange(worldPos)) {
+//		const glm::vec3 local = toLocal(worldPos);
+//		const glm::vec3 delta = sign(local - (CHUNK_SIZE_F - 1.f));
+//		const glm::vec2 newChunkPos = position + glm::vec2(delta.x, delta.z);
+//		for (ChunkColumn* chunk : neibours) {
+//			if (chunk->getPosition2D() == newChunkPos) {
+//				return chunk->getBlock(worldPos);
+//			}
+//		}
+//	}
+//	else {
+//		return getBlock_BlockStore(worldPos, true, bs);
+//	}
+//	return Block::AIR;
+//}
 
 void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
-	glm::vec3 localPos = toLocal(add.worldPos);
+	const glm::vec3 localPos = toLocal(add.worldPos);
 	for (GeomData& data : bufferData) {
 		if (data.getPos() == localPos) {
 			markSlot(data.cubeType_, add.face);
@@ -545,8 +541,7 @@ void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
 	// will reach here if the block doesnt exist in the mesh
 	GeomData data;
 	data.setPos(localPos);
-	markSlot(data.cubeType_, add.face);;
-	glm::vec3 pos = data.getPos();
+	markSlot(data.cubeType_, add.face);
 	data.textureIndex_ = (unsigned char) getBlock(add.worldPos);
 	if (data.textureIndex_ == (unsigned char) Block::AIR || data.textureIndex_ == (unsigned char) Block::ERROR) {
 		return;
@@ -561,25 +556,30 @@ bool ChunkColumn::outOfRange(const glm::vec3& localPos)
 	return glm::any(glm::greaterThanEqual(localPos, glm::vec3(CHUNK_SIZE_F, WORLD_HEIGHT, CHUNK_SIZE_F)) || glm::lessThan(localPos, glm::vec3(0)));
 }
 
-glm::vec3 ChunkColumn::getWorldPos() const
+const glm::vec3 ChunkColumn::getWorldPosition3D() const
 {
-	return glm::vec3(position.x, 0, position.y) * CHUNK_SIZE_F * VOXEL_SZIE;
+	return glm::vec3(position.x, 0, position.y) * CHUNK_SIZE_F;
 }
 
 glm::vec3 ChunkColumn::toLocal(const glm::vec3& p) const
 {
-	return p - getWorldPos();
+	return p - getWorldPosition3D();
+}
+
+glm::vec3 ChunkColumn::toWorld(const glm::vec3& p) const
+{
+	return p + getWorldPosition3D();
 }
 
 // getters
-const Block ChunkColumn::getBlock(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const {
-	glm::vec3 relativePostion = worldPos ? getRelativePosition(pos) : pos;
+const Block ChunkColumn::getBlock_WorldMap(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const {
+	glm::vec3 relativePostion = worldPos ? toLocal(pos) : pos;
 
 	const BlockStore& blockStore = worldMap[position];
 
 	if (glm::all(glm::greaterThanEqual(relativePostion, { 0, 0, 0 }))) {
 		if (glm::all(glm::lessThan(relativePostion, { CHUNK_SIZE_F, WORLD_HEIGHT, CHUNK_SIZE_F }))) {
-			return getBlock(pos, worldPos, blockStore);
+			return getBlock_BlockStore(pos, worldPos, blockStore);
 		}
 	}
 	if (!safe) return Block::AIR;

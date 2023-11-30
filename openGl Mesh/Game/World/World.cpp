@@ -10,13 +10,13 @@
 
 World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool() {
 }
+
 World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
 	this->seed = seed;
-	//getNewChunkPositions(worldOrigin);
 }
 
 void World::getNewChunkPositions(const glm::vec3 worldOrigin) {
-	std::unordered_set<glm::vec2> chunkPositions = centeredPositions({ worldOrigin.x, worldOrigin .z }, RENDER_DISTANCE);
+	std::unordered_set<glm::vec2> chunkPositions = centeredPositions({ worldOrigin.x, worldOrigin.z }, RENDER_DISTANCE);
 
 	generateTerrain(chunkPositions);
 }
@@ -47,16 +47,19 @@ void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions)
 
 void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& frustrumCenter, const float frustrumRadius)
 {
+	// distance calculations performed in scaled world space
 	if (!GENERATE_NEW_CHUNKS) {
 		return;
 	}
+	// local unscaled
 	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
 
 	float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SZIE) + frustrumRadius;
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
+		// pos unscaled local chunk pos
 		auto& [pos, _] = *itt;
-		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_F * VOXEL_SZIE, { frustrumCenter.x, frustrumCenter.z });
+		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
 		if ((!toGenerate.contains(pos) || dist > maxDist) && !positionsBeingGenerated.contains(pos))
 		{
 			geomDrawable.remove(pos);
@@ -69,8 +72,9 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 	}
 
 	for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
+		// local unscaled
 		const glm::vec2& pos = *itt;
-		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_F * VOXEL_SZIE, { frustrumCenter.x, frustrumCenter.z });
+		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
 		if (chunks.contains(pos) || positionsBeingGenerated.contains(pos) || dist > maxDist) {
 			itt = toGenerate.erase(itt);
 		}
@@ -154,14 +158,9 @@ std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<
 
 const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool includeSelf)
 {
-	std::list<glm::vec2> offsets = {
-		glm::vec2(0, 1),
-		glm::vec2(-1, 0),
-		glm::vec2(1, 0),
-		glm::vec2(0, -1)
-	};
+	std::list<glm::vec2> offsets(OFFSETS_2D.begin(), OFFSETS_2D.end());
 	if (includeSelf) {
-		offsets.push_back(glm::vec2(0));
+		offsets.push_front(glm::vec2(0));
 	}
 	std::list<ChunkColumn*> res;
 	for (auto& [pos, chunk] : chunks) {
@@ -171,6 +170,7 @@ const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool
 			if (cp == pos) {
 				itt = offsets.erase(itt);
 				res.push_back(&chunk);
+				break;
 			}
 			else {
 				itt++;
@@ -199,16 +199,6 @@ void World::setUpDrawable()
 }
 
 
-const std::list<glm::vec3> offsets = {
-	glm::vec3(0, 0, 1),
-	glm::vec3(0, 0, -1),
-
-	glm::vec3(-1, 0, 0),
-	glm::vec3(1, 0, 0),
-
-	glm::vec3(0, 1, 0),
-	glm::vec3(0, -1, 0)
-};
 
 void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)
 {
@@ -222,8 +212,8 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 		for (const GeomData& data : chunk->getMeshData()) {
 			glm::vec3 worldBlockPos = data.getPos();
 
-			worldBlockPos.x += chunk->getWorldPosition().x;
-			worldBlockPos.z += chunk->getWorldPosition().y;
+			worldBlockPos.x += chunk->getWorldPosition3D().x;
+			worldBlockPos.z += chunk->getWorldPosition3D().y;
 			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
 				const float d = glm::distance(ro, worldBlockPos);
 				if (d < minD) {
@@ -256,8 +246,8 @@ void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 		for (const GeomData& data : chunk->getMeshData()) {
 			glm::vec3 worldBlockPos = data.getPos();
 
-			worldBlockPos.x += chunk->getWorldPosition().x;
-			worldBlockPos.z += chunk->getWorldPosition().y;
+			worldBlockPos.x += chunk->getWorldPosition3D().x;
+			worldBlockPos.z += chunk->getWorldPosition3D().y;
 			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
 				const float d = glm::distance(ro, worldBlockPos);
 				if (d < minD) {

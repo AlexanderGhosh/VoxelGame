@@ -69,7 +69,7 @@ void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, co
 	}
 	// reverts movement if it has caused a collision
 	for (ChunkColumn* chunk : neighbours) {
-		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition())) {
+		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition2D())) {
 			_transform->position = prevPos;
 			break;
 		}
@@ -77,7 +77,7 @@ void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, co
 	prevPos = _transform->position;
 	_transform->position.y -= 10 * deltaTime;
 	for (ChunkColumn* chunk : neighbours) {
-		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition())) {
+		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition2D())) {
 			_transform->position = prevPos;
 			break;
 		}

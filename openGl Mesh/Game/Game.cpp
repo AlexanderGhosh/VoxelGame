@@ -171,7 +171,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	manager->startEvent();
 	
-	_player->setPosition({ CHUNK_SIZE_F * VOXEL_SZIE * .5f, 25, CHUNK_SIZE_F * VOXEL_SZIE * .5f });
+	_player->setPosition({ 8, 25, 8 });
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();

@@ -58,6 +58,8 @@ constexpr float VOXEL_SZIE = 1;
 constexpr float HALF_VOXEL_SZIE = VOXEL_SZIE * .5f;
 constexpr glm::vec3 WORLD_ORIGIN(0, (VOXEL_SZIE - 1) * -30.f / VOXEL_SZIE, 0);
 
+constexpr float CHUNK_SIZE_SCALED = CHUNK_SIZE_F * VOXEL_SZIE;
+
 // used to convert from world space to 'noise space' (noise space is the space used in the noise generator)
 constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * VOXEL_SZIE;
 
@@ -73,6 +75,13 @@ constexpr std::array<glm::vec3, 6> OFFSETS_3D = {
 		glm::vec3(0, 1, 0),
 		glm::vec3(0, -1, 0)
 };
+constexpr std::array<glm::vec2, 4> OFFSETS_2D = {
+		glm::vec2(0, 1),
+		glm::vec2(0, -1),
+
+		glm::vec2(-1, 0),
+		glm::vec2(1, 0)
+};
 #ifdef DEBUG_GRID_LINES
 constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
 	glm::vec3(-HALF_VOXEL_SZIE),
@@ -86,7 +95,9 @@ constexpr glm::vec3 LIGHT_POSITION(0, 1000, -1000);
 
 enum class Block : unsigned char;
 
+// maps local unscaled pos to the chunk
 using Chunks = std::unordered_map<glm::vec2, ChunkColumn>;
+// maps local unscaled pos to the respective blockstore
 using WorldMap = std::unordered_map<glm::vec2, BlockStore>;
 using HeightMap = std::array<BlocksEncoded, CHUNK_AREA>;
 

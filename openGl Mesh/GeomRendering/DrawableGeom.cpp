@@ -30,14 +30,13 @@ void DrawableGeom::setUp(Chunks& chunks)
 {
 	data.clear();
 	for (auto& [pos, chunk] : chunks) {
-		data.emplace_back(chunk.getBufferPtr(), nullptr, glm::vec3(pos.x, 0, pos.y));
+		data.emplace_back(chunk.getBufferPtr(), nullptr, chunk.getPosition3D());
 	}
 }
 
 void DrawableGeom::add(ChunkColumn& chunk)
 {
-	const glm::vec2& pos = chunk.getPosition();
-	data.emplace_back(chunk.getBufferPtr(), nullptr, glm::vec3(pos.x, 0, pos.y));
+	data.emplace_back(chunk.getBufferPtr(), nullptr, chunk.getPosition3D());
 }
 
 void DrawableGeom::remove(const glm::vec2& chunkPos)
@@ -61,7 +60,7 @@ void DrawableGeom::draw(Shader* shader) const
 		if (tex) {
 			tex->bind();
 		}
-		shader->setValue("chunkPosition", data.drawOrigin * CHUNK_SIZE_F);
+		shader->setValue("chunkPosition", data.drawOrigin * CHUNK_SIZE_SCALED);
 
 
 		buffer->bind();
