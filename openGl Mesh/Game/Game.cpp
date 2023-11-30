@@ -174,10 +174,10 @@ void Game::doLoop(const glm::mat4& projection) {
 	_player->setPosition({ CHUNK_SIZE_F * VOXEL_SZIE * .5f, 25, CHUNK_SIZE_F * VOXEL_SZIE * .5f });
 
 	// LOAD MODELS
-	//ModelManager& modelManager = ModelManager::getInstance();
-	//auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
-	//std::cout << "Model Loaded" << std::endl;
-	//addModel(buffer);
+	ModelManager& modelManager = ModelManager::getInstance();
+	auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	std::cout << "Model Loaded" << std::endl;
+	addModel(buffer);
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
 #ifdef SSAO
@@ -285,6 +285,7 @@ void Game::showStuff() {
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
 	world.render(&shadows);
+	renderModels();
 	shadows.unBind();
 	shadowFramebuffer.unBind();
 	// 2. render for OIT
@@ -303,6 +304,7 @@ void Game::showStuff() {
 	gbufferS.setValue("projection", cameraProjection);
 
 	world.render(&gbufferS);
+	renderModels();
 	//renderModels(projection);
 	manager->renderEvent();
 
@@ -377,7 +379,7 @@ void Game::showStuff() {
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	renderModels();
+	// renderModels();
 	showSkybox();
 
 	// 2.2 Transparent
@@ -548,22 +550,6 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 			rightClickRelease.fire();
 		}
 	}
-	/*if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		float zcoord = 0;
-		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
-		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
-		float z = (zcoord - 0.5f) * 2.0f;
-
-		world.placeBlock(z, invPV, mainCamera->GetFront());
-	}
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		float zcoord = 0;
-		glReadPixels(WIDTH * .5f, HEIGHT * .5f, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zcoord);
-		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
-		float z = (zcoord - 0.5f) * 2.0f;
-
-		world.placeBlock(z, invPV, mainCamera->GetFront());
-	}*/
 }
 
 std::string num = "0";
