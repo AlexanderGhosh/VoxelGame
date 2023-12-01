@@ -2,8 +2,9 @@
 
 layout(location = 0) out vec4 frag;
 
-uniform sampler2D fragPosTex;
-uniform sampler2D normalRnd;
+uniform sampler2D _albedo;
+uniform sampler2D _fragPos;
+uniform sampler2D _normal;
 uniform sampler2D ao;
 uniform sampler2D shadowMap;
 uniform mat4 view_inv;
@@ -15,12 +16,6 @@ struct Material{
     vec4 albedo1;
     vec4 albedo2;
 };
-
-layout (std140, binding = 1) uniform Mats
-{
-    Material[6] materials;
-};
-
 
 in vec2 texCoords;
 
@@ -34,20 +29,14 @@ float inShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir);
 
 void main() {
     Light light = createLight();
-    vec4 fragPos_view = texture(fragPosTex, texCoords);
+    vec3 albedo = texture(_albedo, texCoords).rgb;
+    vec4 fragPos_view = vec4(texture(_fragPos, texCoords).xyz, 1);
     vec3 fragPos = (view_inv * fragPos_view).xyz;
-    uint colourIndex = uint(fragPos_view.w);
     // normal and rnd number
-    vec4 normalRndSample = texture(normalRnd, texCoords);
+    vec3 normal = texture(_normal, texCoords).xyz;
     // AO
     float occluded = texture(ao, texCoords).r;
     // fragment world pos
-
-    float rndValue = normalRndSample.w;
-    vec3 normal = normalRndSample.xyz;
-    vec3 albedo1 = (materials[colourIndex]).albedo1.rgb;
-    vec3 albedo2 = (materials[colourIndex]).albedo2.rgb;
-    vec3 albedo = mix(albedo1, albedo2, rndValue);
 
     vec4 lightFragPos = lightMatrix * vec4(fragPos, 1);
     

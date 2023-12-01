@@ -20,4 +20,3 @@ namespace Entities {
 		Components::RenderMesh* _renderMesh;
 	};
 }
-

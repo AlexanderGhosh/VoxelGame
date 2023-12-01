@@ -67,22 +67,27 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 
 	{
-		// DEFERED RENERING
+		// DEFERED RENERING G-BUFFER
 		FrameBufferInit gBufferDetails; // may need to make this depth texture the one used by the transparancy buffer
 		gBufferDetails.hasDepth = true;
 		gBufferDetails.depthTexture = true;
 
+		ColourBufferInit albedo;
+		albedo.format = GL_FLOAT;
+		albedo.internalFormat = GL_RGB16F;
+		albedo.type = GL_RGB;
+
 		ColourBufferInit fragPos;
 		fragPos.format = GL_FLOAT;
-		fragPos.internalFormat = GL_RGBA16F;
-		fragPos.type = GL_RGBA;
+		fragPos.internalFormat = GL_RGB16F;
+		fragPos.type = GL_RGB;
 
-		ColourBufferInit normalRnd;
-		normalRnd.format = GL_FLOAT;
-		normalRnd.internalFormat = GL_RGBA16F;
-		normalRnd.type = GL_RGBA;
+		ColourBufferInit normal;
+		normal.format = GL_FLOAT;
+		normal.internalFormat = GL_RGBA16F;
+		normal.type = GL_RGBA;
 
-		gBufferDetails.colourBuffers = { fragPos, normalRnd };
+		gBufferDetails.colourBuffers = { albedo, fragPos, normal };
 
 		gBuffer = FrameBuffer(windowDim);
 		gBuffer.setUp(gBufferDetails);
@@ -345,9 +350,9 @@ void Game::showStuff() {
 	ssao.setValue("normalRnd", 1);
 	ssao.setValue("ssaoNoise", 2);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0)); // fragPos model
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // fragPos
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // normal
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2)); // normal
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex); // random-ness
 
@@ -379,22 +384,26 @@ void Game::showStuff() {
 	Shader& deffered = SHADERS[DEFFERED];
 	deffered.bind();
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0)); // fragPos
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0)); // albedo
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // normal rnd
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // fragPos
 
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // blured ao
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2)); // normal
 
 	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // blured ao
+
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth()); // shadow map
 
-	deffered.setValue("fragPosTex", 0);
-	deffered.setValue("normalRnd", 1);
-	// deffered.setValue("materialIndex", 2);
-	deffered.setValue("ao", 2);
-	deffered.setValue("shadowMap", 3);
+	deffered.setValue("_albedo", 0);
+	deffered.setValue("_fragPos", 1);
+	deffered.setValue("_normal", 2);
+	deffered.setValue("ao", 3);
+	deffered.setValue("shadowMap", 4);
+
 	deffered.setValue("viewDir", _player->getViewDirection());
 	deffered.setValue("view_inv", glm::inverse(cameraView));
 	deffered.setValue("lightMatrix", LSM);
