@@ -1,8 +1,7 @@
 #pragma once
-#include <string>
 #include "Manager.h"
-
-class Model;
+#include <string>
+#include "../Helpers/ModelLoaders/Model.h"
 
 class ModelManager : public Manager<ModelManager>
 {

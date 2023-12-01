@@ -3,11 +3,15 @@
 layout (points) in;
 layout (triangle_strip, max_vertices = 24) out;
 
+layout (std140, binding = 0) uniform Camera
+{
+    mat4 projection;
+    mat4 view;
+};
+
 in VS_OUT {
     uint cubeType;
     uint blockColourIndex;
-    mat4 view;
-    mat4 proj;
     mat4 m;
 } vs_out[];
 
@@ -59,7 +63,7 @@ void main() {
     for (uint i = 0; i < 6; i++) {
         uint slot = vs_out[0].cubeType & (1 << i);
         if (slot > 0) {            
-            mat3 normalMatrix = transpose(inverse(mat3(vs_out[0].view * vs_out[0].m)));
+            mat3 normalMatrix = transpose(inverse(mat3(view * vs_out[0].m)));
             normal = normals[i];
 
             for (uint j = 0u; j < 4u; j++){
@@ -67,9 +71,9 @@ void main() {
                 vec3 v = vertices[l];
 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                fragPos_ = vs_out[0].view * vs_out[0].m * vec4(v * voxelSize, 1);
+                fragPos_ = view * vs_out[0].m * vec4(v * voxelSize, 1);
 
-                gl_Position = vs_out[0].proj * fragPos_;
+                gl_Position = projection * fragPos_;
                 EmitVertex();
             }
             EndPrimitive();

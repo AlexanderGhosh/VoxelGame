@@ -19,12 +19,12 @@ void ModelRenderer::add(Model& buffer)
 
 void ModelRenderer::render(Shader* shader)
 {
-	for (auto& model : models) {
+	/*for (auto& model : models) {
 		for (auto& buffer : model.meshBuffers) {
 			buffer.bind();
 			glDrawElements(GL_TRIANGLES, buffer.size(), GL_UNSIGNED_INT, nullptr);
 		}
-	}
+	}*/
 }
 
 void ModelRenderer::cleanUp()

@@ -16,7 +16,7 @@ struct Material{
     vec4 albedo2;
 };
 
-layout (std140, binding = 0) uniform Mats
+layout (std140, binding = 1) uniform Mats
 {
     Material[6] materials;
 };

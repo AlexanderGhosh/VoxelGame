@@ -1,6 +1,11 @@
 #version 440 core
 
 layout(location = 0) out float ao;
+layout (std140, binding = 0) uniform Camera
+{
+    mat4 projection;
+    mat4 view;
+};
 
 const int kernelSize = 64; // ssao req
 
@@ -13,8 +18,6 @@ uniform vec3 ssaoSamples[kernelSize];
 uniform vec2 ssaoNoiseScale;
 uniform float ssaoRadius;
 uniform float ssaoBias;
-uniform mat4 projection;
-uniform mat4 view;
 
 in vec2 texCoords;
 

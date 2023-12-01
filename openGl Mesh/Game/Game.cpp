@@ -39,7 +39,7 @@ Event Game::leftClickRelease;
 Event Game::rightClickRelease;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), gBuffer(), materialsBuffer(), _player() {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -47,7 +47,10 @@ SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameB
 	manager = &EntityManager::getInstance(); 
 	gizmoManager = &GizmoManager::getInstance();
 
-	materialsBuffer.allocate(sizeof(Material) * MATERIALS.size(), 0);
+	camreraBuffer.allocate(sizeof(glm::mat4) * 2, 0);
+	camreraBuffer.fill(0, sizeof(glm::mat4) * 2, nullptr);
+
+	materialsBuffer.allocate(sizeof(Material) * MATERIALS.size(), 1);
 	materialsBuffer.fill(0, sizeof(Material) * MATERIALS.size(), MATERIALS.data());
 }
 
@@ -62,102 +65,104 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	setUpFreeType();
 
 
-	// DEFERED RENERING
-	FrameBufferInit gBufferDetails; // may need to make this depth texture the one used by the transparancy buffer
-	gBufferDetails.hasDepth = true;
-	gBufferDetails.depthTexture = true;
+	{
+		// DEFERED RENERING
+		FrameBufferInit gBufferDetails; // may need to make this depth texture the one used by the transparancy buffer
+		gBufferDetails.hasDepth = true;
+		gBufferDetails.depthTexture = true;
 
-	ColourBufferInit fragPos;
-	fragPos.format = GL_FLOAT;
-	fragPos.internalFormat = GL_RGBA16F;
-	fragPos.type = GL_RGBA;
+		ColourBufferInit fragPos;
+		fragPos.format = GL_FLOAT;
+		fragPos.internalFormat = GL_RGBA16F;
+		fragPos.type = GL_RGBA;
 
-	ColourBufferInit normalRnd;
-	normalRnd.format = GL_FLOAT;
-	normalRnd.internalFormat = GL_RGBA16F;
-	normalRnd.type = GL_RGBA;
+		ColourBufferInit normalRnd;
+		normalRnd.format = GL_FLOAT;
+		normalRnd.internalFormat = GL_RGBA16F;
+		normalRnd.type = GL_RGBA;
 
-	gBufferDetails.colourBuffers = { fragPos, normalRnd };
+		gBufferDetails.colourBuffers = { fragPos, normalRnd };
 
-	gBuffer = FrameBuffer(windowDim);
-	gBuffer.setUp(gBufferDetails);
+		gBuffer = FrameBuffer(windowDim);
+		gBuffer.setUp(gBufferDetails);
 
-	// OPAQUE OIT BUFFER (and used for SSAO)
-	FrameBufferInit detailsOIT;
-	detailsOIT.hasDepth = true;
-	detailsOIT.depthTexture = true;
+		// OPAQUE OIT BUFFER (and used for SSAO)
+		FrameBufferInit detailsOIT;
+		detailsOIT.hasDepth = true;
+		detailsOIT.depthTexture = true;
 
-	ColourBufferInit opaqueOIT;
-	opaqueOIT.format = GL_HALF_FLOAT;
-	opaqueOIT.internalFormat = GL_RGBA16F;
-	opaqueOIT.type = GL_RGBA;
+		ColourBufferInit opaqueOIT;
+		opaqueOIT.format = GL_HALF_FLOAT;
+		opaqueOIT.internalFormat = GL_RGBA16F;
+		opaqueOIT.type = GL_RGBA;
 
-	detailsOIT.colourBuffers = { opaqueOIT };
-	detailsOIT.depthBuffer = gBuffer.getDepth();
+		detailsOIT.colourBuffers = { opaqueOIT };
+		detailsOIT.depthBuffer = gBuffer.getDepth();
 
-	oitFrameBuffer1 = FrameBuffer(windowDim);
-	oitFrameBuffer1.setUp(detailsOIT);
+		oitFrameBuffer1 = FrameBuffer(windowDim);
+		oitFrameBuffer1.setUp(detailsOIT);
 
-	// TRANSPARENT BUFFER
-	ColourBufferInit accumOIT;
-	accumOIT.format = GL_FLOAT;
-	accumOIT.internalFormat = GL_RGBA;
-	accumOIT.type = GL_RGBA;
+		// TRANSPARENT BUFFER
+		ColourBufferInit accumOIT;
+		accumOIT.format = GL_FLOAT;
+		accumOIT.internalFormat = GL_RGBA;
+		accumOIT.type = GL_RGBA;
 
-	ColourBufferInit revealOIT;
-	revealOIT.format = GL_FLOAT;
-	revealOIT.internalFormat = GL_R8;
-	revealOIT.type = GL_RED;
+		ColourBufferInit revealOIT;
+		revealOIT.format = GL_FLOAT;
+		revealOIT.internalFormat = GL_R8;
+		revealOIT.type = GL_RED;
 
-	detailsOIT.colourBuffers = { accumOIT, revealOIT };
-	detailsOIT.depthBuffer = gBuffer.getDepth();
+		detailsOIT.colourBuffers = { accumOIT, revealOIT };
+		detailsOIT.depthBuffer = gBuffer.getDepth();
 
-	oitFrameBuffer2 = FrameBuffer(windowDim);
-	oitFrameBuffer2.setUp(detailsOIT);
+		oitFrameBuffer2 = FrameBuffer(windowDim);
+		oitFrameBuffer2.setUp(detailsOIT);
 
-	// GUI BUFFER
-	FrameBufferInit detailsGUI;
+		// GUI BUFFER
+		FrameBufferInit detailsGUI;
 
-	ColourBufferInit colourGUI;
-	colourGUI.format = GL_FLOAT;
-	colourGUI.internalFormat = GL_RGBA32F;
-	colourGUI.type = GL_RGBA;
-	
-	detailsGUI.hasDepth = false;
-	detailsGUI.depthTexture = false;
+		ColourBufferInit colourGUI;
+		colourGUI.format = GL_FLOAT;
+		colourGUI.internalFormat = GL_RGBA32F;
+		colourGUI.type = GL_RGBA;
 
-
-	detailsGUI.colourBuffers = { colourGUI };
-	guiFrameBuffer = FrameBuffer(windowDim);
-	guiFrameBuffer.setUp(detailsGUI);
-
-	// SHADOW MAP BUFFER
-	FrameBufferInit detailsShadows;
-	detailsShadows.hasDepth = true;
-	detailsShadows.depthTexture = true;
-
-	shadowFramebuffer = FrameBuffer({ SHADOW_MAP_SIZE , SHADOW_MAP_SIZE });
-	shadowFramebuffer.setUp(detailsShadows);
-
-	// BLUR BUFFER
-	FrameBufferInit multiPurposeFBDetails;
-	multiPurposeFBDetails.hasDepth = false;
-	multiPurposeFBDetails.depthTexture = false;
-
-	ColourBufferInit mpInput;
-	mpInput.format = GL_FLOAT;
-	mpInput.internalFormat = GL_RGBA;
-	mpInput.type = GL_RGBA;
-
-	ColourBufferInit mpOutput;
-	mpOutput.format = GL_FLOAT;
-	mpOutput.internalFormat = GL_RGBA;
-	mpOutput.type = GL_RGBA;
+		detailsGUI.hasDepth = false;
+		detailsGUI.depthTexture = false;
 
 
-	multiPurposeFBDetails.colourBuffers = { mpOutput, mpInput };
-	multiPurposeFB = FrameBuffer(windowDim);
-	multiPurposeFB.setUp(multiPurposeFBDetails);
+		detailsGUI.colourBuffers = { colourGUI };
+		guiFrameBuffer = FrameBuffer(windowDim);
+		guiFrameBuffer.setUp(detailsGUI);
+
+		// SHADOW MAP BUFFER
+		FrameBufferInit detailsShadows;
+		detailsShadows.hasDepth = true;
+		detailsShadows.depthTexture = true;
+
+		shadowFramebuffer = FrameBuffer({ SHADOW_MAP_SIZE , SHADOW_MAP_SIZE });
+		shadowFramebuffer.setUp(detailsShadows);
+
+		// BLUR BUFFER
+		FrameBufferInit multiPurposeFBDetails;
+		multiPurposeFBDetails.hasDepth = false;
+		multiPurposeFBDetails.depthTexture = false;
+
+		ColourBufferInit mpInput;
+		mpInput.format = GL_FLOAT;
+		mpInput.internalFormat = GL_RGBA;
+		mpInput.type = GL_RGBA;
+
+		ColourBufferInit mpOutput;
+		mpOutput.format = GL_FLOAT;
+		mpOutput.internalFormat = GL_RGBA;
+		mpOutput.type = GL_RGBA;
+
+
+		multiPurposeFBDetails.colourBuffers = { mpOutput, mpInput };
+		multiPurposeFB = FrameBuffer(windowDim);
+		multiPurposeFB.setUp(multiPurposeFBDetails);
+	}
 }
 
 void Game::generateWorld() {
@@ -171,14 +176,14 @@ void Game::doLoop(const glm::mat4& projection) {
 	gameRunning = true;
 	setupEventCB(window);
 	cameraProjection = projection;
+
+	camreraBuffer.fill(0, sizeof(glm::mat4), &projection);
 	
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
-	addModel(enterprise);
 	auto& cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
-	addModel(cloud);
 	std::cout << "Models Loaded" << std::endl;
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
@@ -220,6 +225,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		_player->processKeys(keys, deltaTime, neibours);
 
 		cameraView = _player->getViewMatrix();
+		camreraBuffer.fill(sizeof(glm::mat4), sizeof(glm::mat4), &cameraView);
 
 
 #ifdef DEBUG_GRID_LINES
@@ -285,15 +291,6 @@ void Game::showFPS() {
 	}
 }
 
-void Game::renderModels() {
-	Shader* modelShader = &SHADERS[MODEL];
-	modelShader->bind();
-	modelShader->setValue("view", cameraView);
-	modelShader->setValue("projection", cameraProjection);
-	modelRenderer.render(modelShader);
-	modelShader->unBind();
-}
-
 void Game::showStuff() {
 	const glm::mat4 LSM = ShadowBox::getLSM(cameraView, cameraProjection, LIGHT_POSITION);
 	// 1. render from the lights perspective for the shadow map
@@ -309,7 +306,6 @@ void Game::showStuff() {
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
 	world.render(&shadows);
-	renderModels();
 	shadows.unBind();
 	shadowFramebuffer.unBind();
 	// 2. render for OIT
@@ -324,12 +320,8 @@ void Game::showStuff() {
 
 	Shader& gbufferS = SHADERS[GBUFFER];
 	gbufferS.bind();
-	gbufferS.setValue("view", cameraView);
-	gbufferS.setValue("projection", cameraProjection);
 
 	world.render(&gbufferS);
-	renderModels();
-	//renderModels(projection);
 	manager->renderEvent();
 
 	// 2.1.2 Ambiant Occlusion (render to the oit opaque buffer)
@@ -355,8 +347,6 @@ void Game::showStuff() {
 	ssao.setValue("ssaoNoiseScale", noiseScale);
 	ssao.setValue("ssaoRadius", SSAO_RADIUS);
 	ssao.setValue("ssaoBias", SSAO_BIAS);
-	ssao.setValue("projection", cameraProjection);
-	ssao.setValue("view", cameraView);
 
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -426,8 +416,6 @@ void Game::showStuff() {
 	transparent.bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
-	transparent.setValue("view", cameraView);
-	transparent.setValue("projection", cameraProjection);
 	transparent.setValue("ao", 0);
 	transparent.setValue("viewDir", _player->getViewDirection());
 	transparent.setValue("lightPos", LIGHT_POSITION);
@@ -463,7 +451,6 @@ void Game::showStuff() {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	const Shader& physDebug = SHADERS[PHYS_DEBUG];
 	physDebug.bind();
-	physDebug.setValue("pv", cameraProjection * cameraView);
 
 	// creates VAO, VBO populates with lines then draws repeat for triangles then deltes buffers (every frame
 	static PhysicsManager& physManger = PhysicsManager::getInstance();
@@ -755,8 +742,6 @@ void Game::showSkybox() {
 	SHADERS[SKYBOX].bind();
 	// Camera& camera = player->getCamera();
 	glm::mat4 view = glm::mat4(glm::mat3(cameraView)); // remove translation from the view matrix
-	SHADERS[SKYBOX].setValue("view", view);
-	SHADERS[SKYBOX].setValue("projection", cameraProjection);
 
 	glBindVertexArray(SBVAO);
 	TEXTURES3D[(int)Texture_Names::SKYBOX].bind();

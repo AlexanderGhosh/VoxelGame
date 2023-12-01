@@ -50,7 +50,6 @@ public:
 	void setWindow(GLFWwindow* window);
 	void cleanUp();
 
-	void addModel(Model& model);
 	void setPlayer(Entities::Player* player);
 private:
 	void setUpScreenQuad();
@@ -66,7 +65,7 @@ private:
 	void placeBlock();
 	void breakBlock();
 
-	UniformBuffer materialsBuffer;
+	UniformBuffer camreraBuffer, materialsBuffer;
 	EntityManager* manager;
 	GizmoManager* gizmoManager;
 
@@ -88,7 +87,6 @@ private:
 	// is updated every frame with the current camera's view matrix
 	glm::mat4 cameraView, cameraProjection;
 
-	void renderModels();
 	void showFPS();
 	void calcTimes();
 	void setupEventCB(GLFWwindow* window);

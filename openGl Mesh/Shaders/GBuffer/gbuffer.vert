@@ -2,8 +2,6 @@
 
 layout(location = 0) in uint data;
 
-uniform mat4 projection;
-uniform mat4 view;
 uniform mat4 model;
 uniform float voxelSize;
 uniform vec3 chunkPosition;
@@ -11,8 +9,6 @@ uniform vec3 chunkPosition;
 out VS_OUT {
     uint cubeType;
     uint blockColourIndex;
-    mat4 view;
-    mat4 proj;
     mat4 m;
 } vs_out;
 
@@ -31,10 +27,6 @@ void main() {
     m[3][1] = worldPos_.y * voxelSize;
     m[3][2] = worldPos_.z * voxelSize;
     vs_out.m = m;
-
-    // vs_out.vp = projection * view;
-    vs_out.view = view;
-    vs_out.proj = projection;
 
     gl_Position.xyz = worldPos_;
 
