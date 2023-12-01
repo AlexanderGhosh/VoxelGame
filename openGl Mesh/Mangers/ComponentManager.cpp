@@ -34,8 +34,5 @@ void ComponentManager::removeComponent(unsigned int id)
 
 void ComponentManager::destroy()
 {
-	for (Component* component : _components) {
-		component->destroy();
-	}
 	_components.clear();
 }

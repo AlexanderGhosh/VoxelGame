@@ -87,6 +87,5 @@ const Entity& EntityManager::getEntity(unsigned int id) const
 
 void EntityManager::destroy()
 {
-	destroyEvent();
 	_entities.clear();
 }

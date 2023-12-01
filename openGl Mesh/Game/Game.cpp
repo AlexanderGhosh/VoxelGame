@@ -19,6 +19,7 @@
 #include "../EntityComponent/Entities/TestObject.h"
 #include "../EntityComponent/Components/Transform.h"
 #include "../EntityComponent/Components/RigidBody.h"
+#include "../EntityComponent/Components/RenderMesh.h"
 #include <iostream>
 #include "../EventsSystem/EventCallback.h"
 
@@ -182,7 +183,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
-	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d_voxel.obj");
 	auto& cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
 	std::cout << "Models Loaded" << std::endl;
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
@@ -203,11 +204,19 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	PhysicsManager& physManager = PhysicsManager::getInstance();
 
+	Entities::TestObject to1;
+	Components::Transform to1Transform;
+	Components::RenderMesh to1RenderMesh;
+	to1RenderMesh.setModel(&cloud);
+	to1.addComponent(to1Transform);
+	to1.addComponent(to1RenderMesh);
+
 	manager->awakeEvent();
 
 	manager->startEvent();
 
 	_player->setPosition({ 8, 40, 8 });
+	to1.setPosition({ 0, 100, 0 });
 	/*reactphysics3d::Material& mat = _player->getRigidBody()->getMaterial();
 	mat.setBounciness(0);
 	mat.setFrictionCoefficient(1);*/

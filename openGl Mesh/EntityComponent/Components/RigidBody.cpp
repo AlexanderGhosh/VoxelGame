@@ -65,7 +65,4 @@ reactphysics3d::Material& Components::RigidBody::getMaterial()
 
 void Components::RigidBody::destroy()
 {
-	if (!_reactRigidBody) return;
-	_manager->removeRigidBody(_reactRigidBody);
-	_reactRigidBody = nullptr;
 }

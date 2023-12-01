@@ -5,6 +5,7 @@
 namespace Components {
 	class Transform;
 	class RigidBody;
+	class RenderMesh;
 }
 
 namespace Entities {
@@ -14,10 +15,9 @@ namespace Entities {
 		TestObject();
 		void start() override;
 		void setPosition(const glm::vec3& pos);
-		Components::RigidBody* getRigidBody();
 	private:
 		Components::Transform* _transform;
-		Components::RigidBody* _rigidbody;
+		Components::RenderMesh* _renderMesh;
 	};
 }
 
