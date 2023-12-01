@@ -235,7 +235,7 @@ void Game::doLoop(const glm::mat4& projection) {
 			dtAccumulator -= FIXED_DELTA_TIME;
 
 			bool found = false;
-			const ChunkColumn& chunk = world.getChunk({0, 0}, found);
+			const ChunkColumn& chunk = world.getChunk(c, found);
 			if (found) {
 				physManager.setTerrain(chunk);
 			}
