@@ -519,15 +519,12 @@ void Game::showStuff() {
 	std::string m;
 	m = "Position: " + glm::to_string(_player->getPosition());
 	showText(m, { 5, 850 }, 0.5f);
-
-	m = "Block Position: " + glm::to_string(glm::floor(_player->getPosition()));
-	showText(m, { 5, 825 }, 0.5f);
 	
 	m = "View Direction: " + glm::to_string(_player->getViewDirection());
-	showText(m, { 5, 800 }, 0.5f);
+	showText(m, { 5, 825 }, 0.5f);
 
 	m = "Chunk Pos: " + glm::to_string(_player->getChunkPosition());
-	showText(m, { 5, 775 }, 0.5f);
+	showText(m, { 5, 800 }, 0.5f);
 
 	// 4. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer

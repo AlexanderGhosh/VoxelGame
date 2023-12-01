@@ -9,7 +9,7 @@ in vec3 normal;
 in vec2 texCoords;
 
 void main() {
-    _albedo = normal;
+    _albedo = (normal + 1.) * .5;
     _fragPos = fragPos;
-    _normal = normal;
+    _normal = -normal;
 }
