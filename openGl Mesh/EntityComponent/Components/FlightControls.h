@@ -4,11 +4,11 @@
 #include <glm.hpp>
 
 namespace Components{
-    class Transform;
+    class RigidBody;
     // Allows the player to fly like in minecraft creative mode
     class FlightControls : public Component {
     private:
-        Transform* _transform;
+        RigidBody* _rigidbody;
         float _speed;
     public:
         FlightControls();
@@ -17,7 +17,7 @@ namespace Components{
         // fwd is not front it is the direction that is considered forward
         void processKeys(const std::array<bool, 1024>& keysPressed, const glm::vec3& fwd, const float deltaTime);
 
-        void setTransform(Transform* transform);
+        void setRigidBody(RigidBody* rb);
         void setSpeed(const float speed);
     };
 }

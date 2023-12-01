@@ -5,6 +5,7 @@
 namespace reactphysics3d {
     class RigidBody;
     class BoxShape;
+    class Material;
 }
 class PhysicsManager;
 
@@ -22,6 +23,7 @@ namespace Components {
     };
 
     class Transform;
+    // only supports one collider
     class RigidBody : public Component
     {
     private:
@@ -34,6 +36,7 @@ namespace Components {
         void setTransform(Transform* transform);
 
         // used in the start method not anywhere else
+        // only supports one collider
         void setDetails(const RigidBody_Details& detials);
         
         // creates the react RB
@@ -43,6 +46,11 @@ namespace Components {
         void preFixedUpdate() override;
         // updates render trhansform with reacts transform
         void postFixedUpdate() override;
+
+        void addVelocity(const glm::vec3& delta);
+
+        // asumes only one collider
+        reactphysics3d::Material& getMaterial();
 
         void destroy() override;
     };

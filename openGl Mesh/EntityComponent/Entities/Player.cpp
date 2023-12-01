@@ -28,6 +28,11 @@ void Entities::Player::setPosition(const glm::vec3& pos)
 	_transform->position = pos;
 }
 
+Components::RigidBody* Entities::Player::getRigidBody()
+{
+	return _rigidbody;
+}
+
 const glm::ivec2 Entities::Player::getChunkPosition() const
 {
 	glm::vec3 p = glm::floor(_transform->position * VOXEL_SIZE_INV); // my * VOXEL_SIZE_INV it translates world space to unscaled space
@@ -79,23 +84,19 @@ void Entities::Player::start()
 	_controls = getComponent<Components::FlightControls>();
 	_rigidbody = getComponent<Components::RigidBody>();
 
-	_transform->scale = glm::vec3(1, 2, 1);
+	_transform->scale = glm::vec3(1, 2, 1) * .8f;
 
-	_controls->setTransform(_transform);
+	_controls->setRigidBody(_rigidbody);
 	_rigidbody->setTransform(_transform);
 
 	Components::RigidBody_Details rbDetails;
 	rbDetails._hasGravity = !_noClip;
 	if (!_noClip) {
 		rbDetails._bodyType = Components::RigidBody_Details::DYNAMIC;
-		rbDetails._collider = PhysicsManager::getInstance().createBoxShape({ HALF_VOXEL_SIZE, VOXEL_SIZE, HALF_VOXEL_SIZE });
+		rbDetails._collider = PhysicsManager::getInstance().createBoxShape(glm::vec3(HALF_VOXEL_SIZE, VOXEL_SIZE, HALF_VOXEL_SIZE) * .9f);
 	}
 	else {
 		rbDetails._bodyType = Components::RigidBody_Details::STATIC;
 	}
 	_rigidbody->setDetails(rbDetails);
-}
-
-void Entities::Player::update(float deltaTime)
-{
 }

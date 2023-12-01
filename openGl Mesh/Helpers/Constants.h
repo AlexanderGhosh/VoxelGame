@@ -14,7 +14,7 @@ class ChunkColumn;
 class BlockStore;
 class Material;
 
-#define PHYSICS_DEBUG_RENDERER
+// #define PHYSICS_DEBUG_RENDERER
 
 #define GENERATE_NEW_CHUNKS false
 
@@ -54,7 +54,7 @@ constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
 
 
-constexpr float PLAYER_SPEED = 10;
+constexpr float PLAYER_SPEED = 25;
 
 constexpr float VOXEL_SIZE = 1;
 constexpr float VOXEL_SIZE_INV = 1.f / VOXEL_SIZE;

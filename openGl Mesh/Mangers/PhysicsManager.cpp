@@ -89,6 +89,9 @@ void PhysicsManager::setTerrain(const ChunkColumn& chunk) const
 			offset.setPosition(offsetPos); // pos in scaled
 
 			collider->setLocalToBodyTransform(offset);
+			reactphysics3d::Material& mat = collider->getMaterial();
+			mat.setBounciness(0);
+			mat.setFrictionCoefficient(1);
 		}
 	}
 }

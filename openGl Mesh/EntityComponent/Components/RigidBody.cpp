@@ -49,6 +49,20 @@ void Components::RigidBody::postFixedUpdate()
 	memcpy(&_transform->position, &pos, sizeof(glm::vec3));
 }
 
+void Components::RigidBody::addVelocity(const glm::vec3& delta)
+{
+	reactphysics3d::Vector3 vel = _reactRigidBody->getLinearVelocity();
+	vel.x += delta.x;
+	vel.y += delta.y;
+	vel.z += delta.z;
+	_reactRigidBody->setLinearVelocity(vel);
+}
+
+reactphysics3d::Material& Components::RigidBody::getMaterial()
+{
+	return _reactRigidBody->getCollider(0)->getMaterial();
+}
+
 void Components::RigidBody::destroy()
 {
 	if (!_reactRigidBody) return;

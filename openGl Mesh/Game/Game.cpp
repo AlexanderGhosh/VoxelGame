@@ -16,6 +16,9 @@
 #include "../Material.h"
 #include "../Helpers/Timers/Timer.h"
 #include "../EntityComponent/Entities/Player.h"
+#include "../EntityComponent/Entities/TestObject.h"
+#include "../EntityComponent/Components/Transform.h"
+#include "../EntityComponent/Components/RigidBody.h"
 #include <iostream>
 #include "../EventsSystem/EventCallback.h"
 
@@ -169,11 +172,6 @@ void Game::doLoop(const glm::mat4& projection) {
 	setupEventCB(window);
 	cameraProjection = projection;
 	
-	manager->awakeEvent();
-
-	manager->startEvent();
-	
-	_player->setPosition({ 0, 10, 0 });
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
@@ -197,6 +195,15 @@ void Game::doLoop(const glm::mat4& projection) {
 	Timer timer("Loop Time");
 
 	PhysicsManager& physManager = PhysicsManager::getInstance();
+
+	manager->awakeEvent();
+
+	manager->startEvent();
+
+	_player->setPosition({ 8, 100, 8 });
+	reactphysics3d::Material& mat = _player->getRigidBody()->getMaterial();
+	mat.setBounciness(0);
+	mat.setFrictionCoefficient(1);
 
 	float dtAccumulator = 0;
 	while (gameRunning) {

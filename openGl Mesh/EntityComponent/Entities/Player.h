@@ -25,6 +25,7 @@ namespace Entities {
 		const glm::mat4 getViewMatrix() const;
 		void setPosition(const glm::vec3& pos);
 
+		Components::RigidBody* getRigidBody();
 		// Returns the world chunk position unscaled
 		const glm::ivec2 getChunkPosition() const;
 
@@ -37,6 +38,5 @@ namespace Entities {
 		void processMouse(const glm::vec2& mouseOffsets);
 
 		void start() override;
-		void update(float deltaTime) override;
 	};
 };

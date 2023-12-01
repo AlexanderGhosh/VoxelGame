@@ -58,7 +58,7 @@ int main() {
 	ComponentManager& componentManager = ComponentManager::getInstance();
 	EntityManager& entityManager = EntityManager::getInstance();
 
-	Entities::Player player(true);
+	Entities::Player player(false);
 	Components::Transform playerTransform;
 	Components::Camera playerCamera;
 	Components::FlightControls playerControler(PLAYER_SPEED);
