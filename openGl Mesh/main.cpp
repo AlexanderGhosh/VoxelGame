@@ -19,13 +19,15 @@
 #include "EntityComponent/Components/Transform.h"
 #include "EntityComponent/Components/Camera.h"
 #include "EntityComponent/Components/FlightControls.h"
-#include "EntityComponent/Components/BoxCollider.h"
 #include "EntityComponent/Components/RigidBody.h"
 
 #include "Mangers/EntityManager.h"
 #include "Mangers/ComponentManager.h"
 #include "Mangers/ModelManager.h"
 #include "Mangers/GizmoManager.h"
+#include "Mangers/PhysicsManager.h"
+
+
 #include "Gizmos/Composite/Grid2D.h"
 #include "Game/World/world_generation.h"
 
@@ -37,6 +39,8 @@ void createBlockDetails();
 int main() {
 
 	GLFWwindow* window = createWindow();
+	reactphysics3d::PhysicsCommon physCommon;
+	PhysicsManager::getInstance().setPhysCommon(&physCommon);
 
 	for (auto& tex : TEXTURES3D) {
 		tex.load3D(tex.getName());
@@ -58,13 +62,11 @@ int main() {
 	Components::Transform playerTransform;
 	Components::Camera playerCamera;
 	Components::FlightControls playerControler(PLAYER_SPEED);
-	Components::BoxCollider playerCollider;
 	Components::RigidBody playerRB;
 
 	player.addComponent(playerTransform);
 	player.addComponent(playerCamera);
 	player.addComponent(playerControler);
-	player.addComponent(playerCollider);
 	player.addComponent(playerRB);
 
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
@@ -113,6 +115,7 @@ int main() {
 	EntityManager::getInstance().destroy();
 	ModelManager::getInstance().destroy();
 	GizmoManager::getInstance().destroy();
+	PhysicsManager::getInstance().destroy();
 	return 0;
 }
 

@@ -2,15 +2,14 @@
 #include "../Components/Transform.h"
 #include "../Components/Camera.h"
 #include "../Components/FlightControls.h"
-#include "../Components/BoxCollider.h"
 #include "../Components/RigidBody.h"
 #include "../../Helpers/Functions.h"
-#include "../../Mangers/CollisionManager.h"
 #include "../../Game/World/Chunks/ChunkColumn.h"
+#include "../../Mangers/PhysicsManager.h"
 
 using namespace Entities;
 
-Player::Player() : Entity(), _transform(), _camera(), _controls(), _collider(), _rigidbody(), _noClip(false)
+Player::Player() : Entity(), _transform(), _camera(), _controls(), _rigidbody(), _noClip(false)
 {
 }
 
@@ -55,7 +54,6 @@ const glm::vec3& Entities::Player::getFront() const
 
 void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, const float deltaTime, const std::list<ChunkColumn*>& neighbours)
 {
-	CollisionManager& manager = CollisionManager::getInstance();
 	// prevents the player from moving up or down with out space or shift
 	glm::vec3 fwd = _camera->getFront();
 	fwd.y = 0;
@@ -66,21 +64,6 @@ void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, co
 
 	if (_noClip) {
 		return;
-	}
-	// reverts movement if it has caused a collision
-	for (ChunkColumn* chunk : neighbours) {
-		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition2D())) {
-			_transform->position = prevPos;
-			break;
-		}
-	}
-	prevPos = _transform->position;
-	_transform->position.y -= 10 * deltaTime;
-	for (ChunkColumn* chunk : neighbours) {
-		if (manager.checkCollision(_collider, chunk->getMeshData(), chunk->getWorldPosition2D())) {
-			_transform->position = prevPos;
-			break;
-		}
 	}
 }
 
@@ -94,12 +77,25 @@ void Entities::Player::start()
 	_transform = getComponent<Components::Transform>();
 	_camera = getComponent<Components::Camera>();
 	_controls = getComponent<Components::FlightControls>();
-	_collider = getComponent<Components::BoxCollider>();
 	_rigidbody = getComponent<Components::RigidBody>();
 
 	_transform->scale = glm::vec3(1, 2, 1);
 
 	_controls->setTransform(_transform);
-	_collider->setTransform(_transform);
 	_rigidbody->setTransform(_transform);
+
+	Components::RigidBody_Details rbDetails;
+	rbDetails._hasGravity = !_noClip;
+	if (!_noClip) {
+		rbDetails._bodyType = Components::RigidBody_Details::DYNAMIC;
+		rbDetails._collider = PhysicsManager::getInstance().createBoxShape({ HALF_VOXEL_SIZE, VOXEL_SIZE, HALF_VOXEL_SIZE });
+	}
+	else {
+		rbDetails._bodyType = Components::RigidBody_Details::STATIC;
+	}
+	_rigidbody->setDetails(rbDetails);
+}
+
+void Entities::Player::update(float deltaTime)
+{
 }

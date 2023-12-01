@@ -18,5 +18,5 @@ public:
 
 	void removeComponent(unsigned int id);
 
-	void destroy();
+	void destroy() override;
 };

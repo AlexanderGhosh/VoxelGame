@@ -16,7 +16,7 @@ public:
 };
 
 
-template<typename T>
+template<class T>
 T Manager<T>::_instance;
 
 template<class T>

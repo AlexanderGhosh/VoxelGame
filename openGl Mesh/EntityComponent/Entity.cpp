@@ -33,7 +33,11 @@ void Entity::update(const float detlaTime)
 {
 }
 
-void Entity::fixedUpdate()
+void Entity::preFixedUpdate()
+{
+}
+
+void Entity::postFixedUpdate()
 {
 }
 
@@ -69,11 +73,19 @@ void Entity::updateEvent(const float deltaTime)
     }
 }
 
-void Entity::fixedUpdateEvent()
+void Entity::preFixedUpdateEvent()
 {
-    fixedUpdate();
+    preFixedUpdate();
     for (auto& component : _components) {
-        component->fixedUpdate();
+        component->preFixedUpdate();
+    }
+}
+
+void Entity::postFixedUpdateEvent()
+{
+    postFixedUpdate();
+    for (auto& component : _components) {
+        component->postFixedUpdate();
     }
 }
 

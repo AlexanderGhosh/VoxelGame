@@ -28,6 +28,8 @@ public:
 	void tryStartGenerateChunks(const glm::vec2& chunkPos, const glm::vec3& frustrumCenter, const float frustrumRadius); 
 	void tryFinishGenerateChunk();
 
+	// if sucess is true returns a reference to the desired chunk
+	// will not return partialy generated chunks (in the process of async generation)
 	const ChunkColumn& getChunk(const glm::vec2& chunkPos, bool& success) const;
 
 private:

@@ -15,7 +15,8 @@ public:
 	void awakeEvent();
 	void startEvent();
 	void updateEvent(const float deltaTime);
-	void fixedUpdateEvent();
+	void preFixedUpdateEvent();
+	void postFixedUpdateEvent();
 	void renderEvent();
 	void destroyEvent();
 

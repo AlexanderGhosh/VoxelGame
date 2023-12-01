@@ -44,6 +44,10 @@ public:
 	void save() const;
 	void load(const glm::vec2& chunkPos);
 
+	// x and z are local coords
+	// returns the height of the column as if it had just being newly generated (doesnt check edited blocks)
+	unsigned int getHeight(const float x, const float z) const;
+
 	const std::vector<GeomData>& getMeshData() const;
 private:
 

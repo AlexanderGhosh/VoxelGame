@@ -14,6 +14,8 @@ class ChunkColumn;
 class BlockStore;
 class Material;
 
+#define PHYSICS_DEBUG_RENDERER
+
 #define GENERATE_NEW_CHUNKS false
 
 #define RRC(x) (float(x) / 255.f)
@@ -29,7 +31,7 @@ constexpr float SSAO_RADIUS = 0.5;
 constexpr float SSAO_BIAS = 0.025;
 #endif // SSAO
 
-
+constexpr float FIXED_DELTA_TIME = 1.f / 60.f;
 constexpr bool VSYNC = true;
 constexpr float PI = 3.14;
 constexpr float HEIGHT = 720;
@@ -54,9 +56,9 @@ constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
 
 constexpr float PLAYER_SPEED = 10;
 
-constexpr float VOXEL_SIZE = 0.5;
+constexpr float VOXEL_SIZE = 1;
 constexpr float VOXEL_SIZE_INV = 1.f / VOXEL_SIZE;
-constexpr float HALF_VOXEL_SZIE = VOXEL_SIZE * .5f;
+constexpr float HALF_VOXEL_SIZE = VOXEL_SIZE * .5f;
 constexpr glm::vec3 WORLD_ORIGIN(0, 0, 0);
 
 constexpr float CHUNK_SIZE_SCALED = CHUNK_SIZE_F * VOXEL_SIZE;
@@ -85,10 +87,10 @@ constexpr std::array<glm::vec2, 4> OFFSETS_2D = {
 };
 #ifdef DEBUG_GRID_LINES
 constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
-	glm::vec3(-HALF_VOXEL_SZIE),
-	glm::vec3(VOXEL_SIZE * (CHUNK_SIZE - .5f), -HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE),
-	glm::vec3(-HALF_VOXEL_SZIE),
-	glm::vec3(-HALF_VOXEL_SZIE, -HALF_VOXEL_SZIE, VOXEL_SIZE * (CHUNK_SIZE - .5f))
+	glm::vec3(-HALF_VOXEL_SIZE),
+	glm::vec3(VOXEL_SIZE * (CHUNK_SIZE - .5f), -HALF_VOXEL_SIZE, -HALF_VOXEL_SIZE),
+	glm::vec3(-HALF_VOXEL_SIZE),
+	glm::vec3(-HALF_VOXEL_SIZE, -HALF_VOXEL_SIZE, VOXEL_SIZE * (CHUNK_SIZE - .5f))
 };
 #endif // DEBUG_GRID_LINES
 
@@ -149,6 +151,7 @@ enum SHADER_NAMES : unsigned char {
 	POINT_GIZMO,
 	LINE_GIZMO,
 	CIRCLE_GIZMO,
+	PHYS_DEBUG
 };
 
 enum class Move_Dir : unsigned char {

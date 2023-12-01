@@ -19,7 +19,9 @@ protected:
 	// called before componet functions
 	virtual void update(const float detlaTime);
 	// called before componet functions
-	virtual void fixedUpdate();
+	virtual void preFixedUpdate();
+	// called before componet functions
+	virtual void postFixedUpdate();
 	// called before componet functions
 	virtual void render();
 	// called before componet functions
@@ -41,7 +43,9 @@ public:
 	// called after entity functions
 	void updateEvent(const float deltaTime);
 	// called after entity functions
-	void fixedUpdateEvent();
+	void preFixedUpdateEvent();
+	// called after entity functions
+	void postFixedUpdateEvent();
 	// called after entity functions
 	void renderEvent();
 	// called after entity functions (likly redundent as it will be cassed after the componets destructor

@@ -14,7 +14,8 @@ public:
 	virtual void awake();
 	virtual void start();
 	virtual void update(const float detlaTime);
-	virtual void fixedUpdate();
+	virtual void preFixedUpdate();
+	virtual void postFixedUpdate();
 	virtual void render();
 	virtual void destroy();
 };

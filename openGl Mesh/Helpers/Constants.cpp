@@ -29,6 +29,7 @@ std::vector<Shader> SHADERS = {
 	Shader("Gizmos/PointShader/pointShader"),
 	Shader("Gizmos/LineShader/lineShader", true),
 	Shader("Gizmos/CircleShader/circleShader", true),
+	Shader("PhysicsDebug/physicsDebug"),
 };
 std::vector<BlockDetails> BLOCK_DETAILS = {};
 std::vector<Material> MATERIALS = {

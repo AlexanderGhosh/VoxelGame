@@ -24,7 +24,11 @@ void Component::update(const float detlaTime)
 {
 }
 
-void Component::fixedUpdate()
+void Component::preFixedUpdate()
+{
+}
+
+void Component::postFixedUpdate()
 {
 }
 

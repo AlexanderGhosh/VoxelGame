@@ -113,7 +113,7 @@ void World::tryFinishGenerateChunk()
 
 const ChunkColumn& World::getChunk(const glm::vec2& chunkPos, bool& success) const
 {
-	if (chunks.contains(chunkPos)) {
+	if (chunks.contains(chunkPos) && !positionsBeingGenerated.contains(chunkPos)) {
 		success = true;
 		return chunks.at(chunkPos);
 	}
@@ -213,7 +213,7 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 
 			worldBlockPos.x += chunk->getWorldPosition3D().x;
 			worldBlockPos.z += chunk->getWorldPosition3D().y;
-			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
+			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
 				const float d = glm::distance(ro, worldBlockPos);
 				if (d < minD) {
 					minD = d;
@@ -247,7 +247,7 @@ void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 
 			worldBlockPos.x += chunk->getWorldPosition3D().x;
 			worldBlockPos.z += chunk->getWorldPosition3D().y;
-			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SZIE, worldBlockPos + HALF_VOXEL_SZIE)) {
+			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
 				const float d = glm::distance(ro, worldBlockPos);
 				if (d < minD) {
 					minD = d;

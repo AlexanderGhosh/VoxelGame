@@ -6,7 +6,6 @@ namespace Components {
 	class Transform;
 	class Camera;
 	class FlightControls;
-	class BoxCollider;
 	class RigidBody;
 }
 class ChunkColumn;
@@ -17,7 +16,6 @@ namespace Entities {
 		Components::Transform* _transform;
 		Components::Camera* _camera;
 		Components::FlightControls* _controls;
-		Components::BoxCollider* _collider;
 		Components::RigidBody* _rigidbody;
 		bool _noClip;
 	public:
@@ -39,5 +37,6 @@ namespace Entities {
 		void processMouse(const glm::vec2& mouseOffsets);
 
 		void start() override;
+		void update(float deltaTime) override;
 	};
 };

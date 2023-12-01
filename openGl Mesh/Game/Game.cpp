@@ -6,6 +6,7 @@
 #include "../Mangers/EntityManager.h"
 #include "../Mangers/ModelManager.h"
 #include "../Mangers/GizmoManager.h"
+#include "../Mangers/PhysicsManager.h"
 #include "../IndexedBuffer.h"
 #include "../Helpers/ModelLoaders/ModelLoader.h"
 #include "../Helpers/ModelLoaders/Model.h"
@@ -34,10 +35,11 @@ UI_Renderer Game::uiRenderer;
 Event Game::leftClickRelease;
 Event Game::rightClickRelease;
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(), cameraView(),
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
 SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer(), materialsBuffer(), _player() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
+
 	setUpScreenQuad();
 	manager = &EntityManager::getInstance(); 
 	gizmoManager = &GizmoManager::getInstance();
@@ -171,7 +173,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	manager->startEvent();
 	
-	_player->setPosition({ 0, 25, 0 });
+	_player->setPosition({ 0, 10, 0 });
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
@@ -193,6 +195,10 @@ void Game::doLoop(const glm::mat4& projection) {
 	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
 	Timer timer("Loop Time");
+
+	PhysicsManager& physManager = PhysicsManager::getInstance();
+
+	float dtAccumulator = 0;
 	while (gameRunning) {
 		calcTimes();
 		glfwPollEvents();
@@ -225,7 +231,20 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		manager->updateEvent(deltaTime);
 
-		manager->fixedUpdateEvent();
+		if (dtAccumulator >= FIXED_DELTA_TIME) {
+			dtAccumulator -= FIXED_DELTA_TIME;
+
+			bool found = false;
+			const ChunkColumn& chunk = world.getChunk({0, 0}, found);
+			if (found) {
+				physManager.setTerrain(chunk);
+			}
+
+			manager->preFixedUpdateEvent();
+			physManager.step();
+			manager->postFixedUpdateEvent();
+		}
+		dtAccumulator += deltaTime;
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -433,6 +452,49 @@ void Game::showStuff() {
 	glBindVertexArray(0);
 
 	gizmoManager->render(cameraProjection * cameraView);
+#ifdef PHYSICS_DEBUG_RENDERER
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(false);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	const Shader& physDebug = SHADERS[PHYS_DEBUG];
+	physDebug.bind();
+	physDebug.setValue("pv", cameraProjection * cameraView);
+
+	// creates VAO, VBO populates with lines then draws repeat for triangles then deltes buffers (every frame
+	static PhysicsManager& physManger = PhysicsManager::getInstance();
+	auto debugger = physManger.getDebugRenderer();
+	auto numLines = debugger->getNbLines();
+	auto numTriangles = debugger->getNbTriangles();
+
+	
+	unsigned int VAO, VBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)0); // vert world pos
+	glEnableVertexAttribArray(1);
+	glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)sizeof(reactphysics3d::Vector3)); // vert colour
+
+	if (numLines > 0) {
+		// auto lines = debugger->getLinesArray();
+		// glBufferData(GL_ARRAY_BUFFER, numLines * sizeof(reactphysics3d::DebugRenderer::DebugLine), lines, GL_STATIC_DRAW);
+		// glDrawArrays(GL_LINES, 0, numLines*2); // draw all lines
+	}
+	if (numTriangles > 0) {
+		auto triangles = debugger->getTrianglesArray();
+		// refill data with triangle data
+		glBufferData(GL_ARRAY_BUFFER, numTriangles * sizeof(reactphysics3d::DebugRenderer::DebugTriangle), triangles, GL_STATIC_DRAW);
+
+		glDrawArrays(GL_TRIANGLES, 0, numTriangles*3); // draw triangles
+	}
+
+	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, &VAO); 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 	composite.unBind();
 
 

@@ -67,7 +67,6 @@ private:
 	void placeBlock();
 	void breakBlock();
 
-	
 	UniformBuffer materialsBuffer;
 	ModelRenderer modelRenderer;
 	EntityManager* manager;

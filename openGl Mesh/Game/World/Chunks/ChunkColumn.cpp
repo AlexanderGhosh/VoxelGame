@@ -488,6 +488,13 @@ void ChunkColumn::load(const glm::vec2& chunkPos)
 	this->buffer.setUp(bufferData.data(), bufferData.size());
 }
 
+unsigned int ChunkColumn::getHeight(const float x, const float z) const
+{
+	glm::vec2 worldPos(x, z);
+	worldPos += getWorldPosition2D();
+	return world_generation::heightOfColumn(worldPos, seed);
+}
+
 const std::vector<GeomData>& ChunkColumn::getMeshData() const
 {
 	return bufferData;

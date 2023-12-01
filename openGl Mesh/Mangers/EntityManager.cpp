@@ -28,10 +28,17 @@ void EntityManager::updateEvent(const float deltaTime)
 	}
 }
 
-void EntityManager::fixedUpdateEvent()
+void EntityManager::preFixedUpdateEvent()
 {
 	for (Entity* entity : _entities) {
-		entity->fixedUpdateEvent();
+		entity->preFixedUpdateEvent();
+	}
+}
+
+void EntityManager::postFixedUpdateEvent()
+{
+	for (Entity* entity : _entities) {
+		entity->postFixedUpdateEvent();
 	}
 }
 
