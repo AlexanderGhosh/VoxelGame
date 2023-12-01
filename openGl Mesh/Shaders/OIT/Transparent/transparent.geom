@@ -3,12 +3,16 @@
 layout (points) in;
 layout (triangle_strip, max_vertices = 24) out;
 
+layout (std140, binding = 0) uniform Camera
+{
+    mat4 projection;
+    mat4 view;
+};
 uniform float voxelSize;
 
 in VS_OUT {
     uint cubeType;
     uint colourIndex;
-    mat4 pv;
     mat4 m;
 } vs_out[];
 
@@ -58,7 +62,7 @@ void main() {
                 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
                 fragPos = (vs_out[0].m * vec4(v * voxelSize, 1)).xyz;
-                gl_Position = vs_out[0].pv * vec4(fragPos, 1);
+                gl_Position = projection * view * vec4(fragPos, 1);
                 EmitVertex();
             }
             EndPrimitive();

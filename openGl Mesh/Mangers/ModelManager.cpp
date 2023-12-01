@@ -1,13 +1,12 @@
 #include "ModelManager.h"
 #include "../Helpers/ModelLoaders/ModelLoader.h"
-#include "../Helpers/ModelLoaders/Model.h"
 
 ModelManager::ModelManager()
 {
 }
 Model& ModelManager::load(const std::string& file)
 {
-	_allModels.emplace_back(ModelLoader::Load(file));
+	_allModels.push_back(ModelLoader::Load(file));
 	return _allModels.back();
 }
 
