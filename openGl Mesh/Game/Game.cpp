@@ -175,9 +175,11 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
-	auto buffer = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
-	std::cout << "Model Loaded" << std::endl;
-	addModel(buffer);
+	auto enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	addModel(enterprise);
+	auto cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
+	addModel(cloud);
+	std::cout << "Models Loaded" << std::endl;
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
 #ifdef SSAO
@@ -200,10 +202,10 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	manager->startEvent();
 
-	_player->setPosition({ 8, 100, 8 });
-	reactphysics3d::Material& mat = _player->getRigidBody()->getMaterial();
+	_player->setPosition({ 8, 40, 8 });
+	/*reactphysics3d::Material& mat = _player->getRigidBody()->getMaterial();
 	mat.setBounciness(0);
-	mat.setFrictionCoefficient(1);
+	mat.setFrictionCoefficient(1);*/
 
 	float dtAccumulator = 0;
 	while (gameRunning) {

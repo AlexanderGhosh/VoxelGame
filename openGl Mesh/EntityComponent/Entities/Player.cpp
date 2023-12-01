@@ -79,14 +79,14 @@ void Entities::Player::processMouse(const glm::vec2& mouseOffsets)
 
 void Entities::Player::start()
 {
-	_transform = getComponent<Components::Transform>();
+	_transform = getComponent<Components::Transform>(); 
 	_camera = getComponent<Components::Camera>();
 	_controls = getComponent<Components::FlightControls>();
 	_rigidbody = getComponent<Components::RigidBody>();
 
 	_transform->scale = glm::vec3(1, 2, 1) * .8f;
 
-	_controls->setRigidBody(_rigidbody);
+	_controls->setTransform(_transform);
 	_rigidbody->setTransform(_transform);
 
 	Components::RigidBody_Details rbDetails;
@@ -96,7 +96,7 @@ void Entities::Player::start()
 		rbDetails._collider = PhysicsManager::getInstance().createBoxShape(glm::vec3(HALF_VOXEL_SIZE, VOXEL_SIZE, HALF_VOXEL_SIZE) * .9f);
 	}
 	else {
-		rbDetails._bodyType = Components::RigidBody_Details::STATIC;
+		rbDetails._bodyType = Components::RigidBody_Details::KINEMATIC;
 	}
 	_rigidbody->setDetails(rbDetails);
 }
