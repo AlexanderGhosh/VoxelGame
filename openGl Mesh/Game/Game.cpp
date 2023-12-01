@@ -39,7 +39,7 @@ Event Game::leftClickRelease;
 Event Game::rightClickRelease;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), modelRenderer(), gBuffer(), materialsBuffer(), _player() {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), gBuffer(), materialsBuffer(), _player() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -175,9 +175,9 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	// LOAD MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
-	auto enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
+	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d.obj");
 	addModel(enterprise);
-	auto cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
+	auto& cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
 	addModel(cloud);
 	std::cout << "Models Loaded" << std::endl;
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
@@ -269,10 +269,6 @@ void Game::doLoop(const glm::mat4& projection) {
 	timer.showDetails(numFrames);
 
 	manager->destroyEvent();
-}
-
-void Game::addModel(Model& model) {
-	modelRenderer.add(model);
 }
 
 void Game::calcTimes() {

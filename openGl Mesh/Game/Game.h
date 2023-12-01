@@ -10,7 +10,6 @@
 #include "../Renders/UI Stuff/UI_Renderer.h"
 #include "World/World.h"
 #include "../FrameBuffer.h"
-#include "../Renders/ModelRenderer.h"
 #include "../UniformBuffer.h"
 #include "../EventsSystem/Event.h"
 
@@ -68,7 +67,6 @@ private:
 	void breakBlock();
 
 	UniformBuffer materialsBuffer;
-	ModelRenderer modelRenderer;
 	EntityManager* manager;
 	GizmoManager* gizmoManager;
 

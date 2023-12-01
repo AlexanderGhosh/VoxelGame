@@ -4,10 +4,13 @@
 #include "../../IndexedBuffer.h"
 
 class Mesh;
+class Shader;
 
 class Model {
+private:
+	std::vector<IndexedBuffer> _meshBuffers;
 public:
-	std::vector<IndexedBuffer> meshBuffers;
+	void render() const;
 	void setUp(const std::list<Mesh>& meshes);
 	void cleanUp();
 };

@@ -1,19 +1,28 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "../../IndexedBuffer.h"
+#include <glad/glad.h>
+
+void Model::render() const
+{
+	for (auto& buffer : _meshBuffers) {
+		buffer.bind();
+		glDrawElements(GL_TRIANGLES, buffer.size(), GL_UNSIGNED_INT, nullptr);
+	}
+}
 
 void Model::setUp(const std::list<Mesh>& meshes)
 {
-	meshBuffers.reserve(meshes.size());
+	_meshBuffers.reserve(meshes.size());
 	for (const Mesh& mesh : meshes) {
-		meshBuffers.emplace_back(mesh);
+		_meshBuffers.emplace_back(mesh);
 	}
 }
 
 void Model::cleanUp()
 {
-	for (IndexedBuffer& buffer : meshBuffers) {
+	for (IndexedBuffer& buffer : _meshBuffers) {
 		buffer.cleanUp();
 	}
-	meshBuffers.clear();
+	_meshBuffers.clear();
 }

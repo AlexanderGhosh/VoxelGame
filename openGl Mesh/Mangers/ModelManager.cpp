@@ -5,11 +5,16 @@
 ModelManager::ModelManager()
 {
 }
-Model ModelManager::load(const std::string& file)
+Model& ModelManager::load(const std::string& file)
 {
-	return ModelLoader::Load(file);
+	_allModels.emplace_back(ModelLoader::Load(file));
+	return _allModels.back();
 }
 
 void ModelManager::destroy()
 {
+	for (Model& m : _allModels) {
+		m.cleanUp();
+	}
+	_allModels.clear();
 }

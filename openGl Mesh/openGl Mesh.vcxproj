@@ -195,6 +195,7 @@
     <ClCompile Include="Gizmos\Primatives\Point.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mangers\PhysicsManager.cpp" />
+    <ClCompile Include="EntityComponent\Components\RenderMesh.cpp" />
     <ClCompile Include="Renders\ModelRenderer.cpp" />
     <ClCompile Include="EntityComponent\Components\RigidBody.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
@@ -280,6 +281,7 @@
     <ClInclude Include="Gizmos\Primatives\Point.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mangers\PhysicsManager.h" />
+    <ClInclude Include="EntityComponent\Components\RenderMesh.h" />
     <ClInclude Include="Renders\ModelRenderer.h" />
     <ClInclude Include="EntityComponent\Components\RigidBody.h" />
     <ClInclude Include="Shaders\Shader.h" />
