@@ -211,8 +211,8 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 		for (const GeomData& data : chunk->getMeshData()) {
 			glm::vec3 worldBlockPos = data.getPos();
 
-			worldBlockPos.x += chunk->getWorldPosition3D().x;
-			worldBlockPos.z += chunk->getWorldPosition3D().y;
+			worldBlockPos.x += chunk->getWorldPosition2D().x;
+			worldBlockPos.z += chunk->getWorldPosition2D().y;
 			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
 				const float d = glm::distance(ro, worldBlockPos);
 				if (d < minD) {
@@ -245,8 +245,8 @@ void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 		for (const GeomData& data : chunk->getMeshData()) {
 			glm::vec3 worldBlockPos = data.getPos();
 
-			worldBlockPos.x += chunk->getWorldPosition3D().x;
-			worldBlockPos.z += chunk->getWorldPosition3D().y;
+			worldBlockPos.x += chunk->getWorldPosition2D().x;
+			worldBlockPos.z += chunk->getWorldPosition2D().y;
 			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
 				const float d = glm::distance(ro, worldBlockPos);
 				if (d < minD) {
