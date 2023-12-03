@@ -500,6 +500,31 @@ const std::vector<GeomData>& ChunkColumn::getMeshData() const
 	return bufferData;
 }
 
+std::array<BlockDetails, CHUNK_AREA * WORLD_HEIGHT> ChunkColumn::getBlocksGrid()
+{
+	auto index = [](int x, int y, int z) -> int {
+		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+	};
+
+	std::array<BlockDetails, CHUNK_AREA * WORLD_HEIGHT> res;
+	res.fill(getDetails(Block::AIR));
+
+	for (const GeomData& data : bufferData) {
+		const glm::vec3 p = data.getPos();
+		int idx = index(p.x, p.y, p.z);
+		if ((Block)data.textureIndex_ == Block::WATER) {
+			int _ = 0;
+		}
+		res[idx] = getDetails((Block) data.textureIndex_);
+	}
+	for (auto& [p, block] : editedBlocks) {
+		int idx = index(p.x, p.y, p.z);
+		res[idx] = getDetails(block);
+	}
+
+	return res;
+}
+
 const Block ChunkColumn::getBlock_BlockStore(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const
 {
 	if (worldPos) {

@@ -40,4 +40,5 @@ std::vector<Material> MATERIALS = {
 	Material(glm::vec4(RRC(246), RRC(215), RRC(176), 1), glm::vec4(RRC(225), RRC(191), RRC(146), 1)), // sand
 	Material(glm::vec4(0, .6, 1, .7), glm::vec4(.1, .4, .9, .8)), // water
 	Material(glm::vec4(1), glm::vec4(.9)), // snow
+	Material(glm::vec4(1, 0, 0, 1), glm::vec4(1, 0, 0, 1)), // gravel
 };

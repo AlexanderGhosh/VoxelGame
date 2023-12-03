@@ -124,7 +124,9 @@ void createBlockDetails() {
 	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
 		Block block = (Block)i;
 		BlockDetails& dets = BLOCK_DETAILS[i];
+		dets.type = block;
 		dets.isTransparant = block == Block::AIR || block == Block::WATER;
+		dets.isDynamic = block == Block::GRAVEL;
 	}
 }
 

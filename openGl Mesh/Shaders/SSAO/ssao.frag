@@ -56,8 +56,6 @@ void main() {
 
     occlusion = 1.0 - (occlusion / float(kernelSize));
 
-    occlusion = occlusion > 0.5 ? 1.: 0.;
-
     // only outputs the albedo
     ao = occlusion;
 }

@@ -31,6 +31,12 @@ public:
 	// if sucess is true returns a reference to the desired chunk
 	// will not return partialy generated chunks (in the process of async generation)
 	const ChunkColumn& getChunk(const glm::vec2& chunkPos, bool& success) const;
+	// if sucess is true returns a reference to the desired chunk
+	// will not return partialy generated chunks (in the process of async generation)
+	ChunkColumn* getChunk(const glm::vec2& chunkPos, bool& success);
+
+	// performs cellular automota on 0, 0 chunk
+	void update();
 
 private:
 	bool generated; // used to genrated the world async first

@@ -87,7 +87,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 	positionsBeingGenerated.insert(toGenerate.begin(), toGenerate.end());
 
 	// compute set difference
-	launchAsyncs(toGenerate, 4);
+	launchAsyncs(toGenerate, 1);
 }
 
 void World::tryFinishGenerateChunk()
@@ -121,6 +121,62 @@ const ChunkColumn& World::getChunk(const glm::vec2& chunkPos, bool& success) con
 	return {};
 }
 
+ChunkColumn* World::getChunk(const glm::vec2& chunkPos, bool& success)
+{
+	if (chunks.contains(chunkPos) && !positionsBeingGenerated.contains(chunkPos)) {
+		success = true;
+		return &chunks.at(chunkPos);
+	}
+	success = false;
+	return nullptr;
+}
+
+void World::update()
+{
+	// performed in local unscaled space
+	auto index = [](int x, int y, int z) -> int {
+		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+	};
+	struct MoveRequest {
+		glm::ivec3 currentPos;
+		glm::ivec3 nextPos;
+		Block currentBlock;
+		Block nextBlock;
+	};
+
+	bool found = false;
+	ChunkColumn& chunk = *getChunk({ 0, 0 }, found);
+	if (!found) {
+		return;
+	}
+	const auto data = chunk.getBlocksGrid();
+	std::list<MoveRequest> movementRequests;
+	for (int x = 0; x < CHUNK_SIZE; x++) {
+		for (int z = 0; z < CHUNK_SIZE; z++) {
+			for (int y = WORLD_HEIGHT - 1; y > 0; y--) {
+				int idx = index(x, y, z);
+				const BlockDetails& block = data[idx];
+				if (block.isDynamic) {
+					idx = index(x, y - 1, z);
+					const BlockDetails& under = data[idx];
+					if (under.type == Block::AIR) {
+						MoveRequest request{};
+						request.currentBlock = block.type;
+						request.nextBlock = block.type;
+						request.currentPos = { x, y, z };
+						request.nextPos = { x, y - 1, z };
+						movementRequests.push_back(request);
+					}
+				}
+			}
+		}
+	}
+	for (auto& req : movementRequests) {
+		chunk.removeBlock(req.currentPos, this);
+		chunk.addBlock(req.nextPos, req.nextBlock);
+	}
+}
+
 void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, const unsigned int n)
 {
 	unsigned int size = allChunkPoss.size() / n;
@@ -146,12 +202,14 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 
 std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
 {
+	Timer t("Chunk Genreate");
 	// can throw error if the chunk is removed from chunks while its being generated
 	for (const glm::vec2& chunkPos : positions) {
 		chunks[chunkPos] = ChunkColumn();
 		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
 		chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
 	}
+	t.showDetails(positions.size());
 	return positions;
 }
 
@@ -229,7 +287,7 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 
 	if (chunks.find(chunkPos) != chunks.end()) {
 		ChunkColumn& chunk = chunks.at(chunkPos);
-		chunk.addBlock(placePos, Block::SAND);
+		chunk.addBlock(placePos, Block::GRAVEL);
 	}
 }
 

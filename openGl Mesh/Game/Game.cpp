@@ -227,6 +227,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	mat.setFrictionCoefficient(1);*/
 
 	float dtAccumulator = 0;
+	float cellularAccum = 0;
 	while (gameRunning) {
 		calcTimes();
 		glfwPollEvents();
@@ -264,7 +265,7 @@ void Game::doLoop(const glm::mat4& projection) {
 			dtAccumulator -= FIXED_DELTA_TIME;
 
 			bool found = false;
-			const ChunkColumn& chunk = world.getChunk(c, found);
+			const ChunkColumn& chunk = *world.getChunk(c, found);
 			if (found) {
 				physManager.setTerrain(chunk);
 			}
@@ -274,6 +275,13 @@ void Game::doLoop(const glm::mat4& projection) {
 			manager->postFixedUpdateEvent();
 		}
 		dtAccumulator += deltaTime;
+		cellularAccum += deltaTime;
+
+		// occures every 1 seccond
+		if (cellularAccum > 1) {
+			world.update();
+			cellularAccum = 0;
+		}
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
