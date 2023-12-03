@@ -16,7 +16,7 @@ class Material;
 
 // #define PHYSICS_DEBUG_RENDERER
 
-#define GENERATE_NEW_CHUNKS true
+#define GENERATE_NEW_CHUNKS false
 
 #define RRC(x) (float(x) / 255.f)
 
