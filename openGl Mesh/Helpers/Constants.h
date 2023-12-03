@@ -16,7 +16,7 @@ class Material;
 
 // #define PHYSICS_DEBUG_RENDERER
 
-#define GENERATE_NEW_CHUNKS false
+#define GENERATE_NEW_CHUNKS true
 
 #define RRC(x) (float(x) / 255.f)
 
@@ -43,7 +43,7 @@ constexpr float FAR_PLANE = 200;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr unsigned int RENDER_DISTANCE = 9;
+constexpr unsigned int RENDER_DISTANCE = 20;
 constexpr unsigned int WORLD_HEIGHT = 256;
 constexpr unsigned unsigned int WATER_LEVEL = 20;
 constexpr unsigned unsigned int SNOW_LEVEL = 38;

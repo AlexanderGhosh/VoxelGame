@@ -251,8 +251,8 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		// glm::vec3 f = glm::normalize(glm::vec3(mainCamera.GetFront().x, 0, mainCamera.GetFront().z));
 		// glm::vec3 frustrumCenter = mainCamera.GetPosition() + f * FAR_PLANE * .5f;
-		glm::vec3 frustrumCenter(0, 0, 0);
-		float frustrumRadius = FAR_PLANE * .5f;
+		float frustrumRadius = FAR_PLANE;
+		glm::vec3 frustrumCenter = _player->getPosition();
 		
 
 		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);

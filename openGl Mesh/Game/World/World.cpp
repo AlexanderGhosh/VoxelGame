@@ -61,7 +61,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 		// pos unscaled local chunk pos
 		auto& [pos, _] = *itt;
 		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-		if ((!toGenerate.contains(pos) || dist > maxDist) && !positionsBeingGenerated.contains(pos))
+		if ((dist > maxDist || !toGenerate.contains(pos)) && !positionsBeingGenerated.contains(pos))
 		{
 			geomDrawable.remove(pos);
 			itt = chunks.erase(itt);
@@ -76,7 +76,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 		// local unscaled
 		const glm::vec2& pos = *itt;
 		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-		if (chunks.contains(pos) || positionsBeingGenerated.contains(pos) || dist > maxDist) {
+		if (dist > maxDist || positionsBeingGenerated.contains(pos) || chunks.contains(pos)) {
 			itt = toGenerate.erase(itt);
 		}
 		else {
@@ -147,13 +147,11 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
 {
 	// can throw error if the chunk is removed from chunks while its being generated
-	Timer t("Chunk Mesh");
 	for (const glm::vec2& chunkPos : positions) {
 		chunks[chunkPos] = ChunkColumn();
 		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
 		chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
 	}
-	t.showDetails(positions.size());
 	return positions;
 }
 
