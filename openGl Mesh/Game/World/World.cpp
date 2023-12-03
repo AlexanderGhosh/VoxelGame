@@ -147,11 +147,13 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
 {
 	// can throw error if the chunk is removed from chunks while its being generated
+	Timer t("Chunk Mesh");
 	for (const glm::vec2& chunkPos : positions) {
 		chunks[chunkPos] = ChunkColumn();
 		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
 		chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
 	}
+	t.showDetails(positions.size());
 	return positions;
 }
 
