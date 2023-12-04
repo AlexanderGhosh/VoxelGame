@@ -12,6 +12,6 @@ public:
 	
 	const BlocksEncoded& getBlocksAt(glm::vec2 pos) const;
 	const BlocksEncoded& getBlocksAt(float x, float z) const;
-	const Block getBlock(glm::vec3 relativePos) const;
+	const Block getBlock(glm::vec3 relativePos, bool check = true) const;
 };
 

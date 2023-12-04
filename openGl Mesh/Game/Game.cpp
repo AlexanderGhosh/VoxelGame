@@ -449,7 +449,7 @@ void Game::showStuff() {
 	transparent.setValue("viewDir", _player->getViewDirection());
 	transparent.setValue("lightPos", LIGHT_POSITION);
 
-	world.render(&transparent);
+	//world.render(&transparent);
 
 	transparent.unBind();
 
@@ -474,6 +474,8 @@ void Game::showStuff() {
 	glBindVertexArray(0);
 
 	gizmoManager->render(cameraProjection * cameraView);
+
+
 #ifdef PHYSICS_DEBUG_RENDERER
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(false);
@@ -561,6 +563,15 @@ void Game::showStuff() {
 	glBindVertexArray(0);
 	
 	screenQuad.unBind();
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	Shader* greedyShader = &SHADERS[GREEDY];
+	greedyShader->bind();
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(false); // enable depth writes so glClear won't ignore clearing the depth buffer
+	glDisable(GL_CULL_FACE);
+	world.renderGreedy(greedyShader);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Game::setWindow(GLFWwindow* window) {

@@ -171,6 +171,8 @@
     <ClCompile Include="EntityComponent\Entity.cpp" />
     <ClCompile Include="Gizmos\Composite\Grid2D.cpp" />
     <ClCompile Include="EntityComponent\Components\FlightControls.cpp" />
+    <ClCompile Include="GreedyRendering\BufferGreedy.cpp" />
+    <ClCompile Include="GreedyRendering\DrawableGreedy.cpp" />
     <ClCompile Include="Mangers\GizmoManager.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\Model.cpp" />
     <ClCompile Include="IndexedBuffer.cpp" />
@@ -238,7 +240,10 @@
   <ItemGroup>
     <ClInclude Include="EntityComponent\Components\Camera.h" />
     <ClInclude Include="EntityComponent\Entities\Player.h" />
+    <ClInclude Include="GreedyRendering\BufferGreedy.h" />
+    <ClInclude Include="GreedyRendering\DrawableGreedy.h" />
     <ClInclude Include="GreedyRendering\GreedyData.h" />
+    <ClInclude Include="GreedyRendering\GreedyDrawData.h" />
     <ClInclude Include="Helpers\Async\DynamicAsyncPool.h" />
     <ClInclude Include="Helpers\Async\StaticAsyncPool.h" />
     <ClInclude Include="Gizmos\Composite\Arrow.h" />

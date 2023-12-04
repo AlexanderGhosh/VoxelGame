@@ -2,6 +2,8 @@
 #include "../../../BlockStore.h"
 #include "../../../GeomRendering/BufferGeom.h"
 #include "../../../GeomRendering/GeomData.h"
+#include "../../../GreedyRendering/GreedyData.h"
+#include "../../../GreedyRendering/BufferGreedy.h"
 
 class World;
 
@@ -54,9 +56,17 @@ public:
 	// returns the current state of the mesh in grid format
 	std::array<BlockDetails, CHUNK_AREA* WORLD_HEIGHT> getBlocksGrid();
 
+	// GREEDY MESH STUFF
+	BufferGreedy* getGreedyPtr() {
+		return &greedyBuffer;
+	};
+	void setUpGreedyBuffer();
 
-	std::vector<GreedyData> newBufferData;
 private:
+	// GREEDY MESH STUFF
+	std::vector<GreedyData> greedyBufferData;
+	BufferGreedy greedyBuffer;
+	//
 
 	// used for runtime genertion doesnt do any opengl funcs
 	void populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);

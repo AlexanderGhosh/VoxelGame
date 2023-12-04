@@ -2,6 +2,7 @@
 #include <future>
 #include <unordered_set>
 #include "../../GeomRendering/DrawableGeom.h"
+#include "../../GreedyRendering/DrawableGreedy.h"
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Async/DynamicAsyncPool.h"
 
@@ -12,6 +13,7 @@ public:
 	World(const glm::vec3 worldOrigin, unsigned int seed);
 
 	void render(Shader* shader);
+	void renderGreedy(Shader* shader);
 
 	void setUpDrawable();
 
@@ -59,6 +61,7 @@ private:
 	Chunks chunks;
 
 	DrawableGeom geomDrawable;
+	DrawableGreedy greedyDrawable;
 	// only genertes chunk buffer data can be called async
 	// returns a list of chunk positions that it will generate
 	std::unordered_set<glm::vec2> generateNewChunks(const std::unordered_set < glm::vec2>& positions);

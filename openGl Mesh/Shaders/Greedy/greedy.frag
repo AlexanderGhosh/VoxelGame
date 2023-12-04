@@ -1,4 +1,4 @@
-#version 440 core
+#version 460 core
 
 layout(location = 0) out vec3 _albedo;
 layout(location = 1) out vec3 _fragPos;
@@ -14,9 +14,7 @@ layout (std140, binding = 1) uniform Mats
     Material[6] materials;
 };
 
-uniform float numBlocks;
-
-flat in uint materialIndex;
+flat in uint matIdx;
 in vec3 normal;
 in vec3 fragPos_;
 // flat in vec2 rndSeed;
@@ -26,7 +24,7 @@ void main()
 {
     vec2 rndSeed = vec2(0, 1);
     float rndValue = rand(rndSeed);
-    Material mat = materials[materialIndex];
+    Material mat = materials[matIdx];
     _albedo = mix(mat.albedo1, mat.albedo2, rndValue).xyz;
     _fragPos = fragPos_; // view space space
     _normal = normal;

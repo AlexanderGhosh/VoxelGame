@@ -1,27 +1,26 @@
-#version 440 core
+#version 460 core
 
-layout(location = 0) in vec3 _vert;
-layout(location = 1) in uint _material;
-
-layout (std140, binding = 0) uniform Camera
-{
-    mat4 projection;
-    mat4 view;
-};
+layout(location = 0) in vec3 _vert0;
+layout(location = 1) in vec3 _vert1;
+layout(location = 2) in vec3 _vert2;
+layout(location = 3) in vec3 _vert3;
+layout(location = 4) in uint _material;
 
 uniform float voxelSize;
 uniform vec3 chunkPosition;
 
+out vec3 vert0;
+out vec3 vert1;
+out vec3 vert2;
+out vec3 vert3;
 flat out uint materialIndex;
-out vec3 fragPos_;
-out vec3 normal;
 
-// gl_Postion hold the max coord
 
 void main() {
-    normal = vec3(0, 1, 0);
-    vec3 pos = (chunkPosition + _vert) * voxelSize;
-    fragPos_ = (view * vec4(pos, 1.0)).xyz;
-    gl_Position = projection * vec4(fragPos_, 1.0);
+    vert0 = (_vert0 + chunkPosition) * voxelSize;
+    vert1 = (_vert1 + chunkPosition) * voxelSize;
+    vert2 = (_vert2 + chunkPosition) * voxelSize;
+    vert3 = (_vert3 + chunkPosition) * voxelSize;
+
     materialIndex = _material;
 }

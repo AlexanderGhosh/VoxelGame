@@ -7,6 +7,7 @@
 #include "../../Helpers/Timers/Timer.h"
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
+#include <glad/glad.h>
 
 World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false) {
 }
@@ -102,6 +103,9 @@ void World::tryFinishGenerateChunk()
 			// ChunkColumn& chunk = chunks.at(chunkPos);
 			chunk->setUpBuffer();
 			geomDrawable.add(*chunk);
+			// GREEDY
+			chunk->setUpGreedyBuffer();
+			greedyDrawable.add(*chunk);
 
 			const std::list<ChunkColumn*>& neighbours = getNeibours(*itt);
 			for (ChunkColumn* chunk : neighbours) {
@@ -309,8 +313,15 @@ void World::save() const
 
 void World::render(Shader* shader) {
 	tryFinishGenerateChunk();
-	geomDrawable.render(shader);
+	//geomDrawable.render(shader);
+
+
 }
+void World::renderGreedy(Shader* shader) {
+	tryFinishGenerateChunk();
+	greedyDrawable.render(shader);
+}
+
 
 void World::setUpDrawable()
 {
