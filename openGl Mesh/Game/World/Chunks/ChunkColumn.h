@@ -10,9 +10,9 @@ class World;
 // all operations are unscaled unless otherwise stated
 class ChunkColumn
 {
-	friend class World;
 public:
 	ChunkColumn();
+	ChunkColumn(glm::vec2 pos, unsigned int seed);
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
 	// runtime chunk generation
@@ -20,6 +20,7 @@ public:
 	void generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours);
 	void setUpBuffer();
 	void reallocBuffer();
+
 
 
 	// inital world generation
@@ -61,11 +62,20 @@ public:
 		return &greedyBuffer;
 	};
 	void setUpGreedyBuffer();
+	// GREEDY MESH ASYNC
+	// puts this chunks block store in bs (assumes the chunk positon is set)
+	void generateBlockStore(BlockStore& bs);
+	void createMesh(const std::unordered_map<glm::vec2, BlockStore>& neighbours, const BlockStore& blockStore);
 
+	// Gets the block from edited or simplex noise in the world pos
+	// all getBlock s resovel to this
+	const Block getBlock(const glm::vec3& worldPos);
 private:
 	// GREEDY MESH STUFF
 	std::vector<GreedyData> greedyBufferData;
 	BufferGreedy greedyBuffer;
+	// greedy mesh
+	void greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neighbours, const BlockStore& blockStore);
 
 	void createRunPX(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
 	void createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
@@ -74,8 +84,6 @@ private:
 
 	// used for runtime genertion doesnt do any opengl funcs
 	void populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
-	// greedy mesh
-	void greedyMesh(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
 
 	struct AddFaces {
 		glm::vec3 worldPos;
@@ -90,9 +98,6 @@ private:
 
 	unsigned int seed;
 
-	// Gets the block from edited or simplex noise in the world pos
-	// all getBlock s resovel to this
-	const Block getBlock(const glm::vec3& worldPos);
 	// returns the block found at the position will check the neibour chunks (sourced from world map) if out of bounds
 	const Block getBlock_WorldMap(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const;
 	// returns the block found at in the provided block store

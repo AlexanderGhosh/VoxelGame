@@ -101,15 +101,15 @@ void World::tryFinishGenerateChunk()
 			
 			positionsBeingGenerated.erase(*itt);
 			// ChunkColumn& chunk = chunks.at(chunkPos);
-			chunk->setUpBuffer();
-			geomDrawable.add(*chunk);
+			// chunk->setUpBuffer();
+			// geomDrawable.add(*chunk);
 			// GREEDY
 			chunk->setUpGreedyBuffer();
 			greedyDrawable.add(*chunk);
 
 			const std::list<ChunkColumn*>& neighbours = getNeibours(*itt);
 			for (ChunkColumn* chunk : neighbours) {
-				chunk->reallocBuffer();
+				//chunk->reallocBuffer();
 			}
 		}
 	}
@@ -268,13 +268,41 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 
 std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
 {
+	// Timer t("Chunk Genreate");
+	// // can throw error if the chunk is removed from chunks while its being generated
+	// for (const glm::vec2& chunkPos : positions) {
+	// 	chunks[chunkPos] = ChunkColumn();
+	// 	const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
+	// 	chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
+	// }
+	// t.showDetails(positions.size());
+	// return positions;
+
+
 	Timer t("Chunk Genreate");
+
+
 	// can throw error if the chunk is removed from chunks while its being generated
+
+	// will generate all block stores
+	std::unordered_map<glm::vec2, BlockStore> blockData;
 	for (const glm::vec2& chunkPos : positions) {
-		chunks[chunkPos] = ChunkColumn();
+		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
+		chunks[chunkPos].generateBlockStore(blockData[chunkPos]);
 		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
-		chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
+		
+		for (ChunkColumn* chunk : neighbours) {
+			if (!blockData.contains(chunk->getPosition2D())) {
+				chunk->generateBlockStore(blockData[chunk->getPosition2D()]);
+			}
+		}
 	}
+
+	for (const glm::vec2& chunkPos : positions) {
+		chunks[chunkPos].createMesh(blockData, blockData[chunkPos]);
+	}
+
+
 	t.showDetails(positions.size());
 	return positions;
 }

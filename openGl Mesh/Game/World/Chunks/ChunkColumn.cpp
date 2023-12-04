@@ -15,6 +15,12 @@ ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), edited
 {
 }
 
+ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed) : ChunkColumn()
+{
+	this->seed = seed;
+	position = pos;
+}
+
 ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn()
 {
 	this->seed = seed;
@@ -29,7 +35,7 @@ void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std:
 	BlockStore bs(pos * CHUNK_SIZE_F, seed);
 	//populateBufferFromNeibours(neibours, bs);
 
-	greedyMesh(neibours, bs);
+	// greedyMesh(neibours, bs);
 }
 
 void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
@@ -322,8 +328,24 @@ void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const Bl
 }
 
 
-void ChunkColumn::greedyMesh(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore)
+void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neibours, const BlockStore& blockStore)
 {
+	const BlockStore* pz,* nz,* px,* nx;
+	for (auto& [p, chunk] : neibours) {
+		if (p.x == 1) {
+			px = &chunk;
+		}
+		else if (p.x == -1) {
+			nx = &chunk;
+		}
+		else if (p.y == 1) {
+			pz = &chunk;
+		}
+		else if (p.y == -1) {
+			nz = &chunk;
+		}
+
+	}
 	// unscaled local space
 	auto isVisiblePY = [&](Block b, int x, int y, int z) -> bool {
 		if (b == Block::AIR) {
@@ -335,35 +357,55 @@ void ChunkColumn::greedyMesh(const std::list<ChunkColumn*>& neibours, const Bloc
 	};
 
 	auto isVisiblePZ = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR || z + 1 == CHUNK_SIZE) {
+		if (b == Block::AIR) {
 			return false;
 		}
-		b = blockStore.getBlock({ x, y, z + 1 }, false);
+		else if (z + 1 == CHUNK_SIZE && pz) {
+			b = pz->getBlock({ x, y, 0 });
+		}
+		else {
+			b = blockStore.getBlock({ x, y, z + 1 }, false);
+		}
 		auto& dets = getDetails(b);
 		return b == Block::AIR;
 		};
 	auto isVisibleNZ = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR || z == 0) {
+		if (b == Block::AIR) {
 			return false;
 		}
-		b = blockStore.getBlock({ x, y, z - 1 }, false);
+		else if (z == 0 && nz) {
+			b = pz->getBlock({ x, y, CHUNK_SIZE - 1 });
+		}
+		else {
+			b = blockStore.getBlock({ x, y, z - 1 }, false);
+		}
 		auto& dets = getDetails(b);
 		return b == Block::AIR;
 		};
 
 	auto isVisiblePX = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR || x + 1 == CHUNK_SIZE) {
+		if (b == Block::AIR) {
 			return false;
 		}
-		b = blockStore.getBlock({ x + 1, y, z }, false);
+		else if (x == CHUNK_SIZE - 1 && px) {
+			b = px->getBlock({ 0, y, z });
+		}
+		else {
+			b = blockStore.getBlock({ x + 1, y, z }, false);
+		}
 		auto& dets = getDetails(b);
 		return b == Block::AIR;
 		};
 	auto isVisibleNX = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR || x == 0) {
+		if (b == Block::AIR) {
 			return false;
 		}
-		b = blockStore.getBlock({ x - 1, y, z }, false);
+		else if (x == 0 && nx) {
+			b = nx->getBlock({ CHUNK_SIZE - 1, y, z });
+		}
+		else {
+			b = blockStore.getBlock({ x - 1, y, z }, false);
+		}
 		auto& dets = getDetails(b);
 		return b == Block::AIR;
 		};
@@ -443,6 +485,16 @@ void ChunkColumn::setUpBuffer()
 void ChunkColumn::setUpGreedyBuffer()
 {
 	greedyBuffer.setUp(greedyBufferData.data(), greedyBufferData.size());
+}
+
+void ChunkColumn::generateBlockStore(BlockStore& bs)
+{
+	bs = BlockStore(getWorldPosition2D(), seed);
+}
+
+void ChunkColumn::createMesh(const std::unordered_map<glm::vec2, BlockStore>& neighbours, const BlockStore& blockStore)
+{
+	greedyMesh(neighbours, blockStore);
 }
 
 void ChunkColumn::reallocBuffer()
