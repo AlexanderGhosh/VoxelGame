@@ -238,6 +238,7 @@
   <ItemGroup>
     <ClInclude Include="EntityComponent\Components\Camera.h" />
     <ClInclude Include="EntityComponent\Entities\Player.h" />
+    <ClInclude Include="GreedyRendering\GreedyData.h" />
     <ClInclude Include="Helpers\Async\DynamicAsyncPool.h" />
     <ClInclude Include="Helpers\Async\StaticAsyncPool.h" />
     <ClInclude Include="Gizmos\Composite\Arrow.h" />

@@ -38,6 +38,14 @@ public:
 	// performs cellular automota on 0, 0 chunk
 	void update();
 
+	// blows up blocks centered at world pos with radius
+	// is optimised for explosions dont use for breaking one block (CAN BE OPTIMISED BUT CURRENTLY NOT)
+	// asumes the same chunk
+	void explode(const glm::vec3& worldPos, float radius);
+
+	// returns the block looking (error if none) updates hit Pos witht he pos of the block
+	glm::vec3 lookingAt(const glm::vec3& ro, const glm::vec3& rd);
+
 private:
 	bool generated; // used to genrated the world async first
 	DynamicAsyncPool<std::unordered_set<glm::vec2>> pool;

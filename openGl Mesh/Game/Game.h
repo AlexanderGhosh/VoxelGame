@@ -61,9 +61,11 @@ private:
 	static UI_Renderer uiRenderer;
 	static Event leftClickRelease;
 	static Event rightClickRelease;
+	static Event middleClickRelease;
 
 	void placeBlock();
 	void breakBlock();
+	void explode();
 
 	UniformBuffer camreraBuffer, materialsBuffer;
 	EntityManager* manager;

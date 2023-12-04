@@ -38,6 +38,7 @@ World Game::world;
 UI_Renderer Game::uiRenderer; 
 Event Game::leftClickRelease;
 Event Game::rightClickRelease;
+Event Game::middleClickRelease;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
 SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
@@ -196,12 +197,14 @@ void Game::doLoop(const glm::mat4& projection) {
 #ifdef SSAO
 	setUpSSAO();
 #endif // SSAO
-
+	
 	// EventCallback<Game>* callback = new EventCallback<Game>(this, &Game::placeBlock);
 	EventCallback<Game> leftReleaseCB(this, &Game::breakBlock);
 	leftClickRelease += leftReleaseCB;
 	EventCallback<Game> rightReleaseCB(this, &Game::placeBlock);
 	rightClickRelease += rightReleaseCB;
+	EventCallback<Game> middleReleaseCB(this, &Game::explode);
+	middleClickRelease += middleReleaseCB;
 
 	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
@@ -626,6 +629,9 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 		if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 			rightClickRelease.fire();
 		}
+		if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+			middleClickRelease.fire();
+		}
 	}
 }
 
@@ -697,6 +703,11 @@ void Game::placeBlock()
 void Game::breakBlock()
 {
 	world.breakBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
+}
+
+void Game::explode() {
+	glm::vec3 lookPos = world.lookingAt(_player->getPosition(), _player->getFront());
+	world.explode(lookPos, 5);
 }
 
 void Game::makeSkybox(const std::string& skybox) {

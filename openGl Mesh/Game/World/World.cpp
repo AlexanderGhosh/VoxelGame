@@ -133,6 +133,9 @@ ChunkColumn* World::getChunk(const glm::vec2& chunkPos, bool& success)
 
 void World::update()
 {
+#ifdef CELLULAR_AUTOMOTA
+	return;
+#endif
 	// performed in local unscaled space
 	auto index = [](int x, int y, int z) -> int {
 		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
@@ -175,6 +178,65 @@ void World::update()
 		chunk.removeBlock(req.currentPos, this);
 		chunk.addBlock(req.nextPos, req.nextBlock);
 	}
+}
+
+void World::explode(const glm::vec3& worldPos, float radius)
+{
+	std::unordered_set<glm::vec3> positoins;
+	for (int i = 0; i < radius * 2; i++) {
+		for (int j = 0; j < radius * 2; j++) {
+			for (int k = 0; k < radius * 2; k++) {
+				glm::vec3 canidate(i, j, k);
+				canidate -= radius;
+				float dist = glm::length(canidate);
+				if (dist < radius) {
+					positoins.insert(canidate + worldPos);
+				}
+			}
+		}
+	}
+
+	for (const glm::vec3& pos : positoins) {
+		glm::vec2 chunkPos(pos.x, pos.z);
+		chunkPos *= VOXEL_SIZE_INV * CHUNK_SIZE_INV;
+		chunkPos = floor(chunkPos);
+
+		ChunkColumn& chunk = chunks.at(chunkPos);
+		if (chunk.getBlock(pos) == Block::AIR) {
+			continue;
+		}
+		chunk.removeBlock(pos, this);
+	}
+}
+
+glm::vec3 World::lookingAt(const glm::vec3& ro, const glm::vec3& rd)
+{
+	glm::vec2 chunkPos(ro.x, ro.z);
+	chunkPos *= VOXEL_SIZE_INV * CHUNK_SIZE_INV;
+	chunkPos = floor(chunkPos);
+
+	if (!chunks.contains(chunkPos)) {
+		return glm::vec3(-FLT_MAX);
+	}
+	glm::vec3 hitPos(0);
+	float minD = FLT_MAX;
+	auto chunk_s = getNeibours(chunkPos, true);
+	for (auto chunk : chunk_s) {
+		for (const GeomData& data : chunk->getMeshData()) {
+			glm::vec3 worldBlockPos = data.getPos();
+
+			worldBlockPos.x += chunk->getWorldPosition2D().x;
+			worldBlockPos.z += chunk->getWorldPosition2D().y;
+			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
+				const float d = glm::distance(ro, worldBlockPos);
+				if (d < minD) {
+					minD = d;
+					hitPos = worldBlockPos;
+				}
+			}
+		}
+	}
+	return hitPos;
 }
 
 void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, const unsigned int n)
@@ -259,28 +321,12 @@ void World::setUpDrawable()
 
 void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)
 {
+	Timer t("Place Block");
 	if (!chunks.contains(occupiedChunkPos)) {
 		return;
 	}
-	glm::vec3 placePos(0);
-	float minD = FLT_MAX;
-	auto chunk_s = getNeibours(occupiedChunkPos, true);
-	for (auto chunk : chunk_s) {
-		for (const GeomData& data : chunk->getMeshData()) {
-			glm::vec3 worldBlockPos = data.getPos();
-
-			worldBlockPos.x += chunk->getWorldPosition2D().x;
-			worldBlockPos.z += chunk->getWorldPosition2D().y;
-			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
-				const float d = glm::distance(ro, worldBlockPos);
-				if (d < minD) {
-					minD = d;
-					placePos = worldBlockPos - rd * VOXEL_SIZE;
-				}
-			}
-		}
-	}
-	placePos = round(placePos);
+	glm::vec3 placePos = lookingAt(ro, rd);
+	placePos = round(placePos - rd * VOXEL_SIZE);
 	glm::vec3 chunkPos3 = reduceToMultiple(placePos);
 	glm::vec2 chunkPos(chunkPos3.x, chunkPos3.z);
 	chunkPos *= CHUNK_SIZE_INV;
@@ -289,6 +335,7 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 		ChunkColumn& chunk = chunks.at(chunkPos);
 		chunk.addBlock(placePos, Block::GRAVEL);
 	}
+	t.showDetails(1);
 }
 
 void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)
@@ -296,25 +343,8 @@ void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 	if (!chunks.contains(occupiedChunkPos)) {
 		return;
 	}
-	glm::vec3 breakPos(0);
-	float minD = FLT_MAX;
-	auto chunk_s = getNeibours(occupiedChunkPos, true);
-	for (auto chunk : chunk_s) {
-		for (const GeomData& data : chunk->getMeshData()) {
-			glm::vec3 worldBlockPos = data.getPos();
+	glm::vec3 breakPos = lookingAt(ro, rd);
 
-			worldBlockPos.x += chunk->getWorldPosition2D().x;
-			worldBlockPos.z += chunk->getWorldPosition2D().y;
-			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
-				const float d = glm::distance(ro, worldBlockPos);
-				if (d < minD) {
-					minD = d;
-					breakPos = worldBlockPos;
-				}
-			}
-		}
-	}
-	breakPos = round(breakPos);
 	glm::vec3 chunkPos3 = reduceToMultiple(breakPos);
 	glm::vec2 chunkPos(chunkPos3.x, chunkPos3.z);
 	chunkPos *= CHUNK_SIZE_INV;

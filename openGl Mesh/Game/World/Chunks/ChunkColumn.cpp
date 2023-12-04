@@ -8,6 +8,7 @@
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"
 #include "../World.h"
+#include "../../../GreedyRendering/GreedyData.h"
 
 
 ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
@@ -27,6 +28,8 @@ void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std:
 	position = pos;
 	BlockStore bs(pos * CHUNK_SIZE_F, seed);
 	populateBufferFromNeibours(neibours, bs);
+
+	greedyMesh(neibours, bs);
 }
 
 void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
@@ -159,6 +162,77 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 			}
 		}
 	}
+}
+
+void ChunkColumn::greedyMesh(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore)
+{
+	// unscaled local space
+	auto isVisible = [&](Block b, int x, int y, int z) {
+		if (b == Block::AIR) {
+			return false;
+		}
+		b = blockStore.getBlock({ x, y + 1, z });
+		auto& dets = getDetails(b);
+		return dets.isTransparant;
+	};
+	auto index = [](int x, int y, int z) {
+		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+	};
+
+
+	bool* visited_px = new bool[CHUNK_VOLUME];
+	memset(visited_px, false, CHUNK_VOLUME * sizeof(bool));
+
+	for (int y = 0; y < WORLD_HEIGHT; y++) {
+		for (int z = 0; z < CHUNK_SIZE; z++) {
+			int idx = index(0, y, z);
+			Block currentBlock = blockStore.getBlock({ 0, y, z });
+			assert(currentBlock != Block::ERROR);
+			// run along +x
+			if (!visited_px[idx] && isVisible(currentBlock, 0, y, z)) {
+				// is not currently in the mesh and can be seen
+				int mkPoint = 0; // the start point of a run
+				visited_px[idx] = true;
+
+				for (unsigned int x = 1; x < CHUNK_SIZE; x++) {
+					idx += 1; // can do this because of the index order (wont work for y, z (uses -1 for -x axis))
+					idx = index(x, y, z);
+					visited_px[idx] = true;
+					const Block nextBlock = blockStore.getBlock({ x, y, z });
+
+					if (currentBlock != nextBlock) {
+						// add face
+						glm::vec3 faceMin(mkPoint, y, z);
+						glm::vec3 faceMax(x, y, z + 1);
+
+						GreedyData data;
+						data._corner0 = faceMin;
+						data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+						data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
+						data._corner3 = faceMax;
+						newBufferData.push_back(data);
+
+						// reset for next srip of blocks (same axis)
+						currentBlock = nextBlock;
+						mkPoint = x;
+					}
+				}
+
+				// add traing face
+				glm::vec3 faceMin(mkPoint, y, z);
+				glm::vec3 faceMax(CHUNK_SIZE-1, y, z + 1);
+
+				GreedyData data;
+				data._corner0 = faceMin;
+				data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+				data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
+				data._corner3 = faceMax;
+				newBufferData.push_back(data);
+			}
+		}
+	}
+
+	delete[] visited_px;
 }
 
 void ChunkColumn::setUpBuffer()
@@ -343,7 +417,8 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 	bool removed = false;
 	for (auto itt1 = bufferData.begin(); itt1 != bufferData.end();) {
 		GeomData& data = *itt1;
-		const glm::vec3 dataWorldPos = toWorld(data.getPos());
+		glm::vec3 local = data.getPos();
+		const glm::vec3 dataWorldPos = toWorld(local);
 		if (dataWorldPos == worldPos) {
 			// the block its self
 			itt1 = bufferData.erase(itt1);

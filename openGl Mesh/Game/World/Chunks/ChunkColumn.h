@@ -8,6 +8,7 @@ class World;
 // all operations are unscaled unless otherwise stated
 class ChunkColumn
 {
+	friend class World;
 public:
 	ChunkColumn();
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
@@ -52,10 +53,15 @@ public:
 
 	// returns the current state of the mesh in grid format
 	std::array<BlockDetails, CHUNK_AREA* WORLD_HEIGHT> getBlocksGrid();
+
+
+	std::vector<GreedyData> newBufferData;
 private:
 
 	// used for runtime genertion doesnt do any opengl funcs
 	void populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
+	// greedy mesh
+	void greedyMesh(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);
 
 	struct AddFaces {
 		glm::vec3 worldPos;

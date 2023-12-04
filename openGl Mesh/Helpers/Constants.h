@@ -17,6 +17,7 @@ class Material;
 // #define PHYSICS_DEBUG_RENDERER
 
 #define GENERATE_NEW_CHUNKS false
+#define CELLULAR_AUTOMOTA
 
 #define RRC(x) (float(x) / 255.f)
 
@@ -52,6 +53,7 @@ constexpr unsigned int CHUNK_SIZE = 16;
 constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
 constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
+constexpr unsigned int CHUNK_VOLUME = CHUNK_AREA * WORLD_HEIGHT;
 
 
 constexpr float PLAYER_SPEED = 25;
@@ -151,7 +153,9 @@ enum SHADER_NAMES : unsigned char {
 	POINT_GIZMO,
 	LINE_GIZMO,
 	CIRCLE_GIZMO,
-	PHYS_DEBUG
+	PHYS_DEBUG,
+
+	GREEDY
 };
 
 enum class Move_Dir : unsigned char {
