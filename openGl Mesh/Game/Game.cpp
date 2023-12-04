@@ -564,11 +564,12 @@ void Game::showStuff() {
 	
 	screenQuad.unBind();
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	Shader* greedyShader = &SHADERS[GREEDY];
 	greedyShader->bind();
 	glEnable(GL_DEPTH_TEST);
-	glDepthMask(false); // enable depth writes so glClear won't ignore clearing the depth buffer
+	glDepthFunc(GL_LESS);
+	glDepthMask(true); // enable depth writes so glClear won't ignore clearing the depth buffer
 	glDisable(GL_CULL_FACE);
 	world.renderGreedy(greedyShader);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

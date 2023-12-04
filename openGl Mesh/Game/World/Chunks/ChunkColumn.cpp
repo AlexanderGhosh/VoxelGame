@@ -164,10 +164,168 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 	}
 }
 
+void ChunkColumn::createRunPX(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore) {
+	auto index = [](int x, int y, int z) {
+		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+		};
+
+	// is not currently in the mesh and can be seen
+	int mkPoint = x++; // the start point of a run
+	// visited_px[idx] = true;
+	for (; x < CHUNK_SIZE; x++) {
+		// visited_px[idx] = true;
+		const Block nextBlock = blockStore.getBlock({ x, y, z }, false);
+
+		if (currentBlock != nextBlock) {
+			// add face
+			glm::vec3 faceMin(mkPoint, y, z);
+			glm::vec3 faceMax(x, y, z + 1);
+
+			GreedyData data;
+			data._normal = glm::vec3(0, 1, 0);
+			data._materialIdx = (unsigned int)currentBlock;
+			data._corner0 = faceMin;
+			data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+			data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
+			data._corner3 = faceMax;
+			if (currentBlock != Block::AIR)
+				greedyBufferData.push_back(data);
+
+			// reset for next srip of blocks (same axis)
+			currentBlock = nextBlock;
+			mkPoint = x;
+		}
+	}
+	// add traing face
+	if (currentBlock != Block::AIR) {
+		glm::vec3 faceMin(mkPoint, y, z);
+		// faceMin.y += 1.f;
+		glm::vec3 faceMax(CHUNK_SIZE - 1, y, z + 1);
+		// faceMax.y += 1.f;
+		GreedyData data;
+		data._normal = glm::vec3(0, 1, 0);
+		data._materialIdx = (unsigned int)currentBlock;
+		data._corner0 = faceMin;
+		data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+		data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
+		data._corner3 = faceMax;
+		greedyBufferData.push_back(data);
+	}
+	
+}
+
+void ChunkColumn::createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore) {
+	auto index = [](int x, int y, int z) {
+		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+		};
+
+	// is not currently in the mesh and can be seen
+	int mkPoint = x++; // the start point of a run
+	// visited_px[idx] = true;
+	for (; x < CHUNK_SIZE; x++) {
+		// visited_px[idx] = true;
+		const Block nextBlock = blockStore.getBlock({ x, y, z }, false);
+
+		if (currentBlock != nextBlock) {
+			// add face
+			glm::vec3 faceMin(mkPoint, y-1, z);
+			glm::vec3 faceMax(x, y, z);
+			faceMin.z += 1.f;
+			faceMax.z += 1.f;
+
+			GreedyData data;
+			data._normal = glm::vec3(0, 0, 1);
+			data._materialIdx = (unsigned int)currentBlock;
+			data._corner0 = faceMin;
+			data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+			data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
+			data._corner3 = faceMax;
+			if (currentBlock != Block::AIR)
+				greedyBufferData.push_back(data);
+
+			// reset for next srip of blocks (same axis)
+			currentBlock = nextBlock;
+			mkPoint = x;
+		}
+	}
+	// add traing face
+	if (currentBlock != Block::AIR) {
+		glm::vec3 faceMin(mkPoint, y, z);
+		glm::vec3 faceMax(CHUNK_SIZE - 1, y - 1, z);
+		faceMin.z += 1.f;
+		faceMax.z += 1.f;
+
+		GreedyData data;
+		data._normal = glm::vec3(0, 0, 1);
+		data._materialIdx = (unsigned int)currentBlock;
+		data._corner0 = faceMin;
+		data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+		data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
+		data._corner3 = faceMax;
+		greedyBufferData.push_back(data);
+	}
+
+}
+void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore) {
+	auto index = [](int x, int y, int z) {
+		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+		};
+
+	// is not currently in the mesh and can be seen
+	int mkPoint = x++; // the start point of a run
+	// visited_px[idx] = true;
+	for (; x < CHUNK_SIZE; x++) {
+		if (x == 7 && z == 14) {
+			int gf = 0;
+		}
+		// visited_px[idx] = true;
+		const Block nextBlock = blockStore.getBlock({ x, y, z }, false);
+
+		if (currentBlock != nextBlock) {
+			// add face
+			glm::vec3 faceMin(mkPoint, y, z);
+			glm::vec3 faceMax(x, y - 1, z);
+			//faceMin.z -= 1.f;
+			//faceMax.z -= 1.f;
+
+			GreedyData data;
+			data._normal = glm::vec3(0, 0, -1);
+			data._materialIdx = (unsigned int)currentBlock;
+			data._corner0 = faceMin;
+			data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+			data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
+			data._corner3 = faceMax;
+			if (currentBlock != Block::AIR)
+				greedyBufferData.push_back(data);
+
+			// reset for next srip of blocks (same axis)
+			currentBlock = nextBlock;
+			mkPoint = x;
+		}
+	}
+	// add traing face
+	if (currentBlock != Block::AIR) {
+		glm::vec3 faceMin(mkPoint, y, z);
+		glm::vec3 faceMax(CHUNK_SIZE - 1, y - 1, z);
+		//faceMin.z -= 1.f;
+		//faceMax.z -= 1.f;
+
+		GreedyData data;
+		data._normal = glm::vec3(0, 0, -1);
+		data._materialIdx = (unsigned int)currentBlock;
+		data._corner0 = faceMin;
+		data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+		data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
+		data._corner3 = faceMax;
+		greedyBufferData.push_back(data);
+	}
+}
+
+
 void ChunkColumn::greedyMesh(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore)
 {
 	// unscaled local space
-	auto isVisible = [&](Block b, int x, int y, int z) {
+	auto isVisiblePY = [&](Block b, int x, int y, int z) -> bool {
 		if (b == Block::AIR) {
 			return false;
 		}
@@ -175,71 +333,107 @@ void ChunkColumn::greedyMesh(const std::list<ChunkColumn*>& neibours, const Bloc
 		auto& dets = getDetails(b);
 		return b == Block::AIR;
 	};
+
+	auto isVisiblePZ = [&](Block b, int x, int y, int z) -> bool {
+		if (b == Block::AIR || z + 1 == CHUNK_SIZE) {
+			return false;
+		}
+		b = blockStore.getBlock({ x, y, z + 1 }, false);
+		auto& dets = getDetails(b);
+		return b == Block::AIR;
+		};
+	auto isVisibleNZ = [&](Block b, int x, int y, int z) -> bool {
+		if (b == Block::AIR || z == 0) {
+			return false;
+		}
+		b = blockStore.getBlock({ x, y, z - 1 }, false);
+		auto& dets = getDetails(b);
+		return b == Block::AIR;
+		};
+
+	auto isVisiblePX = [&](Block b, int x, int y, int z) -> bool {
+		if (b == Block::AIR || x + 1 == CHUNK_SIZE) {
+			return false;
+		}
+		b = blockStore.getBlock({ x + 1, y, z }, false);
+		auto& dets = getDetails(b);
+		return b == Block::AIR;
+		};
+	auto isVisibleNX = [&](Block b, int x, int y, int z) -> bool {
+		if (b == Block::AIR || x == 0) {
+			return false;
+		}
+		b = blockStore.getBlock({ x - 1, y, z }, false);
+		auto& dets = getDetails(b);
+		return b == Block::AIR;
+		};
+	
 	auto index = [](int x, int y, int z) {
 		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
 	};
+	//////////////////////////////////////////
 
-
-	// bool* visited_px = new bool[CHUNK_VOLUME];
-	// memset(visited_px, false, CHUNK_VOLUME * sizeof(bool));
-
-	int numAir = 0;
 	for (int y = 0; y < WORLD_HEIGHT; y++) {
 		for (int z = 0; z < CHUNK_SIZE; z++) {
 			for (int x = 0; x < CHUNK_SIZE; x++) {
 				int idx = index(x, y, z);
 				Block currentBlock = blockStore.getBlock({ x, y, z }, false);
-				if (currentBlock == Block::AIR)
-					numAir++;
-				// run along +x
-				if (/*!visited_px[idx] && */isVisible(currentBlock, x, y, z)) {
-					// wont get hear is current == AIR
-					
-					// is not currently in the mesh and can be seen
-					int mkPoint = x++; // the start point of a run
-					// visited_px[idx] = true;
-					for (; x < CHUNK_SIZE; x++) {
-						idx += 1; // can do this because of the index order (wont work for y, z (uses -1 for -x axis))
-						// visited_px[idx] = true;
-						const Block nextBlock = blockStore.getBlock({ x, y, z }, false);
+				if (isVisiblePY(currentBlock, x, y, z)) {
+					createRunPX(currentBlock, x, y, z, blockStore);
+				}
+			}
+			for (int x = 0; x < CHUNK_SIZE; x++) {
+				int idx = index(x, y, z);
+				Block currentBlock = blockStore.getBlock({ x, y, z }, false);
+				if (isVisiblePZ(currentBlock, x, y, z)) {
+					createRunPZ(currentBlock, x, y, z, blockStore);
+				}
+			}
+			for (int x = 0; x < CHUNK_SIZE; x++) {
+				int idx = index(x, y, z);
+				Block currentBlock = blockStore.getBlock({ x, y, z }, false);
+				if (isVisibleNZ(currentBlock, x, y, z)) {
+					createRunNZ(currentBlock, x, y, z, blockStore);
+				}
+			}
 
-						if (currentBlock != nextBlock) {
-							// add face
-							glm::vec3 faceMin(mkPoint, y, z);
-							glm::vec3 faceMax(x, y, z + 1);
 
-							GreedyData data;
-							data._materialIdx = (unsigned int)currentBlock;
-							data._corner0 = faceMin;
-							data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-							data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
-							data._corner3 = faceMax;
-							if(currentBlock != Block::AIR)
-								greedyBufferData.push_back(data);
+			for (int x = 0; x < CHUNK_SIZE - 1; x++) {
+				int idx = index(x, y, z);
+				Block currentBlock = blockStore.getBlock({ x, y, z }, false);
+				if (isVisiblePX(currentBlock, x, y, z)) {
 
-							// reset for next srip of blocks (same axis)
-							currentBlock = nextBlock;
-							mkPoint = x;
-						}
-					}
-					// add traing face
-					if (currentBlock != Block::AIR) {
-						glm::vec3 faceMin(mkPoint, y, z);
-						glm::vec3 faceMax(CHUNK_SIZE - 1, y, z + 1);
-						GreedyData data;
-						data._materialIdx = (unsigned int)currentBlock;
-						data._corner0 = faceMin;
-						data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-						data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
-						data._corner3 = faceMax;
-						greedyBufferData.push_back(data);
-					}
+					glm::vec3 faceMin(x, y - 1, z);
+					glm::vec3 faceMax(x, y, z + 1);
+					faceMin.x += 1.f;
+					faceMax.x += 1.f;
+
+					GreedyData data;
+					data._normal = glm::vec3(1, 0, 0);
+					data._materialIdx = (unsigned int)currentBlock;
+					data._corner0 = faceMin;
+					data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
+					data._corner2 = { faceMin.x, faceMax.y, faceMin.z };
+					data._corner3 = faceMax;
+					greedyBufferData.push_back(data);
+				}
+				
+				if (isVisibleNX(currentBlock, x, y, z)) {
+					glm::vec3 faceMin(x, y - 1, z);
+					glm::vec3 faceMax(x, y, z + 1);
+
+					GreedyData data;
+					data._normal = glm::vec3(-1, 0, 0);
+					data._materialIdx = (unsigned int)currentBlock;
+					data._corner0 = faceMin;
+					data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
+					data._corner2 = { faceMin.x, faceMax.y, faceMin.z };
+					data._corner3 = faceMax;
+					greedyBufferData.push_back(data);
 				}
 			}
 		}
 	}
-	int fdfd = 0;
-	// delete[] visited_px;
 }
 
 void ChunkColumn::setUpBuffer()

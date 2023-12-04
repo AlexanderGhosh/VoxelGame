@@ -26,8 +26,9 @@ void BufferGreedy::setUp(const GreedyData* data, unsigned int size)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GreedyData), (void*) offsetof(GreedyData, _corner1));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GreedyData), (void*) offsetof(GreedyData, _corner2));
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(GreedyData), (void*) offsetof(GreedyData, _corner3));
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(GreedyData), (void*)offsetof(GreedyData, _normal));
 
-	glVertexAttribIPointer(4, 1, GL_UNSIGNED_INT, sizeof(GreedyData), (void*) offsetof(GreedyData, _materialIdx));
+	glVertexAttribIPointer(5, 1, GL_UNSIGNED_INT, sizeof(GreedyData), (void*) offsetof(GreedyData, _materialIdx));
 
 
 	glEnableVertexAttribArray(0);
@@ -35,6 +36,7 @@ void BufferGreedy::setUp(const GreedyData* data, unsigned int size)
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 	glEnableVertexAttribArray(4);
+	glEnableVertexAttribArray(5);
 
 	glBindVertexArray(0);
 

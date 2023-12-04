@@ -15,8 +15,8 @@ layout (std140, binding = 1) uniform Mats
 };
 
 flat in uint matIdx;
-in vec3 normal;
-in vec3 fragPos_;
+in vec3 norm;
+in vec4 fragPos_;
 // flat in vec2 rndSeed;
 
 float rand(vec2 seed);
@@ -26,8 +26,8 @@ void main()
     float rndValue = rand(rndSeed);
     Material mat = materials[matIdx];
     _albedo = mix(mat.albedo1, mat.albedo2, rndValue).xyz;
-    _fragPos = fragPos_; // view space space
-    _normal = normal;
+    _fragPos = fragPos_.xyz; // view space space
+    _normal = norm;
 }
 float rand(vec2 seed){
     return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);

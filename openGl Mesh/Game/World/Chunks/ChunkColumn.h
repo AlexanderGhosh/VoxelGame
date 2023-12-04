@@ -66,6 +66,10 @@ private:
 	// GREEDY MESH STUFF
 	std::vector<GreedyData> greedyBufferData;
 	BufferGreedy greedyBuffer;
+
+	void createRunPX(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
+	void createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
+	void createRunNZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
 	//
 
 	// used for runtime genertion doesnt do any opengl funcs
