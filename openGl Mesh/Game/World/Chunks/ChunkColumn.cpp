@@ -330,18 +330,26 @@ void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const Bl
 
 void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neibours, const BlockStore& blockStore)
 {
-	const BlockStore* pz,* nz,* px,* nx;
+	const BlockStore* pz = nullptr;
+	const BlockStore* nz = nullptr;
+	const BlockStore* px = nullptr;
+	const BlockStore* nx = nullptr;
+
+	if (position.y == 1 && position.x == 0) {
+		int gjkf = 0;
+	}
 	for (auto& [p, chunk] : neibours) {
-		if (p.x == 1) {
+		glm::vec2 delta = p - position;
+		if (delta.x == 1 && delta.y == 0) {
 			px = &chunk;
 		}
-		else if (p.x == -1) {
+		else if (delta.x == -1 && delta.y == 0) {
 			nx = &chunk;
 		}
-		else if (p.y == 1) {
+		else if (delta.x == 0 && delta.y == 1) {
 			pz = &chunk;
 		}
-		else if (p.y == -1) {
+		else if (delta.x == 0 && delta.y == -1) {
 			nz = &chunk;
 		}
 
@@ -360,8 +368,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		if (b == Block::AIR) {
 			return false;
 		}
-		else if (z + 1 == CHUNK_SIZE && pz) {
-			b = pz->getBlock({ x, y, 0 });
+		else if (z + 1 == CHUNK_SIZE) {
+			if(pz)
+				b = pz->getBlock({ x, y, 0 }, false);
+			else
+				return false;
 		}
 		else {
 			b = blockStore.getBlock({ x, y, z + 1 }, false);
@@ -373,8 +384,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		if (b == Block::AIR) {
 			return false;
 		}
-		else if (z == 0 && nz) {
-			b = pz->getBlock({ x, y, CHUNK_SIZE - 1 });
+		else if (z == 0) {
+			if(nz)
+				b = nz->getBlock({ x, y, CHUNK_SIZE - 1 }, false);
+			else
+				return false;
 		}
 		else {
 			b = blockStore.getBlock({ x, y, z - 1 }, false);
@@ -387,8 +401,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		if (b == Block::AIR) {
 			return false;
 		}
-		else if (x == CHUNK_SIZE - 1 && px) {
-			b = px->getBlock({ 0, y, z });
+		else if (x == CHUNK_SIZE - 1) {
+			if (px)
+				b = px->getBlock({ 0, y, z }, false);
+			else
+				return false;
 		}
 		else {
 			b = blockStore.getBlock({ x + 1, y, z }, false);
@@ -400,8 +417,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		if (b == Block::AIR) {
 			return false;
 		}
-		else if (x == 0 && nx) {
-			b = nx->getBlock({ CHUNK_SIZE - 1, y, z });
+		else if (x == 0) {
+			if (nx)
+				b = nx->getBlock({ CHUNK_SIZE - 1, y, z }, false);
+			else
+				return false;
 		}
 		else {
 			b = blockStore.getBlock({ x - 1, y, z }, false);
