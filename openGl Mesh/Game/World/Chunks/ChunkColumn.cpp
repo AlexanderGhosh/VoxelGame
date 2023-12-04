@@ -171,7 +171,7 @@ void ChunkColumn::greedyMesh(const std::list<ChunkColumn*>& neibours, const Bloc
 		if (b == Block::AIR) {
 			return false;
 		}
-		b = blockStore.getBlock({ x, y + 1, z });
+		b = blockStore.getBlock({ x, y + 1, z }, false);
 		auto& dets = getDetails(b);
 		return b == Block::AIR;
 	};
