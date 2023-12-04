@@ -77,7 +77,7 @@ private:
 	// greedy mesh
 	void greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neighbours, const BlockStore& blockStore);
 
-	void createRunPX(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
+	void createRunPY(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
 	void createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
 	void createRunNZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore);
 	//
