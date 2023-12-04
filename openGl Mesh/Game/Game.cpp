@@ -340,10 +340,11 @@ void Game::showStuff() {
 	gBuffer.bind();
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CW);
+	glDisable(GL_CULL_FACE); ///////////////// remove later
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	Shader& gbufferS = SHADERS[GBUFFER];
+	Shader& gbufferS = SHADERS[GREEDY];
 	gbufferS.bind();
 
 	world.render(&gbufferS);
@@ -565,14 +566,14 @@ void Game::showStuff() {
 	screenQuad.unBind();
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	Shader* greedyShader = &SHADERS[GREEDY];
-	greedyShader->bind();
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glDepthMask(true); // enable depth writes so glClear won't ignore clearing the depth buffer
-	glDisable(GL_CULL_FACE);
-	world.renderGreedy(greedyShader);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	// Shader* greedyShader = &SHADERS[GREEDY];
+	// greedyShader->bind();
+	// glEnable(GL_DEPTH_TEST);
+	// glDepthFunc(GL_LESS);
+	// glDepthMask(true); // enable depth writes so glClear won't ignore clearing the depth buffer
+	// glDisable(GL_CULL_FACE);
+	// world.renderGreedy(greedyShader);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Game::setWindow(GLFWwindow* window) {

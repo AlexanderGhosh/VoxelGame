@@ -200,7 +200,7 @@ void ChunkColumn::createRunPX(Block currentBlock, int& x, int y, int z, const Bl
 	if (currentBlock != Block::AIR) {
 		glm::vec3 faceMin(mkPoint, y, z);
 		// faceMin.y += 1.f;
-		glm::vec3 faceMax(CHUNK_SIZE - 1, y, z + 1);
+		glm::vec3 faceMax(x, y, z + 1);
 		// faceMax.y += 1.f;
 		GreedyData data;
 		data._normal = glm::vec3(0, 1, 0);
@@ -251,7 +251,7 @@ void ChunkColumn::createRunPZ(Block currentBlock, int& x, int y, int z, const Bl
 	// add traing face
 	if (currentBlock != Block::AIR) {
 		glm::vec3 faceMin(mkPoint, y, z);
-		glm::vec3 faceMax(CHUNK_SIZE - 1, y - 1, z);
+		glm::vec3 faceMax(x, y - 1, z);
 		faceMin.z += 1.f;
 		faceMax.z += 1.f;
 
@@ -306,7 +306,7 @@ void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const Bl
 	// add traing face
 	if (currentBlock != Block::AIR) {
 		glm::vec3 faceMin(mkPoint, y, z);
-		glm::vec3 faceMax(CHUNK_SIZE - 1, y - 1, z);
+		glm::vec3 faceMax(x, y - 1, z);
 		//faceMin.z -= 1.f;
 		//faceMax.z -= 1.f;
 
@@ -398,7 +398,7 @@ void ChunkColumn::greedyMesh(const std::list<ChunkColumn*>& neibours, const Bloc
 			}
 
 
-			for (int x = 0; x < CHUNK_SIZE - 1; x++) {
+			for (int x = 0; x < CHUNK_SIZE; x++) {
 				int idx = index(x, y, z);
 				Block currentBlock = blockStore.getBlock({ x, y, z }, false);
 				if (isVisiblePX(currentBlock, x, y, z)) {
