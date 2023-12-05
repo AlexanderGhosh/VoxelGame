@@ -18,6 +18,8 @@ class Material;
 
 #define GENERATE_NEW_CHUNKS false
 #define CELLULAR_AUTOMOTA
+// #define GENERATE_INDEX_DATA_GREEDY
+#define MINIMAL_GREEDY_MESH
 
 #define RRC(x) (float(x) / 255.f)
 

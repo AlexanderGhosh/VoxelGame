@@ -172,11 +172,13 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 
 void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neibours, const BlockStore& blockStore)
 {
+#ifdef GENERATE_INDEX_DATA_GREEDY
 	auto lessThanVec3 = [](glm::vec3 a, glm::vec3 b) { return a.x < b.x && a.y < b.y && a.z < b.z; };
 	// maps vertex to index
 	unsigned int index = 0;
 	std::unordered_map<glm::vec3, unsigned int> vertices;
 	std::vector<unsigned int> indices;
+#endif // GENERATE_INDEX_DATA_GREEDY
 
 	const BlockStore* pz = nullptr;
 	const BlockStore* nz = nullptr;
@@ -275,6 +277,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		return b == Block::AIR;
 		};
 
+#ifdef GENERATE_INDEX_DATA_GREEDY
 	auto addVert = [&](glm::vec3 vert) {
 		auto [itt, success] = vertices.emplace(vert, index);
 		if (success) {
@@ -284,7 +287,9 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		else {
 			indices.push_back((*itt).second);
 		}
-	};
+		};
+#endif // GENERATE_INDEX_DATA_GREEDY
+
 
 	auto addPY = [&](Block b, int mkPoint, int x, int y, int z) {
 		if (b != Block::AIR) {
@@ -301,10 +306,13 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 
 			greedyBufferData.push_back(data);
 
+#ifdef GENERATE_INDEX_DATA_GREEDY
 			addVert(data._corner0);
 			addVert(data._corner1);
 			addVert(data._corner2);
 			addVert(data._corner3);
+#endif // GENERATE_INDEX_DATA_GREEDY
+
 		}
 	};
 	auto addPZ = [&](Block b, int mkPoint, int x, int y, int z) {
@@ -323,10 +331,13 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		data._corner3 = faceMax;
 		greedyBufferData.push_back(data);
 
+
+#ifdef GENERATE_INDEX_DATA_GREEDY
 		addVert(data._corner0);
 		addVert(data._corner1);
 		addVert(data._corner2);
 		addVert(data._corner3);
+#endif // GENERATE_INDEX_DATA_GREEDY
 	};
 	auto addNZ = [&](Block b, int mkPoint, int x, int y, int z) {
 		// add face
@@ -344,10 +355,13 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		data._corner3 = faceMax;
 		greedyBufferData.push_back(data);
 
+
+#ifdef GENERATE_INDEX_DATA_GREEDY
 		addVert(data._corner0);
 		addVert(data._corner1);
 		addVert(data._corner2);
 		addVert(data._corner3);
+#endif // GENERATE_INDEX_DATA_GREEDY
 	};
 	
 	//////////////////////////////////////////
@@ -375,13 +389,19 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 					// if not visible and not the same
 					//	no add increment 2
 
-					// bool pyVisible = currentBlock != Block::AIR || isVisiblePY(currentBlock, x, y, z);
-					// bool pzVisible = currentBlock != Block::AIR || isVisiblePZ(currentBlock, x, y, z);
-					// bool nzVisible = currentBlock != Block::AIR || isVisibleNZ(currentBlock, x, y, z);
-					bool t = currentBlock != Block::AIR;
+#ifdef MINIMAL_GREEDY_MESH
+					bool pyVisible = isVisiblePY(currentBlock, x, y, z);
+					bool pzVisible = isVisiblePZ(currentBlock, x, y, z);
+					bool nzVisible = isVisibleNZ(currentBlock, x, y, z);
+#else
+					bool pyVisible = currentBlock != Block::AIR;
+					bool pzVisible = currentBlock != Block::AIR;
+					bool nzVisible = currentBlock != Block::AIR;
+#endif // MINIMAL_GREEDY_MESH
+
 					if (prevBlock == currentBlock) {
 						// PY
-						if (t) {
+						if (pyVisible) {
 							// doesnt change mark spot
 						}
 						else {
@@ -390,7 +410,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// PZ
-						if (t) {
+						if (pzVisible) {
 							// doesnt change mark spot
 						}
 						else {
@@ -399,7 +419,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// NZ
-						if (t) {
+						if (nzVisible) {
 							// doesnt change mark spot
 						}
 						else {
@@ -409,7 +429,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 					}
 					if (prevBlock != currentBlock) {
 						// PY
-						if (t) {
+						if (pyVisible) {
 							addPY(prevBlock, mkPointPY, x, y, z);
 							mkPointPY = x;
 						}
@@ -419,7 +439,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// PZ
-						if (t) {
+						if (pzVisible) {
 							addPZ(prevBlock, mkPointPZ, x, y, z);
 							mkPointPZ = x;
 						}
@@ -429,7 +449,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// NZ
-						if (t) {
+						if (nzVisible) {
 							addNZ(prevBlock, mkPointNZ, x, y, z);
 							mkPointNZ = x;
 						}
