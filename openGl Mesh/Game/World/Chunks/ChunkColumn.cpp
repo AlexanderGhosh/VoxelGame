@@ -451,55 +451,10 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 					prevBlock = currentBlock;
 				}
 
-				// add traing facePY
-				if (prevBlock != Block::AIR) {
-					glm::vec3 faceMin(mkPointPY, y, z);
-					// faceMin.y += 1.f;
-					glm::vec3 faceMax(x, y, z + 1);
-					// faceMax.y += 1.f;
-					GreedyData data;
-					data._normal = glm::vec3(0, 1, 0);
-					data._materialIdx = (unsigned int)prevBlock;
-					data._corner0 = faceMin;
-					data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-					data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
-					data._corner3 = faceMax;
-					greedyBufferData.push_back(data);
-				}
-
-				// add traing face PZ
-				if (prevBlock != Block::AIR) {
-					glm::vec3 faceMin(mkPointPZ, y, z);
-					glm::vec3 faceMax(x, y - 1, z);
-					faceMin.z += 1.f;
-					faceMax.z += 1.f;
-
-					GreedyData data;
-					data._normal = glm::vec3(0, 0, 1);
-					data._materialIdx = (unsigned int)prevBlock;
-					data._corner0 = faceMin;
-					data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-					data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
-					data._corner3 = faceMax;
-					greedyBufferData.push_back(data);
-				}
-
-				// add traing face NZ
-				if (prevBlock != Block::AIR) {
-					glm::vec3 faceMin(mkPointNZ, y, z);
-					glm::vec3 faceMax(x, y - 1, z);
-					//faceMin.z -= 1.f;
-					//faceMax.z -= 1.f;
-
-					GreedyData data;
-					data._normal = glm::vec3(0, 0, -1);
-					data._materialIdx = (unsigned int)prevBlock;
-					data._corner0 = faceMin;
-					data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
-					data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
-					data._corner3 = faceMax;
-					greedyBufferData.push_back(data);
-				}
+				// add traing faces
+				addPY(prevBlock, mkPointPY, x, y, z);
+				addPZ(prevBlock, mkPointPZ, x, y, z);
+				addNZ(prevBlock, mkPointNZ, x, y, z);
 			}
 
 			// X faces
