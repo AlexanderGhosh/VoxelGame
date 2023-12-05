@@ -77,13 +77,6 @@ private:
 	BufferGreedy greedyBuffer;
 	// greedy mesh
 	void greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neighbours, const BlockStore& blockStore);
-
-	template<typename Compare>
-	void createRunPX(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices);
-	template<typename Compare>
-	void createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices);
-	template<typename Compare>
-	void createRunNZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices);
 	//
 
 	// used for runtime genertion doesnt do any opengl funcs

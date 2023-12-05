@@ -170,171 +170,14 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 	}
 }
 
-template<typename Compare>
-void ChunkColumn::createRunPX(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices) {
-	auto index = [](int x, int y, int z) {
-		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
-		};
-
-	// is not currently in the mesh and can be seen
-	int mkPoint = x++; // the start point of a run
-	// visited_px[idx] = true;
-	for (; x < CHUNK_SIZE; x++) {
-		// visited_px[idx] = true;
-		const Block nextBlock = blockStore.getBlock({ x, y, z }, false);
-
-		if (currentBlock != nextBlock) {
-			// add face
-			glm::vec3 faceMin(mkPoint, y, z);
-			glm::vec3 faceMax(x, y, z + 1);
-
-			GreedyData data;
-			data._normal = glm::vec3(0, 1, 0);
-			data._materialIdx = (unsigned int)currentBlock;
-			data._corner0 = faceMin;
-			data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-			data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
-			data._corner3 = faceMax;
-			if (currentBlock != Block::AIR)
-				greedyBufferData.push_back(data);
-
-			// reset for next srip of blocks (same axis)
-			currentBlock = nextBlock;
-			mkPoint = x;
-		}
-	}
-	// add traing face
-	if (currentBlock != Block::AIR) {
-		glm::vec3 faceMin(mkPoint, y, z);
-		// faceMin.y += 1.f;
-		glm::vec3 faceMax(x, y, z + 1);
-		// faceMax.y += 1.f;
-		GreedyData data;
-		data._normal = glm::vec3(0, 1, 0);
-		data._materialIdx = (unsigned int)currentBlock;
-		data._corner0 = faceMin;
-		data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-		data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
-		data._corner3 = faceMax;
-		greedyBufferData.push_back(data);
-	}
-}
-
-template<typename Compare>
-void ChunkColumn::createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices) {
-	auto index = [](int x, int y, int z) {
-		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
-	};
-
-	// is not currently in the mesh and can be seen
-	int mkPoint = x++; // the start point of a run
-	// visited_px[idx] = true;
-	for (; x < CHUNK_SIZE; x++) {
-		// visited_px[idx] = true;
-		const Block nextBlock = blockStore.getBlock({ x, y, z }, false);
-
-		if (currentBlock != nextBlock) {
-			// add face
-			glm::vec3 faceMin(mkPoint, y-1, z);
-			glm::vec3 faceMax(x, y, z);
-			faceMin.z += 1.f;
-			faceMax.z += 1.f;
-
-			GreedyData data;
-			data._normal = glm::vec3(0, 0, 1);
-			data._materialIdx = (unsigned int)currentBlock;
-			data._corner0 = faceMin;
-			data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
-			data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
-			data._corner3 = faceMax;
-			if (currentBlock != Block::AIR)
-				greedyBufferData.push_back(data);
-
-			// reset for next srip of blocks (same axis)
-			currentBlock = nextBlock;
-			mkPoint = x;
-		}
-	}
-	// add traing face
-	if (currentBlock != Block::AIR) {
-		glm::vec3 faceMin(mkPoint, y, z);
-		glm::vec3 faceMax(x, y - 1, z);
-		faceMin.z += 1.f;
-		faceMax.z += 1.f;
-
-		GreedyData data;
-		data._normal = glm::vec3(0, 0, 1);
-		data._materialIdx = (unsigned int)currentBlock;
-		data._corner0 = faceMin;
-		data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-		data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
-		data._corner3 = faceMax;
-		greedyBufferData.push_back(data);
-	}
-
-}
-template<typename Compare>
-void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices) {
-	auto index = [](int x, int y, int z) {
-		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
-		};
-
-	// is not currently in the mesh and can be seen
-	int mkPoint = x++; // the start point of a run
-	// visited_px[idx] = true;
-	for (; x < CHUNK_SIZE; x++) {
-		if (x == 7 && z == 14) {
-			int gf = 0;
-		}
-		// visited_px[idx] = true;
-		const Block nextBlock = blockStore.getBlock({ x, y, z }, false);
-
-		if (currentBlock != nextBlock) {
-			// add face
-			glm::vec3 faceMin(mkPoint, y, z);
-			glm::vec3 faceMax(x, y - 1, z);
-			//faceMin.z -= 1.f;
-			//faceMax.z -= 1.f;
-
-			GreedyData data;
-			data._normal = glm::vec3(0, 0, -1);
-			data._materialIdx = (unsigned int)currentBlock;
-			data._corner0 = faceMin;
-			data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
-			data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
-			data._corner3 = faceMax;
-			if (currentBlock != Block::AIR)
-				greedyBufferData.push_back(data);
-
-			// reset for next srip of blocks (same axis)
-			currentBlock = nextBlock;
-			mkPoint = x;
-		}
-	}
-	// add traing face
-	if (currentBlock != Block::AIR) {
-		glm::vec3 faceMin(mkPoint, y, z);
-		glm::vec3 faceMax(x, y - 1, z);
-		//faceMin.z -= 1.f;
-		//faceMax.z -= 1.f;
-
-		GreedyData data;
-		data._normal = glm::vec3(0, 0, -1);
-		data._materialIdx = (unsigned int)currentBlock;
-		data._corner0 = faceMin;
-		data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
-		data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
-		data._corner3 = faceMax;
-		greedyBufferData.push_back(data);
-	}
-}
-
-
 void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neibours, const BlockStore& blockStore)
 {
 	auto lessThanVec3 = [](glm::vec3 a, glm::vec3 b) { return a.x < b.x && a.y < b.y && a.z < b.z; };
-	std::unordered_set<glm::vec3, decltype(lessThanVec3)> vertices;
+	// maps vertex to index
+	unsigned int index = 0;
+	std::unordered_map<glm::vec3, unsigned int> vertices;
 	std::vector<unsigned int> indices;
+
 	const BlockStore* pz = nullptr;
 	const BlockStore* nz = nullptr;
 	const BlockStore* px = nullptr;
@@ -432,6 +275,17 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		return b == Block::AIR;
 		};
 
+	auto addVert = [&](glm::vec3 vert) {
+		auto [itt, success] = vertices.emplace(vert, index);
+		if (success) {
+			indices.push_back(index);
+			index++;
+		}
+		else {
+			indices.push_back((*itt).second);
+		}
+	};
+
 	auto addPY = [&](Block b, int mkPoint, int x, int y, int z) {
 		if (b != Block::AIR) {
 			glm::vec3 faceMin(mkPoint, y, z);
@@ -446,6 +300,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 			data._corner3 = faceMax;
 
 			greedyBufferData.push_back(data);
+
+			addVert(data._corner0);
+			addVert(data._corner1);
+			addVert(data._corner2);
+			addVert(data._corner3);
 		}
 	};
 	auto addPZ = [&](Block b, int mkPoint, int x, int y, int z) {
@@ -463,6 +322,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
 		data._corner3 = faceMax;
 		greedyBufferData.push_back(data);
+
+		addVert(data._corner0);
+		addVert(data._corner1);
+		addVert(data._corner2);
+		addVert(data._corner3);
 	};
 	auto addNZ = [&](Block b, int mkPoint, int x, int y, int z) {
 		// add face
@@ -479,6 +343,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
 		data._corner3 = faceMax;
 		greedyBufferData.push_back(data);
+
+		addVert(data._corner0);
+		addVert(data._corner1);
+		addVert(data._corner2);
+		addVert(data._corner3);
 	};
 	
 	//////////////////////////////////////////
@@ -659,6 +528,8 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 			}
 		}
 	}
+
+	int ghfoi = 0;
 }
 
 void ChunkColumn::setUpBuffer()
