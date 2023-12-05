@@ -470,7 +470,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
 		data._corner3 = faceMax;
 		greedyBufferData.push_back(data);
-		};
+	};
 	
 	//////////////////////////////////////////
 
@@ -497,12 +497,13 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 					// if not visible and not the same
 					//	no add increment 2
 
-					bool pyVisible = isVisiblePY(currentBlock, x, y, z);
-					bool pzVisible = isVisiblePZ(currentBlock, x, y, z);
-					bool nzVisible = isVisibleNZ(currentBlock, x, y, z);
+					// bool pyVisible = currentBlock != Block::AIR || isVisiblePY(currentBlock, x, y, z);
+					// bool pzVisible = currentBlock != Block::AIR || isVisiblePZ(currentBlock, x, y, z);
+					// bool nzVisible = currentBlock != Block::AIR || isVisibleNZ(currentBlock, x, y, z);
+					bool t = currentBlock != Block::AIR;
 					if (prevBlock == currentBlock) {
 						// PY
-						if (pyVisible) {
+						if (t) {
 							// doesnt change mark spot
 						}
 						else {
@@ -511,7 +512,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// PZ
-						if (pzVisible) {
+						if (t) {
 							// doesnt change mark spot
 						}
 						else {
@@ -520,7 +521,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// NZ
-						if (nzVisible) {
+						if (t) {
 							// doesnt change mark spot
 						}
 						else {
@@ -530,7 +531,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 					}
 					if (prevBlock != currentBlock) {
 						// PY
-						if (pyVisible) {
+						if (t) {
 							addPY(prevBlock, mkPointPY, x, y, z);
 							mkPointPY = x;
 						}
@@ -540,7 +541,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// PZ
-						if (pzVisible) {
+						if (t) {
 							addPZ(prevBlock, mkPointPZ, x, y, z);
 							mkPointPZ = x;
 						}
@@ -550,7 +551,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 
 						// NZ
-						if (nzVisible) {
+						if (t) {
 							addNZ(prevBlock, mkPointNZ, x, y, z);
 							mkPointNZ = x;
 						}
@@ -560,53 +561,6 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 						}
 					}
 					prevBlock = currentBlock;
-					continue;
-
-					if (!isVisiblePZ(prevBlock, x, y, z)) {
-						// add face
-						glm::vec3 faceMin(mkPointPZ, y - 1, z);
-						glm::vec3 faceMax(x, y, z);
-						faceMin.z += 1.f;
-						faceMax.z += 1.f;
-
-						GreedyData data;
-						data._normal = glm::vec3(0, 0, 1);
-						data._materialIdx = (unsigned int)prevBlock;
-						data._corner0 = faceMin;
-						data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
-						data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
-						data._corner3 = faceMax;
-						if (prevBlock != Block::AIR && mkPointPZ > 0)
-							greedyBufferData.push_back(data);
-
-						// reset for next srip of blocks (same axis)
-						mkPointPZ = x;
-					}
-					prevBlock = currentBlock;
-
-					continue;
-
-					if (prevBlock != currentBlock) {
-						// add face
-						glm::vec3 faceMin(mkPointNZ, y, z);
-						glm::vec3 faceMax(x, y - 1, z);
-						//faceMin.z -= 1.f;
-						//faceMax.z -= 1.f;
-
-						GreedyData data;
-						data._normal = glm::vec3(0, 0, -1);
-						data._materialIdx = (unsigned int)prevBlock;
-						data._corner0 = faceMin;
-						data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
-						data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
-						data._corner3 = faceMax;
-						if (prevBlock != Block::AIR)
-							greedyBufferData.push_back(data);
-
-						// reset for next srip of blocks (same axis)
-						prevBlock = currentBlock;
-						mkPointNZ = x;
-					}
 				}
 
 				// add traing facePY
@@ -660,7 +614,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 				}
 			}
 
-
+			// X faces
 			for (int x = 0; x < CHUNK_SIZE; x++) {
 				Block currentBlock = blockStore.getBlock({ x, y, z }, false);
 				if (isVisiblePX(currentBlock, x, y, z)) {
