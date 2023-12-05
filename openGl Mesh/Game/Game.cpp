@@ -340,7 +340,6 @@ void Game::showStuff() {
 	gBuffer.bind();
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CW);
-	//glDisable(GL_CULL_FACE); ///////////////// remove later
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 

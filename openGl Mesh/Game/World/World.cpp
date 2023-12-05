@@ -342,7 +342,9 @@ void World::save() const
 void World::render(Shader* shader) {
 	tryFinishGenerateChunk();
 	//geomDrawable.render(shader);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	greedyDrawable.render(shader);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 
 }
