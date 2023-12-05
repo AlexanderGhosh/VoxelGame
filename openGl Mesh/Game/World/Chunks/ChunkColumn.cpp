@@ -201,21 +201,21 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		}
 
 	}
-	// unscaled local space
-	auto isVisiblePY = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR) {
-			return false;
-		}
-		b = blockStore.getBlock({ x, y + 1, z }, false);
-		auto& dets = getDetails(b);
-		return b == Block::AIR;
+
+	auto show = [&](Block a, Block b) {
+		auto& d = getDetails(b);
+		return d.isTransparant && a != b;
 	};
 
-	auto isVisiblePZ = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR) {
-			return false;
-		}
-		else if (z + 1 == CHUNK_SIZE) {
+	// unscaled local space
+	auto isVisiblePY = [&](Block a, int x, int y, int z) -> bool {
+		Block b = blockStore.getBlock({ x, y + 1, z }, false);
+		return show(a, b);
+	};
+
+	auto isVisiblePZ = [&](Block a, int x, int y, int z) -> bool {
+		Block b;
+		if (z + 1 == CHUNK_SIZE) {
 			if(pz)
 				b = pz->getBlock({ x, y, 0 }, false);
 			else
@@ -224,14 +224,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		else {
 			b = blockStore.getBlock({ x, y, z + 1 }, false);
 		}
-		auto& dets = getDetails(b);
-		return b == Block::AIR;
-		};
-	auto isVisibleNZ = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR) {
-			return false;
-		}
-		else if (z == 0) {
+		return show(a, b);
+	};
+	auto isVisibleNZ = [&](Block a, int x, int y, int z) -> bool {
+		Block b;
+		if (z == 0) {
 			if(nz)
 				b = nz->getBlock({ x, y, CHUNK_SIZE - 1 }, false);
 			else
@@ -240,15 +237,12 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		else {
 			b = blockStore.getBlock({ x, y, z - 1 }, false);
 		}
-		auto& dets = getDetails(b);
-		return b == Block::AIR;
-		};
+		return show(a, b);
+	};
 
-	auto isVisiblePX = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR) {
-			return false;
-		}
-		else if (x == CHUNK_SIZE - 1) {
+	auto isVisiblePX = [&](Block a, int x, int y, int z) -> bool {
+		Block b; 
+		if (x == CHUNK_SIZE - 1) {
 			if (px)
 				b = px->getBlock({ 0, y, z }, false);
 			else
@@ -257,14 +251,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		else {
 			b = blockStore.getBlock({ x + 1, y, z }, false);
 		}
-		auto& dets = getDetails(b);
-		return b == Block::AIR;
-		};
-	auto isVisibleNX = [&](Block b, int x, int y, int z) -> bool {
-		if (b == Block::AIR) {
-			return false;
-		}
-		else if (x == 0) {
+		return show(a, b);
+	};
+	auto isVisibleNX = [&](Block a, int x, int y, int z) -> bool {
+		Block b;
+		if (x == 0) {
 			if (nx)
 				b = nx->getBlock({ CHUNK_SIZE - 1, y, z }, false);
 			else
@@ -273,9 +264,8 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		else {
 			b = blockStore.getBlock({ x - 1, y, z }, false);
 		}
-		auto& dets = getDetails(b);
-		return b == Block::AIR;
-		};
+		return show(a, b);
+	};
 
 #ifdef GENERATE_INDEX_DATA_GREEDY
 	auto addVert = [&](glm::vec3 vert) {
