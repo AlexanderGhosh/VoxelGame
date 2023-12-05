@@ -493,8 +493,6 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 			}
 		}
 	}
-
-	int ghfoi = 0;
 }
 
 void ChunkColumn::setUpBuffer()
