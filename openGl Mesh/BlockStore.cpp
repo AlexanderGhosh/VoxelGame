@@ -16,7 +16,7 @@ BlockStore::BlockStore(glm::vec2 pos, unsigned int seed, bool limitSamples)
 
 const BlocksEncoded& BlockStore::getBlocksAt(glm::vec2 pos) const
 {
-	return heightMap[columnIndex(pos.x, pos.y)];
+	return getBlocksAt(pos.x, pos.y);
 }
 
 const BlocksEncoded& BlockStore::getBlocksAt(float x, float z) const
