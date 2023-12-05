@@ -170,7 +170,11 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 	}
 }
 
-void ChunkColumn::createRunPY(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore) {
+template<typename Compare>
+void ChunkColumn::createRunPX(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices) {
+	auto index = [](int x, int y, int z) {
+		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+		};
 
 	// is not currently in the mesh and can be seen
 	int mkPoint = x++; // the start point of a run
@@ -216,7 +220,8 @@ void ChunkColumn::createRunPY(Block currentBlock, int& x, int y, int z, const Bl
 	}
 }
 
-void ChunkColumn::createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore) {
+template<typename Compare>
+void ChunkColumn::createRunPZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices) {
 	auto index = [](int x, int y, int z) {
 		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
 	};
@@ -268,7 +273,8 @@ void ChunkColumn::createRunPZ(Block currentBlock, int& x, int y, int z, const Bl
 	}
 
 }
-void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore) {
+template<typename Compare>
+void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const BlockStore& blockStore, std::vector<unsigned int>& indices, std::unordered_set<glm::vec3, Compare>& vertices) {
 	auto index = [](int x, int y, int z) {
 		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
 		};
@@ -326,6 +332,9 @@ void ChunkColumn::createRunNZ(Block currentBlock, int& x, int y, int z, const Bl
 
 void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neibours, const BlockStore& blockStore)
 {
+	auto lessThanVec3 = [](glm::vec3 a, glm::vec3 b) { return a.x < b.x && a.y < b.y && a.z < b.z; };
+	std::unordered_set<glm::vec3, decltype(lessThanVec3)> vertices;
+	std::vector<unsigned int> indices;
 	const BlockStore* pz = nullptr;
 	const BlockStore* nz = nullptr;
 	const BlockStore* px = nullptr;
