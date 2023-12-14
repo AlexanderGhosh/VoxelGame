@@ -60,11 +60,8 @@ void main() {
     if(blockColourIndex == 5u) {
         return; // discards water
     }
-    
-    for (uint i = 0; i < 6; i++) {
-        // the 63 renders all faces
-        uint slot = 63 & (1 << i);
-        if (slot > 0) {            
+    for(uint h = 0; h < 5; h++) {
+        for (uint i = 0; i < 6; i++) {  
             normal = normals[i];
 
             for (uint j = 0u; j < 4u; j++){
@@ -73,12 +70,13 @@ void main() {
 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
                 worldPos = (gl_in[0].gl_Position.xyz + v) * voxelSize;
+                worldPos.y -= h;
                 viewFragPos_ = view * vec4(worldPos, 1);
 
                 gl_Position = projection * viewFragPos_;
                 EmitVertex();
             }
-            EndPrimitive();
         }
     }
+    EndPrimitive();
 }

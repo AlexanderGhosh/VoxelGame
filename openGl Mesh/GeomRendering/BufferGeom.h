@@ -7,6 +7,9 @@ public:
 	BufferGeom();
 	~BufferGeom();
 
+	BufferGeom(BufferGeom&& other) noexcept;
+	BufferGeom& operator=(BufferGeom&& other) noexcept;
+
 	void setUp(const GeomData* data, unsigned int size);
 	void realloc(const GeomData* data, unsigned int size);
 

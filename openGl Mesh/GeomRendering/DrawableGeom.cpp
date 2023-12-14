@@ -65,6 +65,10 @@ void DrawableGeom::draw(Shader* shader) const
 
 		buffer->bind();
 		glDrawArrays(GL_POINTS, 0, buffer->size());
+		auto e = glGetError();
+		if (e != 0) {
+			buffer->unbind();
+		}
 		buffer->unbind();
 		if (tex) tex->unBind();
 	}

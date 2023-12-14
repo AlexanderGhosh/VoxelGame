@@ -40,6 +40,7 @@ void World::generateTerrain() {
 
 		NoiseRenderData data(&chunks[pos].noiseBuffer, chunk.getWorldPosition3D());
 		noiseRenderer.add(data);
+		geomDrawable.add(chunk);
 	}
 	// timer.mark("Constructors");
 	// for (auto& chunk : chunks) {
@@ -254,8 +255,8 @@ void World::save() const
 
 void World::render(Shader* shader) {
 	tryFinishGenerateChunk();
-	// geomDrawable.render(shader);
-	noiseRenderer.render();
+	geomDrawable.render(shader);
+	// noiseRenderer.render();
 }
 
 void World::setUpDrawable()

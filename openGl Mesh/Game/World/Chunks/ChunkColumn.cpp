@@ -8,6 +8,7 @@
 #include "../world_generation.h"
 #include "../../../Helpers/BlockDetails.h"
 #include "../World.h"
+#include "../../../Helpers/Timers/Timer.h"
 
 
 ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks(), noiseBuffer()
@@ -28,7 +29,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
 {
 	position = other.position;
-	buffer = other.buffer;
+	buffer = std::move(other.buffer);
 	seed = other.seed;
 	bufferData = std::move(other.bufferData);
 	editedBlocks = std::move(other.editedBlocks);
@@ -187,8 +188,102 @@ void ChunkColumn::reallocBuffer()
 
 void ChunkColumn::generateNoiseBuffer()
 {
+	Timer timer("Generate from noise");
+	timer.start();
+	BlockStore bs(getWorldPosition2D(), seed);
+	auto index = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE; };
 	std::vector<float> heights = std::move(world_generation::getRawHeights(getWorldPosition2D(), seed));
-	noiseBuffer = NoiseBuffer(heights.data(), heights.size());
+	timer.mark("Heights Generated");
+		
+	// contqains the list of differances in height along axis (should equate to how many faces are visible
+	std::vector<unsigned char> pxDelta(CHUNK_AREA);
+	std::vector<unsigned char> nxDelta(CHUNK_AREA);
+	std::vector<unsigned char> pzDelta(CHUNK_AREA);
+	std::vector<unsigned char> nzDelta(CHUNK_AREA);
+
+	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
+		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
+			unsigned int currentIndex = index(x, z);
+			unsigned char current = heights[currentIndex];
+
+			if (x == CHUNK_SIZE - 1) {
+				pxDelta[currentIndex] = 0;
+			}
+			else {
+				pxDelta[currentIndex] = fmaxf(0, current - heights[index(x + 1, z)]);
+			}
+			if (x == 0) {
+				nxDelta[currentIndex] = 0;
+			}
+			else {
+				nxDelta[currentIndex] = fmaxf(0, current - heights[index(x - 1, z)]);
+			}
+
+			if (z == CHUNK_SIZE - 1) {
+				pzDelta[currentIndex] = 0;
+			}
+			else {
+				pzDelta[currentIndex] = fmaxf(0, current - heights[index(x, z + 1)]);
+			}
+			if (z == 0) {
+				nzDelta[currentIndex] = 0;
+			}
+			else {
+				nzDelta[currentIndex] = fmaxf(0, current - heights[index(x, z - 1)]);
+			}
+		}
+	}
+	timer.mark("Height Deltas generated");
+
+	bufferData.reserve(CHUNK_AREA);
+	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
+		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
+			unsigned int idx = index(x, z);
+			const BlocksEncoded& currentColumn = bs.getBlocksAt(x, z);
+			const float y = currentColumn.height();
+
+			unsigned char px = pxDelta[idx];
+			unsigned char nx = nxDelta[idx];
+			unsigned char pz = pzDelta[idx];
+			unsigned char nz = nzDelta[idx];
+
+			unsigned char maxDepth = fmaxf(fmaxf(px, pz), fmaxf(nx, nz));
+			for (unsigned int i = 0; i < maxDepth; i++) {
+				Block block = currentColumn[y - i];
+				if (block == Block::WATER) break;
+				GeomData data;
+				data.setPos({ x, y - i, z });
+				data.textureIndex_ = (unsigned char) block;
+				if (i == 0) markSlot(data.cubeType_, 4); // top face
+				if (i < px) markSlot(data.cubeType_, 3);
+				if (i < nx) markSlot(data.cubeType_, 2);
+				if (i < pz) markSlot(data.cubeType_, 0);
+				if (i < nz) markSlot(data.cubeType_, 1);
+
+				bufferData.push_back(data);
+			}
+			if (maxDepth == 0) {
+				Block block = currentColumn[y];
+				if (block == Block::WATER) continue;
+				GeomData data;
+				data.setPos({ x, y, z });
+				data.textureIndex_ = (unsigned char)block;
+				markSlot(data.cubeType_, 4); // top face
+				bufferData.push_back(data);
+			}
+		}
+	}
+
+	bufferData.shrink_to_fit();
+	timer.mark("Mesh generated");
+
+
+	setUpBuffer();
+	timer.mark("OpenGl");
+	timer.showDetails(1);
+
+
+	// noiseBuffer = NoiseBuffer(heights.data(), heights.size());
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {

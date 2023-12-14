@@ -13,11 +13,32 @@ BufferGeom::~BufferGeom()
 	cleanUp();
 }
 
+BufferGeom::BufferGeom(BufferGeom&& other) noexcept : BufferGeom()
+{
+	VBO = other.VBO;
+	VAO = other.VAO;
+	size_ = other.size_;
+
+	other.VBO = other.VAO = 0;
+	other.size_ = 0;
+}
+
+BufferGeom& BufferGeom::operator=(BufferGeom&& other) noexcept
+{
+	VBO = other.VBO;
+	VAO = other.VAO;
+	size_ = other.size_;
+
+	other.VBO = other.VAO = 0;
+	other.size_ = 0;
+	return *this;
+}
+
 void BufferGeom::setUp(const GeomData* data, unsigned int size)
 {
 	cleanUp();
-	glGenBuffers(1, &VBO); // VBO
 	glGenVertexArrays(1, &VAO); // VAO
+	glGenBuffers(1, &VBO); // VBO
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, size * sizeof(GeomData), data, GL_STATIC_DRAW);
