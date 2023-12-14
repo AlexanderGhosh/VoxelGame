@@ -6,7 +6,8 @@
 
 FastNoise::SmartNode<FastNoise::Simplex> world_generation::noiseSource;
 FastNoise::SmartNode<FastNoise::FractalFBm> world_generation::noiseGenerator;
-std::vector<float> world_generation::xs(CHUNK_AREA), world_generation::ys(CHUNK_AREA);
+// uses padded for the sake of 'getRawHeightsPadded'
+std::vector<float> world_generation::xs(CHUNK_AREA_PADDED), world_generation::ys(CHUNK_AREA_PADDED);
 glm::ivec2 world_generation::treeCooldown(4);
 NoiseOptions world_generation::options = {};
 
@@ -22,13 +23,27 @@ void world_generation::setUp()
 	noiseGenerator->SetOctaveCount(options.octaves);
 	noiseGenerator->SetLacunarity(1.5);
 	unsigned int x = 0, y = 0;
-	for (float i = 0; i < CHUNK_SIZE; i++) {
-		for (float j = 0; j < CHUNK_SIZE; j++) {
+	for (float i = 0; i < CHUNK_SIZE_PADDED; i++) {
+		for (float j = 0; j < CHUNK_SIZE_PADDED; j++) {
 			xs[x++] = j * NOISE_FACTOR * options.frequency;
 			ys[y++] = i * NOISE_FACTOR * options.frequency;
 		}
 	}
 
+}
+
+std::vector<float> world_generation::getRawHeightsPadded(glm::vec2 chunkPos, unsigned int seed)
+{
+	std::vector<float> noiseOutput(CHUNK_AREA_PADDED);
+	chunkPos -= 1;
+	chunkPos *= NOISE_FACTOR * options.frequency;
+	// deducts 1 to nullify the padding
+	auto minMax = noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA_PADDED, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
+	for (unsigned int i = 0; i < CHUNK_AREA_PADDED; i++)
+	{
+		noiseOutput[i] = noiseToHeight(noiseOutput[i], minMax);
+	}
+	return noiseOutput;
 }
 
 std::vector<float> world_generation::getRawHeights(glm::vec2 chunkPos, unsigned int seed)
