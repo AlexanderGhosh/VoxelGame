@@ -190,9 +190,10 @@ void ChunkColumn::generateNoiseBuffer()
 	Timer timer("Generate from noise");
 	timer.start();
 	// BlockStore bs(getWorldPosition2D(), seed);
-	std::vector<float> heights = std::move(world_generation::getRawHeights(getWorldPosition2D(), seed));
+	std::vector<float> heightsPadded = std::move(world_generation::getRawHeightsPadded(getWorldPosition2D(), seed));
 	auto index = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE; };
-	auto getHeight = [&heights, &index](unsigned int x, unsigned int z) -> unsigned char { return heights[index(x, z)]; };
+	auto indexPadded = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE_PADDED; };
+	auto getHeight = [&heightsPadded, &indexPadded](unsigned int x, unsigned int z) -> unsigned char { return heightsPadded[indexPadded(x, z)]; };
 
 	timer.mark("Heights Generated");
 		
@@ -202,37 +203,17 @@ void ChunkColumn::generateNoiseBuffer()
 	std::vector<unsigned char> pzDelta(CHUNK_AREA);
 	std::vector<unsigned char> nzDelta(CHUNK_AREA);
 
-	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
-		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
-			unsigned int currentIndex = index(x, z);
+	for (unsigned int x = 1; x < CHUNK_SIZE_PADDED - 1; x++) {
+		for (unsigned int z = 1; z < CHUNK_SIZE_PADDED -1; z++) {
+			unsigned int currentIndex = index(x - 1, z - 1);
 			unsigned char height = getHeight(x, z);
 
 
-			if (x == CHUNK_SIZE - 1) {
-				pxDelta[currentIndex] = 0;
-			}
-			else {
-				pxDelta[currentIndex] = fmaxf(0, height - getHeight(x + 1, z));
-			}
-			if (x == 0) {
-				nxDelta[currentIndex] = 0;
-			}
-			else {
-				nxDelta[currentIndex] = fmaxf(0, height - getHeight(x - 1, z));
-			}
+			pxDelta[currentIndex] = fmaxf(0, height - getHeight(x + 1, z));
+			nxDelta[currentIndex] = fmaxf(0, height - getHeight(x - 1, z));
 
-			if (z == CHUNK_SIZE - 1) {
-				pzDelta[currentIndex] = 0;
-			}
-			else {
-				pzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z + 1));
-			}
-			if (z == 0) {
-				nzDelta[currentIndex] = 0;
-			}
-			else {
-				nzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z - 1));
-			}
+			pzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z + 1));
+			nzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z - 1));
 		}
 	}
 	timer.mark("Height Deltas generated");
@@ -241,7 +222,7 @@ void ChunkColumn::generateNoiseBuffer()
 	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
 		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
 			unsigned int idx = index(x, z);
-			const float y = heights[index(x, z)];
+			const float y = getHeight(x + 1, z + 1);
 			const BlocksEncoded& currentColumn = world_generation::createColumn(y);
 
 			unsigned char px = pxDelta[idx];

@@ -43,7 +43,7 @@ constexpr float FAR_PLANE = 200;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr unsigned int RENDER_DISTANCE = 25;
+constexpr unsigned int RENDER_DISTANCE = 10;
 constexpr unsigned int WORLD_HEIGHT = 50;
 constexpr unsigned unsigned int WATER_LEVEL = 20;
 constexpr unsigned unsigned int SNOW_LEVEL = 38;
@@ -52,6 +52,9 @@ constexpr unsigned int CHUNK_SIZE = 16;
 constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
 constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
+
+constexpr unsigned int CHUNK_SIZE_PADDED = CHUNK_SIZE + 2;
+constexpr unsigned int CHUNK_AREA_PADDED = CHUNK_SIZE_PADDED * CHUNK_SIZE_PADDED;
 
 
 constexpr float PLAYER_SPEED = 25;
