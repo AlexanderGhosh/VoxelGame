@@ -2,7 +2,6 @@
 #include "../../../BlockStore.h"
 #include "../../../GeomRendering/BufferGeom.h"
 #include "../../../GeomRendering/GeomData.h"
-#include "../../../NoiseRender/NoiseBuffer.h"
 
 class World;
 
@@ -23,7 +22,6 @@ public:
 	void reallocBuffer();
 
 	// noiseRenderig
-	NoiseBuffer noiseBuffer;
 	// done in one step because generating the noise is so fast that putting it on a thread would likly slow it down
 	void generateNoiseBuffer();
 
