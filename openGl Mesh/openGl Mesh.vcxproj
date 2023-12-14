@@ -197,8 +197,6 @@
     <ClCompile Include="Mangers\PhysicsManager.cpp" />
     <ClCompile Include="EntityComponent\Components\RenderMesh.cpp" />
     <ClCompile Include="EntityComponent\Components\RigidBody.cpp" />
-    <ClCompile Include="NoiseRender\NoiseRenderer.cpp" />
-    <ClCompile Include="NoiseRender\NoiseBuffer.cpp" />
     <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="SOIL2\etc1_utils.c" />
     <ClCompile Include="SOIL2\image_DXT.c" />
@@ -284,9 +282,6 @@
     <ClInclude Include="Mangers\PhysicsManager.h" />
     <ClInclude Include="EntityComponent\Components\RenderMesh.h" />
     <ClInclude Include="EntityComponent\Components\RigidBody.h" />
-    <ClInclude Include="NoiseRender\NoiseRenderer.h" />
-    <ClInclude Include="NoiseRender\NoiseBuffer.h" />
-    <ClInclude Include="NoiseRender\NoiseRenderData.h" />
     <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SOIL2\etc1_utils.h" />
     <ClInclude Include="SOIL2\image_DXT.h" />

@@ -8,7 +8,7 @@
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
 
-World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false), noiseRenderer()
+World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false)
 {
 }
 
@@ -38,9 +38,7 @@ void World::generateTerrain() {
 
 		chunks.emplace(pos, std::move(chunk));
 
-		NoiseRenderData data(&chunks[pos].noiseBuffer, chunk.getWorldPosition3D());
-		noiseRenderer.add(data);
-		geomDrawable.add(chunk);
+		geomDrawable.add(chunks[pos]);
 	}
 	// timer.mark("Constructors");
 	// for (auto& chunk : chunks) {

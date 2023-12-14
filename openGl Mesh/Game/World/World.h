@@ -4,7 +4,6 @@
 #include "../../GeomRendering/DrawableGeom.h"
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Async/DynamicAsyncPool.h"
-#include "../../NoiseRender/NoiseRenderer.h"
 
 class World
 {
@@ -51,7 +50,6 @@ private:
 
 	unsigned int seed;
 	Chunks chunks;
-	NoiseRenderer noiseRenderer;
 	DrawableGeom geomDrawable;
 	// only genertes chunk buffer data can be called async
 	// returns a list of chunk positions that it will generate

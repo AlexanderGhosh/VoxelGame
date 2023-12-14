@@ -11,7 +11,7 @@
 #include "../../../Helpers/Timers/Timer.h"
 
 
-ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks(), noiseBuffer()
+ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
 {
 }
 
@@ -33,7 +33,6 @@ ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
 	seed = other.seed;
 	bufferData = std::move(other.bufferData);
 	editedBlocks = std::move(other.editedBlocks);
-	noiseBuffer = std::move(other.noiseBuffer);
 }
 
 void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
@@ -189,8 +188,8 @@ void ChunkColumn::generateNoiseBuffer()
 {
 	Timer timer("Generate from noise");
 	timer.start();
-	// BlockStore bs(getWorldPosition2D(), seed);
 	std::vector<float> heightsPadded = std::move(world_generation::getRawHeightsPadded(getWorldPosition2D(), seed));
+
 	auto index = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE; };
 	auto indexPadded = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE_PADDED; };
 	auto getHeight = [&heightsPadded, &indexPadded](unsigned int x, unsigned int z) -> unsigned char { return heightsPadded[indexPadded(x, z)]; };
@@ -278,9 +277,6 @@ void ChunkColumn::generateNoiseBuffer()
 	setUpBuffer();
 	timer.mark("OpenGl");
 	//timer.showDetails(1);
-
-
-	// noiseBuffer = NoiseBuffer(heights.data(), heights.size());
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {
