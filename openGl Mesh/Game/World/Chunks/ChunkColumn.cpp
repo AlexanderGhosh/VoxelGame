@@ -169,7 +169,6 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 							break;
 						}
 					}
-
 				}
 			}
 		}
@@ -190,9 +189,11 @@ void ChunkColumn::generateNoiseBuffer()
 {
 	Timer timer("Generate from noise");
 	timer.start();
-	BlockStore bs(getWorldPosition2D(), seed);
-	auto index = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE; };
+	// BlockStore bs(getWorldPosition2D(), seed);
 	std::vector<float> heights = std::move(world_generation::getRawHeights(getWorldPosition2D(), seed));
+	auto index = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE; };
+	auto getHeight = [&heights, &index](unsigned int x, unsigned int z) -> unsigned char { return heights[index(x, z)]; };
+
 	timer.mark("Heights Generated");
 		
 	// contqains the list of differances in height along axis (should equate to how many faces are visible
@@ -204,32 +205,33 @@ void ChunkColumn::generateNoiseBuffer()
 	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
 		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
 			unsigned int currentIndex = index(x, z);
-			unsigned char current = heights[currentIndex];
+			unsigned char height = getHeight(x, z);
+
 
 			if (x == CHUNK_SIZE - 1) {
 				pxDelta[currentIndex] = 0;
 			}
 			else {
-				pxDelta[currentIndex] = fmaxf(0, current - heights[index(x + 1, z)]);
+				pxDelta[currentIndex] = fmaxf(0, height - getHeight(x + 1, z));
 			}
 			if (x == 0) {
 				nxDelta[currentIndex] = 0;
 			}
 			else {
-				nxDelta[currentIndex] = fmaxf(0, current - heights[index(x - 1, z)]);
+				nxDelta[currentIndex] = fmaxf(0, height - getHeight(x - 1, z));
 			}
 
 			if (z == CHUNK_SIZE - 1) {
 				pzDelta[currentIndex] = 0;
 			}
 			else {
-				pzDelta[currentIndex] = fmaxf(0, current - heights[index(x, z + 1)]);
+				pzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z + 1));
 			}
 			if (z == 0) {
 				nzDelta[currentIndex] = 0;
 			}
 			else {
-				nzDelta[currentIndex] = fmaxf(0, current - heights[index(x, z - 1)]);
+				nzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z - 1));
 			}
 		}
 	}
@@ -239,8 +241,8 @@ void ChunkColumn::generateNoiseBuffer()
 	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
 		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
 			unsigned int idx = index(x, z);
-			const BlocksEncoded& currentColumn = bs.getBlocksAt(x, z);
-			const float y = currentColumn.height();
+			const float y = heights[index(x, z)];
+			const BlocksEncoded& currentColumn = world_generation::createColumn(y);
 
 			unsigned char px = pxDelta[idx];
 			unsigned char nx = nxDelta[idx];
@@ -250,10 +252,19 @@ void ChunkColumn::generateNoiseBuffer()
 			unsigned char maxDepth = fmaxf(fmaxf(px, pz), fmaxf(nx, nz));
 			for (unsigned int i = 0; i < maxDepth; i++) {
 				Block block = currentColumn[y - i];
-				if (block == Block::WATER) break;
 				GeomData data;
+
+
+				if (y < WATER_LEVEL) {
+					if (i == 0) markSlot(data.cubeType_, 4); // top face
+					data.textureIndex_ = (unsigned char)Block::WATER;
+					data.setPos({ x, WATER_LEVEL, z });
+					bufferData.push_back(data);
+					data.cubeType_ = 0;
+				}
+
+				data.textureIndex_ = (unsigned char)block;
 				data.setPos({ x, y - i, z });
-				data.textureIndex_ = (unsigned char) block;
 				if (i == 0) markSlot(data.cubeType_, 4); // top face
 				if (i < px) markSlot(data.cubeType_, 3);
 				if (i < nx) markSlot(data.cubeType_, 2);
@@ -263,9 +274,14 @@ void ChunkColumn::generateNoiseBuffer()
 				bufferData.push_back(data);
 			}
 			if (maxDepth == 0) {
-				Block block = currentColumn[y];
-				if (block == Block::WATER) continue;
 				GeomData data;
+				if (y < WATER_LEVEL) {
+					markSlot(data.cubeType_, 4); // top face
+					data.textureIndex_ = (unsigned char)Block::WATER;
+					data.setPos({ x, WATER_LEVEL, z });
+					bufferData.push_back(data);
+				}
+				Block block = currentColumn[y];
 				data.setPos({ x, y, z });
 				data.textureIndex_ = (unsigned char)block;
 				markSlot(data.cubeType_, 4); // top face
@@ -280,7 +296,7 @@ void ChunkColumn::generateNoiseBuffer()
 
 	setUpBuffer();
 	timer.mark("OpenGl");
-	timer.showDetails(1);
+	//timer.showDetails(1);
 
 
 	// noiseBuffer = NoiseBuffer(heights.data(), heights.size());

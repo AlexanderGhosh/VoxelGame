@@ -43,7 +43,7 @@ constexpr float FAR_PLANE = 200;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr unsigned int RENDER_DISTANCE = 0;
+constexpr unsigned int RENDER_DISTANCE = 25;
 constexpr unsigned int WORLD_HEIGHT = 50;
 constexpr unsigned unsigned int WATER_LEVEL = 20;
 constexpr unsigned unsigned int SNOW_LEVEL = 38;
