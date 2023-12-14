@@ -151,7 +151,9 @@ enum SHADER_NAMES : unsigned char {
 	POINT_GIZMO,
 	LINE_GIZMO,
 	CIRCLE_GIZMO,
-	PHYS_DEBUG
+	PHYS_DEBUG,
+
+	RENDER_NOISE
 };
 
 enum class Move_Dir : unsigned char {

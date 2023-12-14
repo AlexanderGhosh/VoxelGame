@@ -10,15 +10,29 @@
 #include "../World.h"
 
 
-ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
+ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks(), noiseBuffer()
 {
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn()
+ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed) : ChunkColumn()
 {
 	this->seed = seed;
 	position = pos;
+}
+
+ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn(pos, seed)
+{
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
+}
+
+ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
+{
+	position = other.position;
+	buffer = other.buffer;
+	seed = other.seed;
+	bufferData = std::move(other.bufferData);
+	editedBlocks = std::move(other.editedBlocks);
+	noiseBuffer = std::move(other.noiseBuffer);
 }
 
 void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
@@ -169,6 +183,12 @@ void ChunkColumn::setUpBuffer()
 void ChunkColumn::reallocBuffer()
 {
 	buffer.realloc(bufferData.data(), bufferData.size());
+}
+
+void ChunkColumn::generateNoiseBuffer()
+{
+	std::vector<float> heights = std::move(world_generation::getRawHeights(getWorldPosition2D(), seed));
+	noiseBuffer = NoiseBuffer(heights.data(), heights.size());
 }
 
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {

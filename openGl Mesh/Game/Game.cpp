@@ -175,6 +175,7 @@ void Game::generateWorld() {
 	unsigned int seed = 32;
 	srand(seed);
 	world = World(WORLD_ORIGIN, seed);
+	world.generateTerrain();
 	world.setUpDrawable();
 }
 

@@ -11,6 +11,9 @@ class world_generation
 public:
 	static void setUp();
 
+	// returns the raw heights
+	static std::vector<float> getRawHeights(glm::vec2 chunkPos, unsigned int seed);
+
 	// static ChunkHeightMap genHeightMap(glm::vec3 chunkPos);
 	static void createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome = 0);
 	static void createHeightMapLimitedSamples(glm::vec2 chunkPos, unsigned int seed, HeightMap& res);

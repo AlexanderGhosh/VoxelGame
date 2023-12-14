@@ -2,6 +2,7 @@
 #include "../../../BlockStore.h"
 #include "../../../GeomRendering/BufferGeom.h"
 #include "../../../GeomRendering/GeomData.h"
+#include "../../../NoiseRender/NoiseBuffer.h"
 
 class World;
 
@@ -10,13 +11,21 @@ class ChunkColumn
 {
 public:
 	ChunkColumn();
+	ChunkColumn(glm::vec2 pos, unsigned int seed);
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
+
+	ChunkColumn(ChunkColumn&& other) noexcept;
 
 	// runtime chunk generation
 	// generates all chunk data needed for the the buffers
 	void generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours);
 	void setUpBuffer();
 	void reallocBuffer();
+
+	// noiseRenderig
+	NoiseBuffer noiseBuffer;
+	// done in one step because generating the noise is so fast that putting it on a thread would likly slow it down
+	void generateNoiseBuffer();
 
 
 	// inital world generation

@@ -31,16 +31,25 @@ void world_generation::setUp()
 
 }
 
-void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
+std::vector<float> world_generation::getRawHeights(glm::vec2 chunkPos, unsigned int seed)
+{
 	std::vector<float> noiseOutput(CHUNK_AREA);
 
 	chunkPos *= NOISE_FACTOR * options.frequency;
 	auto minMax = noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
+	for (unsigned int i = 0; i < CHUNK_AREA; i++)
+	{
+		noiseOutput[i] = noiseToHeight(noiseOutput[i], minMax);
+	}
+	return noiseOutput;
+}
+
+void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
+	std::vector<float> noiseOutput = std::move(getRawHeights(chunkPos, seed));
 
 	for (unsigned int i = 0; i < CHUNK_AREA; i++)
 	{
-		unsigned int height = noiseToHeight(noiseOutput[i], minMax);
-		res[i] = createColumn(height);
+		res[i] = createColumn(noiseOutput[i]);
 	}
 }
 

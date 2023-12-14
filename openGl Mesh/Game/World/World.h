@@ -4,6 +4,7 @@
 #include "../../GeomRendering/DrawableGeom.h"
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Async/DynamicAsyncPool.h"
+#include "../../NoiseRender/NoiseRenderer.h"
 
 class World
 {
@@ -13,6 +14,7 @@ public:
 
 	void render(Shader* shader);
 
+	void generateTerrain();
 	void setUpDrawable();
 
 	void placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunk);
@@ -49,7 +51,7 @@ private:
 
 	unsigned int seed;
 	Chunks chunks;
-
+	NoiseRenderer noiseRenderer;
 	DrawableGeom geomDrawable;
 	// only genertes chunk buffer data can be called async
 	// returns a list of chunk positions that it will generate
@@ -57,5 +59,4 @@ private:
 	// reutns a set of positions centered on the origin with a scale of 1
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	void getNewChunkPositions(const glm::vec3 worldOrigin);
-	void generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions);
 };
