@@ -221,7 +221,7 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	manager->startEvent();
 
-	_player->setPosition({ 8, 40, 8 });
+	_player->setPosition({ CHUNK_SIZE_F * HALF_VOXEL_SIZE, 40, CHUNK_SIZE_F * HALF_VOXEL_SIZE });
 	to1.setPosition({ 0, 100, 0 });
 	/*reactphysics3d::Material& mat = _player->getRigidBody()->getMaterial();
 	mat.setBounciness(0);
