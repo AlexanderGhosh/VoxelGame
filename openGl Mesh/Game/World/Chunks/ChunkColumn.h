@@ -6,6 +6,7 @@
 class World;
 
 // all operations are unscaled unless otherwise stated
+// the copy constructor doenst copy the buffer
 class ChunkColumn
 {
 public:
@@ -13,6 +14,8 @@ public:
 	ChunkColumn(glm::vec2 pos, unsigned int seed);
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
+	ChunkColumn(ChunkColumn& other);
+	ChunkColumn operator=(ChunkColumn other);
 	ChunkColumn(ChunkColumn&& other) noexcept;
 
 	// runtime chunk generation

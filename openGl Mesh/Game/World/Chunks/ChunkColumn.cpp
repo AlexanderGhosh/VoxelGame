@@ -26,6 +26,23 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
 
+ChunkColumn::ChunkColumn(ChunkColumn& other)
+{
+	position = other.position;
+	seed = other.seed;
+	bufferData = other.bufferData;
+	editedBlocks = other.editedBlocks;
+}
+
+ChunkColumn ChunkColumn::operator=(ChunkColumn other)
+{
+	position = other.position;
+	seed = other.seed;
+	bufferData = other.bufferData;
+	editedBlocks = other.editedBlocks;
+	return *this;
+}
+
 ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
 {
 	position = other.position;
@@ -273,9 +290,11 @@ void ChunkColumn::generateNoiseBuffer()
 	bufferData.shrink_to_fit();
 	timer.mark("Mesh generated");
 
-
+#if !defined(GENERATE_CHUNKS_ASYNC) && !defined(GENERATE_NEW_CHUNKS)
 	setUpBuffer();
 	timer.mark("OpenGl");
+#endif // !GENERATE_CHUNKS_ASYNC
+
 	//timer.showDetails(1);
 }
 

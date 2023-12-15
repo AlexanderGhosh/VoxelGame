@@ -175,8 +175,10 @@ void Game::generateWorld() {
 	unsigned int seed = 32;
 	srand(seed);
 	world = World(WORLD_ORIGIN, seed);
+#if  !defined(GENERATE_CHUNKS_ASYNC) && !defined(GENERATE_NEW_CHUNKS)
 	world.generateTerrain();
 	world.setUpDrawable();
+#endif // GENERATE_CHUNKS_ASYNC
 }
 
 void Game::doLoop(const glm::mat4& projection) {
@@ -206,7 +208,6 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
-	Timer timer("Loop Time");
 
 	PhysicsManager& physManager = PhysicsManager::getInstance();
 
@@ -229,19 +230,23 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	float dtAccumulator = 0;
 	float cellularAccum = 0;
+	Timer timer("Game Loop");
 	while (gameRunning) {
+		timer.start();
 		calcTimes();
 		glfwPollEvents();
 		_player->processMouse(mouseOffset);
-
+		timer.mark("Player Mouse");
 		glm::ivec2 c = _player->getChunkPosition();
 		
 		std::list<ChunkColumn*> neibours = world.getNeibours(c, true);
 
 		_player->processKeys(keys, deltaTime, neibours);
+		timer.mark("Player Keys");
 
 		cameraView = _player->getViewMatrix();
 		camreraBuffer.fill(sizeof(glm::mat4), sizeof(glm::mat4), &cameraView);
+		timer.mark("View Buffer");
 
 
 #ifdef DEBUG_GRID_LINES
@@ -258,9 +263,12 @@ void Game::doLoop(const glm::mat4& projection) {
 		
 
 		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);
+
+		timer.mark("Start Chunk Gen");
 		// std::cout << "Generated" << std::endl;
 
 		manager->updateEvent(deltaTime);
+		timer.mark("Entity Update");
 
 		if (dtAccumulator >= FIXED_DELTA_TIME) {
 			dtAccumulator -= FIXED_DELTA_TIME;
@@ -275,6 +283,7 @@ void Game::doLoop(const glm::mat4& projection) {
 			physManager.step();
 			manager->postFixedUpdateEvent();
 		}
+		timer.mark("Physics Manger");
 		dtAccumulator += deltaTime;
 		cellularAccum += deltaTime;
 
@@ -283,17 +292,20 @@ void Game::doLoop(const glm::mat4& projection) {
 			world.update();
 			cellularAccum = 0;
 		}
+		timer.mark("Cellular Automota");
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();
+		timer.mark("Rendering");
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
 		glfwSwapBuffers(window);
 		numFrames++;
 		mouseOffset = glm::vec2(0);
+
 	}
 	timer.showDetails(numFrames);
 
