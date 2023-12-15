@@ -37,8 +37,6 @@ void World::generateTerrain() {
 		chunk.generateNoiseBuffer();
 
 		chunks.emplace(pos, std::move(chunk));
-
-		geomDrawable.add(chunks[pos]);
 	}
 	// timer.mark("Constructors");
 	// for (auto& chunk : chunks) {
@@ -98,6 +96,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 
 void World::tryFinishGenerateChunk()
 {
+	Timer timer("Finish Async");
 	auto allDone = pool.getAllDone(true);
 	for (auto& generated : allDone) {
 		for (auto itt = generated.begin(); itt != generated.end(); itt++) {
@@ -108,13 +107,10 @@ void World::tryFinishGenerateChunk()
 			// ChunkColumn& chunk = chunks.at(chunkPos);
 			chunk->setUpBuffer();
 			geomDrawable.add(*chunk);
-
-			const std::list<ChunkColumn*>& neighbours = getNeibours(*itt);
-			for (ChunkColumn* chunk : neighbours) {
-				chunk->reallocBuffer();
-			}
 		}
 	}
+	// if (allDone.size() == 0) return;
+	// timer.showDetails(allDone.front().size());
 }
 
 const ChunkColumn& World::getChunk(const glm::vec2& chunkPos, bool& success) const
@@ -139,6 +135,7 @@ ChunkColumn* World::getChunk(const glm::vec2& chunkPos, bool& success)
 
 void World::update()
 {
+	return;
 	// performed in local unscaled space
 	auto index = [](int x, int y, int z) -> int {
 		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
@@ -208,14 +205,13 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 
 std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
 {
-	Timer t("Chunk Genreate");
+	Timer t("Chunk Generate");
 	// can throw error if the chunk is removed from chunks while its being generated
 	for (const glm::vec2& chunkPos : positions) {
-		chunks[chunkPos];
-		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
-		chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
+		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
+		chunks[chunkPos].generateNoiseBuffer();
 	}
-	t.showDetails(positions.size());
+	// t.showDetails(positions.size());
 	return positions;
 }
 
@@ -226,7 +222,15 @@ const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool
 		offsets.push_front(glm::vec2(0));
 	}
 	std::list<ChunkColumn*> res;
-	for (auto& [pos, chunk] : chunks) {
+
+	for (auto& off : offsets) {
+		ChunkColumn* chunk = getValue(chunks, chunkPos + off);
+		if (chunk) {
+			res.push_back(chunk);
+		}
+	}
+
+	/*for (auto& [pos, chunk] : chunks) {
 		for (auto itt = offsets.begin(); itt != offsets.end();) {
 			const glm::vec2& delta = *itt;
 			const glm::vec2 cp = chunkPos + delta;
@@ -239,7 +243,7 @@ const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool
 				itt++;
 			}
 		}
-	}
+	}*/
 
 	return res;
 }
@@ -278,11 +282,11 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 
 			worldBlockPos.x += chunk->getWorldPosition2D().x;
 			worldBlockPos.z += chunk->getWorldPosition2D().y;
-			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
-				const float d = glm::distance(ro, worldBlockPos);
+			if (rayCubeIntersection(ro * VOXEL_SIZE_INV, rd, worldBlockPos - .5f, worldBlockPos + .5f)) {
+				const float d = glm::distance(ro * VOXEL_SIZE_INV, worldBlockPos); //  * VOXEL_SIZE_INV is to move the ray origin into unscaled space
 				if (d < minD) {
 					minD = d;
-					placePos = worldBlockPos - rd * VOXEL_SIZE;
+					placePos = worldBlockPos - rd; // step back out of block
 				}
 			}
 		}
@@ -312,11 +316,11 @@ void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 
 			worldBlockPos.x += chunk->getWorldPosition2D().x;
 			worldBlockPos.z += chunk->getWorldPosition2D().y;
-			if (rayCubeIntersection(ro, rd, worldBlockPos - HALF_VOXEL_SIZE, worldBlockPos + HALF_VOXEL_SIZE)) {
-				const float d = glm::distance(ro, worldBlockPos);
+			if (rayCubeIntersection(ro * VOXEL_SIZE_INV, rd, worldBlockPos - .5f, worldBlockPos + .5f)) {
+				const float d = glm::distance(ro * VOXEL_SIZE_INV, worldBlockPos); //  * VOXEL_SIZE_INV is to move the ray origin into unscaled space
 				if (d < minD) {
 					minD = d;
-					breakPos = worldBlockPos;
+					breakPos = worldBlockPos; // step back out of block
 				}
 			}
 		}

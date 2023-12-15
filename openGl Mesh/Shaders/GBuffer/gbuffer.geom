@@ -24,7 +24,7 @@ uniform float voxelSize;
 // const float size = 0.5;
 // const float inv_size = 1.0 / size;
 
-vec3 vertices[8] = vec3[](
+const vec3 vertices[8] = vec3[](
 	vec3(-0.5,-0.5,-0.5), // 0
 	vec3( 0.5,-0.5,-0.5), // 1
 	vec3(-0.5,-0.5, 0.5), // 2
@@ -36,7 +36,7 @@ vec3 vertices[8] = vec3[](
 	vec3(-0.5, 0.5, 0.5)  // 7
 );
 
-int indices[] = int[](
+const int indices[] = int[](
     3, 2, 6, 7, // +z
     5, 4, 1, 0, // -z
     0, 4, 2, 7, // -x
@@ -45,7 +45,7 @@ int indices[] = int[](
     0, 2, 1, 3  // -y
 );
 
-vec3 normals[6] = vec3[] (
+const vec3 normals[6] = vec3[] (
     vec3(0, 0, 1),
     vec3(0, 0, -1),
     vec3(-1, 0, 0),
