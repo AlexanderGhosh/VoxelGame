@@ -1,6 +1,7 @@
 #include "Timer.h"
 #include <iostream>
 #include <common.hpp>
+#include "../Functions.h"
 
 Timer::Timer() : name(), start_(), stop_(), markedPoints()
 {
@@ -63,7 +64,21 @@ void Timer::log(std::string name, bool inFrames)
 void Timer::mark(std::string name)
 {
 	stop();
-	markedPoints.emplace(name, getTime());
+	bool contains_ = false;
+	for (auto& [n, _] : markedPoints) {
+		contains_ = contains(n, name);
+		if (contains_) {
+			name = n;
+			break;
+		}
+	}
+	if(!contains_)
+		name = std::to_string(markedPoints.size() + 1) + ". " + name;
+	if (!contains_)
+		markedPoints.emplace(name, getTime());
+	else
+		markedPoints[name] += getTime();
+	start();
 }
 
 long long Timer::getTime() const
@@ -81,7 +96,10 @@ void Timer::showTime(bool inFrames)
 void Timer::showDetails(unsigned int ammount)
 {
 	stop();
-	double total = getTime();
+	double total = 0;
+	for (const auto& [_, mp_duration] : markedPoints) {
+		total += mp_duration;
+	}
 	double totalSecconds = total * 1e-9;
 	double totalFrames = totalSecconds * 60.;
 
@@ -97,7 +115,7 @@ void Timer::showDetails(unsigned int ammount)
 	double prevDuration = 0;
 	for (const auto& [mp_name, mp_duration] : markedPoints) {
 		double currentDuration = mp_duration - prevDuration;
-		prevDuration = mp_duration;
+		//prevDuration = mp_duration;
 		double percent = currentDuration;
 		percent /= total;
 		percent *= 100.f;
