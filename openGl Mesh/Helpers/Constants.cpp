@@ -17,12 +17,12 @@ std::vector<Shader> SHADERS = {
 	Shader("skybox"),
 	Shader("crosshair"),
 	Shader("glyph"),
-	Shader("OIT/Transparent/transparent", true),
+	Shader("OIT/Transparent/transparent", "OIT/Transparent/transparent", "OIT/Transparent/transparent"),
 	Shader("OIT/Composite/composite"),
 	Shader("ScreenQuad/screenQuad"),
 	Shader("Shadow/shadow", true),
 	Shader("Model/model"),
-	Shader("GBuffer/gbuffer", true),
+	Shader("OIT/Transparent/transparent", "OIT/Transparent/transparent", "GBuffer/gbuffer"),
 	Shader("Deffered/deffered"),
 	Shader("SSAO/ssao"),
 	Shader("Blur/blur"),
@@ -40,6 +40,6 @@ std::vector<Material> MATERIALS = {
 	Material(glm::vec4(.4, .4, .4, 1), glm::vec4(.6, .6, .6, 1)), // stone
 	Material(glm::vec4(RRC(246), RRC(215), RRC(176), 1), glm::vec4(RRC(225), RRC(191), RRC(146), 1)), // sand
 	Material(glm::vec4(0, .6, 1, .7), glm::vec4(.1, .4, .9, .8)), // water
-	Material(glm::vec4(1), glm::vec4(.9)), // snow
+	Material(glm::vec4(1), glm::vec4(.9, .9, .9, 1)), // snow
 	Material(glm::vec4(1, 0, 0, 1), glm::vec4(1, 0, 0, 1)), // gravel
 };

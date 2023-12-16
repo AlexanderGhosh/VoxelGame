@@ -16,18 +16,20 @@ layout (std140, binding = 1) uniform Mats
 
 uniform float numBlocks;
 
-flat in uint blockColourIndex;
+flat in uint matIndex;
 in vec3 normal;
-in vec4 fragPos_;
+in vec4 viewPos;
 flat in vec2 rndSeed;
 
 float rand(vec2 seed);
 void main()
 {
     float rndValue = rand(rndSeed);
-    Material mat = materials[blockColourIndex];
-    _albedo = mix(mat.albedo1, mat.albedo2, rndValue).xyz;
-    _fragPos = fragPos_.xyz; // view space space
+    Material mat = materials[matIndex];
+    vec4 albedo = mix(mat.albedo1, mat.albedo2, rndValue);
+    if(albedo.a < 1) discard;
+    _albedo = albedo.rgb;
+    _fragPos = viewPos.xyz; // view space space
     _normal = normal;
 }
 float rand(vec2 seed){

@@ -24,7 +24,7 @@ layout (std140, binding = 1) uniform Matrices
 
 // out vec4 color;
 
-flat in uint colourIndex;
+flat in uint matIndex;
 flat in vec2 rndSeed;
 in vec3 fragPos;
 in vec3 normal;
@@ -39,9 +39,10 @@ void main()
 {
     Light light = createLight();
     float rnd = rand(rndSeed);
-    vec4 albedo1 = (materials[colourIndex]).albedo1;
-    vec4 albedo2 = (materials[colourIndex]).albedo2;
-    vec4 albedo = mix(albedo1, albedo2, rnd);
+    Material mat = materials[matIndex];
+    vec4 albedo = mix(mat.albedo1, mat.albedo2, rnd);
+
+    if(albedo.a == 1) discard;
 
     // AO
     float occluded = texture(ao, gl_FragCoord.xy).r;

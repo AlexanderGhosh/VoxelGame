@@ -12,17 +12,18 @@ uniform float voxelSize;
 
 in VS_OUT {
     uint cubeType;
-    uint colourIndex;
+    uint matIndex;
     mat4 m;
 } vs_out[];
 
-flat out uint colourIndex;
+flat out uint matIndex;
 flat out vec2 rndSeed;
+out vec4 viewPos;
 out vec3 fragPos;
 out vec3 normal;
 
 
-vec3 vertices[8] = vec3[](
+const vec3 vertices[8] = vec3[](
 	vec3(-0.5,-0.5,-0.5), // 0
 	vec3( 0.5,-0.5,-0.5), // 1
 	vec3(-0.5,-0.5, 0.5), // 2
@@ -34,7 +35,7 @@ vec3 vertices[8] = vec3[](
 	vec3(-0.5, 0.5, 0.5)  // 7
 );
 
-int indices[] = int[](
+const int indices[] = int[](
     3, 2, 6, 7, // +z
     5, 4, 1, 0, // -z
     0, 4, 2, 7, // -x
@@ -43,26 +44,36 @@ int indices[] = int[](
     0, 2, 1, 3  // -y
 );
 
+const vec3 normals[6] = vec3[] (
+    vec3(0, 0, 1),
+    vec3(0, 0, -1),
+    vec3(-1, 0, 0),
+    vec3(1, 0, 0),
+    vec3(0, 1, 0),
+    vec3(0, -1, 0)
+);
 
 void main() {
-    normal = vec3(0, 1, 0);
-    colourIndex = vs_out[0].colourIndex;
-    if(colourIndex != 5u) {
-        return; // discards all but water
-    }
+    matIndex = vs_out[0].matIndex;
+
     for (uint i = 0; i < 6; i++) {
         uint slot = vs_out[0].cubeType & (1 << i);
         if (slot > 0) {
+            normal = normals[i];
+
             for (uint j = 0u; j < 4u; j++){ 
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
-                if(v.y > 0){
+                
+                if(matIndex == 5u && v.y > 0){ // is water and is a top vertex
                     v.y *= 0.75;
                 }
                 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                fragPos = (vs_out[0].m * vec4(v * voxelSize, 1)).xyz;
-                gl_Position = projection * view * vec4(fragPos, 1);
+                vec4 fragPos4 = vs_out[0].m * vec4(v * voxelSize, 1);
+                fragPos = fragPos4.xyz;
+                viewPos = view * fragPos4;
+                gl_Position = projection * viewPos;
                 EmitVertex();
             }
             EndPrimitive();
