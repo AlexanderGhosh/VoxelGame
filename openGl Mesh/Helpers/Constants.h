@@ -62,7 +62,7 @@ constexpr unsigned int CHUNK_AREA_PADDED = CHUNK_SIZE_PADDED * CHUNK_SIZE_PADDED
 
 constexpr float PLAYER_SPEED = 25;
 
-constexpr float VOXEL_SIZE = 0.5;
+constexpr float VOXEL_SIZE = 1;
 constexpr float VOXEL_SIZE_INV = 1.f / VOXEL_SIZE;
 constexpr float HALF_VOXEL_SIZE = VOXEL_SIZE * .5f;
 constexpr glm::vec3 WORLD_ORIGIN(0, 0, 0);
@@ -158,8 +158,6 @@ enum SHADER_NAMES : unsigned char {
 	LINE_GIZMO,
 	CIRCLE_GIZMO,
 	PHYS_DEBUG,
-
-	RENDER_NOISE
 };
 
 enum class Move_Dir : unsigned char {

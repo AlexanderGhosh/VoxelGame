@@ -23,6 +23,7 @@ public:
 	Timer();
 	// creates a timer and starts it
 	Timer(const std::string& name);
+
 	void reName(const std::string& newName);
 	// starts the timer
 	void start();

@@ -113,6 +113,18 @@ void World::tryFinishGenerateChunk()
 	// timer.showDetails(allDone.front().size());
 }
 
+std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
+{
+	Timer t("Chunk Generate");
+	// can throw error if the chunk is removed from chunks while its being generated
+	for (const glm::vec2& chunkPos : positions) {
+		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
+		chunks[chunkPos].generateNoiseBuffer();
+	}
+	// t.showDetails(positions.size());
+	return positions;
+}
+
 const ChunkColumn& World::getChunk(const glm::vec2& chunkPos, bool& success) const
 {
 	if (chunks.contains(chunkPos) && !positionsBeingGenerated.contains(chunkPos)) {
@@ -201,20 +213,6 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 	}
 }
 
-
-
-std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
-{
-	Timer t("Chunk Generate");
-	// can throw error if the chunk is removed from chunks while its being generated
-	for (const glm::vec2& chunkPos : positions) {
-		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
-		chunks[chunkPos].generateNoiseBuffer();
-	}
-	// t.showDetails(positions.size());
-	return positions;
-}
-
 const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool includeSelf)
 {
 	std::list<glm::vec2> offsets(OFFSETS_2D.begin(), OFFSETS_2D.end());
@@ -265,8 +263,6 @@ void World::setUpDrawable()
 {
 	geomDrawable.setUp(chunks);
 }
-
-
 
 void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)
 {

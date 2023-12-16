@@ -26,7 +26,7 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
 
-ChunkColumn::ChunkColumn(ChunkColumn& other)
+ChunkColumn::ChunkColumn(const ChunkColumn& other)
 {
 	position = other.position;
 	seed = other.seed;
@@ -34,7 +34,7 @@ ChunkColumn::ChunkColumn(ChunkColumn& other)
 	editedBlocks = other.editedBlocks;
 }
 
-ChunkColumn ChunkColumn::operator=(ChunkColumn other)
+ChunkColumn ChunkColumn::operator=(const ChunkColumn& other)
 {
 	position = other.position;
 	seed = other.seed;
