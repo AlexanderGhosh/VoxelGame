@@ -7,8 +7,7 @@ uniform vec3 chunkPosition;
 
 out VS_OUT {
     uint cubeType;
-    uint blockColourIndex;
-    mat4 m;
+    mat4 model;
 } vs_out;
 
 void main() {
@@ -20,12 +19,11 @@ void main() {
     vec3 worldPos_ = vec3(float(x), float(y), float(z));
 
     worldPos_ += chunkPosition;
-    mat4 m = mat4(voxelSize);
-    m[3][0] = worldPos_.x * voxelSize;
-    m[3][1] = worldPos_.y * voxelSize;
-    m[3][2] = worldPos_.z * voxelSize;
-    vs_out.m = m;
+    mat4 model = mat4(voxelSize);
+    model[3][0] = worldPos_.x * voxelSize;
+    model[3][1] = worldPos_.y * voxelSize;
+    model[3][2] = worldPos_.z * voxelSize;
+    vs_out.model = model;
 
     vs_out.cubeType = cubeType_;
-    vs_out.blockColourIndex = blockColourIndex_;
 }
