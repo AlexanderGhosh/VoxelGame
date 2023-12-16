@@ -8,12 +8,11 @@ layout (std140, binding = 0) uniform Camera
     mat4 projection;
     mat4 view;
 };
-uniform float voxelSize;
 
 in VS_OUT {
     uint cubeType;
     uint matIndex;
-    mat4 m;
+    mat4 model;
 } vs_out[];
 
 flat out uint matIndex;
@@ -70,7 +69,7 @@ void main() {
                 }
                 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                vec4 fragPos4 = vs_out[0].m * vec4(v * voxelSize, 1);
+                vec4 fragPos4 = vs_out[0].model * vec4(v, 1);
                 fragPos = fragPos4.xyz;
                 viewPos = view * fragPos4;
                 gl_Position = projection * viewPos;

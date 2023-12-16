@@ -8,7 +8,7 @@ uniform vec3 chunkPosition;
 out VS_OUT {
     uint cubeType;
     uint matIndex;
-    mat4 m;
+    mat4 model;
 } vs_out;
 
 void main() {
@@ -21,11 +21,11 @@ void main() {
 
     worldPos_ += chunkPosition;
     //worldPos_.y += voxelSize == 1 ? 0 : 20.0 / (1.0 - voxelSize);
-    mat4 m = mat4(1);
-    m[3][0] = worldPos_.x * voxelSize;
-    m[3][1] = worldPos_.y * voxelSize;
-    m[3][2] = worldPos_.z * voxelSize;
-    vs_out.m = m;
+    mat4 model = mat4(voxelSize);
+    model[3][0] = worldPos_.x * voxelSize;
+    model[3][1] = worldPos_.y * voxelSize;
+    model[3][2] = worldPos_.z * voxelSize;
+    vs_out.model = model;
 
     gl_Position.xyz = worldPos_;
 
