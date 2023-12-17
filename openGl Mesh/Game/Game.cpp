@@ -382,6 +382,7 @@ void Game::showStuff() {
 	ssao.setValue("ssaoNoiseScale", noiseScale);
 	ssao.setValue("ssaoRadius", SSAO_RADIUS);
 	ssao.setValue("ssaoBias", SSAO_BIAS);
+	ssao.setValue("voxelSize", VOXEL_SIZE); 
 	
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

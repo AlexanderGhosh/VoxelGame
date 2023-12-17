@@ -18,7 +18,7 @@ in VS_OUT {
 flat out uint matIndex;
 flat out vec2 rndSeed;
 out vec4 viewPos;
-out vec3 fragPos;
+out vec3 worldPos;
 out vec3 normal;
 
 
@@ -69,9 +69,9 @@ void main() {
                 }
                 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                vec4 fragPos4 = vs_out[0].model * vec4(v, 1);
-                fragPos = fragPos4.xyz;
-                viewPos = view * fragPos4;
+                vec4 worldPos4 = vs_out[0].model * vec4(v, 1);
+                worldPos = worldPos4.xyz;
+                viewPos = view * worldPos4;
                 gl_Position = projection * viewPos;
                 EmitVertex();
             }

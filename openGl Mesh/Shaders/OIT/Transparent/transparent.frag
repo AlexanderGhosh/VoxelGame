@@ -26,7 +26,7 @@ layout (std140, binding = 1) uniform Matrices
 
 flat in uint matIndex;
 flat in vec2 rndSeed;
-in vec3 fragPos;
+in vec3 worldPos;
 in vec3 normal;
 
 Light createLight();
@@ -49,7 +49,7 @@ void main()
     occluded = 1.0;
     
     // blinn-phong (in model-space)
-    vec3 lightDir = normalize(light.Position - fragPos);
+    vec3 lightDir = normalize(light.Position - worldPos);
     vec3 ambient = vec3(0.3 * albedo * occluded); // here we add occlusion factor
     // diffuse
     vec3 diffuse = 0.5 * max(dot(normal, lightDir), 0.0) * albedo.xyz * light.Color;

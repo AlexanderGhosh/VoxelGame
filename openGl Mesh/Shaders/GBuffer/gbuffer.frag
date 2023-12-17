@@ -19,6 +19,7 @@ uniform float numBlocks;
 flat in uint matIndex;
 in vec3 normal;
 in vec4 viewPos;
+in vec3 worldPos;
 flat in vec2 rndSeed;
 
 float rand(vec2 seed);
@@ -29,7 +30,7 @@ void main()
     vec4 albedo = mix(mat.albedo1, mat.albedo2, rndValue);
     if(albedo.a < 1) discard;
     _albedo = albedo.rgb;
-    _fragPos = viewPos.xyz; // view space space
+    _fragPos = worldPos.xyz; // view space space
     _normal = normal;
 }
 float rand(vec2 seed){
