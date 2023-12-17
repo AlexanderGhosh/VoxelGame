@@ -219,40 +219,30 @@ void ChunkColumn::generateNoiseBuffer()
 	std::vector<unsigned char> pzDelta(CHUNK_AREA);
 	std::vector<unsigned char> nzDelta(CHUNK_AREA);
 
-	for (unsigned int x = 1; x < CHUNK_SIZE_PADDED - 1; x++) {
-		for (unsigned int z = 1; z < CHUNK_SIZE_PADDED -1; z++) {
-			unsigned int currentIndex = index(x - 1, z - 1);
-			unsigned char height = getHeight(x, z);
-
-
-			pxDelta[currentIndex] = fmaxf(0, height - getHeight(x + 1, z));
-			nxDelta[currentIndex] = fmaxf(0, height - getHeight(x - 1, z));
-
-			pzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z + 1));
-			nzDelta[currentIndex] = fmaxf(0, height - getHeight(x, z - 1));
-		}
-	}
-	timer.mark("Height Deltas generated");
-
 	bufferData.reserve(CHUNK_AREA);
-	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
-		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
-			unsigned int idx = index(x, z);
-			const float y = getHeight(x + 1, z + 1);
-			const BlocksEncoded& currentColumn = world_generation::createColumn(y);
+	for (unsigned int i = 1; i < CHUNK_SIZE_PADDED - 1; i++) {
+		for (unsigned int j = 1; j < CHUNK_SIZE_PADDED - 1; j++) {
+			unsigned int x = i - 1;
+			unsigned int z = j - 1;
+			unsigned int currentIndex = index(x, z);
+			unsigned char height = getHeight(i, j);
 
-			unsigned char px = pxDelta[idx];
-			unsigned char nx = nxDelta[idx];
-			unsigned char pz = pzDelta[idx];
-			unsigned char nz = nzDelta[idx];
+			// deltas
+			unsigned char px = fmaxf(0, height - getHeight(i + 1, j));
+			unsigned char nx = fmaxf(0, height - getHeight(i - 1, j));
 
+			unsigned char pz = fmaxf(0, height - getHeight(i, j + 1));
+			unsigned char nz = fmaxf(0, height - getHeight(i, j - 1));
+
+			// mesh
+			const BlocksEncoded& currentColumn = world_generation::createColumn(height);
 			unsigned char maxDepth = fmaxf(fmaxf(px, pz), fmaxf(nx, nz));
 			for (unsigned int i = 0; i < maxDepth; i++) {
-				Block block = currentColumn[y - i];
+				Block block = currentColumn[height - i];
 				GeomData data;
 
-
-				if (y < WATER_LEVEL) {
+				// addes the water level
+				if (height < WATER_LEVEL) {
 					if (i == 0) markSlot(data.cubeType_, 4); // top face
 					data.textureIndex_ = (unsigned char)Block::WATER;
 					data.setPos({ x, WATER_LEVEL, z });
@@ -261,7 +251,7 @@ void ChunkColumn::generateNoiseBuffer()
 				}
 
 				data.textureIndex_ = (unsigned char)block;
-				data.setPos({ x, y - i, z });
+				data.setPos({ x, height - i, z });
 				if (i == 0) markSlot(data.cubeType_, 4); // top face
 				if (i < px) markSlot(data.cubeType_, 3);
 				if (i < nx) markSlot(data.cubeType_, 2);
@@ -272,14 +262,14 @@ void ChunkColumn::generateNoiseBuffer()
 			}
 			if (maxDepth == 0) {
 				GeomData data;
-				if (y < WATER_LEVEL) {
+				if (height < WATER_LEVEL) {
 					markSlot(data.cubeType_, 4); // top face
 					data.textureIndex_ = (unsigned char)Block::WATER;
 					data.setPos({ x, WATER_LEVEL, z });
 					bufferData.push_back(data);
 				}
-				Block block = currentColumn[y];
-				data.setPos({ x, y, z });
+				Block block = currentColumn[height];
+				data.setPos({ x, height, z });
 				data.textureIndex_ = (unsigned char)block;
 				markSlot(data.cubeType_, 4); // top face
 				bufferData.push_back(data);
@@ -287,10 +277,9 @@ void ChunkColumn::generateNoiseBuffer()
 		}
 	}
 
-	bufferData.shrink_to_fit();
 	timer.mark("Mesh generated");
 
-#if !defined(GENERATE_CHUNKS_ASYNC) && !defined(GENERATE_NEW_CHUNKS)
+#if !defined(GENERATE_CHUNKS_ASYNC) && !GENERATE_NEW_CHUNKS
 	setUpBuffer();
 	timer.mark("OpenGl");
 #endif // !GENERATE_CHUNKS_ASYNC

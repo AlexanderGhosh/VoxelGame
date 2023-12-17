@@ -97,8 +97,13 @@ void Timer::showDetails(unsigned int ammount)
 {
 	stop();
 	double total = 0;
-	for (const auto& [_, mp_duration] : markedPoints) {
-		total += mp_duration;
+	if (markedPoints.size() == 0) {
+		total = getTime();
+	}
+	else {
+		for (const auto& [_, mp_duration] : markedPoints) {
+			total += mp_duration;
+		}
 	}
 	double totalSecconds = total * 1e-9;
 	double totalFrames = totalSecconds * 60.;
@@ -109,7 +114,7 @@ void Timer::showDetails(unsigned int ammount)
 	normaliseNameSize(avg_name, maxSize);
 
 	std::cout << std::setprecision(3) << std::fixed;
-	std::cout << "-----------------------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << "#################################################################################################################" << std::endl;
 	std::cout << name << ": " << totalSecconds << " Secconds | " << totalFrames << " Frames" << std::endl;
 	std::cout << "--------------------------------------------------------" << std::endl;
 	double prevDuration = 0;
@@ -129,6 +134,6 @@ void Timer::showDetails(unsigned int ammount)
 	double avgFrames = totalFrames / (double)ammount;
 	std::cout << "--------------------------------------------------------" << std::endl;
 	std::cout << avg_name << ": " << avgSecconds << " Secconds | " << avgFrames << " Frames | Count: " << ammount << std::endl;
-	std::cout << "-----------------------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << "#################################################################################################################" << std::endl;
 	markedPoints.clear();
 }

@@ -170,7 +170,7 @@ void Game::generateWorld() {
 	unsigned int seed = 32;
 	srand(seed);
 	world = World(WORLD_ORIGIN, seed);
-#if  !defined(GENERATE_CHUNKS_ASYNC) && !defined(GENERATE_NEW_CHUNKS)
+#if  !defined(GENERATE_CHUNKS_ASYNC) && !GENERATE_NEW_CHUNKS
 	world.generateTerrain();
 	world.setUpDrawable();
 #endif // GENERATE_CHUNKS_ASYNC
@@ -525,8 +525,9 @@ void Game::showStuff() {
 	composite.unBind();
 	
 	
-	// 3. render the GUI
+	// 6. render the GUI
 	guiFrameBuffer.bind(); // use the GUI framebuffer
+
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -543,7 +544,7 @@ void Game::showStuff() {
 	m = "Chunk Pos: " + glm::to_string(_player->getChunkPosition());
 	showText(m, { 5, 800 }, 0.5f);
 	
-	// 4. render the screen quad
+	// 7. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
 	
 	glDisable(GL_DEPTH_TEST);
