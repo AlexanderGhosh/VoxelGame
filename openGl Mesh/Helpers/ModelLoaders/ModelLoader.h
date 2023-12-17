@@ -14,6 +14,7 @@ private:
 	static Mesh createMesh(const aiMesh& mesh);
 	static void processNode(const aiNode& node, const aiScene& scene, std::list<Mesh>& meshes);
 public:
-	static Model Load(const std::string& file);
+	static Model LoadAssimp(const std::string& file);
+	static void LoadPointCloud(const std::string& file);
 };
 

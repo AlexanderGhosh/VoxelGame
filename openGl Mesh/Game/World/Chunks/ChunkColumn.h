@@ -61,7 +61,7 @@ public:
 	const std::vector<GeomData>& getMeshData() const;
 
 	// returns the current state of the mesh in grid format
-	std::array<BlockDetails, CHUNK_AREA* WORLD_HEIGHT> getBlocksGrid();
+	std::array<BlockDetails, CHUNK_AREA * WORLD_HEIGHT> getBlocksGrid();
 private:
 
 	// used for runtime genertion doesnt do any opengl funcs

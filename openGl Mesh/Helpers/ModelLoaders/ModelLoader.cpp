@@ -1,7 +1,10 @@
 #include "ModelLoader.h"
 #include <assimp/postprocess.h>
+#include <fstream>
 #include "Mesh.h"
 #include "Model.h"
+#include "../Functions.h"
+#include "../Constants.h"
 
 Assimp::Importer ModelLoader::importer;
 
@@ -40,7 +43,7 @@ void ModelLoader::processNode(const aiNode& node, const aiScene& scene, std::lis
 	}
 }
 
-Model ModelLoader::Load(const std::string& file)
+Model ModelLoader::LoadAssimp(const std::string& file)
 {
 	const aiScene* scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
 	aiNode* root = scene->mRootNode;
@@ -49,4 +52,36 @@ Model ModelLoader::Load(const std::string& file)
 	Model model;
 	model.setUp(meshes);
 	return model;
+}
+
+void ModelLoader::LoadPointCloud(const std::string& fileName)
+{
+	std::ifstream file(fileName);
+	std::vector<glm::vec3> points;
+	std::unordered_set<glm::vec3> colours;
+
+	std::string line;
+	// reads the header
+	while (std::getline(file, line) && line != "end_header") {
+		if (contains(line, "element")) {
+			auto _split = split(line, " ");
+			points.reserve(stoi(_split.back()));
+		}
+	}
+
+	// the body
+	while (std::getline(file, line)) {
+		auto _split = split(line, " ");
+		glm::vec3 point(0);
+		point.x = stoi(_split[0]);
+		point.y = stoi(_split[1]);
+		point.z = stoi(_split[2]);
+		glm::vec3 colour(0);
+		colour.x = RRC(stoi(_split[3]));
+		colour.y = RRC(stoi(_split[4]));
+		colour.z = RRC(stoi(_split[5]));
+
+		points.push_back(point);
+		colours.insert(colour);
+	}
 }

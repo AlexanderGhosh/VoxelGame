@@ -6,7 +6,7 @@ ModelManager::ModelManager()
 }
 Model& ModelManager::load(const std::string& file)
 {
-	_allModels.push_back(ModelLoader::Load(file));
+	_allModels.push_back(ModelLoader::LoadAssimp(file));
 	return _allModels.back();
 }
 
