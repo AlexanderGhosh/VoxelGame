@@ -341,7 +341,7 @@ void Game::showStuff() {
 	// 2. render for OIT
 	// 2.1 Opaque
 	
-	// 2.1.1 Populate G-Buffer
+	// 2.1 Populate G-Buffer Opaque
 	gBuffer.bind();
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CW);
@@ -353,10 +353,38 @@ void Game::showStuff() {
 	
 	world.render(&gbufferS);
 	manager->renderEvent();
+
+
+	// 2.2 Populate G-Buffer Opaque
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunci(3, GL_ONE, GL_ONE);
+	glBlendFunci(4, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	glBlendEquation(GL_FUNC_ADD);
+
+	glm::vec4 black(0);
+	glm::vec4 white(1);
+	glClearBufferfv(GL_COLOR, 3, &black[0]);
+	glClearBufferfv(GL_COLOR, 4, &white[0]);
+
+	Shader& transparent = SHADERS[OIT_TRANSPARENT];
+	transparent.bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
+	transparent.setValue("ao", 0);
+	transparent.setValue("viewDir", _player->getViewDirection());
+	transparent.setValue("lightPos", LIGHT_POSITION);
+
+	world.render(&transparent);
+	manager->renderEvent();
+
 	
-	// 2.1.2 Ambiant Occlusion (render to the oit opaque buffer)
+	// 3.1 Ambiant Occlusion (render to the oit opaque buffer)
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 	oitFrameBuffer1.bind();
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -382,7 +410,7 @@ void Game::showStuff() {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
-	// 2.1.3 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
+	// 3.2 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
 	multiPurposeFB.bind();
 	glClear(GL_COLOR_BUFFER_BIT);
 	Shader& blur = SHADERS[BLUR];
@@ -394,7 +422,7 @@ void Game::showStuff() {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
-	// 2.1.4 OIT Opaque (renders into the oit1 buffer and apply AO)
+	// 4. Deffered Lighting
 	oitFrameBuffer1.bind();
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -431,35 +459,7 @@ void Game::showStuff() {
 	// renderModels();
 	showSkybox();
 	
-	// 2.2 Transparent
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	gBuffer.bind(); // render to the OIT framebuffer2
-	glClear(GL_COLOR_BUFFER_BIT);
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunci(3, GL_ONE, GL_ONE);
-	glBlendFunci(4, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
-	glBlendEquation(GL_FUNC_ADD);
-	
-	glm::vec4 black(0);
-	glm::vec4 white(1);
-	glClearBufferfv(GL_COLOR, 3, &black[0]);
-	glClearBufferfv(GL_COLOR, 4, &white[0]);
-	
-	Shader& transparent = SHADERS[OIT_TRANSPARENT];
-	transparent.bind();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
-	transparent.setValue("ao", 0);
-	transparent.setValue("viewDir", _player->getViewDirection());
-	transparent.setValue("lightPos", LIGHT_POSITION);
-	
-	world.render(&transparent);
-	
-	transparent.unBind();
-	
-	// 2.3 Composite
+	// 5. Composite combines the opaque and transparent
 	glDisable(GL_CULL_FACE);
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer
 	glDepthFunc(GL_ALWAYS);
@@ -942,7 +942,6 @@ void Game::showText(const std::string& text, const glm::vec2& position, float sc
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
 
 #ifdef SSAO
 void Game::setUpSSAO()
