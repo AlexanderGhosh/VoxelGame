@@ -5,7 +5,7 @@
 
 
 FastNoise::SmartNode<FastNoise::Simplex> world_generation::noiseSource;
-FastNoise::SmartNode<FastNoise::FractalFBm> world_generation::noiseGenerator;
+FastNoise::SmartNode<> world_generation::noiseGenerator;
 // uses padded for the sake of 'getRawHeightsPadded'
 std::vector<float> world_generation::xs(CHUNK_AREA_PADDED), world_generation::ys(CHUNK_AREA_PADDED);
 glm::ivec2 world_generation::treeCooldown(4);
@@ -13,15 +13,21 @@ NoiseOptions world_generation::options = {};
 
 void world_generation::setUp()
 {
+	// AgAAAIA/
 	options.octaves = 5;
 	options.frequency = 0.7;
 	
 	noiseSource = FastNoise::New<FastNoise::Simplex>();
-	noiseGenerator = FastNoise::New<FastNoise::FractalFBm>();
+	noiseGenerator = FastNoise::New<FastNoise::FractalFBm>(); 
+#ifdef FLAT_TERRAIN
+	noiseGenerator = FastNoise::NewFromEncodedNodeTree("AAAAAAA/");
+#else
+	noiseGenerator = FastNoise::NewFromEncodedNodeTree("DQAIAAAACtejvQgAAPYoXD8AAAAAAA==");
+#endif
 
-	noiseGenerator->SetSource(noiseSource);
-	noiseGenerator->SetOctaveCount(options.octaves);
-	noiseGenerator->SetLacunarity(1.5);
+	//noiseGenerator->SetSource(noiseSource);
+	//noiseGenerator->SetOctaveCount(options.octaves);
+	//noiseGenerator->SetLacunarity(1.5);
 	unsigned int x = 0, y = 0;
 	for (float i = 0; i < CHUNK_SIZE_PADDED; i++) {
 		for (float j = 0; j < CHUNK_SIZE_PADDED; j++) {

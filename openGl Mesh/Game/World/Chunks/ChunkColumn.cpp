@@ -235,7 +235,7 @@ void ChunkColumn::generateNoiseBuffer()
 			unsigned char nz = fmaxf(0, height - getHeight(i, j - 1));
 
 			// mesh
-			const BlocksEncoded& currentColumn = world_generation::createColumn(height);
+			const BlocksEncoded currentColumn = world_generation::createColumn(height);
 			unsigned char maxDepth = fmaxf(fmaxf(px, pz), fmaxf(nx, nz));
 			for (unsigned int i = 0; i < maxDepth; i++) {
 				Block block = currentColumn[height - i];

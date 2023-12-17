@@ -25,7 +25,7 @@ private:
 	static unsigned int noiseToHeight(const float noise, const FastNoise::OutputMinMax& minMax);
 
 	static FastNoise::SmartNode<FastNoise::Simplex> noiseSource;
-	static FastNoise::SmartNode<FastNoise::FractalFBm> noiseGenerator;
+	static FastNoise::SmartNode<> noiseGenerator;
 
 	static glm::ivec2 treeCooldown;
 	static std::vector<float> xs, ys;
