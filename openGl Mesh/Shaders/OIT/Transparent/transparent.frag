@@ -1,7 +1,7 @@
 #version 440 core
 
-layout(location = 0) out vec4 accum;
-layout(location = 1) out float reveal;
+layout(location = 3) out vec4 accum;
+layout(location = 4) out float reveal;
 
 uniform sampler2D ao;
 uniform vec3 lightPos;

@@ -40,7 +40,7 @@ Event Game::leftClickRelease;
 Event Game::rightClickRelease;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -87,7 +87,17 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 		normal.internalFormat = GL_RGBA16F;
 		normal.type = GL_RGBA;
 
-		gBufferDetails.colourBuffers = { albedo, fragPos, normal };
+		ColourBufferInit accumOIT;
+		accumOIT.format = GL_FLOAT;
+		accumOIT.internalFormat = GL_RGBA;
+		accumOIT.type = GL_RGBA;
+
+		ColourBufferInit revealOIT;
+		revealOIT.format = GL_FLOAT;
+		revealOIT.internalFormat = GL_R8;
+		revealOIT.type = GL_RED;
+
+		gBufferDetails.colourBuffers = { albedo, fragPos, normal, accumOIT, revealOIT };
 
 		gBuffer = FrameBuffer(windowDim);
 		gBuffer.setUp(gBufferDetails);
@@ -109,21 +119,6 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 		oitFrameBuffer1.setUp(detailsOIT);
 
 		// TRANSPARENT BUFFER
-		ColourBufferInit accumOIT;
-		accumOIT.format = GL_FLOAT;
-		accumOIT.internalFormat = GL_RGBA;
-		accumOIT.type = GL_RGBA;
-
-		ColourBufferInit revealOIT;
-		revealOIT.format = GL_FLOAT;
-		revealOIT.internalFormat = GL_R8;
-		revealOIT.type = GL_RED;
-
-		detailsOIT.colourBuffers = { accumOIT, revealOIT };
-		detailsOIT.depthBuffer = gBuffer.getDepth();
-
-		oitFrameBuffer2 = FrameBuffer(windowDim);
-		oitFrameBuffer2.setUp(detailsOIT);
 
 		// GUI BUFFER
 		FrameBufferInit detailsGUI;
@@ -439,18 +434,18 @@ void Game::showStuff() {
 	// 2.2 Transparent
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	oitFrameBuffer2.bind(); // render to the OIT framebuffer2
+	gBuffer.bind(); // render to the OIT framebuffer2
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
-	glBlendFunci(0, GL_ONE, GL_ONE);
-	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	glBlendFunci(3, GL_ONE, GL_ONE);
+	glBlendFunci(4, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 	glBlendEquation(GL_FUNC_ADD);
 	
 	glm::vec4 black(0);
 	glm::vec4 white(1);
-	glClearBufferfv(GL_COLOR, 0, &black[0]);
-	glClearBufferfv(GL_COLOR, 1, &white[0]);
+	glClearBufferfv(GL_COLOR, 3, &black[0]);
+	glClearBufferfv(GL_COLOR, 4, &white[0]);
 	
 	Shader& transparent = SHADERS[OIT_TRANSPARENT];
 	transparent.bind();
@@ -473,9 +468,9 @@ void Game::showStuff() {
 	Shader& composite = SHADERS[OIT_COMPOSITE];
 	
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer2.getColourTex(0));
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(3));
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer2.getColourTex(1));
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(4));
 	
 	composite.bind();
 	composite.setValue("accum", 0);
@@ -670,13 +665,6 @@ void Game::setupEventCB(GLFWwindow* window) {
 }
 
 void Game::cleanUp() {
-	oitFrameBuffer1.cleanUp();
-	oitFrameBuffer2.cleanUp();
-	guiFrameBuffer.cleanUp();
-	shadowFramebuffer.cleanUp();
-	gBuffer.cleanUp();
-	multiPurposeFB.cleanUp();
-
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 	quadVAO = quadVBO = 0;

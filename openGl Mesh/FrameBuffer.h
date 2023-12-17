@@ -26,8 +26,15 @@ private:
 	unsigned int depthBuffer;
 public:
 	FrameBuffer();
+
 	FrameBuffer(const glm::ivec2& dim);
 	~FrameBuffer();
+
+	FrameBuffer(const FrameBuffer&) = delete;
+	FrameBuffer& operator=(const FrameBuffer&) = delete;
+
+	FrameBuffer(FrameBuffer&&) noexcept;
+	FrameBuffer& operator=(FrameBuffer&&) noexcept;
 	
 	void setUp(const FrameBufferInit& init);
 

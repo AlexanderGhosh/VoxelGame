@@ -72,7 +72,7 @@ private:
 	unsigned int quadVBO, quadVAO;
 
 	Entities::Player* _player;
-	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer, gBuffer;
+	FrameBuffer oitFrameBuffer1, guiFrameBuffer, shadowFramebuffer, gBuffer;
 	// Colour slot 0 is writen too
 	FrameBuffer multiPurposeFB;
 	GLFWwindow* window;
