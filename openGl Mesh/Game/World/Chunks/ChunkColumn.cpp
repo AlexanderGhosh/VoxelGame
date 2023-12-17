@@ -371,45 +371,48 @@ BufferGeom* ChunkColumn::getBufferPtr()
 
 void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 {
-	GeomData toAdd;
-	toAdd.setPos(toLocal(worldPos));
-	toAdd.cubeType_ = 0x3f; // all faces
-	toAdd.textureIndex_ = (unsigned char) block;
-
+	Timer timer("Add Block");
 	struct RemoveFace {
-		glm::vec3 worldPos;
+		glm::vec3 localPos;
 		unsigned char face;
 	};
-	std::vector<RemoveFace> toRemove;
+	std::list<RemoveFace> toRemove;
+	const glm::vec3 localPos = toLocal(worldPos);
 
-	unsigned char i = 0;
-	for (const glm::vec3& off : OFFSETS_3D) {
+	GeomData toAdd;
+	toAdd.setPos(localPos);
+	toAdd.cubeType_ = 63; // all faces
+	toAdd.textureIndex_ = (unsigned char) block;
+
+
+	for (unsigned int i = 0; i < OFFSETS_3D.size(); i++) {
 		// needs to check the world map
 		RemoveFace data{};
-		data.worldPos = worldPos + off;
+		data.localPos = localPos + OFFSETS_3D[i];
 		data.face = i++;
 
 		toRemove.push_back(data);
 	}
+	timer.mark("Create to Remove");
 
 
 	for (auto itt1 = bufferData.begin(); itt1 != bufferData.end();) {
 		GeomData& data = *itt1;
-		glm::vec3 dataWorldPos = toWorld(data.getPos());
+		const glm::vec3 dataLocalPos = data.getPos();
 		for (auto itt2 = toRemove.begin(); itt2 != toRemove.end();) {
 			const RemoveFace& remove = *itt2;
-			if (dataWorldPos == remove.worldPos) {
+			if (dataLocalPos == remove.localPos) {
 				unsigned int mask = 1u << remove.face;
 				toAdd.cubeType_ ^= mask; // sets the face to add
 
-				if (remove.face % 2 == 0) {
-					mask = 1 << remove.face + 1;
-				}
-				else {
+				if (remove.face & 1) {
 					mask = 1 << remove.face - 1;
 				}
+				else {
+					mask = 1 << remove.face + 1;
+				}
 
-				mask = ~mask; // this is in the wrong slot as the face refers to the new blocks face not the neigbour the slot needs to inccremented or decrmented dependent MAYBE NOT ANY MORE
+				mask = ~mask;
 				data.cubeType_ &= mask; // will set the slot of face to 0
 				itt2 = toRemove.erase(itt2);
 				break;
@@ -427,10 +430,13 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 		}
 		itt1++;
 	}
-
-	editedBlocks[worldPos] = block;
 	bufferData.push_back(toAdd);
+	editedBlocks[worldPos] = block;
+	timer.mark("Edit mesh");
+
 	buffer.realloc(bufferData.data(), bufferData.size());
+	timer.mark("OpenGL");
+	timer.showDetails(1);
 }
 
 void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
@@ -438,18 +444,17 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 	const glm::vec3 localPos = toLocal(worldPos);
 	std::vector<AddFaces> toAdd;
 
-	unsigned char i = 0;
-	for (const glm::vec3& off : OFFSETS_3D) {
+	for (unsigned int i = 0; i > OFFSETS_3D.size(); i++) {
 		// needs to check the world map
 		AddFaces data{};
-		data.worldPos = worldPos + off;
-		data.offset = off;
+		data.offset = OFFSETS_3D[i];
+		data.worldPos = worldPos + data.offset;
 		data.face = i++; // swaps face
-		if (data.face % 2 == 0) {
-			data.face++;
+		if (data.face & 1) {
+			data.face--;
 		}
 		else {
-			data.face--;
+			data.face++;
 		}
 		//face is the index of the face to add relative to the block to add it too
 

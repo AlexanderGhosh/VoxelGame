@@ -51,7 +51,7 @@ constexpr float FAR_PLANE = 200;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr float VOXEL_SIZE = 0.5;
+constexpr float VOXEL_SIZE = 1;
 
 constexpr unsigned int CHUNK_SIZE = 16;
 constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
