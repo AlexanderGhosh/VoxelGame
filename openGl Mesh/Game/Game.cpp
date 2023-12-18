@@ -183,9 +183,12 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	camreraBuffer.fill(0, sizeof(glm::mat4), &projection);
 	
+	// VOXEL MODELS
+	ModelManager& modelManager = ModelManager::getInstance();
+	castle = &modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\castle.ply");
+
 
 	// LOAD MODELS
-	ModelManager& modelManager = ModelManager::getInstance();
 	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d_voxel.obj");
 	auto& cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
 	std::cout << "Models Loaded" << std::endl;
@@ -336,6 +339,7 @@ void Game::showStuff() {
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
 	world.render(&shadows);
+	castle->render(shadows);
 	shadows.unBind();
 	shadowFramebuffer.unBind();
 	// 2. render for OIT
@@ -353,6 +357,7 @@ void Game::showStuff() {
 	
 	world.render(&gbufferS);
 	manager->renderEvent();
+	castle->render(gbufferS);
 
 
 	// 2.2 Populate G-Buffer Opaque
@@ -379,6 +384,7 @@ void Game::showStuff() {
 
 	world.render(&transparent);
 	manager->renderEvent();
+	castle->render(transparent);
 
 	
 	// 3.1 Ambiant Occlusion (render to the oit opaque buffer)

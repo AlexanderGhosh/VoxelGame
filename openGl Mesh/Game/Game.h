@@ -12,6 +12,7 @@
 #include "../FrameBuffer.h"
 #include "../UniformBuffer.h"
 #include "../EventsSystem/Event.h"
+#include "../Helpers/ModelLoaders/VoxelModel_Base.h"
 
 class Model;
 class EntityManager;
@@ -65,6 +66,8 @@ private:
 	void placeBlock();
 	void breakBlock();
 
+	VoxelModel_Static* castle;
+
 	UniformBuffer camreraBuffer, materialsBuffer;
 	EntityManager* manager;
 	GizmoManager* gizmoManager;
@@ -86,6 +89,8 @@ private:
 
 	// is updated every frame with the current camera's view matrix
 	glm::mat4 cameraView, cameraProjection;
+
+
 
 	void showFPS();
 	void calcTimes();
