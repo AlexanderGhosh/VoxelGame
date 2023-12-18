@@ -52,7 +52,6 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 						markSlot(data.cubeType_, i);
 					}
 				}
-				data.cubeType_ = 63;
 				bufferData.push_back(data);
 			}
 		}

@@ -185,8 +185,9 @@ void Game::doLoop(const glm::mat4& projection) {
 	
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
+	Timer voxelLoad("Load Voxel Model");
 	castle = &modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\castle.ply");
-
+	voxelLoad.showTime(0);
 
 	// LOAD MODELS
 	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d_voxel.obj");
