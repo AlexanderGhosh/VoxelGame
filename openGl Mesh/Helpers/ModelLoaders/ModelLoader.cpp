@@ -75,16 +75,17 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 	// the body
 	while (std::getline(file, line)) {
 		auto _split = split(line, " ");
+		if (_split.size() < 6) break;
 		glm::vec3 colour(0);
-		colour.x = RRC(stoi(_split[3]));
-		colour.y = RRC(stoi(_split[4]));
-		colour.z = RRC(stoi(_split[5]));
+		colour.x = RRC(stof(_split[3]));
+		colour.y = RRC(stof(_split[4]));
+		colour.z = RRC(stof(_split[5]));
 		colours.insert(colour);
 
 		PointColourIndex point{};
-		point.x = stoi(_split[0]);
-		point.y = stoi(_split[2]);
-		point.z = stoi(_split[1]);
+		point.x = stof(_split[0]);
+		point.y = stof(_split[2]);
+		point.z = stof(_split[1]);
 		point.idx = colours.size();
 
 		maxSize.x = std::max(maxSize.x, point.x);

@@ -19,7 +19,7 @@ class Material;
 // insted of manuly declaring render distance this calculates it based of a desired terrain radius in real units
 // #define RENDER_DIST_FROM_DISTANCE
 
-#define PHYSICS_DEBUG_RENDERER
+// #define PHYSICS_DEBUG_RENDERER
 
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
@@ -51,7 +51,7 @@ constexpr float FAR_PLANE = 200;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr float VOXEL_SIZE = 1;
+constexpr float VOXEL_SIZE = 0.1;
 
 constexpr unsigned int CHUNK_SIZE = 16;
 constexpr float CHUNK_SIZE_F = CHUNK_SIZE;

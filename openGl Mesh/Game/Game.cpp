@@ -186,7 +186,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	castle = &modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\castle.ply", true);
+	castle = &modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\zelda.ply", false);
 	// castle->setPosition(0, 38, 0);
 	voxelLoad.showTime(0);
 
@@ -417,6 +417,9 @@ void Game::showStuff() {
 	
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glClearColor(1, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
 	
 	// 3.2 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
 	multiPurposeFB.bind();

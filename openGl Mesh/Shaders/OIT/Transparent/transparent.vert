@@ -20,7 +20,7 @@ void main() {
     vec3 worldPos_ = vec3(float(x), float(y), float(z));
 
     worldPos_ += chunkPosition;
-    //worldPos_.y += voxelSize == 1 ? 0 : 20.0 / (1.0 - voxelSize);
+    
     mat4 model = mat4(voxelSize);
     model[3][0] = worldPos_.x * voxelSize;
     model[3][1] = worldPos_.y * voxelSize;

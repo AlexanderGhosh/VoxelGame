@@ -43,7 +43,6 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 					glm::vec3 currentPos(x, y, z);
 					glm::vec3 neighbourPos = currentPos + OFFSETS_3D[i];
 					Block neighbour = Block::AIR;
-
 					if (glm::all(glm::greaterThanEqual(neighbourPos, glm::vec3(0))) && glm::all(glm::lessThan(neighbourPos, span))) {
 						neighbour = cloud[index(neighbourPos.x, neighbourPos.y, neighbourPos.z)];
 					}
@@ -54,6 +53,7 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 						markSlot(data.cubeType_, i);
 					}
 				}
+				// data.cubeType_ = 63;
 				bufferData.push_back(data);
 			}
 		}
