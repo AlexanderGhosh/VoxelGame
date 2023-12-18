@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "../Functions.h"
 #include "../Constants.h"
+#include "VoxelModel_Base.h"
 
 Assimp::Importer ModelLoader::importer;
 
@@ -54,10 +55,10 @@ Model ModelLoader::LoadAssimp(const std::string& file)
 	return model;
 }
 
-void ModelLoader::LoadPointCloud(const std::string& fileName)
+VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName)
 {
 	std::ifstream file(fileName);
-	std::vector<glm::vec3> points;
+	std::vector<PointColourIndex> points;
 	std::unordered_set<glm::vec3> colours;
 
 	std::string line;
@@ -68,20 +69,36 @@ void ModelLoader::LoadPointCloud(const std::string& fileName)
 			points.reserve(stoi(_split.back()));
 		}
 	}
+	glm::vec3 maxSize(0);
+	glm::vec3 minSize(0);
 
 	// the body
 	while (std::getline(file, line)) {
 		auto _split = split(line, " ");
-		glm::vec3 point(0);
-		point.x = stoi(_split[0]);
-		point.y = stoi(_split[1]);
-		point.z = stoi(_split[2]);
 		glm::vec3 colour(0);
 		colour.x = RRC(stoi(_split[3]));
 		colour.y = RRC(stoi(_split[4]));
 		colour.z = RRC(stoi(_split[5]));
+		colours.insert(colour);
+
+		PointColourIndex point{};
+		point.x = stoi(_split[0]);
+		point.y = stoi(_split[1]);
+		point.z = stoi(_split[2]);
+		point.idx = colours.size();
+
+		maxSize.x = std::max(maxSize.x, point.x);
+		maxSize.y = std::max(maxSize.y, point.y);
+		maxSize.z = std::max(maxSize.z, point.z);
+
+		minSize.x = std::min(minSize.x, point.x);
+		minSize.y = std::min(minSize.y, point.y);
+		minSize.z = std::min(minSize.z, point.z);
 
 		points.push_back(point);
-		colours.insert(colour);
 	}
+	file.close();
+
+	std::vector<glm::vec3> cols(colours.begin(), colours.end());
+	return VoxelModel_Static(points, cols, maxSize, minSize);
 }

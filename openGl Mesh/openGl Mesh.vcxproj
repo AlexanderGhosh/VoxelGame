@@ -171,6 +171,8 @@
     <ClCompile Include="EntityComponent\Entity.cpp" />
     <ClCompile Include="Gizmos\Composite\Grid2D.cpp" />
     <ClCompile Include="EntityComponent\Components\FlightControls.cpp" />
+    <ClCompile Include="Helpers\ModelLoaders\VoxelMesh.cpp" />
+    <ClCompile Include="Helpers\ModelLoaders\VoxelModel_Base.cpp" />
     <ClCompile Include="Mangers\GizmoManager.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\Model.cpp" />
     <ClCompile Include="IndexedBuffer.cpp" />
@@ -248,6 +250,7 @@
     <ClInclude Include="EntityComponent\ComponentTypes.h" />
     <ClInclude Include="Gizmos\Composite\Grid2D.h" />
     <ClInclude Include="EntityComponent\Components\FlightControls.h" />
+    <ClInclude Include="Helpers\ModelLoaders\VoxelModel_Base.h" />
     <ClInclude Include="Mangers\GizmoManager.h" />
     <ClInclude Include="Helpers\ModelLoaders\Mesh.h" />
     <ClInclude Include="Helpers\ModelLoaders\Model.h" />
@@ -310,6 +313,7 @@
     <ClInclude Include="Gizmos\Composite\Triangle.h" />
     <ClInclude Include="Helpers\Timers\TimerGroup.h" />
     <ClInclude Include="UniformBuffer.h" />
+    <ClInclude Include="Helpers\ModelLoaders\VoxelMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png" />
