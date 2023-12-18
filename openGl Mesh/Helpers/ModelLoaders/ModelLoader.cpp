@@ -83,8 +83,8 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName)
 
 		PointColourIndex point{};
 		point.x = stoi(_split[0]);
-		point.y = stoi(_split[1]);
-		point.z = stoi(_split[2]);
+		point.y = stoi(_split[2]);
+		point.z = stoi(_split[1]);
 		point.idx = colours.size();
 
 		maxSize.x = std::max(maxSize.x, point.x);
