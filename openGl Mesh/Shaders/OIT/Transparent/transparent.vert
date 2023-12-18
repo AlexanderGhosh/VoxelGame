@@ -21,7 +21,7 @@ void main() {
 
     worldPos_ += chunkPosition;
     
-    mat4 model = mat4(voxelSize);
+    mat4 model = mat4(1);
     model[3][0] = worldPos_.x * voxelSize;
     model[3][1] = worldPos_.y * voxelSize;
     model[3][2] = worldPos_.z * voxelSize;

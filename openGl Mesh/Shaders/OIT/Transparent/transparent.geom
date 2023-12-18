@@ -52,6 +52,7 @@ const vec3 normals[6] = vec3[] (
     vec3(0, -1, 0)
 );
 
+uniform float voxelSize;
 void main() {
     matIndex = vs_out[0].matIndex;
 
@@ -69,7 +70,7 @@ void main() {
                 }
                 
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                vec4 worldPos4 = vs_out[0].model * vec4(v, 1);
+                vec4 worldPos4 = vs_out[0].model * vec4(v * voxelSize, 1);
                 worldPos = worldPos4.xyz;
                 viewPos = view * worldPos4;
                 gl_Position = projection * viewPos;
