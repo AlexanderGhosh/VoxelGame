@@ -55,7 +55,7 @@ Model ModelLoader::LoadAssimp(const std::string& file)
 	return model;
 }
 
-VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName)
+VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool withCollider)
 {
 	std::ifstream file(fileName);
 	std::vector<PointColourIndex> points;
@@ -100,5 +100,5 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName)
 	file.close();
 
 	std::vector<glm::vec3> cols(colours.begin(), colours.end());
-	return VoxelModel_Static(points, cols, maxSize, minSize);
+	return VoxelModel_Static(points, cols, maxSize, minSize, withCollider);
 }

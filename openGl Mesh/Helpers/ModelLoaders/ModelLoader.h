@@ -19,6 +19,6 @@ private:
 
 	static Model LoadAssimp(const std::string& file);
 	// doesnt load colours correctly
-	static VoxelModel_Static LoadPointCloud(const std::string& file);
+	static VoxelModel_Static LoadPointCloud(const std::string& file, bool withCollider);
 };
 

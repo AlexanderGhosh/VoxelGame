@@ -4,12 +4,14 @@
 #include "../../GeomRendering/GeomData.h"
 #include "../../Shaders/Shader.h"
 #include <glad/glad.h>
+#include "../../Mangers/PhysicsManager.h"
+#include "../../EntityComponent/Components/Transform.h"
 
-VoxelMesh::VoxelMesh() : relativePos_(), buffer_()
+VoxelMesh::VoxelMesh() : relativePos_(), buffer_(), rigidBody_()
 {
 }
 
-VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points, const std::vector<glm::vec3>& colours) : VoxelMesh()
+VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points, const std::vector<glm::vec3>& colours, bool hasCollider) : VoxelMesh()
 {
 	relativePos_ = relativePos;
 	const glm::vec3 span(CHUNK_SIZE_F);
@@ -58,6 +60,27 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 	}
 	bufferData.shrink_to_fit();
 	buffer_.setUp(bufferData.data(), bufferData.size());
+
+	if (hasCollider) {
+		PhysicsManager& manager = PhysicsManager::getInstance();
+		Components::Transform rbPosition;
+		rbPosition.position = relativePos_;
+		rigidBody_ = manager.createRigidBody(&rbPosition);
+		rigidBody_->enableGravity(false);
+		rigidBody_->setType(reactphysics3d::BodyType::STATIC);
+
+
+		for (const GeomData& data : bufferData) {
+			auto shape = manager.createBoxShape(glm::vec3(HALF_VOXEL_SIZE));
+			reactphysics3d::Transform relativePos;
+
+			const glm::vec3 pos = relativePos_ + data.getPos();
+			memcpy(&relativePos, &pos, sizeof(glm::vec3)); // can copy straight in because positoin is at the top of transform
+
+			rigidBody_->addCollider(shape, relativePos);
+			//break;
+		}
+	}
 }
 
 void VoxelMesh::render(const Shader& shader, const glm::vec3& parentPos) const
