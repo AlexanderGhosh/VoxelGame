@@ -13,6 +13,25 @@ BufferGreedy::~BufferGreedy()
 	cleanUp();
 }
 
+BufferGreedy::BufferGreedy(BufferGreedy&& other) noexcept : BufferGreedy()
+{
+	VBO = other.VBO;
+	VAO = other.VAO;
+	size_ = other.size_;
+	other.VBO = 0;
+	other.VAO = 0;
+}
+
+BufferGreedy& BufferGreedy::operator=(BufferGreedy&& other) noexcept
+{
+	VBO = other.VBO;
+	VAO = other.VAO;
+	size_ = other.size_;
+	other.VBO = 0;
+	other.VAO = 0;
+	return *this;
+}
+
 void BufferGreedy::setUp(const GreedyData* data, unsigned int size)
 {
 	cleanUp();
@@ -70,8 +89,9 @@ unsigned int BufferGreedy::size() const
 
 void BufferGreedy::cleanUp()
 {
-	if(!(VAO || VBO)) return;
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	if(VAO != 0)
+		glDeleteVertexArrays(1, &VAO);
+	if(VBO != 0)
+		glDeleteBuffers(1, &VBO);
 	VAO = VBO = 0;
 }

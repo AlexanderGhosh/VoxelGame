@@ -22,16 +22,10 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed) : ChunkColumn()
 	position = pos;
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn()
+ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn(pos, seed)
 {
-	this->seed = seed;
-	position = pos;
+	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
 }
-
-//ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn(pos, seed)
-//{
-//	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
-//}
 
 ChunkColumn::ChunkColumn(const ChunkColumn& other)
 {
@@ -39,6 +33,9 @@ ChunkColumn::ChunkColumn(const ChunkColumn& other)
 	seed = other.seed;
 	bufferData = other.bufferData;
 	editedBlocks = other.editedBlocks;
+#ifdef ALWAYS_USE_GREEDY_MESH
+	greedyBufferData = other.greedyBufferData;
+#endif
 }
 
 ChunkColumn ChunkColumn::operator=(const ChunkColumn& other)
@@ -47,6 +44,9 @@ ChunkColumn ChunkColumn::operator=(const ChunkColumn& other)
 	seed = other.seed;
 	bufferData = other.bufferData;
 	editedBlocks = other.editedBlocks;
+#ifdef ALWAYS_USE_GREEDY_MESH
+	greedyBufferData = other.greedyBufferData;
+#endif
 	return *this;
 }
 
@@ -57,18 +57,28 @@ ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
 	seed = other.seed;
 	bufferData = std::move(other.bufferData);
 	editedBlocks = std::move(other.editedBlocks);
+#ifdef ALWAYS_USE_GREEDY_MESH
+	greedyBufferData = std::move(other.greedyBufferData);
+	greedyBuffer = std::move(other.greedyBuffer);
+#endif
 }
 
+#ifdef ALWAYS_USE_SLOW_MESH
 void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
 {
 	this->seed = seed;
 	position = pos;
 	BlockStore bs(pos * CHUNK_SIZE_F, seed);
-	//populateBufferFromNeibours(neibours, bs);
 
-	// greedyMesh(neibours, bs);
+#ifdef ALWAYS_USE_SLOW_MESH
+	populateBufferFromNeibours(neibours, bs);
+#elif defined(ALWAYS_USE_GREEDY_MESH)
+	greedyMesh(neibours, bs);
+#endif
 }
+#endif
 
+#ifdef ALWAYS_USE_SLOW_MESH
 void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore) {
 	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
 
@@ -199,7 +209,16 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 		}
 	}
 }
+#endif
 
+#ifndef ALWAYS_USE_GREEDY_MESH
+void ChunkColumn::setUpBuffer()
+{
+	buffer_.setUp(bufferData.data(), bufferData.size());
+}
+#endif
+
+#ifdef ALWAYS_USE_GREEDY_MESH
 void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neibours, const BlockStore& blockStore)
 {
 #ifdef GENERATE_INDEX_DATA_GREEDY
@@ -386,10 +405,11 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 	
 	//////////////////////////////////////////
 
-	for (int y = 0; y < WORLD_HEIGHT; y++) {
+	for (int y = WORLD_HEIGHT - 1; y >= 0; y--) {
 		for (int z = 0; z < CHUNK_SIZE; z++) {
 			for (int x = 0; x < CHUNK_SIZE; x++) {
 				Block prevBlock = blockStore.getBlock({ x, y, z }, false);
+				if (prevBlock == Block::AIR) continue;
 				int mkPointPY = x; // the start point of a run
 				int mkPointPZ = x;
 				int mkPointNZ = x;
@@ -418,6 +438,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 					bool pzVisible = currentBlock != Block::AIR;
 					bool nzVisible = currentBlock != Block::AIR;
 #endif // MINIMAL_GREEDY_MESH
+					if (pyVisible && pzVisible && nzVisible) break;
 
 					if (prevBlock == currentBlock) {
 						// PY
@@ -525,10 +546,6 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 	}
 }
 
-void ChunkColumn::setUpBuffer()
-{
-	buffer_.setUp(bufferData.data(), bufferData.size());
-}
 void ChunkColumn::setUpGreedyBuffer()
 {
 	greedyBuffer.setUp(greedyBufferData.data(), greedyBufferData.size());
@@ -543,12 +560,14 @@ void ChunkColumn::createMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 {
 	greedyMesh(neighbours, blockStore);
 }
+#endif // ALWAYS_USE_GREEDY_MESH
 
 void ChunkColumn::reallocBuffer()
 {
 	buffer_.realloc(bufferData.data(), bufferData.size());
 }
 
+#ifdef ALWAYS_USE_NOISE_MESH
 void ChunkColumn::generateNoiseBuffer()
 {
 	Timer timer("Generate from noise");
@@ -634,78 +653,7 @@ void ChunkColumn::generateNoiseBuffer()
 
 	//timer.showDetails(1);
 }
-
-void ChunkColumn::populateBuffer(WorldMap& worldMap) {
-	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
-
-	const BlockStore& blockStore = worldMap[position];
-	GeomData data{};
-	glm::vec3 chunkWorldPos(position.x * CHUNK_SIZE, 0, position.y * CHUNK_SIZE);
-
-	for (int z = 0; z < CHUNK_SIZE; z++) {
-		for (int x = 0; x < CHUNK_SIZE; x++) {
-			const BlocksEncoded& encodes = blockStore.getBlocksAt(x, z);
-			int height = encodes.height();
-			unsigned int depth = 0;
-			for (int r = encodes.size() - 1; r >= 0; r--) {
-				const Block b1 = encodes.block(r);
-
-				const unsigned int count1 = encodes.count(r);
-
-				// never the case due to lack of caves
-				if (b1 == Block::AIR) {
-					height -= count1;
-					depth += count1;
-					continue;
-				}
-				bool added = false;
-				for (unsigned int i = 0; i < count1; i++) {
-					glm::vec3 blockPos = glm::vec3(x, height - i, z);
-					data.setPos(blockPos);
-					unsigned int j = 0;
-					added = false;
-					std::vector<unsigned int> added_list;
-					for (const glm::vec3& off : OFFSETS_3D) {
-						const glm::vec3 p = blockPos + off + chunkWorldPos;
-
-						Block b2 = Block::ERROR;
-						if (exploredBlocksCache.find(p) != exploredBlocksCache.end()) {
-							b2 = exploredBlocksCache.at(p);
-						}
-						else {
-							b2 = getBlock_WorldMap(p, true, true, worldMap);
-							exploredBlocksCache.emplace(p, b2);
-						}
-
-						const BlockDetails& blockDets2 = getDetails(b2);
-
-						if (blockDets2.isTransparant && b1 != b2) {
-							markSlot(data.cubeType_, j);
-						}
-						j++;
-					}
-					if (data.cubeType_) {
-						data.textureIndex_ = (unsigned char) b1;
-						//data.textureIndex_ = (unsigned char)Block::DIRT;
-						bufferData.push_back(data);
-						added = true;
-						data.cubeType_ = 0;
-						added_list.clear();
-					}
-					else {
-						break;
-					}
-				}
-				height -= count1;
-				const BlockDetails& blockDets1 = getDetails(b1);
-				if (!added && !blockDets1.isTransparant) 
-					break;
-			}
-		}
-	}
-
-	setUpBuffer();
-}
+#endif
 
 const BufferGeom& ChunkColumn::getBuffer() const
 {

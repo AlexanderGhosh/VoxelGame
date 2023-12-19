@@ -7,6 +7,12 @@ public:
 	BufferGreedy();
 	~BufferGreedy();
 
+	BufferGreedy(BufferGreedy&& other) noexcept;
+	BufferGreedy& operator=(BufferGreedy&& other) noexcept;
+
+	BufferGreedy(const BufferGreedy&) = delete;
+	BufferGreedy& operator=(const BufferGreedy&) = delete;
+
 	void setUp(const GreedyData* data, unsigned int size);
 	void realloc(const GreedyData* data, unsigned int size);
 

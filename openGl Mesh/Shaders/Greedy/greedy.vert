@@ -14,7 +14,7 @@ out vec3 vert0;
 out vec3 vert1;
 out vec3 vert2;
 out vec3 vert3;
-out vec3 normal;
+out vec3 normal_;
 flat out uint materialIndex;
 
 
@@ -23,7 +23,7 @@ void main() {
     vert1 = (_vert1 + chunkPosition) * voxelSize;
     vert2 = (_vert2 + chunkPosition) * voxelSize;
     vert3 = (_vert3 + chunkPosition) * voxelSize;
-    normal = _normal;
+    normal_ = _normal;
 
     materialIndex = _material;
 }

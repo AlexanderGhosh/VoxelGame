@@ -23,6 +23,7 @@ void DrawableGeom::render(Shader* shader) const
 #ifdef RENDER_WIREFRAMES
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 #endif
+	shader->bind();
 	shader->setValue("voxelSize", VOXEL_SIZE);
 
 	draw(shader);

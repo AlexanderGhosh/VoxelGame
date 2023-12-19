@@ -25,29 +25,38 @@ void World::generateTerrain() {
 	generated = true;
 	std::cout << "Started\n";
 
-	// WorldMap worldMap;
-	// worldMap.reserve(chunkPositions.size());
-
 	Timer timer("Inital Chunk Loading");
 
 	std::unordered_set<glm::vec2> chunkPositions = centeredPositions({ 0, 0 }, RENDER_DISTANCE);
 	chunks.reserve(chunkPositions.size());
 
+	std::unordered_map<glm::vec2, BlockStore> blockData;
 	for (const glm::vec2& pos : chunkPositions) {
 		ChunkColumn chunk(pos, seed);
+#ifdef ALWAYS_USE_SLOW_MESH
+		auto neighbours = getNeibours(pos, true);
+		chunk.generateChunkData(pos, seed, neighbours);
+		chunk.setUpBuffer();
+#elif defined(ALWAYS_USE_NOISE_MESH)
 		chunk.generateNoiseBuffer();
+#elif defined(ALWAYS_USE_GREEDY_MESH)
+		auto neighbours = getNeibours(pos, true);
+
+		chunk.generateBlockStore(blockData[pos]);
+
+		for (ChunkColumn* chunk : neighbours) {
+			if (!blockData.contains(chunk->getPosition2D())) {
+				chunk->generateBlockStore(blockData[chunk->getPosition2D()]);
+			}
+		}
+		chunk.createMesh(blockData, blockData[pos]);
+		chunk.setUpGreedyBuffer();
+#endif // ALWAYS_USE_SLOW_MESH
 
 		chunks.emplace(pos, std::move(chunk));
 	}
-	// timer.mark("Constructors");
-	// for (auto& chunk : chunks) {
-	// 	chunk.second.populateBuffer(worldMap);
-	// }
-	// timer.mark("Buffers");
 
 	timer.showDetails(chunks.size());
-
-	// worldMap.clear();
 }
 
 void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& frustrumCenter, const float frustrumRadius)
@@ -106,8 +115,13 @@ void World::tryFinishGenerateChunk()
 			
 			positionsBeingGenerated.erase(*itt);
 			// ChunkColumn& chunk = chunks.at(chunkPos);
+#ifndef ALWAYS_USE_GREEDY_MESH
 			chunk->setUpBuffer();
 			geomDrawable.add(chunk);
+#else
+			chunk->setUpGreedyBuffer();
+			greedyDrawable.add(*chunk);
+#endif
 		}
 	}
 	// if (allDone.size() == 0) return;
@@ -120,7 +134,27 @@ std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<
 	// can throw error if the chunk is removed from chunks while its being generated
 	for (const glm::vec2& chunkPos : positions) {
 		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
-		chunks[chunkPos].generateNoiseBuffer();
+		ChunkColumn& chunk = chunks.at(chunkPos);
+#ifdef ALWAYS_USE_NOISE_MESH
+		chunk.generateNoiseBuffer();
+#elif  defined(ALWAYS_USE_SLOW_MESH)
+		auto neighbours = getNeibours(chunkPos, true);
+		chunk.generateChunkData(chunkPos, seed, neighbours);
+#elif defined(ALWAYS_USE_GREEDY_MESH)
+		auto neighbours = getNeibours(chunkPos, true);
+
+		std::unordered_map<glm::vec2, BlockStore> blockData;
+		chunk.generateBlockStore(blockData[chunkPos]);
+
+		for (ChunkColumn* chunk : neighbours) {
+			if (!blockData.contains(chunk->getPosition2D())) {
+				chunk->generateBlockStore(blockData[chunk->getPosition2D()]);
+			}
+		}
+
+		chunk.createMesh(blockData, blockData[chunkPos]);
+		greedyDrawable.add(chunk);
+#endif
 	}
 	// t.showDetails(positions.size());
 	return positions;
@@ -289,9 +323,7 @@ std::unordered_set<glm::vec2> World::generateNewChunksGreedy(const std::unordere
 	// t.showDetails(positions.size());
 	// return positions;
 
-
 	Timer t("Chunk Genreate");
-
 
 	// can throw error if the chunk is removed from chunks while its being generated
 
@@ -360,13 +392,19 @@ void World::save() const
 
 void World::render(Shader* shader) {
 	tryFinishGenerateChunk();
+#ifdef ALWAYS_USE_GREEDY_MESH
+	greedyDrawable.render(shader);
+#endif // ALWAYS_USE_GREEDY_MESH
 	geomDrawable.render(shader);
 }
 
-
 void World::setUpDrawable()
 {
+#ifdef ALWAYS_USE_GREEDY_MESH
+	greedyDrawable.setUp(chunks);
+#else
 	geomDrawable.setUp(chunks);
+#endif
 }
 
 void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)

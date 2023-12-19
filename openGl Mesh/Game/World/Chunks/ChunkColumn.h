@@ -22,21 +22,21 @@ public:
 	ChunkColumn operator=(const ChunkColumn& other);
 	ChunkColumn(ChunkColumn&& other) noexcept;
 
+#ifdef ALWAYS_USE_SLOW_MESH
 	// runtime chunk generation
 	// generates all chunk data needed for the the buffers
 	void generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours);
+#endif
+#ifndef ALWAYS_USE_GREEDY_MESH
 	void setUpBuffer();
-	void reallocBuffer();
+#endif
+	void reallocBuffer(); // should be included in the above #if but it isnt beacuse it is used in addubg blocks
 
 	// noiseRenderig
 	// done in one step because generating the noise is so fast that putting it on a thread would likly slow it down
+#ifdef ALWAYS_USE_NOISE_MESH
 	void generateNoiseBuffer();
-
-
-	// inital world generation
-	// NOT UPDATED
-	void populateBuffer(WorldMap& worldMap);
-
+#endif
 	const BufferGeom& getBuffer() const;
 	BufferGeom* getBufferPtr();
 
@@ -68,6 +68,7 @@ public:
 	std::array<BlockDetails, CHUNK_AREA* WORLD_HEIGHT> getBlocksGrid();
 
 	// GREEDY MESH STUFF
+#ifdef ALWAYS_USE_GREEDY_MESH
 	BufferGreedy* getGreedyPtr() {
 		return &greedyBuffer;
 	};
@@ -76,7 +77,7 @@ public:
 	// puts this chunks block store in bs (assumes the chunk positon is set)
 	void generateBlockStore(BlockStore& bs);
 	void createMesh(const std::unordered_map<glm::vec2, BlockStore>& neighbours, const BlockStore& blockStore);
-
+#endif
 	// Gets the block from edited or simplex noise in the world pos
 	// all getBlock s resovel to this
 	const Block getBlock(const glm::vec3& worldPos);
@@ -84,11 +85,12 @@ public:
 	DrawData getDrawData() const override;
 private:
 	// GREEDY MESH STUFF
+#ifdef ALWAYS_USE_GREEDY_MESH
 	std::vector<GreedyData> greedyBufferData;
 	BufferGreedy greedyBuffer;
 	// greedy mesh
 	void greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& neighbours, const BlockStore& blockStore);
-	//
+#endif
 
 	// used for runtime genertion doesnt do any opengl funcs
 	void populateBufferFromNeibours(const std::list<ChunkColumn*>& neibours, const BlockStore& blockStore);

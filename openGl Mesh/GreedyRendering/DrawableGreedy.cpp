@@ -20,11 +20,18 @@ DrawableGreedy::~DrawableGreedy()
 
 void DrawableGreedy::render(Shader* shader) const
 {
+#ifdef RENDER_WIREFRAMES
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#endif
+	shader->bind();
 	shader->setValue("voxelSize", VOXEL_SIZE);
 
 	draw(shader);
 
 	shader->unBind();
+#ifdef RENDER_WIREFRAMES
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void DrawableGreedy::setUp(Chunks& chunks)
@@ -37,7 +44,9 @@ void DrawableGreedy::setUp(Chunks& chunks)
 
 void DrawableGreedy::add(ChunkColumn& chunk)
 {
+#ifdef ALWAYS_USE_GREEDY_MESH
 	data.emplace_back(chunk.getGreedyPtr(), chunk.getPosition3D());
+#endif
 }
 
 void DrawableGreedy::remove(const glm::vec2& chunkPos)

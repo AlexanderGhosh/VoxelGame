@@ -17,12 +17,20 @@ std::vector<Shader> SHADERS = {
 	Shader("skybox"),
 	Shader("crosshair"),
 	Shader("glyph"),
+#ifdef ALWAYS_USE_GREEDY_MESH
+	Shader("Greedy/greedy", "Greedy/greedy", "OIT/Transparent/transparent"),
+#else
 	Shader("OIT/Transparent/transparent", "OIT/Transparent/transparent", "OIT/Transparent/transparent"),
+#endif
 	Shader("OIT/Composite/composite"),
 	Shader("ScreenQuad/screenQuad"),
 	Shader("Shadow/shadow", true),
 	Shader("Model/model"),
+#ifdef ALWAYS_USE_GREEDY_MESH
+	Shader("Greedy/greedy", "Greedy/greedy", "GBuffer/gbuffer"),
+#else
 	Shader("OIT/Transparent/transparent", "OIT/Transparent/transparent", "GBuffer/gbuffer"),
+#endif
 	Shader("Deffered/deffered"),
 	Shader("SSAO/ssao"),
 	Shader("Blur/blur"),

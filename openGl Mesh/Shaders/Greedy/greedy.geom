@@ -12,35 +12,48 @@ in vec3[] vert0;
 in vec3[] vert1;
 in vec3[] vert2;
 in vec3[] vert3;
-in vec3[] normal;
+in vec3[] normal_;
 flat in uint[] materialIndex;
 
-out vec3 norm;
-out vec4 fragPos_;
-flat out uint matIdx;
+flat out uint matIndex;
+flat out vec2 rndSeed;
+out vec4 viewPos;
+out vec3 worldPos;
+out vec3 normal;
 
 void main() {
-    vec3 pos0 = vert0[0];
-    vec3 pos1 = vert1[0];
-    vec3 pos2 = vert2[0];
-    vec3 pos3 = vert3[0];
-    norm = normal[0];
-    matIdx = materialIndex[0];
+    const vec3 pos0 = vert0[0];
+    const vec3 pos1 = vert1[0];
+    const vec3 pos2 = vert2[0];
+    const vec3 pos3 = vert3[0];
 
-    fragPos_ = view * vec4(pos0, 1);
-    gl_Position = projection * fragPos_;
+    const vec3 avgPos = (pos0 + pos1 + pos2 + pos3) * 0.25;
+
+    normal = normal_[0];
+    matIndex = materialIndex[0];
+
+    worldPos = pos0;
+    viewPos = view * vec4(worldPos, 1);
+    rndSeed = avgPos.xy + avgPos.yz;
+    gl_Position = projection * viewPos;
     EmitVertex();
 
-    fragPos_ = view * vec4(pos1, 1);
-    gl_Position = projection * fragPos_;
+    worldPos = pos1;
+    viewPos = view * vec4(worldPos, 1);
+    rndSeed = avgPos.xy + avgPos.yz;
+    gl_Position = projection * viewPos;
     EmitVertex();
 
-    fragPos_ = view * vec4(pos2, 1);
-    gl_Position = projection * fragPos_;
+    worldPos = pos2;
+    viewPos = view * vec4(worldPos, 1);
+    rndSeed = avgPos.xy + avgPos.yz;
+    gl_Position = projection * viewPos;
     EmitVertex();
 
-    fragPos_ = view * vec4(pos3, 1);
-    gl_Position = projection * fragPos_;
+    worldPos = pos3;
+    viewPos = view * vec4(worldPos, 1);
+    rndSeed = avgPos.xy + avgPos.yz;
+    gl_Position = projection * viewPos;
     EmitVertex();
 
 
