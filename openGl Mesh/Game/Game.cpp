@@ -41,7 +41,7 @@ Event Game::rightClickRelease;
 Event Game::middleClickRelease;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), oitFrameBuffer2(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
+SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -88,7 +88,17 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 		normal.internalFormat = GL_RGBA16F;
 		normal.type = GL_RGBA;
 
-		gBufferDetails.colourBuffers = { albedo, fragPos, normal };
+		ColourBufferInit accumOIT;
+		accumOIT.format = GL_FLOAT;
+		accumOIT.internalFormat = GL_RGBA;
+		accumOIT.type = GL_RGBA;
+
+		ColourBufferInit revealOIT;
+		revealOIT.format = GL_FLOAT;
+		revealOIT.internalFormat = GL_R8;
+		revealOIT.type = GL_RED;
+
+		gBufferDetails.colourBuffers = { albedo, fragPos, normal, accumOIT, revealOIT };
 
 		gBuffer = FrameBuffer(windowDim);
 		gBuffer.setUp(gBufferDetails);
@@ -110,21 +120,6 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 		oitFrameBuffer1.setUp(detailsOIT);
 
 		// TRANSPARENT BUFFER
-		ColourBufferInit accumOIT;
-		accumOIT.format = GL_FLOAT;
-		accumOIT.internalFormat = GL_RGBA;
-		accumOIT.type = GL_RGBA;
-
-		ColourBufferInit revealOIT;
-		revealOIT.format = GL_FLOAT;
-		revealOIT.internalFormat = GL_R8;
-		revealOIT.type = GL_RED;
-
-		detailsOIT.colourBuffers = { accumOIT, revealOIT };
-		detailsOIT.depthBuffer = gBuffer.getDepth();
-
-		oitFrameBuffer2 = FrameBuffer(windowDim);
-		oitFrameBuffer2.setUp(detailsOIT);
 
 		// GUI BUFFER
 		FrameBufferInit detailsGUI;
@@ -176,7 +171,10 @@ void Game::generateWorld() {
 	unsigned int seed = 32;
 	srand(seed);
 	world = World(WORLD_ORIGIN, seed);
+#if  !defined(GENERATE_CHUNKS_ASYNC) && !GENERATE_NEW_CHUNKS
+	world.generateTerrain();
 	world.setUpDrawable();
+#endif // GENERATE_CHUNKS_ASYNC
 }
 
 void Game::doLoop(const glm::mat4& projection) {
@@ -186,9 +184,14 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	camreraBuffer.fill(0, sizeof(glm::mat4), &projection);
 	
+	// VOXEL MODELS
+	ModelManager& modelManager = ModelManager::getInstance();
+	Timer voxelLoad("Load Voxel Model");
+	castle = &modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\zelda.ply", false);
+	// castle->setPosition(0, 38, 0);
+	voxelLoad.showTime(0);
 
 	// LOAD MODELS
-	ModelManager& modelManager = ModelManager::getInstance();
 	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d_voxel.obj");
 	auto& cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
 	std::cout << "Models Loaded" << std::endl;
@@ -208,7 +211,6 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
-	Timer timer("Loop Time");
 
 	PhysicsManager& physManager = PhysicsManager::getInstance();
 
@@ -217,13 +219,13 @@ void Game::doLoop(const glm::mat4& projection) {
 	Components::RenderMesh to1RenderMesh;
 	to1RenderMesh.setModel(&cloud);
 	to1.addComponent(to1Transform);
-	to1.addComponent(to1RenderMesh);
+	//to1.addComponent(to1RenderMesh);
 
 	manager->awakeEvent();
 
 	manager->startEvent();
 
-	_player->setPosition({ 8, 40, 8 });
+	_player->setPosition({ CHUNK_SIZE_F * HALF_VOXEL_SIZE, 40, CHUNK_SIZE_F * HALF_VOXEL_SIZE });
 	to1.setPosition({ 0, 100, 0 });
 	/*reactphysics3d::Material& mat = _player->getRigidBody()->getMaterial();
 	mat.setBounciness(0);
@@ -231,19 +233,23 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	float dtAccumulator = 0;
 	float cellularAccum = 0;
+	Timer timer("Game Loop");
 	while (gameRunning) {
+		timer.start();
 		calcTimes();
 		glfwPollEvents();
 		_player->processMouse(mouseOffset);
-
+		timer.mark("Player Mouse");
 		glm::ivec2 c = _player->getChunkPosition();
 		
 		std::list<ChunkColumn*> neibours = world.getNeibours(c, true);
 
 		_player->processKeys(keys, deltaTime, neibours);
+		timer.mark("Player Keys");
 
 		cameraView = _player->getViewMatrix();
 		camreraBuffer.fill(sizeof(glm::mat4), sizeof(glm::mat4), &cameraView);
+		timer.mark("View Buffer");
 
 
 #ifdef DEBUG_GRID_LINES
@@ -260,9 +266,12 @@ void Game::doLoop(const glm::mat4& projection) {
 		
 
 		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);
+
+		timer.mark("Start Chunk Gen");
 		// std::cout << "Generated" << std::endl;
 
 		manager->updateEvent(deltaTime);
+		timer.mark("Entity Update");
 
 		if (dtAccumulator >= FIXED_DELTA_TIME) {
 			dtAccumulator -= FIXED_DELTA_TIME;
@@ -277,6 +286,7 @@ void Game::doLoop(const glm::mat4& projection) {
 			physManager.step();
 			manager->postFixedUpdateEvent();
 		}
+		timer.mark("Physics Manger");
 		dtAccumulator += deltaTime;
 		cellularAccum += deltaTime;
 
@@ -285,17 +295,20 @@ void Game::doLoop(const glm::mat4& projection) {
 			world.update();
 			cellularAccum = 0;
 		}
+		timer.mark("Cellular Automota");
 
 		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();
+		timer.mark("Rendering");
 
 		if (glfwWindowShouldClose(window)) gameRunning = false;
 
 		glfwSwapBuffers(window);
 		numFrames++;
 		mouseOffset = glm::vec2(0);
+
 	}
 	timer.showDetails(numFrames);
 
@@ -324,34 +337,65 @@ void Game::showStuff() {
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);
 	glFrontFace(GL_CCW); // this is what stops the water from rendering
-
+	
 	shadowFramebuffer.bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
 	Shader& shadows = SHADERS[SHADOW];
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
 	world.render(&shadows);
+	castle->render(shadows);
 	shadows.unBind();
 	shadowFramebuffer.unBind();
 	// 2. render for OIT
 	// 2.1 Opaque
 	
-	// 2.1.1 Populate G-Buffer
+	// 2.1 Populate G-Buffer Opaque
 	gBuffer.bind();
 	glDisable(GL_BLEND);
 	glFrontFace(GL_CW);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-	Shader& gbufferS = SHADERS[GREEDY];
+	
+	Shader& gbufferS = SHADERS[GBUFFER];
 	gbufferS.bind();
-
+	
 	world.render(&gbufferS);
 	manager->renderEvent();
+	castle->render(gbufferS);
 
-	// 2.1.2 Ambiant Occlusion (render to the oit opaque buffer)
+
+	// 2.2 Populate G-Buffer Opaque
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunci(3, GL_ONE, GL_ONE);
+	glBlendFunci(4, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	glBlendEquation(GL_FUNC_ADD);
+
+	glm::vec4 black(0);
+	glm::vec4 white(1);
+	glClearBufferfv(GL_COLOR, 3, &black[0]);
+	glClearBufferfv(GL_COLOR, 4, &white[0]);
+
+	Shader& transparent = SHADERS[OIT_TRANSPARENT];
+	transparent.bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
+	transparent.setValue("ao", 0);
+	transparent.setValue("viewDir", _player->getViewDirection());
+	transparent.setValue("lightPos", LIGHT_POSITION);
+
+	world.render(&transparent);
+	manager->renderEvent();
+	castle->render(transparent);
+
+	
+	// 3.1 Ambiant Occlusion (render to the oit opaque buffer)
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 	oitFrameBuffer1.bind();
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -366,17 +410,21 @@ void Game::showStuff() {
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2)); // normal
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex); // random-ness
-
+	
 	glUniform3fv(glGetUniformLocation(ssao.getId(), "ssaoSamples"), ssaoSamples.size(), &ssaoSamples[0][0]);
 	glm::vec2 noiseScale = ((glm::vec2)windowDim) / SSAO_SCALE;
 	ssao.setValue("ssaoNoiseScale", noiseScale);
 	ssao.setValue("ssaoRadius", SSAO_RADIUS);
 	ssao.setValue("ssaoBias", SSAO_BIAS);
-
+	ssao.setValue("voxelSize", VOXEL_SIZE); 
+	
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	// 2.1.3 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
+	glClearColor(1, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	// 3.2 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
 	multiPurposeFB.bind();
 	glClear(GL_COLOR_BUFFER_BIT);
 	Shader& blur = SHADERS[BLUR];
@@ -384,11 +432,11 @@ void Game::showStuff() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer1.getColourTex(0));
 	blur.setValue("img", 0);
-
+	
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	// 2.1.4 OIT Opaque (renders into the oit1 buffer and apply AO)
+	
+	// 4. Deffered Lighting
 	oitFrameBuffer1.bind();
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -396,30 +444,30 @@ void Game::showStuff() {
 	deffered.bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(0)); // albedo
-
+	
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(1)); // fragPos
-
+	
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2)); // normal
-
+	
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // blured ao
-
+	
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, shadowFramebuffer.getDepth()); // shadow map
-
+	
 	deffered.setValue("_albedo", 0);
 	deffered.setValue("_fragPos", 1);
 	deffered.setValue("_normal", 2);
 	deffered.setValue("ao", 3);
 	deffered.setValue("shadowMap", 4);
-
+	
 	deffered.setValue("viewDir", _player->getViewDirection());
 	deffered.setValue("view_inv", glm::inverse(cameraView));
 	deffered.setValue("lightMatrix", LSM);
 	deffered.setValue("lightPos", LIGHT_POSITION);
-
+	
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	// renderModels();
@@ -449,7 +497,7 @@ void Game::showStuff() {
 	transparent.setValue("viewDir", _player->getViewDirection());
 	transparent.setValue("lightPos", LIGHT_POSITION);
 
-	//world.render(&transparent);
+	world.render(&transparent);
 
 	transparent.unBind();
 
@@ -462,9 +510,9 @@ void Game::showStuff() {
 	Shader& composite = SHADERS[OIT_COMPOSITE];
 	
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer2.getColourTex(0));
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(3));
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer2.getColourTex(1));
+	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(4));
 	
 	composite.bind();
 	composite.setValue("accum", 0);
@@ -472,7 +520,7 @@ void Game::showStuff() {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
-
+	
 	gizmoManager->render(cameraProjection * cameraView);
 
 
@@ -482,25 +530,25 @@ void Game::showStuff() {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	const Shader& physDebug = SHADERS[PHYS_DEBUG];
 	physDebug.bind();
-
+	
 	// creates VAO, VBO populates with lines then draws repeat for triangles then deltes buffers (every frame
 	static PhysicsManager& physManger = PhysicsManager::getInstance();
 	auto debugger = physManger.getDebugRenderer();
 	auto numLines = debugger->getNbLines();
 	auto numTriangles = debugger->getNbTriangles();
-
+	
 	
 	unsigned int VAO, VBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
+	
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)0); // vert world pos
 	glEnableVertexAttribArray(1);
 	glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)sizeof(reactphysics3d::Vector3)); // vert colour
-
+	
 	if (numLines > 0) {
 		// auto lines = debugger->getLinesArray();
 		// glBufferData(GL_ARRAY_BUFFER, numLines * sizeof(reactphysics3d::DebugRenderer::DebugLine), lines, GL_STATIC_DRAW);
@@ -510,38 +558,39 @@ void Game::showStuff() {
 		auto triangles = debugger->getTrianglesArray();
 		// refill data with triangle data
 		glBufferData(GL_ARRAY_BUFFER, numTriangles * sizeof(reactphysics3d::DebugRenderer::DebugTriangle), triangles, GL_STATIC_DRAW);
-
+	
 		glDrawArrays(GL_TRIANGLES, 0, numTriangles*3); // draw triangles
 	}
-
+	
 	glDeleteBuffers(1, &VBO);
 	glDeleteVertexArrays(1, &VAO); 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
 	composite.unBind();
-
-
-	// 3. render the GUI
+	
+	
+	// 6. render the GUI
 	guiFrameBuffer.bind(); // use the GUI framebuffer
+
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	showGUI();
 	showFPS();
-
+	
 	std::string m;
 	m = "Position: " + glm::to_string(_player->getPosition());
 	showText(m, { 5, 850 }, 0.5f);
 	
 	m = "View Direction: " + glm::to_string(_player->getViewDirection());
 	showText(m, { 5, 825 }, 0.5f);
-
+	
 	m = "Chunk Pos: " + glm::to_string(_player->getChunkPosition());
 	showText(m, { 5, 800 }, 0.5f);
-
-	// 4. render the screen quad
+	
+	// 7. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
-
+	
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE); // enable depth writes so glClear won't ignore clearing the depth buffer
 	glDisable(GL_BLEND);
@@ -553,7 +602,7 @@ void Game::showStuff() {
 	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer1.getColourTex(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, guiFrameBuffer.getColourTex(0));
-
+	
 	screenQuad.bind();
 	
 	screenQuad.setValue("screen", 0);
@@ -674,13 +723,6 @@ void Game::setupEventCB(GLFWwindow* window) {
 }
 
 void Game::cleanUp() {
-	oitFrameBuffer1.cleanUp();
-	oitFrameBuffer2.cleanUp();
-	guiFrameBuffer.cleanUp();
-	shadowFramebuffer.cleanUp();
-	gBuffer.cleanUp();
-	multiPurposeFB.cleanUp();
-
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 	quadVAO = quadVBO = 0;
@@ -963,7 +1005,6 @@ void Game::showText(const std::string& text, const glm::vec2& position, float sc
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
 
 #ifdef SSAO
 void Game::setUpSSAO()

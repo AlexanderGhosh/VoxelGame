@@ -9,6 +9,7 @@
 #include "../../../Helpers/BlockDetails.h"
 #include "../World.h"
 #include "../../../GreedyRendering/GreedyData.h"
+#include "../../../Helpers/Timers/Timer.h"
 
 
 ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
@@ -25,7 +26,37 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 {
 	this->seed = seed;
 	position = pos;
+}
+
+ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn(pos, seed)
+{
 	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
+}
+
+ChunkColumn::ChunkColumn(const ChunkColumn& other)
+{
+	position = other.position;
+	seed = other.seed;
+	bufferData = other.bufferData;
+	editedBlocks = other.editedBlocks;
+}
+
+ChunkColumn ChunkColumn::operator=(const ChunkColumn& other)
+{
+	position = other.position;
+	seed = other.seed;
+	bufferData = other.bufferData;
+	editedBlocks = other.editedBlocks;
+	return *this;
+}
+
+ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
+{
+	position = other.position;
+	buffer = std::move(other.buffer);
+	seed = other.seed;
+	bufferData = std::move(other.bufferData);
+	editedBlocks = std::move(other.editedBlocks);
 }
 
 void ChunkColumn::generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours)
@@ -163,6 +194,8 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 							break;
 						}
 					}
+				}
+			}
 
 				}
 			}
@@ -519,6 +552,92 @@ void ChunkColumn::reallocBuffer()
 	buffer.realloc(bufferData.data(), bufferData.size());
 }
 
+void ChunkColumn::generateNoiseBuffer()
+{
+	Timer timer("Generate from noise");
+	timer.start();
+	std::vector<float> heightsPadded = std::move(world_generation::getRawHeightsPadded(getWorldPosition2D(), seed));
+
+	auto index = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE; };
+	auto indexPadded = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE_PADDED; };
+	auto getHeight = [&heightsPadded, &indexPadded](unsigned int x, unsigned int z) -> unsigned char { return heightsPadded[indexPadded(x, z)]; };
+
+	timer.mark("Heights Generated");
+		
+	// contqains the list of differances in height along axis (should equate to how many faces are visible
+	std::vector<unsigned char> pxDelta(CHUNK_AREA);
+	std::vector<unsigned char> nxDelta(CHUNK_AREA);
+	std::vector<unsigned char> pzDelta(CHUNK_AREA);
+	std::vector<unsigned char> nzDelta(CHUNK_AREA);
+
+	bufferData.reserve(CHUNK_AREA);
+	for (unsigned int i = 1; i < CHUNK_SIZE_PADDED - 1; i++) {
+		for (unsigned int j = 1; j < CHUNK_SIZE_PADDED - 1; j++) {
+			unsigned int x = i - 1;
+			unsigned int z = j - 1;
+			unsigned int currentIndex = index(x, z);
+			unsigned char height = getHeight(i, j);
+
+			// deltas
+			unsigned char px = fmaxf(0, height - getHeight(i + 1, j));
+			unsigned char nx = fmaxf(0, height - getHeight(i - 1, j));
+
+			unsigned char pz = fmaxf(0, height - getHeight(i, j + 1));
+			unsigned char nz = fmaxf(0, height - getHeight(i, j - 1));
+
+			// mesh
+			const BlocksEncoded currentColumn = world_generation::createColumn(height);
+			unsigned char maxDepth = fmaxf(fmaxf(px, pz), fmaxf(nx, nz));
+			for (unsigned int i = 0; i < maxDepth; i++) {
+				Block block = currentColumn[height - i];
+				GeomData data;
+
+				// addes the water level
+				if (height < WATER_LEVEL) {
+					if (i == 0) markSlot(data.cubeType_, 4); // top face
+					data.textureIndex_ = (unsigned char)Block::WATER;
+					data.setPos({ x, WATER_LEVEL, z });
+					bufferData.push_back(data);
+					data.cubeType_ = 0;
+				}
+
+				data.textureIndex_ = (unsigned char)block;
+				data.setPos({ x, height - i, z });
+				if (i == 0) markSlot(data.cubeType_, 4); // top face
+				if (i < px) markSlot(data.cubeType_, 3);
+				if (i < nx) markSlot(data.cubeType_, 2);
+				if (i < pz) markSlot(data.cubeType_, 0);
+				if (i < nz) markSlot(data.cubeType_, 1);
+
+				bufferData.push_back(data);
+			}
+			if (maxDepth == 0) {
+				GeomData data;
+				if (height < WATER_LEVEL) {
+					markSlot(data.cubeType_, 4); // top face
+					data.textureIndex_ = (unsigned char)Block::WATER;
+					data.setPos({ x, WATER_LEVEL, z });
+					bufferData.push_back(data);
+				}
+				Block block = currentColumn[height];
+				data.setPos({ x, height, z });
+				data.textureIndex_ = (unsigned char)block;
+				markSlot(data.cubeType_, 4); // top face
+				bufferData.push_back(data);
+			}
+		}
+	}
+
+	timer.mark("Mesh generated");
+
+#if !defined(GENERATE_CHUNKS_ASYNC) && !GENERATE_NEW_CHUNKS
+	setUpBuffer();
+	timer.mark("OpenGl");
+#endif // !GENERATE_CHUNKS_ASYNC
+
+	//timer.showDetails(1);
+}
+
 void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 	std::unordered_map<glm::vec3, Block> exploredBlocksCache; // map of all the blocs which have already being looked up
 
@@ -603,45 +722,48 @@ BufferGeom* ChunkColumn::getBufferPtr()
 
 void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 {
-	GeomData toAdd;
-	toAdd.setPos(toLocal(worldPos));
-	toAdd.cubeType_ = 0x3f; // all faces
-	toAdd.textureIndex_ = (unsigned char) block;
-
+	Timer timer("Add Block");
 	struct RemoveFace {
-		glm::vec3 worldPos;
+		glm::vec3 localPos;
 		unsigned char face;
 	};
-	std::vector<RemoveFace> toRemove;
+	std::list<RemoveFace> toRemove;
+	const glm::vec3 localPos = toLocal(worldPos);
 
-	unsigned char i = 0;
-	for (const glm::vec3& off : OFFSETS_3D) {
+	GeomData toAdd;
+	toAdd.setPos(localPos);
+	toAdd.cubeType_ = 63; // all faces
+	toAdd.textureIndex_ = (unsigned char) block;
+
+
+	for (unsigned int i = 0; i < OFFSETS_3D.size(); i++) {
 		// needs to check the world map
 		RemoveFace data{};
-		data.worldPos = worldPos + off;
+		data.localPos = localPos + OFFSETS_3D[i];
 		data.face = i++;
 
 		toRemove.push_back(data);
 	}
+	timer.mark("Create to Remove");
 
 
 	for (auto itt1 = bufferData.begin(); itt1 != bufferData.end();) {
 		GeomData& data = *itt1;
-		glm::vec3 dataWorldPos = toWorld(data.getPos());
+		const glm::vec3 dataLocalPos = data.getPos();
 		for (auto itt2 = toRemove.begin(); itt2 != toRemove.end();) {
 			const RemoveFace& remove = *itt2;
-			if (dataWorldPos == remove.worldPos) {
+			if (dataLocalPos == remove.localPos) {
 				unsigned int mask = 1u << remove.face;
 				toAdd.cubeType_ ^= mask; // sets the face to add
 
-				if (remove.face % 2 == 0) {
-					mask = 1 << remove.face + 1;
-				}
-				else {
+				if (remove.face & 1) {
 					mask = 1 << remove.face - 1;
 				}
+				else {
+					mask = 1 << remove.face + 1;
+				}
 
-				mask = ~mask; // this is in the wrong slot as the face refers to the new blocks face not the neigbour the slot needs to inccremented or decrmented dependent MAYBE NOT ANY MORE
+				mask = ~mask;
 				data.cubeType_ &= mask; // will set the slot of face to 0
 				itt2 = toRemove.erase(itt2);
 				break;
@@ -659,10 +781,13 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 		}
 		itt1++;
 	}
-
-	editedBlocks[worldPos] = block;
 	bufferData.push_back(toAdd);
+	editedBlocks[worldPos] = block;
+	timer.mark("Edit mesh");
+
 	buffer.realloc(bufferData.data(), bufferData.size());
+	timer.mark("OpenGL");
+	timer.showDetails(1);
 }
 
 void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
@@ -670,18 +795,17 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 	const glm::vec3 localPos = toLocal(worldPos);
 	std::vector<AddFaces> toAdd;
 
-	unsigned char i = 0;
-	for (const glm::vec3& off : OFFSETS_3D) {
+	for (unsigned int i = 0; i > OFFSETS_3D.size(); i++) {
 		// needs to check the world map
 		AddFaces data{};
-		data.worldPos = worldPos + off;
-		data.offset = off;
+		data.offset = OFFSETS_3D[i];
+		data.worldPos = worldPos + data.offset;
 		data.face = i++; // swaps face
-		if (data.face % 2 == 0) {
-			data.face++;
+		if (data.face & 1) {
+			data.face--;
 		}
 		else {
-			data.face--;
+			data.face++;
 		}
 		//face is the index of the face to add relative to the block to add it too
 

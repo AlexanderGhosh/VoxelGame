@@ -15,6 +15,7 @@ public:
 	void render(Shader* shader);
 	void renderGreedy(Shader* shader);
 
+	void generateTerrain();
 	void setUpDrawable();
 
 	void placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunk);
@@ -59,7 +60,6 @@ private:
 
 	unsigned int seed;
 	Chunks chunks;
-
 	DrawableGeom geomDrawable;
 	DrawableGreedy greedyDrawable;
 	// only genertes chunk buffer data can be called async
@@ -68,5 +68,4 @@ private:
 	// reutns a set of positions centered on the origin with a scale of 1
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	void getNewChunkPositions(const glm::vec3 worldOrigin);
-	void generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions);
 };

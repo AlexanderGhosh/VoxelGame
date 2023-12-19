@@ -9,6 +9,7 @@
 class World;
 
 // all operations are unscaled unless otherwise stated
+// the copy constructor doenst copy the buffer
 class ChunkColumn
 {
 public:
@@ -16,12 +17,19 @@ public:
 	ChunkColumn(glm::vec2 pos, unsigned int seed);
 	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
 
+	ChunkColumn(const ChunkColumn& other);
+	ChunkColumn operator=(const ChunkColumn& other);
+	ChunkColumn(ChunkColumn&& other) noexcept;
+
 	// runtime chunk generation
 	// generates all chunk data needed for the the buffers
 	void generateChunkData(glm::vec2 pos, unsigned int seed, const std::list<ChunkColumn*>& neibours);
 	void setUpBuffer();
 	void reallocBuffer();
 
+	// noiseRenderig
+	// done in one step because generating the noise is so fast that putting it on a thread would likly slow it down
+	void generateNoiseBuffer();
 
 
 	// inital world generation

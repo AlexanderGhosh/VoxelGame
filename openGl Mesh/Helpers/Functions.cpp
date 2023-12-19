@@ -227,7 +227,8 @@ std::vector<std::string> split(const std::string& str, const std::string& delim)
 
 bool contains(const std::string& a, const std::string& b) {
 	const short s = b.size();
-	for (short i = 0; i < a.size() - b.size(); i++) {
+	if (a.size() < b.size()) return false;
+	for (short i = 0; i <= a.size() - s; i++) {
 		const std::string& sub = a.substr(i, s);
 		if (sub == b) {
 			return true;

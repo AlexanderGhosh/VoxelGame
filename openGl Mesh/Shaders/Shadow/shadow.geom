@@ -5,28 +5,24 @@ layout (triangle_strip, max_vertices = 24) out;
 
 in VS_OUT {
     uint cubeType;
-    uint blockColourIndex;
-    mat4 m;
+    mat4 model;
 } vs_out[];
 
 uniform mat4 lightMatrix;
 
-const float size = 0.5;
-const float inv_size = 1.0 / size;
+const vec3 vertices[8] = vec3[](
+	vec3(-0.5,-0.5,-0.5), // 0
+	vec3( 0.5,-0.5,-0.5), // 1
+	vec3(-0.5,-0.5, 0.5), // 2
+	vec3( 0.5,-0.5, 0.5), // 3
 
-vec3 vertices[8] = vec3[](
-	vec3(-size,-size,-size), // 0
-	vec3( size,-size,-size), // 1
-	vec3(-size,-size, size), // 2
-	vec3( size,-size, size), // 3
-
-	vec3(-size, size,-size), // 4
-	vec3( size, size,-size), // 5
-	vec3( size, size, size), // 6
-	vec3(-size, size, size)  // 7
+	vec3(-0.5, 0.5,-0.5), // 4
+	vec3( 0.5, 0.5,-0.5), // 5
+	vec3( 0.5, 0.5, 0.5), // 6
+	vec3(-0.5, 0.5, 0.5)  // 7
 );
 
-int indices[] = int[](
+const int indices[] = int[](
     3, 2, 6, 7, // +z
     5, 4, 1, 0, // -z
     0, 4, 2, 7, // -x
@@ -43,7 +39,7 @@ void main() {
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
 
-                gl_Position = lightMatrix * vs_out[0].m * vec4(v, 1);
+                gl_Position = lightMatrix * vs_out[0].model * vec4(v, 1);
 
                 EmitVertex();
             }

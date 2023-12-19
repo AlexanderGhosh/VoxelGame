@@ -21,5 +21,5 @@ void Entities::TestObject::start()
 
 	_transform->scale = glm::vec3(1);
 
-	_renderMesh->setTransform(_transform);
+	//_renderMesh->setTransform(_transform);
 }

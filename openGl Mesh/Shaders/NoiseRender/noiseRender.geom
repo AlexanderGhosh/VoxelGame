@@ -11,16 +11,19 @@ layout (std140, binding = 0) uniform Camera
 
 in VS_OUT {
     uint cubeType;
-    uint matIndex;
-    mat4 model;
+    uint blockColourIndex;
+    mat4 m;
 } vs_out[];
 
-flat out uint matIndex;
-flat out vec2 rndSeed;
-out vec4 viewPos;
-out vec3 worldPos;
+flat out uint blockColourIndex;
 out vec3 normal;
+out vec3 worldPos;
+out vec4 viewFragPos_;
+flat out vec2 rndSeed;
 
+uniform float voxelSize;
+// const float size = 0.5;
+// const float inv_size = 1.0 / size;
 
 const vec3 vertices[8] = vec3[](
 	vec3(-0.5,-0.5,-0.5), // 0
@@ -52,31 +55,28 @@ const vec3 normals[6] = vec3[] (
     vec3(0, -1, 0)
 );
 
-uniform float voxelSize;
 void main() {
-    matIndex = vs_out[0].matIndex;
-
-    for (uint i = 0; i < 6; i++) {
-        uint slot = vs_out[0].cubeType & (1 << i);
-        if (slot > 0) {
+    blockColourIndex = 1;
+    if(blockColourIndex == 5u) {
+        return; // discards water
+    }
+    for(uint h = 0; h < 5; h++) {
+        for (uint i = 0; i < 6; i++) {  
             normal = normals[i];
 
-            for (uint j = 0u; j < 4u; j++){ 
+            for (uint j = 0u; j < 4u; j++){
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
-                
-                if(matIndex == 5u && v.y > 0){ // is water and is a top vertex
-                    v.y *= 0.75;
-                }
-                
+
                 rndSeed = gl_in[0].gl_Position.xy + gl_in[0].gl_Position.zx;
-                vec4 worldPos4 = vs_out[0].model * vec4(v * voxelSize, 1);
-                worldPos = worldPos4.xyz;
-                viewPos = view * worldPos4;
-                gl_Position = projection * viewPos;
+                worldPos = (gl_in[0].gl_Position.xyz + v) * voxelSize;
+                worldPos.y -= h;
+                viewFragPos_ = view * vec4(worldPos, 1);
+
+                gl_Position = projection * viewFragPos_;
                 EmitVertex();
             }
-            EndPrimitive();
         }
     }
+    EndPrimitive();
 }

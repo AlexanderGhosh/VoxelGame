@@ -12,6 +12,7 @@
 #include "../FrameBuffer.h"
 #include "../UniformBuffer.h"
 #include "../EventsSystem/Event.h"
+#include "../Helpers/ModelLoaders/VoxelModel_Base.h"
 
 class Model;
 class EntityManager;
@@ -67,6 +68,8 @@ private:
 	void breakBlock();
 	void explode();
 
+	VoxelModel_Static* castle;
+
 	UniformBuffer camreraBuffer, materialsBuffer;
 	EntityManager* manager;
 	GizmoManager* gizmoManager;
@@ -74,7 +77,7 @@ private:
 	unsigned int quadVBO, quadVAO;
 
 	Entities::Player* _player;
-	FrameBuffer oitFrameBuffer1, oitFrameBuffer2, guiFrameBuffer, shadowFramebuffer, gBuffer;
+	FrameBuffer oitFrameBuffer1, guiFrameBuffer, shadowFramebuffer, gBuffer;
 	// Colour slot 0 is writen too
 	FrameBuffer multiPurposeFB;
 	GLFWwindow* window;
@@ -88,6 +91,8 @@ private:
 
 	// is updated every frame with the current camera's view matrix
 	glm::mat4 cameraView, cameraProjection;
+
+
 
 	void showFPS();
 	void calcTimes();

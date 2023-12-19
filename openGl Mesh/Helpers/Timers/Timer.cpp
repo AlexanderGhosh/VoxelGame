@@ -1,6 +1,7 @@
 #include "Timer.h"
 #include <iostream>
 #include <common.hpp>
+#include "../Functions.h"
 
 Timer::Timer() : name(), start_(), stop_(), markedPoints()
 {
@@ -63,7 +64,21 @@ void Timer::log(std::string name, bool inFrames)
 void Timer::mark(std::string name)
 {
 	stop();
-	markedPoints.emplace(name, getTime());
+	bool contains_ = false;
+	for (auto& [n, _] : markedPoints) {
+		contains_ = contains(n, name);
+		if (contains_) {
+			name = n;
+			break;
+		}
+	}
+	if(!contains_)
+		name = std::to_string(markedPoints.size() + 1) + ". " + name;
+	if (!contains_)
+		markedPoints.emplace(name, getTime());
+	else
+		markedPoints[name] += getTime();
+	start();
 }
 
 long long Timer::getTime() const
@@ -81,7 +96,15 @@ void Timer::showTime(bool inFrames)
 void Timer::showDetails(unsigned int ammount)
 {
 	stop();
-	double total = getTime();
+	double total = 0;
+	if (markedPoints.size() == 0) {
+		total = getTime();
+	}
+	else {
+		for (const auto& [_, mp_duration] : markedPoints) {
+			total += mp_duration;
+		}
+	}
 	double totalSecconds = total * 1e-9;
 	double totalFrames = totalSecconds * 60.;
 
@@ -91,13 +114,13 @@ void Timer::showDetails(unsigned int ammount)
 	normaliseNameSize(avg_name, maxSize);
 
 	std::cout << std::setprecision(3) << std::fixed;
-	std::cout << "-----------------------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << "#################################################################################################################" << std::endl;
 	std::cout << name << ": " << totalSecconds << " Secconds | " << totalFrames << " Frames" << std::endl;
 	std::cout << "--------------------------------------------------------" << std::endl;
 	double prevDuration = 0;
 	for (const auto& [mp_name, mp_duration] : markedPoints) {
 		double currentDuration = mp_duration - prevDuration;
-		prevDuration = mp_duration;
+		//prevDuration = mp_duration;
 		double percent = currentDuration;
 		percent /= total;
 		percent *= 100.f;
@@ -111,6 +134,6 @@ void Timer::showDetails(unsigned int ammount)
 	double avgFrames = totalFrames / (double)ammount;
 	std::cout << "--------------------------------------------------------" << std::endl;
 	std::cout << avg_name << ": " << avgSecconds << " Secconds | " << avgFrames << " Frames | Count: " << ammount << std::endl;
-	std::cout << "-----------------------------------------------------------------------------------------------------------------" << std::endl;
+	std::cout << "#################################################################################################################" << std::endl;
 	markedPoints.clear();
 }

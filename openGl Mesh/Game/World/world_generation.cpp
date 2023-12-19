@@ -5,25 +5,32 @@
 
 
 FastNoise::SmartNode<FastNoise::Simplex> world_generation::noiseSource;
-FastNoise::SmartNode<FastNoise::FractalFBm> world_generation::noiseGenerator;
-std::vector<float> world_generation::xs(CHUNK_AREA), world_generation::ys(CHUNK_AREA);
+FastNoise::SmartNode<> world_generation::noiseGenerator;
+// uses padded for the sake of 'getRawHeightsPadded'
+std::vector<float> world_generation::xs(CHUNK_AREA_PADDED), world_generation::ys(CHUNK_AREA_PADDED);
 glm::ivec2 world_generation::treeCooldown(4);
 NoiseOptions world_generation::options = {};
 
 void world_generation::setUp()
 {
+	// AgAAAIA/
 	options.octaves = 5;
 	options.frequency = 0.7;
 	
 	noiseSource = FastNoise::New<FastNoise::Simplex>();
-	noiseGenerator = FastNoise::New<FastNoise::FractalFBm>();
+	noiseGenerator = FastNoise::New<FastNoise::FractalFBm>(); 
+#ifdef FLAT_TERRAIN
+	noiseGenerator = FastNoise::NewFromEncodedNodeTree("AAAAAAA/");
+#else
+	noiseGenerator = FastNoise::NewFromEncodedNodeTree("DQAIAAAACtejvQgAAPYoXD8AAAAAAA==");
+#endif
 
-	noiseGenerator->SetSource(noiseSource);
-	noiseGenerator->SetOctaveCount(options.octaves);
-	noiseGenerator->SetLacunarity(1.5);
+	//noiseGenerator->SetSource(noiseSource);
+	//noiseGenerator->SetOctaveCount(options.octaves);
+	//noiseGenerator->SetLacunarity(1.5);
 	unsigned int x = 0, y = 0;
-	for (float i = 0; i < CHUNK_SIZE; i++) {
-		for (float j = 0; j < CHUNK_SIZE; j++) {
+	for (float i = 0; i < CHUNK_SIZE_PADDED; i++) {
+		for (float j = 0; j < CHUNK_SIZE_PADDED; j++) {
 			xs[x++] = j * NOISE_FACTOR * options.frequency;
 			ys[y++] = i * NOISE_FACTOR * options.frequency;
 		}
@@ -31,16 +38,39 @@ void world_generation::setUp()
 
 }
 
-void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
+std::vector<float> world_generation::getRawHeightsPadded(glm::vec2 chunkPos, unsigned int seed)
+{
+	std::vector<float> noiseOutput(CHUNK_AREA_PADDED);
+	chunkPos -= 1;
+	chunkPos *= NOISE_FACTOR * options.frequency;
+	// deducts 1 to nullify the padding
+	auto minMax = noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA_PADDED, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
+	for (unsigned int i = 0; i < CHUNK_AREA_PADDED; i++)
+	{
+		noiseOutput[i] = noiseToHeight(noiseOutput[i], minMax);
+	}
+	return noiseOutput;
+}
+
+std::vector<float> world_generation::getRawHeights(glm::vec2 chunkPos, unsigned int seed)
+{
 	std::vector<float> noiseOutput(CHUNK_AREA);
 
 	chunkPos *= NOISE_FACTOR * options.frequency;
 	auto minMax = noiseGenerator->GenPositionArray2D(noiseOutput.data(), CHUNK_AREA, xs.data(), ys.data(), chunkPos.x, chunkPos.y, seed);
+	for (unsigned int i = 0; i < CHUNK_AREA; i++)
+	{
+		noiseOutput[i] = noiseToHeight(noiseOutput[i], minMax);
+	}
+	return noiseOutput;
+}
+
+void world_generation::createHeightMap(glm::vec2 chunkPos, unsigned int seed, HeightMap& res, unsigned int biome) {
+	std::vector<float> noiseOutput = std::move(getRawHeights(chunkPos, seed));
 
 	for (unsigned int i = 0; i < CHUNK_AREA; i++)
 	{
-		unsigned int height = noiseToHeight(noiseOutput[i], minMax);
-		res[i] = createColumn(height);
+		res[i] = createColumn(noiseOutput[i]);
 	}
 }
 

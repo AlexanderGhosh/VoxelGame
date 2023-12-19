@@ -9,7 +9,8 @@
 #include "../../Shaders/Shader.h"
 #include <glad/glad.h>
 
-World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false) {
+World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false)
+{
 }
 
 World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
@@ -17,33 +18,36 @@ World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
 }
 
 void World::getNewChunkPositions(const glm::vec3 worldOrigin) {
-	std::unordered_set<glm::vec2> chunkPositions = centeredPositions({ worldOrigin.x, worldOrigin.z }, RENDER_DISTANCE);
-
-	generateTerrain(chunkPositions);
+	generateTerrain();
 }
 
-void World::generateTerrain(const std::unordered_set<glm::vec2>& chunkPositions) {
+void World::generateTerrain() {
+	generated = true;
 	std::cout << "Started\n";
 
-	WorldMap worldMap;
-	worldMap.reserve(chunkPositions.size());
-	chunks.reserve(chunkPositions.size());
+	// WorldMap worldMap;
+	// worldMap.reserve(chunkPositions.size());
 
 	Timer timer("Inital Chunk Loading");
 
+	std::unordered_set<glm::vec2> chunkPositions = centeredPositions({ 0, 0 }, RENDER_DISTANCE);
+	chunks.reserve(chunkPositions.size());
+
 	for (const glm::vec2& pos : chunkPositions) {
-		ChunkColumn chunk(pos, seed, worldMap);
-		chunks.emplace(pos, chunk);
+		ChunkColumn chunk(pos, seed);
+		chunk.generateNoiseBuffer();
+
+		chunks.emplace(pos, std::move(chunk));
 	}
-	timer.mark("Constructors");
-	for (auto& chunk : chunks) {
-		chunk.second.populateBuffer(worldMap);
-	}
-	timer.mark("Buffers");
+	// timer.mark("Constructors");
+	// for (auto& chunk : chunks) {
+	// 	chunk.second.populateBuffer(worldMap);
+	// }
+	// timer.mark("Buffers");
 
 	timer.showDetails(chunks.size());
 
-	worldMap.clear();
+	// worldMap.clear();
 }
 
 void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& frustrumCenter, const float frustrumRadius)
@@ -93,6 +97,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 
 void World::tryFinishGenerateChunk()
 {
+	Timer timer("Finish Async");
 	auto allDone = pool.getAllDone(true);
 	for (auto& generated : allDone) {
 		for (auto itt = generated.begin(); itt != generated.end(); itt++) {
@@ -101,18 +106,24 @@ void World::tryFinishGenerateChunk()
 			
 			positionsBeingGenerated.erase(*itt);
 			// ChunkColumn& chunk = chunks.at(chunkPos);
-			// chunk->setUpBuffer();
-			// geomDrawable.add(*chunk);
-			// GREEDY
-			chunk->setUpGreedyBuffer();
-			greedyDrawable.add(*chunk);
-
-			const std::list<ChunkColumn*>& neighbours = getNeibours(*itt);
-			for (ChunkColumn* chunk : neighbours) {
-				//chunk->reallocBuffer();
-			}
+			chunk->setUpBuffer();
+			geomDrawable.add(*chunk);
 		}
 	}
+	// if (allDone.size() == 0) return;
+	// timer.showDetails(allDone.front().size());
+}
+
+std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
+{
+	Timer t("Chunk Generate");
+	// can throw error if the chunk is removed from chunks while its being generated
+	for (const glm::vec2& chunkPos : positions) {
+		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
+		chunks[chunkPos].generateNoiseBuffer();
+	}
+	// t.showDetails(positions.size());
+	return positions;
 }
 
 const ChunkColumn& World::getChunk(const glm::vec2& chunkPos, bool& success) const
@@ -314,7 +325,15 @@ const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool
 		offsets.push_front(glm::vec2(0));
 	}
 	std::list<ChunkColumn*> res;
-	for (auto& [pos, chunk] : chunks) {
+
+	for (auto& off : offsets) {
+		ChunkColumn* chunk = getValue(chunks, chunkPos + off);
+		if (chunk) {
+			res.push_back(chunk);
+		}
+	}
+
+	/*for (auto& [pos, chunk] : chunks) {
 		for (auto itt = offsets.begin(); itt != offsets.end();) {
 			const glm::vec2& delta = *itt;
 			const glm::vec2 cp = chunkPos + delta;
@@ -327,7 +346,7 @@ const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool
 				itt++;
 			}
 		}
-	}
+	}*/
 
 	return res;
 }
@@ -341,16 +360,8 @@ void World::save() const
 
 void World::render(Shader* shader) {
 	tryFinishGenerateChunk();
-	//geomDrawable.render(shader);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	greedyDrawable.render(shader);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-
-}
-void World::renderGreedy(Shader* shader) {
-	tryFinishGenerateChunk();
-	greedyDrawable.render(shader);
+	geomDrawable.render(shader);
+	// noiseRenderer.render();
 }
 
 
@@ -358,8 +369,6 @@ void World::setUpDrawable()
 {
 	geomDrawable.setUp(chunks);
 }
-
-
 
 void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2& occupiedChunkPos)
 {

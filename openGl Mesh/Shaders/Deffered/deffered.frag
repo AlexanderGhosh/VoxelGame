@@ -32,6 +32,7 @@ void main() {
     vec3 albedo = texture(_albedo, texCoords).rgb;
     vec4 fragPos_view = vec4(texture(_fragPos, texCoords).xyz, 1);
     vec3 fragPos = (view_inv * fragPos_view).xyz;
+    fragPos = fragPos_view.xyz;
     // normal and rnd number
     vec3 normal = texture(_normal, texCoords).xyz;
     // AO

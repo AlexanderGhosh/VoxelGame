@@ -1,7 +1,7 @@
 #version 440 core
 
-layout(location = 0) out vec4 accum;
-layout(location = 1) out float reveal;
+layout(location = 3) out vec4 accum;
+layout(location = 4) out float reveal;
 
 uniform sampler2D ao;
 uniform vec3 lightPos;
@@ -24,9 +24,9 @@ layout (std140, binding = 1) uniform Matrices
 
 // out vec4 color;
 
-flat in uint colourIndex;
+flat in uint matIndex;
 flat in vec2 rndSeed;
-in vec3 fragPos;
+in vec3 worldPos;
 in vec3 normal;
 
 Light createLight();
@@ -39,16 +39,17 @@ void main()
 {
     Light light = createLight();
     float rnd = rand(rndSeed);
-    vec4 albedo1 = (materials[colourIndex]).albedo1;
-    vec4 albedo2 = (materials[colourIndex]).albedo2;
-    vec4 albedo = mix(albedo1, albedo2, rnd);
+    Material mat = materials[matIndex];
+    vec4 albedo = mix(mat.albedo1, mat.albedo2, rnd);
+
+    if(albedo.a == 1) discard;
 
     // AO
     float occluded = texture(ao, gl_FragCoord.xy).r;
     occluded = 1.0;
     
     // blinn-phong (in model-space)
-    vec3 lightDir = normalize(light.Position - fragPos);
+    vec3 lightDir = normalize(light.Position - worldPos);
     vec3 ambient = vec3(0.3 * albedo * occluded); // here we add occlusion factor
     // diffuse
     vec3 diffuse = 0.5 * max(dot(normal, lightDir), 0.0) * albedo.xyz * light.Color;

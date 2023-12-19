@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 // in nano secconds
 // asumes 60 fps
@@ -12,7 +12,8 @@ private:
 	std::string name;
 	std::chrono::time_point<std::chrono::high_resolution_clock> start_;
 	std::chrono::time_point<std::chrono::high_resolution_clock> stop_;
-	std::unordered_map<std::string, long long> markedPoints;
+
+	std::map<std::string, unsigned long long> markedPoints;
 
 	void printTime(std::string name, bool inFrames) const;
 	unsigned int maxSize();
@@ -22,6 +23,7 @@ public:
 	Timer();
 	// creates a timer and starts it
 	Timer(const std::string& name);
+
 	void reName(const std::string& newName);
 	// starts the timer
 	void start();

@@ -2,14 +2,13 @@
 
 layout(location = 0) in uint data;
 
-uniform mat4 model;
 uniform float voxelSize;
 uniform vec3 chunkPosition;
 
 out VS_OUT {
     uint cubeType;
-    uint colourIndex;
-    mat4 m;
+    uint matIndex;
+    mat4 model;
 } vs_out;
 
 void main() {
@@ -17,20 +16,19 @@ void main() {
     uint x = (data & 0x000000f0) >> 4;
     uint y = (data & 0x0000ff00) >> 8;
     uint cubeType_ = (data & 0x00ff0000) >> 16;
-    uint colourIndex = (data & 0xff000000) >> 24;
+    uint matIndex = (data & 0xff000000) >> 24;
     vec3 worldPos_ = vec3(float(x), float(y), float(z));
 
     worldPos_ += chunkPosition;
-    worldPos_.y += voxelSize == 1 ? 0 : 20.0 / (1.0 - voxelSize);
-    mat4 m = mat4(1);
-    m[3][0] = worldPos_.x * voxelSize;
-    m[3][1] = worldPos_.y * voxelSize;
-    m[3][2] = worldPos_.z * voxelSize;
-    vs_out.m = m;
+    
+    mat4 model = mat4(1);
+    model[3][0] = worldPos_.x * voxelSize;
+    model[3][1] = worldPos_.y * voxelSize;
+    model[3][2] = worldPos_.z * voxelSize;
+    vs_out.model = model;
 
-
-    gl_Position.rgb = worldPos_;
+    gl_Position.xyz = worldPos_;
 
     vs_out.cubeType = cubeType_;
-    vs_out.colourIndex = colourIndex;
+    vs_out.matIndex = matIndex;
 }

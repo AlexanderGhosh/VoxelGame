@@ -18,6 +18,7 @@ uniform vec3 ssaoSamples[kernelSize];
 uniform vec2 ssaoNoiseScale;
 uniform float ssaoRadius;
 uniform float ssaoBias;
+uniform float voxelSize;
 
 in vec2 texCoords;
 
@@ -25,9 +26,8 @@ void main() {
     vec4 albedoPosSample = texture(fragPosTex, texCoords);
     vec4 normalRndSample = texture(normalRnd, texCoords);
 
-    vec3 pos = albedoPosSample.xyz;
-    vec4 n = vec4(normalRndSample.xyz, 1);
     mat3 normalMatrix = transpose(inverse(mat3(view)));
+    vec3 pos = (view * vec4(albedoPosSample.xyz, voxelSize)).xyz;
     vec3 normal = normalMatrix * normalRndSample.xyz;
     
     // ssao
@@ -48,7 +48,8 @@ void main() {
         offset      = projection * offset;    // from view to clip-space
         offset.xyz /= offset.w;               // perspective divide
         offset.xyz  = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
-        float sampleDepth = texture(fragPosTex, offset.xy).z;
+        vec4 sampleFragPos = view * vec4(texture(fragPosTex, offset.xy).xyz, 1.0);
+        float sampleDepth = sampleFragPos.z;
 
         float rangeCheck = smoothstep(0.0, 1.0, ssaoRadius / abs(pos.z - sampleDepth));
         occlusion += (sampleDepth >= samplePos.z + ssaoBias ? 1.0 : 0.0) * rangeCheck;   

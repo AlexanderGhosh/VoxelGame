@@ -11,26 +11,29 @@ struct Material{
 
 layout (std140, binding = 1) uniform Mats
 {
-    Material[6] materials;
+    Material[8] materials;
 };
 
 uniform float numBlocks;
 
-flat in uint matIndex;
+flat in uint blockColourIndex;
 in vec3 normal;
-in vec4 viewPos;
 in vec3 worldPos;
+in vec4 viewFragPos_;
 flat in vec2 rndSeed;
 
 float rand(vec2 seed);
 void main()
 {
+    uint y = uint(worldPos.y);
+    Material mat = materials[blockColourIndex];
+    if(y > 38u) {
+        mat = materials[6];
+    }
+
     float rndValue = rand(rndSeed);
-    Material mat = materials[matIndex];
-    vec4 albedo = mix(mat.albedo1, mat.albedo2, rndValue);
-    if(albedo.a < 1) discard;
-    _albedo = albedo.rgb;
-    _fragPos = worldPos.xyz; // view space space
+    _albedo = mix(mat.albedo1, mat.albedo2, rndValue).xyz;
+    _fragPos = viewFragPos_.xyz; // view space space
     _normal = normal;
 }
 float rand(vec2 seed){

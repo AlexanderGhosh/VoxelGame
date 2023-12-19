@@ -67,6 +67,7 @@ reactphysics3d::BoxShape* PhysicsManager::createBoxShape(const glm::vec3& extent
 
 void PhysicsManager::setTerrain(const ChunkColumn& chunk) const
 {
+	return;
 	reactphysics3d::Transform bodyOffset = _terrainBody->getTransform();
 	glm::vec2 chunkWorldPos = chunk.getWorldPosition2D() * VOXEL_SIZE;
 	auto p = bodyOffset.getPosition();

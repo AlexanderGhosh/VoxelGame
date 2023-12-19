@@ -14,13 +14,21 @@ class ChunkColumn;
 class BlockStore;
 class Material;
 
-// #define PHYSICS_DEBUG_RENDERER
+// forces the terrain to be flat
+#define FLAT_TERRAIN
+// insted of manuly declaring render distance this calculates it based of a desired terrain radius in real units
+// #define RENDER_DIST_FROM_DISTANCE
 
+#define PHYSICS_DEBUG_RENDERER
+
+// only works on the intal generation (all chunks when running will be async)
+//#define GENERATE_CHUNKS_ASYNC 
 #define GENERATE_NEW_CHUNKS false
 #define CELLULAR_AUTOMOTA
 // #define GENERATE_INDEX_DATA_GREEDY
 #define MINIMAL_GREEDY_MESH
 
+//converts 0-256 colour to 0-1
 #define RRC(x) (float(x) / 255.f)
 
 // #define DEBUG_GRID_LINES
@@ -42,25 +50,36 @@ constexpr float WIDTH = 1280;
 constexpr float ASPECT_RATIO = WIDTH / HEIGHT;
 constexpr float FOV = 45;
 constexpr float NEAR_PLANE = 0.1;
-constexpr float FAR_PLANE = 200;
+constexpr float FAR_PLANE = 1000;
 
 constexpr float SHADOW_MAP_SIZE = 4098;
 
-constexpr unsigned int RENDER_DISTANCE = 0;
+constexpr float VOXEL_SIZE = 1;
+
+constexpr unsigned int CHUNK_SIZE = 16;
+constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
+
+#ifdef RENDER_DIST_FROM_DISTANCE
+constexpr float RADIUS_DISTANCE = 16;
+
+constexpr unsigned int RENDER_DISTANCE = RADIUS_DISTANCE / (VOXEL_SIZE * CHUNK_SIZE_F);
+#else
+constexpr unsigned int RENDER_DISTANCE = 5;
+#endif
 constexpr unsigned int WORLD_HEIGHT = 50;
 constexpr unsigned unsigned int WATER_LEVEL = 20;
 constexpr unsigned unsigned int SNOW_LEVEL = 38;
 
-constexpr unsigned int CHUNK_SIZE = 16;
-constexpr float CHUNK_SIZE_F = CHUNK_SIZE;
 constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
 constexpr unsigned int CHUNK_VOLUME = CHUNK_AREA * WORLD_HEIGHT;
 
+constexpr unsigned int CHUNK_SIZE_PADDED = CHUNK_SIZE + 2;
+constexpr unsigned int CHUNK_AREA_PADDED = CHUNK_SIZE_PADDED * CHUNK_SIZE_PADDED;
+
 
 constexpr float PLAYER_SPEED = 7;
 
-constexpr float VOXEL_SIZE = 1;
 constexpr float VOXEL_SIZE_INV = 1.f / VOXEL_SIZE;
 constexpr float HALF_VOXEL_SIZE = VOXEL_SIZE * .5f;
 constexpr glm::vec3 WORLD_ORIGIN(0, 0, 0);
