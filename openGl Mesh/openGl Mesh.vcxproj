@@ -242,6 +242,7 @@
   <ItemGroup>
     <ClInclude Include="EntityComponent\Components\Camera.h" />
     <ClInclude Include="EntityComponent\Entities\Player.h" />
+    <ClInclude Include="GeomRendering\IGeomDrawable.h" />
     <ClInclude Include="GreedyRendering\BufferGreedy.h" />
     <ClInclude Include="GreedyRendering\DrawableGreedy.h" />
     <ClInclude Include="GreedyRendering\GreedyData.h" />

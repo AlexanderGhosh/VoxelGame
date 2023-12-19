@@ -56,12 +56,12 @@ void DrawableGreedy::remove(const glm::vec2& chunkPos)
 void DrawableGreedy::draw(Shader* shader) const
 {
 	for (const GreedyDrawData& data : this->data) {
-		BufferGreedy* buffer = data._buffer;
+		BufferGreedy* buffer_ = data._buffer;
 
 		shader->setValue("chunkPosition", data._drawOrigin * CHUNK_SIZE_F);
 
-		buffer->bind();
-		glDrawArrays(GL_POINTS, 0, buffer->size());
-		buffer->unbind();
+		buffer_->bind();
+		glDrawArrays(GL_POINTS, 0, buffer_->size());
+		buffer_->unbind();
 	}
 }

@@ -7,6 +7,7 @@
 class Camera;
 class Shader;
 class DrawData;
+class IGeomDrawable;
 
 class DrawableGeom
 {
@@ -15,7 +16,10 @@ public:
 	~DrawableGeom();
 	void render(Shader* shader) const;
 	void setUp(Chunks& chunks);
-	void add(ChunkColumn& chunks);
+
+	void add(const IGeomDrawable* elem);
+
+	void remove(IGeomDrawable* elem);
 	void remove(const glm::vec2& chunkPos);
 
 private:

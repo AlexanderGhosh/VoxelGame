@@ -1,11 +1,13 @@
 #include "VoxelMesh.h"
+#include <glad/glad.h>
 #include "../Constants.h"
 #include "../Functions.h"
 #include "../../GeomRendering/GeomData.h"
 #include "../../Shaders/Shader.h"
-#include <glad/glad.h>
 #include "../../Mangers/PhysicsManager.h"
 #include "../../EntityComponent/Components/Transform.h"
+#include "../../GeomRendering/DrawData.h"
+#include "VoxelModel_Base.h"
 
 VoxelMesh::VoxelMesh() : relativePos_(), buffer_(), rigidBody_()
 {
@@ -83,10 +85,11 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 	}
 }
 
-void VoxelMesh::render(const Shader& shader, const glm::vec3& parentPos) const
+DrawData VoxelMesh::getDrawData() const
 {
-	shader.setValue("chunkPosition", relativePos_ + parentPos);
-
-	buffer_.bind();
-	glDrawArrays(GL_POINTS, 0, buffer_.size());
+	DrawData res;
+	res.buffer_ = const_cast<BufferGeom*>(&buffer_);
+	res.drawOrigin_ = relativePos_ + parent->worldPos_;
+	res.type_ = DrawData::MODEL;
+	return res;
 }

@@ -19,14 +19,37 @@ class Material;
 // insted of manuly declaring render distance this calculates it based of a desired terrain radius in real units
 // #define RENDER_DIST_FROM_DISTANCE
 
-#define PHYSICS_DEBUG_RENDERER
+// #define PHYSICS_DEBUG_RENDERER
 
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
 #define GENERATE_NEW_CHUNKS false
-#define CELLULAR_AUTOMOTA
+// #define CELLULAR_AUTOMOTA
 // #define GENERATE_INDEX_DATA_GREEDY
 #define MINIMAL_GREEDY_MESH
+
+#define RENDER_WIREFRAMES
+
+// when defined chunk generation and voxel model loading will be perfored with the GreedyMeshing (at least the collider on models will use it) 40ms BAD MEMORY
+#define ALWAYS_USE_GREEDY_MESH
+// when defined chunk generation will be perfored with the noise map 4ms
+#define ALWAYS_USE_NOISE_MESH
+// when defined chunk generation will be perfored with the BlockStore 40ms
+#define ALWAYS_USE_SLOW_MESH
+
+// these gates prevent a clash in mesh generation methods
+#ifdef ALWAYS_USE_GREEDY_MESH
+#undef ALWAYS_USE_NOISE_MESH
+#undef ALWAYS_USE_SLOW_MESH
+#endif
+#ifdef ALWAYS_USE_NOISE_MESH
+#undef ALWAYS_USE_GREEDY_MESH
+#undef ALWAYS_USE_SLOW_MESH
+#endif
+#ifdef ALWAYS_USE_SLOW_MESH
+#undef ALWAYS_USE_GREEDY_MESH
+#undef ALWAYS_USE_NOISE_MESH
+#endif
 
 //converts 0-256 colour to 0-1
 #define RRC(x) (float(x) / 255.f)
@@ -64,7 +87,7 @@ constexpr float RADIUS_DISTANCE = 16;
 
 constexpr unsigned int RENDER_DISTANCE = RADIUS_DISTANCE / (VOXEL_SIZE * CHUNK_SIZE_F);
 #else
-constexpr unsigned int RENDER_DISTANCE = 5;
+constexpr unsigned int RENDER_DISTANCE = 1;
 #endif
 constexpr unsigned int WORLD_HEIGHT = 50;
 constexpr unsigned unsigned int WATER_LEVEL = 20;

@@ -5,6 +5,7 @@
 #include "../Functions.h"
 #include "../../Shaders/Shader.h"
 #include "../Constants.h"
+#include "../../GeomRendering/DrawableGeom.h"
 
 VoxelModel_Static::VoxelModel_Static() : meshes_(), worldPos_()
 {
@@ -32,19 +33,18 @@ VoxelModel_Static::VoxelModel_Static(std::vector<PointColourIndex>& points, cons
 		glm::vec3 relativePos(p);
 		relativePos *= CHUNK_SIZE_F;
 		meshes_.emplace_back(relativePos, points, colours, hasCollider);
-	}
-}
-
-void VoxelModel_Static::render(const Shader& shader) const
-{
-	shader.bind();
-	shader.setValue("voxelSize", VOXEL_SIZE);
-	for (const VoxelMesh& mesh : meshes_) {
-		mesh.render(shader, worldPos_);
+		meshes_.back().parent = this;
 	}
 }
 
 void VoxelModel_Static::setPosition(float x, float y, float z)
 {
 	worldPos_ = { x, y, z };
+}
+
+void VoxelModel_Static::addToDrawable(DrawableGeom& drawable) const
+{
+	for (const VoxelMesh& mesh : meshes_) {
+		drawable.add(&mesh);
+	}
 }

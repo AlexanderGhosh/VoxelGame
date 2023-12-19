@@ -1,10 +1,11 @@
 #include "DrawableGeom.h"
+#include <glad/glad.h>
 #include "DrawData.h"
 #include "BufferGeom.h"
 #include "../Game/World/Chunks/ChunkColumn.h"
 #include "../Shaders/Shader.h"
 #include "../Textures/Texture.h"
-#include <glad/glad.h>
+#include "IGeomDrawable.h"
 
 DrawableGeom::DrawableGeom() : data()
 {
@@ -13,38 +14,58 @@ DrawableGeom::DrawableGeom() : data()
 DrawableGeom::~DrawableGeom()
 {
 	for (auto& t : data) {
-		t.buffer->cleanUp();
+		t.buffer_->cleanUp();
 	}
 }
 
 void DrawableGeom::render(Shader* shader) const
 {
+#ifdef RENDER_WIREFRAMES
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#endif
 	shader->setValue("voxelSize", VOXEL_SIZE);
 
 	draw(shader);
 
 	shader->unBind();
+#ifdef RENDER_WIREFRAMES
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#endif
 }
 
 void DrawableGeom::setUp(Chunks& chunks)
 {
 	data.clear();
 	for (auto& [pos, chunk] : chunks) {
-		data.emplace_back(chunk.getBufferPtr(), nullptr, chunk.getPosition3D());
+		add(&chunk);
 	}
-}
-
-void DrawableGeom::add(ChunkColumn& chunk)
-{
-	data.emplace_back(chunk.getBufferPtr(), nullptr, chunk.getPosition3D());
 }
 
 void DrawableGeom::remove(const glm::vec2& chunkPos)
 {
 	for (auto itt = data.begin(); itt != data.end();) {
 		DrawData& d = *itt;
-		if (d.drawOrigin == glm::vec3(chunkPos.x, 0, chunkPos.y)) {
+		if (d.type_ == DrawData::CHUNK && d.drawOrigin_ == glm::vec3(chunkPos.x, 0, chunkPos.y)) {
 			itt = data.erase(itt);
+		}
+		else {
+			itt++;
+		}
+	}
+}
+
+void DrawableGeom::add(const IGeomDrawable* elem)
+{
+	data.push_back(elem->getDrawData());
+}
+
+void DrawableGeom::remove(IGeomDrawable* elem)
+{
+	for (auto itt = data.begin(); itt != data.end();) {
+		DrawData& d = *itt;
+		if (d == elem->getDrawData()) {
+			itt = data.erase(itt);
+			return;
 		}
 		else {
 			itt++;
@@ -55,17 +76,11 @@ void DrawableGeom::remove(const glm::vec2& chunkPos)
 void DrawableGeom::draw(Shader* shader) const
 {
 	for (const DrawData& data : this->data) {
-		BufferGeom* buffer = data.buffer;
-		Texture* tex = data.texture;
-		if (tex) {
-			tex->bind();
-		}
-		shader->setValue("chunkPosition", data.drawOrigin * CHUNK_SIZE_F);
-
-
-		buffer->bind();
-		glDrawArrays(GL_POINTS, 0, buffer->size());
-		buffer->unbind();
-		if (tex) tex->unBind();
+		const BufferGeom* buffer_ = data.buffer_;
+		shader->setValue("chunkPosition", data.drawOrigin_);
+		
+		buffer_->bind();
+		glDrawArrays(GL_POINTS, 0, buffer_->size());
+		buffer_->unbind();
 	}
 }

@@ -189,6 +189,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	Timer voxelLoad("Load Voxel Model");
 	castle = &modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\zelda.ply", false);
 	// castle->setPosition(0, 38, 0);
+	castle->addToDrawable(world.geomDrawable);
 	voxelLoad.showTime(0);
 
 	// LOAD MODELS
@@ -344,7 +345,7 @@ void Game::showStuff() {
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
 	world.render(&shadows);
-	castle->render(shadows);
+	// castle->render(shadows);
 	shadows.unBind();
 	shadowFramebuffer.unBind();
 	// 2. render for OIT
@@ -362,7 +363,7 @@ void Game::showStuff() {
 	
 	world.render(&gbufferS);
 	manager->renderEvent();
-	castle->render(gbufferS);
+	// castle->render(gbufferS);
 
 
 	// 2.2 Populate G-Buffer Opaque
@@ -389,7 +390,7 @@ void Game::showStuff() {
 
 	world.render(&transparent);
 	manager->renderEvent();
-	castle->render(transparent);
+	// castle->render(transparent);
 
 	
 	// 3.1 Ambiant Occlusion (render to the oit opaque buffer)
@@ -473,35 +474,7 @@ void Game::showStuff() {
 	// renderModels();
 	showSkybox();
 
-	// 2.2 Transparent
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	oitFrameBuffer2.bind(); // render to the OIT framebuffer2
-	glClear(GL_COLOR_BUFFER_BIT);
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunci(0, GL_ONE, GL_ONE);
-	glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
-	glBlendEquation(GL_FUNC_ADD);
-	
-	glm::vec4 black(0);
-	glm::vec4 white(1);
-	glClearBufferfv(GL_COLOR, 0, &black[0]);
-	glClearBufferfv(GL_COLOR, 1, &white[0]);
-	
-	Shader& transparent = SHADERS[OIT_TRANSPARENT];
-	transparent.bind();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, multiPurposeFB.getColourTex(0)); // ao
-	transparent.setValue("ao", 0);
-	transparent.setValue("viewDir", _player->getViewDirection());
-	transparent.setValue("lightPos", LIGHT_POSITION);
-
-	world.render(&transparent);
-
-	transparent.unBind();
-
-	// 2.3 Composite
+	// 5. Composite
 	glDisable(GL_CULL_FACE);
 	oitFrameBuffer1.bind(); // render to the OIT framebuffer
 	glDepthFunc(GL_ALWAYS);

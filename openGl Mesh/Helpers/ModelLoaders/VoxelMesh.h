@@ -3,6 +3,7 @@
 #include <ext/vector_int3.hpp>
 #include <vector>
 #include "../../GeomRendering/BufferGeom.h"
+#include "../../GeomRendering/IGeomDrawable.h"
 
 struct PointColourIndex {
 	float x, y, z;
@@ -15,7 +16,8 @@ namespace reactphysics3d {
 }
 
 class Shader;
-class VoxelMesh
+
+class VoxelMesh : public IGeomDrawable
 {
 	friend class VoxelModel_Static;
 public:
@@ -24,11 +26,12 @@ private:
 	glm::vec3 relativePos_;
 	BufferGeom buffer_;
 	reactphysics3d::RigidBody* rigidBody_;
+	VoxelModel_Static* parent;
 
 	VoxelMesh();
 
 	// asumes that all values of points are in the range 0-16
 
-	void render(const Shader& shader, const glm::vec3& parentPos) const;
+	DrawData getDrawData() const override;
 };
 

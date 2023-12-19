@@ -107,7 +107,7 @@ void World::tryFinishGenerateChunk()
 			positionsBeingGenerated.erase(*itt);
 			// ChunkColumn& chunk = chunks.at(chunkPos);
 			chunk->setUpBuffer();
-			geomDrawable.add(*chunk);
+			geomDrawable.add(chunk);
 		}
 	}
 	// if (allDone.size() == 0) return;
@@ -148,7 +148,7 @@ ChunkColumn* World::getChunk(const glm::vec2& chunkPos, bool& success)
 
 void World::update()
 {
-#ifdef CELLULAR_AUTOMOTA
+#ifndef CELLULAR_AUTOMOTA
 	return;
 #endif
 	// performed in local unscaled space
@@ -277,7 +277,7 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 
 
 
-std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
+std::unordered_set<glm::vec2> World::generateNewChunksGreedy(const std::unordered_set<glm::vec2>& positions)
 {
 	// Timer t("Chunk Genreate");
 	// // can throw error if the chunk is removed from chunks while its being generated
@@ -361,7 +361,6 @@ void World::save() const
 void World::render(Shader* shader) {
 	tryFinishGenerateChunk();
 	geomDrawable.render(shader);
-	// noiseRenderer.render();
 }
 
 

@@ -12,7 +12,7 @@
 #include "../../../Helpers/Timers/Timer.h"
 
 
-ChunkColumn::ChunkColumn() : position(0), buffer(), seed(), bufferData(), editedBlocks()
+ChunkColumn::ChunkColumn() : position(0), buffer_(), seed(), bufferData(), editedBlocks()
 {
 }
 
@@ -28,10 +28,10 @@ ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : Chun
 	position = pos;
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn(pos, seed)
-{
-	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
-}
+//ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn(pos, seed)
+//{
+//	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
+//}
 
 ChunkColumn::ChunkColumn(const ChunkColumn& other)
 {
@@ -53,7 +53,7 @@ ChunkColumn ChunkColumn::operator=(const ChunkColumn& other)
 ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
 {
 	position = other.position;
-	buffer = std::move(other.buffer);
+	buffer_ = std::move(other.buffer_);
 	seed = other.seed;
 	bufferData = std::move(other.bufferData);
 	editedBlocks = std::move(other.editedBlocks);
@@ -194,9 +194,6 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 							break;
 						}
 					}
-				}
-			}
-
 				}
 			}
 		}
@@ -530,7 +527,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 
 void ChunkColumn::setUpBuffer()
 {
-	buffer.setUp(bufferData.data(), bufferData.size());
+	buffer_.setUp(bufferData.data(), bufferData.size());
 }
 void ChunkColumn::setUpGreedyBuffer()
 {
@@ -549,7 +546,7 @@ void ChunkColumn::createMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 
 void ChunkColumn::reallocBuffer()
 {
-	buffer.realloc(bufferData.data(), bufferData.size());
+	buffer_.realloc(bufferData.data(), bufferData.size());
 }
 
 void ChunkColumn::generateNoiseBuffer()
@@ -712,12 +709,12 @@ void ChunkColumn::populateBuffer(WorldMap& worldMap) {
 
 const BufferGeom& ChunkColumn::getBuffer() const
 {
-	return buffer;
+	return buffer_;
 }
 
 BufferGeom* ChunkColumn::getBufferPtr()
 {
-	return &buffer;
+	return &buffer_;
 }
 
 void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
@@ -785,7 +782,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 	editedBlocks[worldPos] = block;
 	timer.mark("Edit mesh");
 
-	buffer.realloc(bufferData.data(), bufferData.size());
+	buffer_.realloc(bufferData.data(), bufferData.size());
 	timer.mark("OpenGL");
 	timer.showDetails(1);
 }
@@ -882,7 +879,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 		editedBlocks[worldPos] = Block::AIR;
 	}
 
-	buffer.realloc(bufferData.data(), bufferData.size());
+	buffer_.realloc(bufferData.data(), bufferData.size());
 }
 
 const glm::vec2& ChunkColumn::getPosition2D() const
@@ -944,21 +941,21 @@ void ChunkColumn::load(const glm::vec2& chunkPos)
 	position = chunkPos;
 	std::string name = std::format("Chunks/c.{}.{}.chunk", (int)position.x, (int)position.y);
 	std::ifstream fs(name, std::ios::in | std::ios::binary);
-	std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(fs), {});
+	std::vector<unsigned char> buffer_(std::istreambuf_iterator<char>(fs), {});
 	unsigned int index = 0;
-	seed = *(reinterpret_cast<unsigned int*>(&buffer[index]));
+	seed = *(reinterpret_cast<unsigned int*>(&buffer_[index]));
 	index += 4;
-	unsigned int bufferDataSize = *(reinterpret_cast<unsigned int*>(&buffer[index]));
+	unsigned int bufferDataSize = *(reinterpret_cast<unsigned int*>(&buffer_[index]));
 	index += 4;
 
 	bufferData.reserve(bufferDataSize);
 
-	for (unsigned int i = index; i < buffer.size(); i += sizeof(GeomData)) {
-		GeomData* d = reinterpret_cast<GeomData*>(&buffer[i]);
+	for (unsigned int i = index; i < buffer_.size(); i += sizeof(GeomData)) {
+		GeomData* d = reinterpret_cast<GeomData*>(&buffer_[i]);
 		bufferData.push_back(*d);
 	}
 
-	this->buffer.setUp(bufferData.data(), bufferData.size());
+	this->buffer_.setUp(bufferData.data(), bufferData.size());
 }
 
 unsigned int ChunkColumn::getHeight(const float x, const float z) const
@@ -1015,6 +1012,16 @@ const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
 	return column[worldPos.y];
 }
 
+DrawData ChunkColumn::getDrawData() const
+{
+	DrawData res;
+	res.type_ = DrawData::CHUNK;
+	res.buffer_ = const_cast<BufferGeom*>(&buffer_);
+	res.drawOrigin_ = getWorldPosition3D();
+
+	return res;
+}
+
 //const Block ChunkColumn::getBlock_BlockStore(const glm::vec3& worldPos, const std::vector<ChunkColumn*>& neibours, const BlockStore& bs)
 //{
 //	if (outOfRange(worldPos)) {
@@ -1039,7 +1046,7 @@ void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
 		if (data.getPos() == localPos) {
 			markSlot(data.cubeType_, add.face);
 			if(realoc)
-				buffer.realloc(bufferData.data(), bufferData.size());
+				buffer_.realloc(bufferData.data(), bufferData.size());
 			return;
 		}
 	}
@@ -1053,7 +1060,7 @@ void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
 	}
 	bufferData.push_back(data);
 	if(realoc)
-		buffer.realloc(bufferData.data(), bufferData.size());
+		buffer_.realloc(bufferData.data(), bufferData.size());
 }
 
 bool ChunkColumn::outOfRange(const glm::vec3& localPos)

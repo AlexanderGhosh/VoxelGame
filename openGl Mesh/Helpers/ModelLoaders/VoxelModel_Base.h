@@ -8,16 +8,19 @@
 
 class Shader;
 class PointColourIndex;
+class DrawableGeom;
 
 class VoxelModel_Static {
+	friend class VoxelMesh;
 public:
 	VoxelModel_Static();
 	inline bool isEditable() const { return false; }
 
 	VoxelModel_Static(std::vector<PointColourIndex>& points, const std::vector<glm::vec3>& colours, const glm::ivec3& maxSize, const glm::ivec3& minSize, bool hasCollider);
 
-	void render(const Shader& shader) const;
 	void setPosition(float x, float y, float z);
+
+	void addToDrawable(DrawableGeom& drawable) const;
 protected:
 	std::list<VoxelMesh> meshes_;
 	glm::vec3 worldPos_;

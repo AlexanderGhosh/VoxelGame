@@ -8,5 +8,5 @@ struct GreedyDrawData {
 	glm::vec3 _drawOrigin;
 
 	GreedyDrawData() : _buffer(nullptr), _drawOrigin() { }
-	GreedyDrawData(BufferGreedy* buffer, glm::vec3 drawOrigin) : _buffer(buffer), _drawOrigin(drawOrigin) { }
+	GreedyDrawData(BufferGreedy* buffer_, glm::vec3 drawOrigin_) : _buffer(buffer_), _drawOrigin(drawOrigin_) { }
 };

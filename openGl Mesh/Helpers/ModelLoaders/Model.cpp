@@ -5,9 +5,9 @@
 
 void Model::render() const
 {
-	for (auto& buffer : _meshBuffers) {
-		buffer.bind();
-		glDrawElements(GL_TRIANGLES, buffer.size(), GL_UNSIGNED_INT, nullptr);
+	for (auto& buffer_ : _meshBuffers) {
+		buffer_.bind();
+		glDrawElements(GL_TRIANGLES, buffer_.size(), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
@@ -21,8 +21,8 @@ void Model::setUp(const std::list<Mesh>& meshes)
 
 void Model::cleanUp()
 {
-	for (IndexedBuffer& buffer : _meshBuffers) {
-		buffer.cleanUp();
+	for (IndexedBuffer& buffer_ : _meshBuffers) {
+		buffer_.cleanUp();
 	}
 	_meshBuffers.clear();
 }

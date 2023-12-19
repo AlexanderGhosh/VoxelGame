@@ -5,12 +5,13 @@
 #include "../../../GeomRendering/GeomData.h"
 #include "../../../GreedyRendering/GreedyData.h"
 #include "../../../GreedyRendering/BufferGreedy.h"
+#include "../../../GeomRendering/IGeomDrawable.h"
 
 class World;
 
 // all operations are unscaled unless otherwise stated
 // the copy constructor doenst copy the buffer
-class ChunkColumn
+class ChunkColumn : public IGeomDrawable
 {
 public:
 	ChunkColumn();
@@ -79,6 +80,8 @@ public:
 	// Gets the block from edited or simplex noise in the world pos
 	// all getBlock s resovel to this
 	const Block getBlock(const glm::vec3& worldPos);
+
+	DrawData getDrawData() const override;
 private:
 	// GREEDY MESH STUFF
 	std::vector<GreedyData> greedyBufferData;
@@ -97,7 +100,7 @@ private:
 	};
 	std::unordered_map<glm::vec3, Block> editedBlocks;
 	std::vector<GeomData> bufferData;
-	BufferGeom buffer;
+	BufferGeom buffer_;
 	// unscaled local pos 
 	glm::vec2 position;
 
