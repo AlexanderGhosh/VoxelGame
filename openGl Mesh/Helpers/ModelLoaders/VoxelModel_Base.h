@@ -9,6 +9,7 @@
 class Shader;
 class PointColourIndex;
 class DrawableGeom;
+class DrawableGreedy;
 
 class VoxelModel_Static {
 	friend class VoxelMesh;
@@ -20,7 +21,10 @@ public:
 
 	void setPosition(float x, float y, float z);
 
-	void addToDrawable(DrawableGeom& drawable) const;
+	void addToDrawable(DrawableGeom& drawable) const; 
+#ifdef ALWAYS_USE_GREEDY_MESH
+	void addToDrawable(DrawableGreedy& drawable) const;
+#endif
 protected:
 	std::list<VoxelMesh> meshes_;
 	glm::vec3 worldPos_;

@@ -50,6 +50,7 @@ public:
 	glm::vec3 lookingAt(const glm::vec3& ro, const glm::vec3& rd);
 
 	DrawableGeom geomDrawable;
+	DrawableGreedy greedyDrawable;
 private:
 	bool generated; // used to genrated the world async first
 	DynamicAsyncPool<std::unordered_set<glm::vec2>> pool;
@@ -61,11 +62,9 @@ private:
 
 	unsigned int seed;
 	Chunks chunks;
-	DrawableGreedy greedyDrawable;
 	// only genertes chunk buffer data can be called async
 	// returns a list of chunk positions that it will generate
 	std::unordered_set<glm::vec2> generateNewChunks(const std::unordered_set < glm::vec2>& positions);
-	std::unordered_set<glm::vec2> generateNewChunksGreedy(const std::unordered_set < glm::vec2>& positions);
 	// reutns a set of positions centered on the origin with a scale of 1
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	void getNewChunkPositions(const glm::vec3 worldOrigin);

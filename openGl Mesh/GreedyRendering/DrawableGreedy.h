@@ -17,6 +17,7 @@ public:
 	void add(ChunkColumn& chunks);
 	void remove(const glm::vec2& chunkPos);
 
+	void add(BufferGreedy* buffer, glm::vec3 pos);
 private:
 	std::list<GreedyDrawData> data;
 	void draw(Shader* shader) const;

@@ -310,46 +310,6 @@ void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, cons
 }
 
 
-
-std::unordered_set<glm::vec2> World::generateNewChunksGreedy(const std::unordered_set<glm::vec2>& positions)
-{
-	// Timer t("Chunk Genreate");
-	// // can throw error if the chunk is removed from chunks while its being generated
-	// for (const glm::vec2& chunkPos : positions) {
-	// 	chunks[chunkPos] = ChunkColumn();
-	// 	const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
-	// 	chunks[chunkPos].generateChunkData(chunkPos, seed, neighbours);
-	// }
-	// t.showDetails(positions.size());
-	// return positions;
-
-	Timer t("Chunk Genreate");
-
-	// can throw error if the chunk is removed from chunks while its being generated
-
-	// will generate all block stores
-	std::unordered_map<glm::vec2, BlockStore> blockData;
-	for (const glm::vec2& chunkPos : positions) {
-		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
-		chunks[chunkPos].generateBlockStore(blockData[chunkPos]);
-		const std::list<ChunkColumn*>& neighbours = getNeibours(chunkPos);
-		
-		for (ChunkColumn* chunk : neighbours) {
-			if (!blockData.contains(chunk->getPosition2D())) {
-				chunk->generateBlockStore(blockData[chunk->getPosition2D()]);
-			}
-		}
-	}
-
-	for (const glm::vec2& chunkPos : positions) {
-		chunks[chunkPos].createMesh(blockData, blockData[chunkPos]);
-	}
-
-
-	t.showDetails(positions.size());
-	return positions;
-}
-
 const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool includeSelf)
 {
 	std::list<glm::vec2> offsets(OFFSETS_2D.begin(), OFFSETS_2D.end());

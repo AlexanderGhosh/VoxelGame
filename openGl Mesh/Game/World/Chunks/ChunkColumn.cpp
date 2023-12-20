@@ -331,7 +331,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 
 
 	auto addPY = [&](Block b, int mkPoint, int x, int y, int z) {
-		if (b != Block::AIR) {
+		if (b != Block::AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
 			glm::vec3 faceMax(x, y, z + 1);
 
@@ -356,51 +356,55 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 	};
 	auto addPZ = [&](Block b, int mkPoint, int x, int y, int z) {
 		// add face
-		glm::vec3 faceMin(mkPoint, y - 1, z);
-		glm::vec3 faceMax(x, y, z);
-		faceMin.z += 1.f;
-		faceMax.z += 1.f;
+		if (b != Block::AIR && mkPoint != x) {
+			glm::vec3 faceMin(mkPoint, y - 1, z);
+			glm::vec3 faceMax(x, y, z);
+			faceMin.z += 1.f;
+			faceMax.z += 1.f;
 
-		GreedyData data;
-		data._normal = glm::vec3(0, 0, 1);
-		data._materialIdx = (unsigned int) b;
-		data._corner0 = faceMin;
-		data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
-		data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
-		data._corner3 = faceMax;
-		greedyBufferData.push_back(data);
+			GreedyData data;
+			data._normal = glm::vec3(0, 0, 1);
+			data._materialIdx = (unsigned int)b;
+			data._corner0 = faceMin;
+			data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
+			data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
+			data._corner3 = faceMax;
+			greedyBufferData.push_back(data);
 
 
 #ifdef GENERATE_INDEX_DATA_GREEDY
-		addVert(data._corner0);
-		addVert(data._corner1);
-		addVert(data._corner2);
-		addVert(data._corner3);
+			addVert(data._corner0);
+			addVert(data._corner1);
+			addVert(data._corner2);
+			addVert(data._corner3);
 #endif // GENERATE_INDEX_DATA_GREEDY
+		}
 	};
 	auto addNZ = [&](Block b, int mkPoint, int x, int y, int z) {
-		// add face
-		glm::vec3 faceMin(mkPoint, y - 1, z);
-		glm::vec3 faceMax(x, y, z);
-		// faceMin.z += 1.f;
-		// faceMax.z += 1.f;
+		if (b != Block::AIR && mkPoint != x) {
+			// add face
+			glm::vec3 faceMin(mkPoint, y - 1, z);
+			glm::vec3 faceMax(x, y, z);
+			// faceMin.z += 1.f;
+			// faceMax.z += 1.f;
 
-		GreedyData data;
-		data._normal = glm::vec3(0, 0, -1);
-		data._materialIdx = (unsigned int)b;
-		data._corner0 = faceMin;
-		data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
-		data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
-		data._corner3 = faceMax;
-		greedyBufferData.push_back(data);
+			GreedyData data;
+			data._normal = glm::vec3(0, 0, -1);
+			data._materialIdx = (unsigned int)b;
+			data._corner0 = faceMin;
+			data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
+			data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
+			data._corner3 = faceMax;
+			greedyBufferData.push_back(data);
 
 
 #ifdef GENERATE_INDEX_DATA_GREEDY
-		addVert(data._corner0);
-		addVert(data._corner1);
-		addVert(data._corner2);
-		addVert(data._corner3);
+			addVert(data._corner0);
+			addVert(data._corner1);
+			addVert(data._corner2);
+			addVert(data._corner3);
 #endif // GENERATE_INDEX_DATA_GREEDY
+		}
 	};
 	
 	//////////////////////////////////////////

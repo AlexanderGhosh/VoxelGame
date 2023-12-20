@@ -62,6 +62,11 @@ void DrawableGreedy::remove(const glm::vec2& chunkPos)
 	}
 }
 
+void DrawableGreedy::add(BufferGreedy* buffer, glm::vec3 pos)
+{
+	data.emplace_back(buffer, pos);
+}
+
 void DrawableGreedy::draw(Shader* shader) const
 {
 	for (const GreedyDrawData& data : this->data) {

@@ -6,6 +6,7 @@
 #include "../../Shaders/Shader.h"
 #include "../Constants.h"
 #include "../../GeomRendering/DrawableGeom.h"
+#include "../../GreedyRendering/DrawableGreedy.h"
 
 VoxelModel_Static::VoxelModel_Static() : meshes_(), worldPos_()
 {
@@ -48,3 +49,11 @@ void VoxelModel_Static::addToDrawable(DrawableGeom& drawable) const
 		drawable.add(&mesh);
 	}
 }
+#ifdef ALWAYS_USE_GREEDY_MESH
+void VoxelModel_Static::addToDrawable(DrawableGreedy& drawable) const
+{
+	for (const VoxelMesh& mesh : meshes_) {
+		drawable.add(const_cast<BufferGreedy*>(&mesh.greedyBuffer), (mesh.relativePos_ + worldPos_) * CHUNK_SIZE_INV);
+	}
+}
+#endif
