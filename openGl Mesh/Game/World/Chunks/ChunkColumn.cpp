@@ -406,142 +406,30 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 	//////////////////////////////////////////
 
 	for (int y = WORLD_HEIGHT - 1; y >= 0; y--) {
+		bool is_running = false;
 		for (int z = 0; z < CHUNK_SIZE; z++) {
-			for (int x = 0; x < CHUNK_SIZE; x++) {
-				Block prevBlock = blockStore.getBlock({ x, y, z }, false);
-				if (prevBlock == Block::AIR) continue;
-				int mkPointPY = x; // the start point of a run
-				int mkPointPZ = x;
-				int mkPointNZ = x;
-				// visited_px[idx] = true;
-				for (; x < CHUNK_SIZE; x++) {
-					// visited_px[idx] = true;
-					const Block currentBlock = blockStore.getBlock({ x, y, z }, false);
-
-					// if next is visible and same block
-					//	increment without changing block
-					// if not the same block but is visible
-					//	add move mark 1
-					//	then incremnet
-					// if the same block but no visible
-					//	add move mark 2
-					//	then increment
-					// if not visible and not the same
-					//	no add increment 2
-
-#ifdef MINIMAL_GREEDY_MESH
-					bool pyVisible = isVisiblePY(currentBlock, x, y, z);
-					bool pzVisible = isVisiblePZ(currentBlock, x, y, z);
-					bool nzVisible = isVisibleNZ(currentBlock, x, y, z);
-#else
-					bool pyVisible = currentBlock != Block::AIR;
-					bool pzVisible = currentBlock != Block::AIR;
-					bool nzVisible = currentBlock != Block::AIR;
-#endif // MINIMAL_GREEDY_MESH
-					if (pyVisible && pzVisible && nzVisible) break;
-
-					if (prevBlock == currentBlock) {
-						// PY
-						if (pyVisible) {
-							// doesnt change mark spot
-						}
-						else {
-							addPY(currentBlock, mkPointPY, x, y, z);
-							mkPointPY = x + 1;
-						}
-
-						// PZ
-						if (pzVisible) {
-							// doesnt change mark spot
-						}
-						else {
-							addPZ(currentBlock, mkPointPZ, x, y, z);
-							mkPointPZ = x + 1;
-						}
-
-						// NZ
-						if (nzVisible) {
-							// doesnt change mark spot
-						}
-						else {
-							addNZ(currentBlock, mkPointNZ, x, y, z);
-							mkPointNZ = x + 1;
-						}
-					}
-					if (prevBlock != currentBlock) {
-						// PY
-						if (pyVisible) {
-							addPY(prevBlock, mkPointPY, x, y, z);
-							mkPointPY = x;
-						}
-						else {
-							addPY(prevBlock, mkPointPY, x, y, z);
-							mkPointPY = x+1;
-						}
-
-						// PZ
-						if (pzVisible) {
-							addPZ(prevBlock, mkPointPZ, x, y, z);
-							mkPointPZ = x;
-						}
-						else {
-							addPZ(prevBlock, mkPointPZ, x, y, z);
-							mkPointPZ = x + 1;
-						}
-
-						// NZ
-						if (nzVisible) {
-							addNZ(prevBlock, mkPointNZ, x, y, z);
-							mkPointNZ = x;
-						}
-						else {
-							addNZ(prevBlock, mkPointNZ, x, y, z);
-							mkPointNZ = x + 1;
-						}
-					}
-					prevBlock = currentBlock;
-				}
-
-				// add traing faces
-				addPY(prevBlock, mkPointPY, x, y, z);
-				addPZ(prevBlock, mkPointPZ, x, y, z);
-				addNZ(prevBlock, mkPointNZ, x, y, z);
-			}
-
-			// X faces
-			for (int x = 0; x < CHUNK_SIZE; x++) {
+			float x_length = 0; 
+			Block prevBlock;
+			for (int x = 1; x < CHUNK_SIZE; x++) {
+				prevBlock = blockStore.getBlock({ x - 1 , y, z }, false);
 				Block currentBlock = blockStore.getBlock({ x, y, z }, false);
-				if (isVisiblePX(currentBlock, x, y, z)) {
-
-					glm::vec3 faceMin(x, y - 1, z);
-					glm::vec3 faceMax(x, y, z + 1);
-					faceMin.x += 1.f;
-					faceMax.x += 1.f;
-
-					GreedyData data;
-					data._normal = glm::vec3(1, 0, 0);
-					data._materialIdx = (unsigned int)currentBlock;
-					data._corner0 = faceMin;
-					data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
-					data._corner2 = { faceMin.x, faceMax.y, faceMin.z };
-					data._corner3 = faceMax;
-					greedyBufferData.push_back(data);
+				if (currentBlock == prevBlock && currentBlock != Block::AIR) {
+					bool upIsVisible = isVisiblePY(currentBlock, x, y, z);
+					if (upIsVisible) {
+						is_running = true;
+						++x_length;
+						continue;					
+					}
 				}
-				
-				if (isVisibleNX(currentBlock, x, y, z)) {
-					glm::vec3 faceMin(x, y - 1, z);
-					glm::vec3 faceMax(x, y, z + 1);
-
-					GreedyData data;
-					data._normal = glm::vec3(-1, 0, 0);
-					data._materialIdx = (unsigned int)currentBlock;
-					data._corner0 = faceMin;
-					data._corner1 = { faceMin.x, faceMax.y, faceMin.z };
-					data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
-					data._corner3 = faceMax;
-					greedyBufferData.push_back(data);
-				}
+				if (prevBlock == Block::AIR || !is_running) continue;
+				is_running = false;
+				addPY(prevBlock, x - x_length, x, y, z);
+				x_length = 0;
 			}
+
+			if(is_running)
+				addPY(prevBlock, CHUNK_SIZE - ++++x_length, x_length, y, z);
+			is_running = false;
 		}
 	}
 }
