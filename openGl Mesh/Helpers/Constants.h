@@ -32,15 +32,16 @@ class Material;
 
 // #define RENDER_WIREFRAMES
 
-// when defined chunk generation and voxel model loading will be perfored with the GreedyMeshing (at least the collider on models will use it) 40ms BAD MEMORY
 
-#define ALWAYS_USE_GREEDY_MESH
+// when defined chunk generation and voxel model loading will be perfored with the GreedyMeshing (at least the collider on models will use it) 40ms BAD MEMORY
+// #define MINIMUL GREEDY MESH WITH COLLIDERS
 // when defined chunk generation will be perfored with the noise map 4ms
-// 
-//#define ALWAYS_USE_NOISE_MESH
+ 
+#define ALWAYS_USE_NOISE_MESH
 // when defined chunk generation will be perfored with the BlockStore 40ms
-// 
+ 
 //#define ALWAYS_USE_SLOW_MESH
+
 
 // these gates prevent a clash in mesh generation methods
 #ifdef ALWAYS_USE_GREEDY_MESH

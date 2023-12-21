@@ -20,6 +20,10 @@ GreedyColliderData from(const GreedyData& d) {
 	// all works unless otherwise specified
 	GreedyColliderData res;
 	res._center = (d._corner0 + d._corner3) * .5f;
+#ifndef GREEDY MESH WITH COLLIDERS
+	res._center -= HALF_VOXEL_SIZE;
+	res._center.y +=VOXEL_SIZE;
+#endif
 	if (d._normal.y != 0) {
 		res._xSpan = (d._corner3.x - d._corner0.x) * .5f;
 		res._zSpan = HALF_VOXEL_SIZE;
