@@ -129,6 +129,18 @@ DrawData VoxelMesh::getDrawData() const
 
 std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 {
+	struct MergeData {
+		Block block;
+		int mkPoint;
+		int x;
+		int idx;
+	};
+	std::vector<MergeData> prevMergeDataPY;
+	std::vector<MergeData> currentMergeDataPY;
+
+	std::vector<MergeData> prevMergeDataPX;
+	std::vector<MergeData> currentMergeDataPX;
+
 	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE + z * CHUNK_AREA; };
 
 	auto show = [&](Block a, Block b) {
@@ -137,7 +149,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		};
 
 	// unscaled local space
-	auto isVisiblePY = [&](Block a, int x, int y, int z) -> bool {
+	auto isVisiblePY = [&cloud, index, show](Block a, int x, int y, int z) -> bool {
 		Block b;
 		if (++y == CHUNK_SIZE) {
 			return true;
@@ -145,7 +157,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		b = cloud[index(x, y, z)];
 		return show(a, b);
 	};
-	auto isVisibleNY = [&](Block a, int x, int y, int z) -> bool {
+	auto isVisibleNY = [&cloud, index, show](Block a, int x, int y, int z) -> bool {
 		Block b;
 		if (y == 0) {
 			return true;
@@ -154,7 +166,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		return show(a, b);
 		};
 
-	auto isVisiblePZ = [&](Block a, int x, int y, int z) -> bool {
+	auto isVisiblePZ = [&cloud, index, show](Block a, int x, int y, int z) -> bool {
 		Block b;
 		if (++z == CHUNK_SIZE) {
 			return true;
@@ -162,7 +174,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		b = cloud[index(x, y, z)];
 		return show(a, b);
 	};
-	auto isVisibleNZ = [&](Block a, int x, int y, int z) -> bool {
+	auto isVisibleNZ = [&cloud, index, show](Block a, int x, int y, int z) -> bool {
 		Block b;
 		if (z == 0) {
 			return true;
@@ -171,7 +183,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		return show(a, b);
 	};
 
-	auto isVisiblePX = [&](Block a, int x, int y, int z) -> bool {
+	auto isVisiblePX = [&cloud, index, show](Block a, int x, int y, int z) -> bool {
 		Block b;
 		if (++x == CHUNK_SIZE) {
 			return true;
@@ -179,7 +191,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		b = cloud[index(x, y, z)];
 		return show(a, b);
 	};
-	auto isVisibleNX = [&](Block a, int x, int y, int z) -> bool {
+	auto isVisibleNX = [&cloud, index, show](Block a, int x, int y, int z) -> bool {
 		Block b;
 		if (x == 0) {
 			return true;
@@ -189,7 +201,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 	};
 
 	std::vector<GreedyData> greedyBufferData;
-	auto addPY = [&](Block b, int mkPoint, int x, int y, int z) {
+	auto addPY = [&greedyBufferData, &prevMergeDataPY, &currentMergeDataPY](Block b, int mkPoint, int x, int y, int z) -> bool {
 		//return;
 		if (b != Block::AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
@@ -204,9 +216,11 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 			data._corner3 = faceMax;
 
 			greedyBufferData.push_back(data);
+			return true;
 		}
-		};
-	auto addNY = [&](Block b, int mkPoint, int x, int y, int z) {
+		return false;
+	};
+	auto addNY = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) {
 		//return;
 		if (b != Block::AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
@@ -226,7 +240,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 			greedyBufferData.push_back(data);
 		}
 		};
-	auto addPZ = [&](Block b, int mkPoint, int x, int y, int z) {
+	auto addPZ = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) {
 		// add face
 		if (b != Block::AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y - 1, z);
@@ -245,7 +259,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 			greedyBufferData.push_back(data);
 		}
 		};
-	auto addNZ = [&](Block b, int mkPoint, int x, int y, int z) {
+	auto addNZ = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) {
 		if (b != Block::AIR && mkPoint != x) {
 			// add face
 			glm::vec3 faceMin(mkPoint, y - 1, z);
@@ -291,7 +305,29 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 							// doesnt change mark spot
 						}
 						else {
-							addPY(currentBlock, mkPointPY, x, y, z);
+							MergeData data{};
+							data.block = prevBlock;
+							data.mkPoint = mkPointPY;
+							data.x = x;
+
+							bool hit = false;
+							for (MergeData& d : prevMergeDataPY) {
+								if (d.block == prevBlock && d.mkPoint == mkPointPY && d.x == x) {
+									// this hits when the face to be added is the same as in the prev row
+									hit = true;
+									GreedyData& g = greedyBufferData[d.idx];
+									++g._corner2.z;
+									++g._corner3.z;
+									data.idx = d.idx;
+								}
+							}
+							if (!hit) {
+								data.idx = greedyBufferData.size();
+								hit = addPY(currentBlock, mkPointPY, x, y, z);
+							}
+							// hit has being resused to now mean has sdded
+							if (hit)
+								currentMergeDataPY.push_back(data);
 							mkPointPY = x + 1;
 						}
 						// NY
@@ -323,7 +359,29 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 					if (prevBlock != currentBlock) {
 						// PY
 						if (pyVisible) {
-							addPY(prevBlock, mkPointPY, x, y, z);
+							MergeData data{};
+							data.block = prevBlock;
+							data.mkPoint = mkPointPY;
+							data.x = x;
+
+							bool hit = false;
+							for (MergeData& d : prevMergeDataPY) {
+								if (d.block == prevBlock && d.mkPoint == mkPointPY && d.x == x) {
+									// this hits when the face to be added is the same as in the prev row
+									hit = true;
+									GreedyData& g = greedyBufferData[d.idx];
+									++g._corner2.z;
+									++g._corner3.z;
+									data.idx = d.idx;
+								}
+							}
+							if (!hit) {
+								data.idx = greedyBufferData.size();
+								hit = addPY(prevBlock, mkPointPY, x, y, z);
+							}
+							// hit has being resused to now mean has sdded
+							if(hit)
+								currentMergeDataPY.push_back(data);
 							mkPointPY = x;
 						}
 						else {
@@ -364,13 +422,38 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 				}
 
 				// add traing faces
-				addPY(prevBlock, mkPointPY, x, y, z);
+				// addPY(prevBlock, mkPointPY, x, y, z);
+				MergeData data{};
+				data.block = prevBlock;
+				data.mkPoint = mkPointPY;
+				data.x = x;
+				bool hit = false;
+				for (MergeData& d : prevMergeDataPY) {
+					if (d.block == prevBlock && d.mkPoint == mkPointPY && d.x == x) {
+						// this hits when the face to be added is the same as in the prev row
+						hit = true;
+						GreedyData& g = greedyBufferData[d.idx];
+						++g._corner2.z;
+						++g._corner3.z;
+						data.idx = d.idx;
+						break;
+					}
+				}
+				if (!hit) {
+					data.idx = greedyBufferData.size();
+					hit = addPY(prevBlock, mkPointPY, x, y, z);
+				}
+				if(hit)
+					currentMergeDataPY.push_back(data);
+
 				addNY(prevBlock, mkPointNY, x, y, z);
 				addPZ(prevBlock, mkPointPZ, x, y, z);
 				addNZ(prevBlock, mkPointNZ, x, y, z);
 			}
+			prevMergeDataPY = std::move(currentMergeDataPY);
 
 			// X faces
+
 			for (int x = 0; x < CHUNK_SIZE; x++) {
 				// this is what causes the extra colliders in the ridgidbody 
 				Block currentBlock = cloud[index(x, y, z)];
