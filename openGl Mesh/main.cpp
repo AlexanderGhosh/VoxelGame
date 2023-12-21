@@ -32,8 +32,10 @@
 #include "Game/World/world_generation.h"
 #include "Helpers/Timers/Timer.h"
 
+#include "Material.h"
+#include "JsonParser.h"
 #include <random>
-#include <document.h>
+
 
 // #include "Helpers/ModelLoaders/VoxelModel.h"
 glm::ivec2 DIM(WIDTH, HEIGHT);
@@ -43,72 +45,18 @@ void createBlockDetails();
 
 // #define TESTING
 #ifdef TESTING
-struct vec3 {
-	int x, y, z;
-	vec3() : x(), y(), z() { }
-};
-template <typename T>
-T randomFrom(const T min, const T max)
-{
-	static std::random_device rdev;
-	static std::default_random_engine re(rdev());
-	typedef typename std::conditional<
-		std::is_floating_point<T>::value,
-		std::uniform_real_distribution<T>,
-		std::uniform_int_distribution<T>>::type dist_type;
-	dist_type uni(min, max);
-	return static_cast<T>(uni(re));
-}
-vec3 r() {
-	vec3 res;
-	res.x = randomFrom<int>(0, 21);
-	res.y = randomFrom<int>(0, 21);
-	res.z = randomFrom<int>(0, 21);
-	return res;
-}
 #endif
 
 int main() {
 #ifdef TESTING
-	constexpr auto SIZE = 3000;
-
-	Timer timer("Main");
-
-	std::vector<vec3> points(SIZE);
-	for (int i = 0; i < SIZE; i++) {
-		points[i] = r();
-	}
-	timer.mark("Generate Points");
-
-	vec3 maxSize;
-	for (const vec3& d : points) {
-		maxSize.x = std::max(maxSize.x, d.x);
-		maxSize.y = std::max(maxSize.y, d.y);
-		maxSize.z = std::max(maxSize.z, d.z);
-	}
-	maxSize.x += 1;
-	maxSize.y += 1;
-	maxSize.z += 1;
-	timer.mark("Create Max size");
-
-	std::vector<int> cloud(maxSize.x * maxSize.y * maxSize.z);
-	timer.mark("Allocate cloud");
-
-	for (const vec3& d : points) {
-		int idx = d.x + d.y * maxSize.x + d.y * maxSize.x * maxSize.y;
-		cloud[idx] = 100;
-	}
-	timer.mark("Populate Cloud");
-	timer.showDetails(1);
 
 	return 0;
 #endif // TESTING
+	JsonParser parser(".\\Materials.json");
+	MATERIALS = std::move(parser.getAllMaterial());
 
-	// Load blocks and materials
-	std::string materialsFile;
-	rapidjson::Document d;
-	
-
+	JsonParser parser(".\\Blocks.json");
+	MATERIALS = std::move(parser.getAllBlocks());
 
 	GLFWwindow* window = createWindow();
 	reactphysics3d::PhysicsCommon physCommon;
