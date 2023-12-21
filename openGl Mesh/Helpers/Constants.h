@@ -21,7 +21,7 @@ class Material;
 // #define RENDER_DIST_FROM_DISTANCE
 
 //#define TERRAIN_HAS_COLLIDER
-// #define PHYSICS_DEBUG_RENDERER
+//#define PHYSICS_DEBUG_RENDERER
 
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
@@ -30,7 +30,7 @@ class Material;
 // #define GENERATE_INDEX_DATA_GREEDY
 #define MINIMAL_GREEDY_MESH
 
-#define RENDER_WIREFRAMES
+//#define RENDER_WIREFRAMES
 
 
 // when defined chunk generation and voxel model loading will be perfored with the GreedyMeshing (at least the collider on models will use it) 40ms BAD MEMORY

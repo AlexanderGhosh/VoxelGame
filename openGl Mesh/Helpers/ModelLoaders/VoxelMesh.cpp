@@ -479,7 +479,6 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 				}
 				if(hit)
 					currentMergeDataPY.push_back(data);
-
 				addNY(prevBlock, mkPointNY, x, y, z);
 				addPZ(prevBlock, mkPointPZ, x, y, z);
 				addNZ(prevBlock, mkPointNZ, x, y, z);
@@ -492,11 +491,49 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 				// this is what causes the extra colliders in the ridgidbody 
 				Block currentBlock = cloud[index(x, y, z)];
 				if (isVisiblePX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
-					addPX(currentBlock, x, y, z);
+					bool added = false;
+					for (const auto& d : prevMergeDataPX) {
+						if (d.block == currentBlock && d.x == x) {
+							GreedyData& data = greedyBufferData[d.idx];
+							currentMergeDataPX.push_back(d);
+							++data._corner1.z;
+							++data._corner3.z;
+							added = true;
+							break;
+						}
+					}
+					if (!added) {
+						MergeData d;
+						d.block = currentBlock;
+						d.idx = greedyBufferData.size();
+						d.x = x;
+						currentMergeDataPX.push_back(d);
+
+						addPX(currentBlock, x, y, z);
+					}
 				}
 
 				if (isVisibleNX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
-					addNX(currentBlock, x, y, z);
+					bool added = false;
+					for (const auto& d : prevMergeDataNX) {
+						if (d.block == currentBlock && d.x == x) {
+							GreedyData& data = greedyBufferData[d.idx];
+							currentMergeDataNX.push_back(d);
+							++data._corner2.z;
+							++data._corner3.z;
+							added = true;
+							break;
+						}
+					}
+					if (!added) {
+						MergeData d;
+						d.block = currentBlock;
+						d.idx = greedyBufferData.size();
+						d.x = x;
+						currentMergeDataNX.push_back(d);
+
+						addNX(currentBlock, x, y, z);
+					}
 				}
 			}
 
