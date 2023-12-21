@@ -19,7 +19,7 @@ struct Light {
 
 layout (std140, binding = 1) uniform Matrices
 {
-    Material[6] materials;
+    Material[100] materials;
 };
 
 // out vec4 color;

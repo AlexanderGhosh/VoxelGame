@@ -34,10 +34,10 @@ class Material;
 
 
 // when defined chunk generation and voxel model loading will be perfored with the GreedyMeshing (at least the collider on models will use it) 40ms BAD MEMORY
-#define ALWAYS_USE_GREEDY_MESH
+//#define ALWAYS_USE_GREEDY_MESH
 // when defined chunk generation will be perfored with the noise map 4ms
  
-//#define ALWAYS_USE_NOISE_MESH
+#define ALWAYS_USE_NOISE_MESH
 // when defined chunk generation will be perfored with the BlockStore 40ms
  
 //#define ALWAYS_USE_SLOW_MESH
@@ -93,7 +93,7 @@ constexpr float RADIUS_DISTANCE = 16;
 
 constexpr unsigned int RENDER_DISTANCE = RADIUS_DISTANCE / (VOXEL_SIZE * CHUNK_SIZE_F);
 #else
-constexpr unsigned int RENDER_DISTANCE = 0;
+constexpr unsigned int RENDER_DISTANCE = 10;
 #endif
 
 constexpr unsigned int WORLD_HEIGHT = 50;
@@ -221,6 +221,8 @@ enum class Move_Dir : unsigned char {
 
 enum class Block : unsigned char {
 	ERROR,
+	AIR,
+
 	GRASS,
 	DIRT,
 	STONE,
@@ -228,8 +230,5 @@ enum class Block : unsigned char {
 	WATER,
 	SNOW,
 
-	GRAVEL,
-
-	AIR,
-	SIZE
+	GRAVEL
 };

@@ -8,7 +8,7 @@
 
 struct PointColourIndex {
 	float x, y, z;
-	unsigned int idx;
+	int materialIdx;
 	PointColourIndex() = default;
 };
 struct GreedyColliderData {

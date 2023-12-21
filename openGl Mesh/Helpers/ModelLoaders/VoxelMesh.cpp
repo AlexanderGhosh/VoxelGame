@@ -50,7 +50,7 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 		PointColourIndex& point = points[i];
 
 		const int idx = index(point.x, point.y, point.z);
-		cloud[idx] = Block::STONE;
+		cloud[idx] = (Block) point.materialIdx;
 	}
 
 	std::vector<GeomData> bufferData;
@@ -66,7 +66,7 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 
 				GeomData data;
 				data.setPos({ x, y, z });
-				data.textureIndex_ = (unsigned char)current;
+				data.textureIndex_ = getMaterialIndex(current);
 				for (unsigned int i = 0; i < OFFSETS_3D.size(); i++) {
 					glm::vec3 currentPos(x, y, z);
 					glm::vec3 neighbourPos = currentPos + OFFSETS_3D[i];

@@ -33,6 +33,7 @@
 #include "Helpers/Timers/Timer.h"
 
 #include <random>
+#include <document.h>
 
 // #include "Helpers/ModelLoaders/VoxelModel.h"
 glm::ivec2 DIM(WIDTH, HEIGHT);
@@ -102,6 +103,11 @@ int main() {
 
 	return 0;
 #endif // TESTING
+
+	// Load blocks and materials
+	std::string materialsFile;
+	rapidjson::Document d;
+	
 
 
 	GLFWwindow* window = createWindow();
@@ -186,7 +192,6 @@ int main() {
 }
 
 void createBlockDetails() {
-	BLOCK_DETAILS.resize((size_t)Block::SIZE);
 	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
 		Block block = (Block)i;
 		BlockDetails& dets = BLOCK_DETAILS[i];

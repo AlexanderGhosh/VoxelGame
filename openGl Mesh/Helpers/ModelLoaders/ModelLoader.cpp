@@ -1,11 +1,13 @@
 #include "ModelLoader.h"
 #include <assimp/postprocess.h>
 #include <fstream>
+#include <unordered_map>
 #include "Mesh.h"
 #include "Model.h"
 #include "../Functions.h"
 #include "../Constants.h"
 #include "VoxelModel_Base.h"
+#include "../../Material.h"
 
 Assimp::Importer ModelLoader::importer;
 
@@ -59,7 +61,7 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 {
 	std::ifstream file(fileName);
 	std::vector<PointColourIndex> points;
-	std::unordered_set<glm::vec3> colours;
+	std::unordered_map<glm::vec4, int> colours;
 
 	std::string line;
 	// reads the header
@@ -76,17 +78,24 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 	while (std::getline(file, line)) {
 		auto _split = split(line, " ");
 		if (_split.size() < 6) break;
-		glm::vec3 colour(0);
+		glm::vec4 colour(0, 0, 0, 1);
 		colour.x = RRC(stof(_split[3]));
 		colour.y = RRC(stof(_split[4]));
 		colour.z = RRC(stof(_split[5]));
-		colours.insert(colour);
 
 		PointColourIndex point{};
 		point.x = stof(_split[0]);
 		point.y = stof(_split[2]);
 		point.z = stof(_split[1]);
-		point.idx = colours.size();
+		if (colours.contains(colour)) {
+			point.materialIdx = colours[colour];
+		}
+		else {
+			Material mat(colour, colour);
+			point.materialIdx = MATERIALS.size();
+			colours[colour] = point.materialIdx;
+			MATERIALS.push_back(mat);
+		}
 
 		maxSize.x = std::max(maxSize.x, point.x);
 		maxSize.y = std::max(maxSize.y, point.y);
@@ -100,6 +109,9 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 	}
 	file.close();
 
-	std::vector<glm::vec3> cols(colours.begin(), colours.end());
+	std::vector<glm::vec3> cols(colours.size());
+	int i = 0;
+	for (auto& [c, _] : colours)
+		cols[i++] = glm::vec3(c);
 	return VoxelModel_Static(points, cols, maxSize, minSize, withCollider);
 }

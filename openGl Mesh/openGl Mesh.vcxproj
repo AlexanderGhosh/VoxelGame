@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\ReactPhysics3D\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win32\include;C:\Users\AGWDW\Desktop\assimp\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\RapidJSON;C:\Program Files %28x86%29\ReactPhysics3D\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win32\include;C:\Users\AGWDW\Desktop\assimp\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\AssimpCompiled\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\RapidJSON;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\AssimpCompiled\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\ReactPhysics3D\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win32\include;C:\Users\AGWDW\Desktop\assimp\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\RapidJSON;C:\Program Files %28x86%29\ReactPhysics3D\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win32\include;C:\Users\AGWDW\Desktop\assimp\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -145,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\AssimpCompiled\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\RapidJSON;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\AssimpCompiled\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -226,6 +226,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </CopyFileToFolders>
+    <None Include="Blocks.json" />
+    <None Include="Materials.json" />
     <None Include="Shaders\block2_f.gls" />
     <None Include="Shaders\block2_v.gls" />
     <None Include="Shaders\block3_f.gls" />

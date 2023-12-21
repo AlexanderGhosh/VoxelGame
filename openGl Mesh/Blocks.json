@@ -1,0 +1,56 @@
+[
+  {
+    "name": "error",
+    "isTransparent": false,
+    "isDynamic": false,
+    "materialIndex": 0
+  },
+  {
+    "name": "air",
+    "isTransparent": true,
+    "isDynamic": false,
+    "materialIndex": 0
+  },
+  {
+    "name": "grass",
+    "isTransparent": false,
+    "isDynamic": false,
+    "materialIndex": 1
+  },
+  {
+    "name": "dirt",
+    "isTransparent": false,
+    "isDynamic": false,
+    "materialIndex": 2
+  },
+  {
+    "name": "stone",
+    "isTransparent": false,
+    "isDynamic": false,
+    "materialIndex": 3
+  },
+  {
+    "name": "sand",
+    "isTransparent": false,
+    "isDynamic": false,
+    "materialIndex": 4
+  },
+  {
+    "name": "water",
+    "isTransparent": true,
+    "isDynamic": false,
+    "materialIndex": 5
+  },
+  {
+    "name": "snow",
+    "isTransparent": false,
+    "isDynamic": false,
+    "materialIndex": 6
+  },
+  {
+    "name": "gravel",
+    "isTransparent": false,
+    "isDynamic": false,
+    "materialIndex": 7
+  }
+]

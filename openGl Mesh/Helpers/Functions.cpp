@@ -207,7 +207,11 @@ glm::vec3 getTranslation(const glm::mat4& matrix) {
 }
 
 const BlockDetails& getDetails(Block block) {
-	return BLOCK_DETAILS[(unsigned int)block];
+	int idx = (unsigned int)block;
+	if (idx >= BLOCK_DETAILS.size()) {
+		return BLOCK_DETAILS[(int) Block::STONE-2];
+	}
+	return BLOCK_DETAILS[idx];
 }
 
 std::vector<std::string> split(const std::string& str, const std::string& delim)

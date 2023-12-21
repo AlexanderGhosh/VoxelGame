@@ -615,13 +615,13 @@ void ChunkColumn::generateNoiseBuffer()
 				// addes the water level
 				if (height < WATER_LEVEL) {
 					if (i == 0) markSlot(data.cubeType_, 4); // top face
-					data.textureIndex_ = (unsigned char)Block::WATER;
+					data.textureIndex_ = getMaterialIndex(Block::WATER);
 					data.setPos({ x, WATER_LEVEL, z });
 					bufferData.push_back(data);
 					data.cubeType_ = 0;
 				}
 
-				data.textureIndex_ = (unsigned char)block;
+				data.textureIndex_ = getMaterialIndex(block);
 				data.setPos({ x, height - i, z });
 				if (i == 0) markSlot(data.cubeType_, 4); // top face
 				if (i < px) markSlot(data.cubeType_, 3);
@@ -635,13 +635,13 @@ void ChunkColumn::generateNoiseBuffer()
 				GeomData data;
 				if (height < WATER_LEVEL) {
 					markSlot(data.cubeType_, 4); // top face
-					data.textureIndex_ = (unsigned char)Block::WATER;
+					data.textureIndex_ = getMaterialIndex(Block::WATER);
 					data.setPos({ x, WATER_LEVEL, z });
 					bufferData.push_back(data);
 				}
 				Block block = currentColumn[height];
 				data.setPos({ x, height, z });
-				data.textureIndex_ = (unsigned char)block;
+				data.textureIndex_ = getMaterialIndex(block);
 				markSlot(data.cubeType_, 4); // top face
 				bufferData.push_back(data);
 			}

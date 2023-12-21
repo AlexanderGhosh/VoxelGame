@@ -11,7 +11,7 @@ struct Material{
 
 layout (std140, binding = 1) uniform Mats
 {
-    Material[6] materials;
+    Material[100] materials;
 };
 
 uniform float numBlocks;

@@ -13,9 +13,6 @@ DrawableGeom::DrawableGeom() : data()
 
 DrawableGeom::~DrawableGeom()
 {
-	for (auto& t : data) {
-		t.buffer_->cleanUp();
-	}
 }
 
 void DrawableGeom::render(Shader* shader) const
