@@ -16,6 +16,24 @@ VoxelMesh::VoxelMesh() : relativePos_(), buffer_(), rigidBody_(), parent(nullptr
 #endif
 }
 
+GreedyColliderData from(const GreedyData& d) {
+	GreedyColliderData res;
+	res._center = (d._corner0 + d._corner3) * .5f;
+	if (d._normal.y != 0) {
+		res._xSpan = (d._corner3.x - d._corner0.x) * .5f;
+		res._zSpan = HALF_VOXEL_SIZE;
+	}
+	if (d._normal.x != 0) {
+		// res._zSpan = VOXEL_SIZE;
+		// res._ySpan = VOXEL_SIZE;
+	}
+	if (d._normal.z != 1) {
+		// res._xSpan = HALF_VOXEL_SIZE;
+		// res._ySpan = HALF_VOXEL_SIZE;
+	}
+	return res;
+}
+
 VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points, const std::vector<glm::vec3>& colours, bool hasCollider) : VoxelMesh()
 {
 	relativePos_ = relativePos;
@@ -65,28 +83,32 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 	bufferData.shrink_to_fit();
 	buffer_.setUp(bufferData.data(), bufferData.size());
 #ifdef ALWAYS_USE_GREEDY_MESH
-	auto t = std::move(greedyMesh(cloud));
-	greedyBuffer.setUp(t.data(), t.size());
+	auto greedyMeshData = std::move(greedyMesh(cloud));
+	greedyBuffer.setUp(greedyMeshData.data(), greedyMeshData.size());
 #endif
 
 	if (hasCollider) {
-		//PhysicsManager& manager = PhysicsManager::getInstance();
-		//Components::Transform rbPosition;
-		//rbPosition.position = relativePos_;
-		//rigidBody_ = manager.createRigidBody(&rbPosition);
-		//rigidBody_->enableGravity(false);
-		//rigidBody_->setType(reactphysics3d::BodyType::STATIC);
+#ifndef ALWAYS_USE_GREEDY_MESH
+		auto greedyMeshData = std::move(greedyMesh(cloud));
+#endif // ALWAYS_USE_GREEDY_MESH
 
-		//std::vector<GreedyColliderData> greedyBuffer = std::move(greedyMesh(cloud));
-		//for (const GreedyColliderData& data : greedyBuffer) {
-		//	auto shape = manager.createBoxShape(glm::vec3(data._xSpan, data._ySpan, data._zSpan));
-		//	reactphysics3d::Transform relativePos;
+		PhysicsManager& manager = PhysicsManager::getInstance();
+		Components::Transform rbPosition;
+		rbPosition.position = relativePos_;
+		rigidBody_ = manager.createRigidBody(&rbPosition);
+		rigidBody_->enableGravity(false);
+		rigidBody_->setType(reactphysics3d::BodyType::STATIC);
+		
+		for (const auto& d : greedyMeshData) {
+			auto data = from(d);
+			auto shape = manager.createBoxShape(glm::vec3(data._xSpan, data._ySpan, data._zSpan));
+			reactphysics3d::Transform relativePos;
 
-		//	const glm::vec3 pos = relativePos_ + data._center;
-		//	memcpy(&relativePos, &pos, sizeof(glm::vec3)); // can copy straight in because positoin is at the top of transform
+			const glm::vec3 pos = relativePos_ + data._center;
+			memcpy(&relativePos, &pos, sizeof(glm::vec3)); // can copy straight in because positoin is at the top of transform
 
-		//	rigidBody_->addCollider(shape, relativePos);
-		//}
+			rigidBody_->addCollider(shape, relativePos);
+		}
 	}
 }
 
@@ -162,6 +184,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 	std::vector<GreedyData> greedyBufferData;
 	auto addPY = [&](Block b, int mkPoint, int x, int y, int z) {
+		//return;
 		if (b != Block::AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
 			glm::vec3 faceMax(x, y, z + 1);
@@ -178,6 +201,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		}
 		};
 	auto addNY = [&](Block b, int mkPoint, int x, int y, int z) {
+		//return;
 		if (b != Block::AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
 			glm::vec3 faceMax(x, y, z + 1);
@@ -186,7 +210,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 
 			GreedyData data;
-			data._normal = glm::vec3(0, 1, 0);
+			data._normal = glm::vec3(0, -1, 0);
 			data._materialIdx = (unsigned int)b;
 			data._corner0 = faceMin;
 			data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
@@ -342,6 +366,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 			// X faces
 			for (int x = 0; x < CHUNK_SIZE; x++) {
+				break;
 				Block currentBlock = cloud[index(x, y, z)];
 				if (isVisiblePX(currentBlock, x, y, z)) {
 

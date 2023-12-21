@@ -12,20 +12,22 @@ void PhysicsManager::setPhysCommon(rp3d::PhysicsCommon* common)
 	_physCommon = common;
 	_physWorld = _physCommon->createPhysicsWorld();
 	reactphysics3d::Transform bodyOffset;
-	reactphysics3d::Vector3 offsetPos(0.5, 0, 0);
+	reactphysics3d::Vector3 offsetPos(0, 0, 0);
 	bodyOffset.setPosition(offsetPos);
-
+#ifdef TERRAIN_HAS_COLLIDER
 	_terrainBody = _physWorld->createRigidBody(bodyOffset);
 	_terrainBody->setType(reactphysics3d::BodyType::STATIC);
 	_columnCollider = _physCommon->createBoxShape({ HALF_VOXEL_SIZE, HALF_VOXEL_SIZE * WORLD_HEIGHT, HALF_VOXEL_SIZE });
 	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {
 		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
 			reactphysics3d::Transform offset;
-			offset.setPosition({x * VOXEL_SIZE, -(float)WORLD_HEIGHT, z * VOXEL_SIZE}); // pos in scaled
+			glm::vec3 off(x * VOXEL_SIZE, -(float)WORLD_HEIGHT, z * VOXEL_SIZE);
+			memcpy(&offset, &off, sizeof(glm::vec3));
 			// -WORLD_HEIGHT is used so the collider isnt aligned with anything while generating
 			_terrainBody->addCollider(_columnCollider, offset);
 		}
 	}
+#endif
 
 #ifdef PHYSICS_DEBUG_RENDERER
 	_physWorld->setIsDebugRenderingEnabled(true);
@@ -67,16 +69,19 @@ reactphysics3d::BoxShape* PhysicsManager::createBoxShape(const glm::vec3& extent
 
 void PhysicsManager::setTerrain(const ChunkColumn& chunk) const
 {
+#ifndef TERRAIN_HAS_COLLIDER	
 	return;
+#endif //
+
 	reactphysics3d::Transform bodyOffset = _terrainBody->getTransform();
 	glm::vec2 chunkWorldPos = chunk.getWorldPosition2D() * VOXEL_SIZE;
 	auto p = bodyOffset.getPosition();
 	if (p.x == chunkWorldPos.x && p.z == chunkWorldPos.y) {
 		// prevents the same chunk's collider from being re made
-		return;
+		//return;
 	}
 	// world pos scaled
-	bodyOffset.setPosition({ chunkWorldPos.x, 0, chunkWorldPos.y });
+	bodyOffset.setPosition({ chunkWorldPos.x + HALF_VOXEL_SIZE,  -HALF_VOXEL_SIZE, chunkWorldPos.y + HALF_VOXEL_SIZE });
 	_terrainBody->setTransform(bodyOffset);
 
 	for (unsigned int x = 0; x < CHUNK_SIZE; x++) {

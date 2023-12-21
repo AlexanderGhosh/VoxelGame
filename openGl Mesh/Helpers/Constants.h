@@ -20,7 +20,8 @@ class Material;
 // insted of manuly declaring render distance this calculates it based of a desired terrain radius in real units
 // #define RENDER_DIST_FROM_DISTANCE
 
-// #define PHYSICS_DEBUG_RENDERER
+//#define TERRAIN_HAS_COLLIDER
+#define PHYSICS_DEBUG_RENDERER
 
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
@@ -36,7 +37,7 @@ class Material;
 #define ALWAYS_USE_GREEDY_MESH
 // when defined chunk generation will be perfored with the noise map 4ms
 // 
-#define ALWAYS_USE_NOISE_MESH
+//#define ALWAYS_USE_NOISE_MESH
 // when defined chunk generation will be perfored with the BlockStore 40ms
 // 
 //#define ALWAYS_USE_SLOW_MESH

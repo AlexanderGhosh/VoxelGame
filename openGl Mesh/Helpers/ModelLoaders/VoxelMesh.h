@@ -16,11 +16,8 @@ struct GreedyColliderData {
 	float _ySpan;
 	float _zSpan;
 	glm::vec3 _center;
-	glm::vec3 _normal;
 
-	unsigned int _materialIdx;
-
-	GreedyColliderData() : _xSpan(), _ySpan(), _zSpan(), _center(), _normal(), _materialIdx() { }
+	GreedyColliderData() : _xSpan(0.01), _ySpan(0.01), _zSpan(0.01), _center() { }
 
 	GreedyColliderData(const GreedyColliderData&) = default;
 	GreedyColliderData& operator=(const GreedyColliderData&) = default;
@@ -30,16 +27,12 @@ struct GreedyColliderData {
 		_ySpan = other._ySpan;
 		_zSpan = other._zSpan;
 		_center = other._center;
-		_normal = other._center;
-		_materialIdx = other._materialIdx;
 	}
 	GreedyColliderData& operator=(GreedyColliderData&& other) noexcept {
 		_xSpan = other._xSpan;
 		_ySpan = other._ySpan;
 		_zSpan = other._zSpan;
 		_center = other._center;
-		_normal = other._center;
-		_materialIdx = other._materialIdx;
 		return *this;
 	}
 };
