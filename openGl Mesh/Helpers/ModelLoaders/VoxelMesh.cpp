@@ -141,6 +141,9 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 	std::vector<MergeData> prevMergeDataPX;
 	std::vector<MergeData> currentMergeDataPX;
 
+	std::vector<MergeData> prevMergeDataNX;
+	std::vector<MergeData> currentMergeDataNX;
+
 	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE + z * CHUNK_AREA; };
 
 	auto show = [&](Block a, Block b) {
@@ -201,7 +204,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 	};
 
 	std::vector<GreedyData> greedyBufferData;
-	auto addPY = [&greedyBufferData, &prevMergeDataPY, &currentMergeDataPY](Block b, int mkPoint, int x, int y, int z) -> bool {
+	auto addPY = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) -> bool {
 		//return;
 		if (b != Block::AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
@@ -274,6 +277,37 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 			data._corner3 = faceMax;
 			greedyBufferData.push_back(data);
 		}
+		};
+	auto addPX = [&greedyBufferData](Block b, int x, int y, int z)  {
+		//return;
+		glm::vec3 faceMin(x, y - 1, z);
+		glm::vec3 faceMax(x, y, z + 1);
+		faceMin.x += 1.f;
+		faceMax.x += 1.f;
+
+		GreedyData data;
+		data._normal = glm::vec3(1, 0, 0);
+		data._materialIdx = (unsigned int)b;
+		data._corner0 = faceMin;
+		data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
+		data._corner2 = { faceMin.x, faceMax.y, faceMin.z };
+		data._corner3 = faceMax;
+		greedyBufferData.push_back(data);
+		};
+	auto addNX = [&greedyBufferData](Block b, int x, int y, int z) {
+		//return;
+
+		glm::vec3 faceMin(x, y - 1, z);
+		glm::vec3 faceMax(x, y, z + 1);
+
+		GreedyData data;
+		data._normal = glm::vec3(1, 0, 0);
+		data._materialIdx = (unsigned int)b;
+		data._corner0 = faceMin;
+		data._corner1 = { faceMin.x, faceMax.y, faceMin.z };
+		data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
+		data._corner3 = faceMax;
+		greedyBufferData.push_back(data);
 		};
 
 	//////////////////////////////////////////
@@ -458,36 +492,16 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 				// this is what causes the extra colliders in the ridgidbody 
 				Block currentBlock = cloud[index(x, y, z)];
 				if (isVisiblePX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
-
-					glm::vec3 faceMin(x, y - 1, z);
-					glm::vec3 faceMax(x, y, z + 1);
-					faceMin.x += 1.f;
-					faceMax.x += 1.f;
-
-					GreedyData data;
-					data._normal = glm::vec3(1, 0, 0);
-					data._materialIdx = (unsigned int)currentBlock;
-					data._corner0 = faceMin;
-					data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
-					data._corner2 = { faceMin.x, faceMax.y, faceMin.z };
-					data._corner3 = faceMax;
-					greedyBufferData.push_back(data);
+					addPX(currentBlock, x, y, z);
 				}
 
 				if (isVisibleNX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
-					glm::vec3 faceMin(x, y - 1, z);
-					glm::vec3 faceMax(x, y, z + 1);
-
-					GreedyData data;
-					data._normal = glm::vec3(-1, 0, 0);
-					data._materialIdx = (unsigned int)currentBlock;
-					data._corner0 = faceMin;
-					data._corner1 = { faceMin.x, faceMax.y, faceMin.z };
-					data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
-					data._corner3 = faceMax;
-					greedyBufferData.push_back(data);
+					addNX(currentBlock, x, y, z);
 				}
 			}
+
+			prevMergeDataPX = std::move(currentMergeDataPX);
+			prevMergeDataNX = std::move(currentMergeDataNX);
 		}
 	}
 	return greedyBufferData;
