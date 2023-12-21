@@ -17,6 +17,7 @@ VoxelMesh::VoxelMesh() : relativePos_(), buffer_(), rigidBody_(), parent(nullptr
 }
 
 GreedyColliderData from(const GreedyData& d) {
+	// all works unless otherwise specified
 	GreedyColliderData res;
 	res._center = (d._corner0 + d._corner3) * .5f;
 	if (d._normal.y != 0) {
@@ -24,12 +25,13 @@ GreedyColliderData from(const GreedyData& d) {
 		res._zSpan = HALF_VOXEL_SIZE;
 	}
 	if (d._normal.x != 0) {
-		// res._zSpan = VOXEL_SIZE;
-		// res._ySpan = VOXEL_SIZE;
+		// creates extra faces
+		res._zSpan = HALF_VOXEL_SIZE;
+		res._ySpan = HALF_VOXEL_SIZE;
 	}
-	if (d._normal.z != 1) {
-		// res._xSpan = HALF_VOXEL_SIZE;
-		// res._ySpan = HALF_VOXEL_SIZE;
+	if (d._normal.z != 0) {
+		res._xSpan = (d._corner3.x - d._corner0.x) * .5f;
+		res._ySpan = HALF_VOXEL_SIZE;
 	}
 	return res;
 }
@@ -366,9 +368,9 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 			// X faces
 			for (int x = 0; x < CHUNK_SIZE; x++) {
-				break;
+				// this is what causes the extra colliders in the ridgidbody 
 				Block currentBlock = cloud[index(x, y, z)];
-				if (isVisiblePX(currentBlock, x, y, z)) {
+				if (isVisiblePX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
 
 					glm::vec3 faceMin(x, y - 1, z);
 					glm::vec3 faceMax(x, y, z + 1);
@@ -385,7 +387,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 					greedyBufferData.push_back(data);
 				}
 
-				if (isVisibleNX(currentBlock, x, y, z)) {
+				if (isVisibleNX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
 					glm::vec3 faceMin(x, y - 1, z);
 					glm::vec3 faceMax(x, y, z + 1);
 
