@@ -41,7 +41,7 @@ GreedyColliderData from(const GreedyData& d) {
 	return res;
 }
 
-VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points, bool hasCollider) : VoxelMesh()
+VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points) : VoxelMesh()
 {
 	relativePos_ = relativePos;
 	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE_F + z * CHUNK_AREA; };
@@ -91,29 +91,29 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 	greedyBuffer.setUp(greedyMeshData.data(), greedyMeshData.size());
 #endif
 
-	if (hasCollider) {
-#ifndef ALWAYS_USE_GREEDY_MESH
-		auto greedyMeshData = std::move(greedyMesh(cloud));
-#endif // ALWAYS_USE_GREEDY_MESH
-
-		PhysicsManager& manager = PhysicsManager::getInstance();
-		Components::Transform rbPosition;
-		rbPosition.position = relativePos_;
-		rigidBody_ = manager.createRigidBody(&rbPosition);
-		rigidBody_->enableGravity(false);
-		rigidBody_->setType(reactphysics3d::BodyType::STATIC);
-		
-		for (const auto& d : greedyMeshData) {
-			auto data = from(d);
-			auto shape = manager.createBoxShape(glm::vec3(data._xSpan, data._ySpan, data._zSpan));
-			reactphysics3d::Transform relativePos;
-
-			const glm::vec3 pos = relativePos_ + data._center;
-			memcpy(&relativePos, &pos, sizeof(glm::vec3)); // can copy straight in because positoin is at the top of transform
-
-			rigidBody_->addCollider(shape, relativePos);
-		}
-	}
+//	if (hasCollider) {
+//#ifndef ALWAYS_USE_GREEDY_MESH
+//		auto greedyMeshData = std::move(greedyMesh(cloud));
+//#endif // ALWAYS_USE_GREEDY_MESH
+//
+//		PhysicsManager& manager = PhysicsManager::getInstance();
+//		Components::Transform rbPosition;
+//		rbPosition.position = relativePos_;
+//		rigidBody_ = manager.createRigidBody(&rbPosition);
+//		rigidBody_->enableGravity(false);
+//		rigidBody_->setType(reactphysics3d::BodyType::STATIC);
+//		
+//		for (const auto& d : greedyMeshData) {
+//			auto data = from(d);
+//			auto shape = manager.createBoxShape(glm::vec3(data._xSpan, data._ySpan, data._zSpan));
+//			reactphysics3d::Transform relativePos;
+//
+//			const glm::vec3 pos = relativePos_ + data._center;
+//			memcpy(&relativePos, &pos, sizeof(glm::vec3)); // can copy straight in because positoin is at the top of transform
+//
+//			rigidBody_->addCollider(shape, relativePos);
+//		}
+//	}
 }
 
 DrawData VoxelMesh::getDrawData() const

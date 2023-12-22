@@ -10,9 +10,15 @@ Model& ModelManager::load(const std::string& file)
 	return _allModels.back();
 }
 
-VoxelModel_Static& ModelManager::loadVoxel(const std::string& file, bool withCollider)
+VoxelModel_Static& ModelManager::loadVoxel(const std::string& file)
 {
-	_allVoxelModels.push_back(std::move(ModelLoader::LoadPointCloud(file, withCollider)));
+	_allVoxelModels.push_back(std::move(ModelLoader::LoadPointCloud(file)));
+	return _allVoxelModels.back();
+}
+
+VoxelModel_Static& ModelManager::loadVoxel(const std::string& file, Block block)
+{
+	_allVoxelModels.push_back(std::move(ModelLoader::LoadPointCloud(file, block)));
 	return _allVoxelModels.back();
 }
 

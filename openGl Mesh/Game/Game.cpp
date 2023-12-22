@@ -187,21 +187,18 @@ void Game::doLoop(const glm::mat4& projection) {
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	VoxelModel_Static& deer = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\deer.ply", false);
-	deer.setPosition(0, 38, 0);
-	deer.addToDrawable(world.geomDrawable);
-	VoxelModel_Static& zelda = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\zelda_small.ply", false);
-	zelda.setPosition(0, 38, 20);
-	zelda.addToDrawable(world.geomDrawable);
+	// VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_STONE);
+	// woman.setPosition(0, 37, 0);
+	// woman.addToDrawable(world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
-	castle->addToDrawable(world.greedyDrawable);
+	woman.addToDrawable(world.greedyDrawable);
 #endif
 	voxelLoad.showTime(0);
 
 	// LOAD MODELS
-	auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d_voxel.obj");
-	auto& cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
-	std::cout << "Models Loaded" << std::endl;
+	// auto& enterprise = modelManager.load("C:\\Users\\AGWDW\\Desktop\\ncc1701d_voxel.obj");
+	// auto& cloud = modelManager.load("C:\\Users\\AGWDW\\Desktop\\cloud_voxel.obj");
+	// std::cout << "Models Loaded" << std::endl;
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
 #ifdef SSAO
@@ -221,11 +218,11 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	PhysicsManager& physManager = PhysicsManager::getInstance();
 
-	Entities::TestObject to1;
-	Components::Transform to1Transform;
-	Components::RenderMesh to1RenderMesh;
-	to1RenderMesh.setModel(&cloud);
-	to1.addComponent(to1Transform);
+	// Entities::TestObject to1;
+	// Components::Transform to1Transform;
+	// Components::RenderMesh to1RenderMesh;
+	// to1RenderMesh.setModel(&cloud);
+	// to1.addComponent(to1Transform);
 	//to1.addComponent(to1RenderMesh);
 
 	manager->awakeEvent();
@@ -233,7 +230,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	manager->startEvent();
 
 	_player->setPosition({ CHUNK_SIZE_F * HALF_VOXEL_SIZE, 40, CHUNK_SIZE_F * HALF_VOXEL_SIZE });
-	to1.setPosition({ 0, 100, 0 });
+	// to1.setPosition({ 0, 100, 0 });
 	/*reactphysics3d::Material& mat = _player->getRigidBody()->getMaterial();
 	mat.setBounciness(0);
 	mat.setFrictionCoefficient(1);*/

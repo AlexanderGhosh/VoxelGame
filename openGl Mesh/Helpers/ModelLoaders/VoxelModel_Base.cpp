@@ -11,7 +11,7 @@ VoxelModel_Static::VoxelModel_Static() : meshes_(), worldPos_()
 {
 }
 
-VoxelModel_Static::VoxelModel_Static(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize, bool hasCollider) : VoxelModel_Static()
+VoxelModel_Static::VoxelModel_Static(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize) : VoxelModel_Static()
 {
 	typedef std::vector<PointColourIndex> points_t;
 	std::unordered_map<glm::ivec3, points_t> splitPoints;
@@ -32,7 +32,7 @@ VoxelModel_Static::VoxelModel_Static(std::vector<PointColourIndex>& points, cons
 	for (auto& [p, points] : splitPoints) {
 		glm::vec3 relativePos(p);
 		relativePos *= CHUNK_SIZE_F;
-		meshes_.emplace_back(relativePos, points, hasCollider);
+		meshes_.emplace_back(relativePos, points);
 		meshes_.back().parent = this;
 	}
 }

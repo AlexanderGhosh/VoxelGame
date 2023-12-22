@@ -58,7 +58,7 @@ Model ModelLoader::LoadAssimp(const std::string& file)
 	return model;
 }
 
-VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool withCollider)
+VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName)
 {
 	std::ifstream file(fileName);
 	std::vector<PointColourIndex> points;
@@ -119,5 +119,47 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 	file.close();
 
 	std::vector<glm::vec3> cols(colours.size());
-	return VoxelModel_Static(points, maxSize, minSize, withCollider);
+	return VoxelModel_Static(points, maxSize, minSize);
+}
+
+VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, Block block)
+{
+	std::ifstream file(fileName);
+	std::vector<PointColourIndex> points;
+
+	std::string line;
+	// reads the header
+	while (std::getline(file, line) && line != "end_header") {
+		if (contains(line, "element")) {
+			auto _split = split(line, " ");
+			points.reserve(stoi(_split.back()));
+		}
+	}
+	glm::vec3 maxSize(0);
+	glm::vec3 minSize(0);
+
+	// the body
+	while (std::getline(file, line)) {
+		auto _split = split(line, " ");
+		if (_split.size() < 6) break;
+		PointColourIndex point{};
+		point.x = stof(_split[0]);
+		point.y = stof(_split[2]);
+		point.z = stof(_split[1]);
+
+		point.block = block;
+
+		maxSize.x = std::max(maxSize.x, point.x);
+		maxSize.y = std::max(maxSize.y, point.y);
+		maxSize.z = std::max(maxSize.z, point.z);
+
+		minSize.x = std::min(minSize.x, point.x);
+		minSize.y = std::min(minSize.y, point.y);
+		minSize.z = std::min(minSize.z, point.z);
+
+		points.push_back(point);
+	}
+	file.close();
+
+	return VoxelModel_Static(points, maxSize, minSize);
 }

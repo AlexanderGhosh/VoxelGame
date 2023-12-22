@@ -50,7 +50,7 @@ class VoxelMesh : public IGeomDrawable
 {
 	friend class VoxelModel_Static;
 public:
-	VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points, bool hasCollider);
+	VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	BufferGreedy greedyBuffer;
 #endif

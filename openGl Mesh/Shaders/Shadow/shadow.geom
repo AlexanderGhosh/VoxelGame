@@ -9,6 +9,7 @@ in VS_OUT {
 } vs_out[];
 
 uniform mat4 lightMatrix;
+uniform float voxelSize;
 
 const vec3 vertices[8] = vec3[](
 	vec3(-0.5,-0.5,-0.5), // 0
@@ -39,7 +40,7 @@ void main() {
                 int l = indices[i * 4u + j];
                 vec3 v = vertices[l];
 
-                gl_Position = lightMatrix * vs_out[0].model * vec4(v, 1);
+                gl_Position = lightMatrix * vs_out[0].model * vec4(v * voxelSize, 1);
 
                 EmitVertex();
             }

@@ -7,6 +7,7 @@
 class Model;
 class Mesh;
 class VoxelModel_Static;
+class Block;
 
 class ModelLoader
 {
@@ -18,7 +19,9 @@ private:
 	static void processNode(const aiNode& node, const aiScene& scene, std::list<Mesh>& meshes);
 
 	static Model LoadAssimp(const std::string& file);
-	// doesnt load colours correctly
-	static VoxelModel_Static LoadPointCloud(const std::string& file, bool withCollider);
+	// if block is provided it is used insted of any colour sourced from the model
+	static VoxelModel_Static LoadPointCloud(const std::string& file);
+	// if block is provided it is used insted of any colour sourced from the model
+	static VoxelModel_Static LoadPointCloud(const std::string& file, Block block);
 };
 

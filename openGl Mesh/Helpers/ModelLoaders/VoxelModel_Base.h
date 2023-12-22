@@ -15,7 +15,7 @@ public:
 	VoxelModel_Static();
 	inline bool isEditable() const { return false; }
 
-	VoxelModel_Static(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize, bool hasCollider);
+	VoxelModel_Static(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize);
 
 	void setPosition(float x, float y, float z);
 

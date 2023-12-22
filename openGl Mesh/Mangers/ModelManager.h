@@ -13,7 +13,8 @@ public:
 	ModelManager();
 
 	Model& load(const std::string& file);
-	VoxelModel_Static& loadVoxel(const std::string& file, bool withCollider);
+	VoxelModel_Static& loadVoxel(const std::string& file);
+	VoxelModel_Static& loadVoxel(const std::string& file, Block block);
 
 	void destroy() override;
 };
