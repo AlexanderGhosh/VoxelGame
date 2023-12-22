@@ -46,16 +46,16 @@ void main() {
 
         vec4 offset = vec4(samplePos, 1.0);
         offset      = projection * offset;    // from view to clip-space
-        offset.xyz /= offset.w;               // perspective divide
-        offset.xyz  = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
+        offset.xy /= offset.w;               // perspective divide
+        offset.xy  = offset.xy * 0.5 + 0.5;   // transform to range 0.0 - 1.0
         vec4 sampleFragPos = view * vec4(texture(fragPosTex, offset.xy).xyz, 1.0);
         float sampleDepth = sampleFragPos.z;
 
         float rangeCheck = smoothstep(0.0, 1.0, ssaoRadius / abs(pos.z - sampleDepth));
-        occlusion += (sampleDepth >= samplePos.z + ssaoBias ? 1.0 : 0.0) * rangeCheck;   
+        occlusion += (sampleDepth >= samplePos.z + ssaoBias ? 1.0 : 0.0) * rangeCheck;
     }  
 
-    occlusion = 1.0 - (occlusion / float(kernelSize));
+    occlusion = 1.0 - (occlusion / kernelSize);
 
     // only outputs the albedo
     ao = occlusion;

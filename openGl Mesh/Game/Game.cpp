@@ -80,7 +80,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 		ColourBufferInit fragPos;
 		fragPos.format = GL_FLOAT;
-		fragPos.internalFormat = GL_RGB16F;
+		fragPos.internalFormat = GL_RGB32F;
 		fragPos.type = GL_RGB;
 
 		ColourBufferInit normal;
@@ -434,9 +434,6 @@ void Game::showStuff() {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	glClearColor(1, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	
 	// 3.2 Blurs Ambiant Occlusion (renders to the multi purpose buffer)
 	multiPurposeFB.bind();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -1000,18 +997,25 @@ void Game::setUpSSAO()
 	// THE SAMPLES
 	float inv_num = 1.f / (float)SSAO_NUM_SAMPLES;
 	for (unsigned int i = 0; i < SSAO_NUM_SAMPLES; i++) {
-		glm::vec3 r = glm::gaussRand(glm::vec3(0, 0, .5), glm::vec3(1, 1, .5));
+		glm::vec3 r(0);
+		r.x = randRange(-1, 1);
+		r.y = randRange(-1, 1);
+		r.z = randRange(0, 1);
 		r = glm::normalize(r);
-		float s = i * inv_num;
-		s = lerp(0.1f, 1.f, s * s);
+
+		float s = (float)i * inv_num;
+		s = lerp(.1f, 1.f, s * s);
 		r *= s;
 		ssaoSamples[i] = r;
 	}
 	// THE NOISE
 	std::array<glm::vec3, (size_t)(SSAO_SCALE* SSAO_SCALE)> noiseData{};
 	for (unsigned int i = 0; i < noiseData.size(); i++) {
-		glm::vec3 r = glm::gaussRand(glm::vec3(0), glm::vec3(1));
+		glm::vec3 r(0);
+		r.x = randRange(-1, 1);
+		r.y = randRange(-1, 1);
 		r.z = 0;
+		r = glm::normalize(r);
 		noiseData[i] = r;
 	}
 
