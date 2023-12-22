@@ -1,7 +1,9 @@
 #include "world_generation.h"
+#include <iostream>
+#include "../../Block.h"
+#include "../../Helpers/Constants.h"
 #include "../../Helpers/Functions.h"
 #include "../../Helpers/BlocksEncoded.h"
-#include <iostream>
 
 
 FastNoise::SmartNode<FastNoise::Simplex> world_generation::noiseSource;
@@ -101,37 +103,37 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 	if (height < WATER_LEVEL) {
 		// is a body of water
 		unsigned int waterDepth = WATER_LEVEL - height;
-		encoded.push(Block::STONE, height - 3);
-		encoded.push(Block::SAND, 3);
-		encoded.push(Block::WATER, waterDepth);
+		encoded.push(B_STONE, height - 3);
+		encoded.push(B_SAND, 3);
+		encoded.push(B_WATER, waterDepth);
 	}
 	else {
 		// is a land mass
 		int h = randInt(2, 4);
-		encoded.push(Block::STONE, height - h);
+		encoded.push(B_STONE, height - h);
 		if (height > SNOW_LEVEL) {
 			// is mountain
-			encoded.push(Block::SNOW, h);
+			encoded.push(B_SNOW, h);
 		}
 		else {
-			encoded.push(Block::DIRT, h - 1);
-			encoded.push(Block::GRASS, 1);
+			encoded.push(B_DIRT, h - 1);
+			encoded.push(B_GRASS, 1);
 		}
 	}
 
 	/*if (height - 3 > 0) {
-		encoded.push(Block::STONE, height -= 3);
+		encoded.push(B_STONE, height -= 3);
 	}
 	if (height <= WATER_LEVEL) {
-		encoded.push(Block::SAND, 3);
-		encoded.push(Block::WATER, 20 - height - 2);
+		encoded.push(B_SAND, 3);
+		encoded.push(B_WATER, 20 - height - 2);
 	}
 	else if (height < WATER_LEVEL + 3) {
-		encoded.push(Block::SAND, 3);
+		encoded.push(B_SAND, 3);
 	}
 	else if (height - 2 > 0) {
-		encoded.push(Block::DIRT, 2);
-		encoded.push(Block::GRASS, 1);
+		encoded.push(B_DIRT, 2);
+		encoded.push(B_GRASS, 1);
 	}*/
 	return encoded;
 }

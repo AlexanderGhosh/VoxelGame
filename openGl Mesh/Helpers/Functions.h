@@ -3,20 +3,11 @@
 #include <string>
 #include <unordered_map>
 #include <list>
-#include "BlockDetails.h"
 
 class Texture;
+class Block;
 
 enum class Texture_Names : unsigned char;
-enum class Block : unsigned char;
-
-inline unsigned int getMaterialIndex(unsigned int block) {
-	return block -= 2;
-}
-
-inline unsigned int getMaterialIndex(Block block) {
-	return getMaterialIndex((unsigned int)block);
-}
 
 bool rayCubeIntersection(const glm::vec3& ro, const glm::vec3& rd, const glm::vec3& lp, const glm::vec3& up);
 
@@ -53,9 +44,6 @@ glm::vec3 reduceToMultiple(const glm::vec3& victim);
 
 unsigned int toIndex(const Texture_Names tex);
 unsigned int toIndex(const Block block);
-
-const Block toBlock(const unsigned char number);
-const BlockDetails& getDetails(const Block block);
 
 // returns str split at the delimeter
 std::vector<std::string> split(const std::string& str, const std::string& delim);

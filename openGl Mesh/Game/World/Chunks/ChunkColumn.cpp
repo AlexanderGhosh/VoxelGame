@@ -6,10 +6,10 @@
 #include <format>
 #include "../../../Helpers/Functions.h"
 #include "../world_generation.h"
-#include "../../../Helpers/BlockDetails.h"
 #include "../World.h"
 #include "../../../GreedyRendering/GreedyData.h"
 #include "../../../Helpers/Timers/Timer.h"
+#include "../../../Block.h"
 
 
 ChunkColumn::ChunkColumn() : position(0), buffer_(), seed(), bufferData(), editedBlocks()
@@ -95,7 +95,7 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 				const Block b1 = encodes.block(r);
 				const unsigned int count1 = encodes.count(r);
 
-				if (b1 == Block::AIR) {
+				if (b1 == B_AIR) {
 					height -= count1;
 					continue;
 				}
@@ -111,14 +111,14 @@ void ChunkColumn::populateBufferFromNeibours(const std::list<ChunkColumn*>& neib
 					for (const glm::vec3& off : OFFSETS_3D) {
 						glm::vec3 newLocalPosition = currentLocalPos + off;
 						const glm::vec3 newWorldPosition_U = newLocalPosition + chunkWorldPos_U;
-						Block b2 = Block::ERROR;
+						Block b2 = B_ERROR;
 						Block* b2Ptr = getValue(exploredBlocksCache, newWorldPosition_U);
 						if (b2Ptr) {
 							b2 = *b2Ptr;
 						}
 						else {
 							b2 = blockStore.getBlock(newLocalPosition);
-							if (b2 == Block::ERROR) { //  means that it is outside this chunk
+							if (b2 == B_ERROR) { //  means that it is outside this chunk
 								// when this chunk has a face visble from an other chunk eg it is ataller
 								glm::vec2 newChunkPos = position + glm::vec2(off.x, off.z);
 								for (ChunkColumn* chunk : neibours) {
@@ -331,7 +331,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 
 
 	auto addPY = [&](Block b, int mkPoint, int x, int y, int z) {
-		if (b != Block::AIR && mkPoint != x) {
+		if (b != B_AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
 			glm::vec3 faceMax(x, y, z + 1);
 
@@ -356,7 +356,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 	};
 	auto addPZ = [&](Block b, int mkPoint, int x, int y, int z) {
 		// add face
-		if (b != Block::AIR && mkPoint != x) {
+		if (b != B_AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y - 1, z);
 			glm::vec3 faceMax(x, y, z);
 			faceMin.z += 1.f;
@@ -381,7 +381,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		}
 	};
 	auto addNZ = [&](Block b, int mkPoint, int x, int y, int z) {
-		if (b != Block::AIR && mkPoint != x) {
+		if (b != B_AIR && mkPoint != x) {
 			// add face
 			glm::vec3 faceMin(mkPoint, y - 1, z);
 			glm::vec3 faceMax(x, y, z);
@@ -413,7 +413,7 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 		for (int z = 0; z < CHUNK_SIZE; z++) {
 			for (int x = 0; x < CHUNK_SIZE; x++) {
 				Block prevBlock = blockStore.getBlock({ x, y, z }, false);
-				if (prevBlock == Block::AIR) continue;
+				if (prevBlock == B_AIR) continue;
 				int mkPointPY = x; // the start point of a run
 				int mkPointPZ = x;
 				int mkPointNZ = x;
@@ -438,9 +438,9 @@ void ChunkColumn::greedyMesh(const std::unordered_map<glm::vec2, BlockStore>& ne
 					bool pzVisible = isVisiblePZ(currentBlock, x, y, z);
 					bool nzVisible = isVisibleNZ(currentBlock, x, y, z);
 #else
-					bool pyVisible = currentBlock != Block::AIR;
-					bool pzVisible = currentBlock != Block::AIR;
-					bool nzVisible = currentBlock != Block::AIR;
+					bool pyVisible = currentBlock != B_AIR;
+					bool pzVisible = currentBlock != B_AIR;
+					bool nzVisible = currentBlock != B_AIR;
 #endif // MINIMAL_GREEDY_MESH
 					if (pyVisible && pzVisible && nzVisible) break;
 
@@ -615,13 +615,13 @@ void ChunkColumn::generateNoiseBuffer()
 				// addes the water level
 				if (height < WATER_LEVEL) {
 					if (i == 0) markSlot(data.cubeType_, 4); // top face
-					data.textureIndex_ = getMaterialIndex(Block::WATER);
+					data.textureIndex_ = B_WATER.materialIndex;
 					data.setPos({ x, WATER_LEVEL, z });
 					bufferData.push_back(data);
 					data.cubeType_ = 0;
 				}
 
-				data.textureIndex_ = getMaterialIndex(block);
+				data.textureIndex_ = block.materialIndex;
 				data.setPos({ x, height - i, z });
 				if (i == 0) markSlot(data.cubeType_, 4); // top face
 				if (i < px) markSlot(data.cubeType_, 3);
@@ -635,13 +635,13 @@ void ChunkColumn::generateNoiseBuffer()
 				GeomData data;
 				if (height < WATER_LEVEL) {
 					markSlot(data.cubeType_, 4); // top face
-					data.textureIndex_ = getMaterialIndex(Block::WATER);
+					data.textureIndex_ = B_WATER.materialIndex;
 					data.setPos({ x, WATER_LEVEL, z });
 					bufferData.push_back(data);
 				}
 				Block block = currentColumn[height];
 				data.setPos({ x, height, z });
-				data.textureIndex_ = getMaterialIndex(block);
+				data.textureIndex_ = block.materialIndex;
 				markSlot(data.cubeType_, 4); // top face
 				bufferData.push_back(data);
 			}
@@ -682,7 +682,7 @@ void ChunkColumn::addBlock(const glm::vec3& worldPos, const Block block)
 	GeomData toAdd;
 	toAdd.setPos(localPos);
 	toAdd.cubeType_ = 63; // all faces
-	toAdd.textureIndex_ = (unsigned char) block;
+	toAdd.textureIndex_ = block.materialIndex;
 
 
 	for (unsigned int i = 0; i < OFFSETS_3D.size(); i++) {
@@ -813,12 +813,12 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 		else {
 			// the reson why more faces are added then needed is beacuse it doesnt check to see if that blokcs had being broken before DONT THINK THIS IS THE CASE ANYMORE
 			const Block b = getBlock(add.worldPos);
-			if (b == Block::AIR) {
+			if (b == B_AIR) {
 				continue;
 			}
 			GeomData data;
 			data.setPos(toLocal(add.worldPos));
-			data.textureIndex_ = (unsigned char) b;
+			data.textureIndex_ = b.materialIndex;
 			markSlot(data.cubeType_, add.face);
 			bufferData.push_back(data);
 		}
@@ -828,7 +828,7 @@ void ChunkColumn::removeBlock(const glm::vec3& worldPos, World* world)
 		editedBlocks.erase(worldPos);
 	}
 	else {
-		editedBlocks[worldPos] = Block::AIR;
+		editedBlocks[worldPos] = B_AIR;
 	}
 
 	buffer_.realloc(bufferData.data(), bufferData.size());
@@ -922,30 +922,30 @@ const std::vector<GeomData>& ChunkColumn::getMeshData() const
 	return bufferData;
 }
 
-std::array<BlockDetails, CHUNK_AREA * WORLD_HEIGHT> ChunkColumn::getBlocksGrid()
-{
-	auto index = [](int x, int y, int z) -> int {
-		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
-	};
-
-	std::array<BlockDetails, CHUNK_AREA * WORLD_HEIGHT> res;
-	res.fill(getDetails(Block::AIR));
-
-	for (const GeomData& data : bufferData) {
-		const glm::vec3 p = data.getPos();
-		int idx = index(p.x, p.y, p.z);
-		if ((Block)data.textureIndex_ == Block::WATER) {
-			int _ = 0;
-		}
-		res[idx] = getDetails((Block) data.textureIndex_);
-	}
-	for (auto& [p, block] : editedBlocks) {
-		int idx = index(p.x, p.y, p.z);
-		res[idx] = getDetails(block);
-	}
-
-	return res;
-}
+//std::array<BlockDetails, CHUNK_AREA * WORLD_HEIGHT> ChunkColumn::getBlocksGrid()
+//{
+//	auto index = [](int x, int y, int z) -> int {
+//		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
+//	};
+//
+//	std::array<BlockDetails, CHUNK_AREA * WORLD_HEIGHT> res;
+//	res.fill(getDetails(B_AIR));
+//	
+//	for (const GeomData& data : bufferData) {
+//		const glm::vec3 p = data.getPos();
+//		int idx = index(p.x, p.y, p.z);
+//		if ((Block)data.textureIndex_ == B_WATER) {
+//			int _ = 0;
+//		}
+//		res[idx] = getDetails((Block) data.textureIndex_);
+//	}
+//	for (auto& [p, block] : editedBlocks) {
+//		int idx = index(p.x, p.y, p.z);
+//		res[idx] = getDetails(block);
+//	}
+//
+//	return res;
+//}
 
 const Block ChunkColumn::getBlock_BlockStore(glm::vec3 pos, bool worldPos, const BlockStore& blockStore) const
 {
@@ -959,7 +959,7 @@ const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
 	if (editedBlocks.size() > 0 && editedBlocks.find(worldPos) != editedBlocks.end()) {
 		return editedBlocks.at(worldPos);
 	}
-	//return Block::ERROR;
+	//return B_ERROR;
 	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, seed);
 	return column[worldPos.y];
 }
@@ -989,7 +989,7 @@ DrawData ChunkColumn::getDrawData() const
 //	else {
 //		return getBlock_BlockStore(worldPos, true, bs);
 //	}
-//	return Block::AIR;
+//	return B_AIR;
 //}
 
 void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
@@ -1006,8 +1006,8 @@ void ChunkColumn::addFace(const AddFaces& add, bool realoc) {
 	GeomData data;
 	data.setPos(localPos);
 	markSlot(data.cubeType_, add.face);
-	data.textureIndex_ = (unsigned char) getBlock(add.worldPos);
-	if (data.textureIndex_ == (unsigned char) Block::AIR || data.textureIndex_ == (unsigned char) Block::ERROR) {
+	data.textureIndex_ = getBlock(add.worldPos).materialIndex;
+	if (data.textureIndex_ == B_AIR.materialIndex) {
 		return;
 	}
 	bufferData.push_back(data);
@@ -1046,7 +1046,7 @@ const Block ChunkColumn::getBlock_WorldMap(glm::vec3 pos, bool worldPos, bool sa
 			return getBlock_BlockStore(pos, worldPos, blockStore);
 		}
 	}
-	if (!safe) return Block::AIR;
+	if (!safe) return B_AIR;
 	// safe
 
 	glm::vec2 chunkPositionToLookAt = position;
@@ -1069,9 +1069,9 @@ const Block ChunkColumn::getBlock_WorldMap(glm::vec3 pos, bool worldPos, bool sa
 	}
 	if (worldMap.size() > 0) {
 		auto found = worldMap.find(chunkPositionToLookAt);
-		if (found == worldMap.end()) return Block::ERROR;
+		if (found == worldMap.end()) return B_ERROR;
 		auto foundBlock = (*found).second.getBlock(relativePostion);
 		return foundBlock;
 	}
-	return Block::ERROR;
+	return B_ERROR;
 }

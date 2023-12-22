@@ -1,56 +1,47 @@
-[
-  {
-    "name": "error",
+{
+  "error": {
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 0
   },
-  {
-    "name": "air",
+  "air": {
     "isTransparent": true,
     "isDynamic": false,
     "materialIndex": 0
   },
-  {
-    "name": "grass",
+  "grass": {
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 1
   },
-  {
-    "name": "dirt",
+  "dirt": {
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 2
   },
-  {
-    "name": "stone",
+  "stone": {
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 3
   },
-  {
-    "name": "sand",
+  "sand": {
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 4
   },
-  {
-    "name": "water",
+  "water": {
     "isTransparent": true,
     "isDynamic": false,
     "materialIndex": 5
   },
-  {
-    "name": "snow",
+  "snow": {
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 6
   },
-  {
-    "name": "gravel",
+  "gravel": {
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 7
   }
-]
+}

@@ -5,7 +5,6 @@
 #include <array>
 #include <unordered_map>
 #include "BlocksEncoded.h"
-#include "BlockDetails.h"
 
 class Texture;
 class Shader;
@@ -13,6 +12,7 @@ class BlockDetails;
 class ChunkColumn;
 class BlockStore;
 class Material;
+class Block;
 
 // forces the terrain to be flat
 #define FLAT_TERRAIN
@@ -149,8 +149,6 @@ constexpr std::array<glm::vec3, 4> GRID_LINE_POSITIONS{
 
 constexpr glm::vec3 LIGHT_POSITION(0, 1000, -1000);
 
-enum class Block : unsigned char;
-
 // maps local unscaled pos to the chunk
 using Chunks = std::unordered_map<glm::vec2, ChunkColumn>;
 // maps local unscaled pos to the respective blockstore
@@ -161,7 +159,8 @@ using HeightMap = std::array<BlocksEncoded, CHUNK_AREA>;
 extern std::vector<Texture> TEXTURES3D;
 extern std::vector<Texture> TEXTURES2D;
 extern std::vector<Shader> SHADERS;
-extern std::vector<BlockDetails> BLOCK_DETAILS;
+
+extern std::vector<Block> BLOCKS;
 extern std::vector<Material> MATERIALS;
 
 //enum FACES_NAMES : unsigned char {
@@ -219,16 +218,16 @@ enum class Move_Dir : unsigned char {
 	Null
 };
 
-enum class Block : unsigned char {
-	ERROR,
-	AIR,
-
-	GRASS,
-	DIRT,
-	STONE,
-	SAND,
-	WATER,
-	SNOW,
-
-	GRAVEL
-};
+//enum class Block : unsigned char {
+//	ERROR,
+//
+//	GRASS,
+//	DIRT,
+//	STONE,
+//	SAND,
+//	WATER,
+//	SNOW,
+//
+//	GRAVEL,
+//	AIR,
+//};

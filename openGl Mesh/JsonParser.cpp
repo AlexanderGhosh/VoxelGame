@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "Material.h"
+#include "Block.h"
 
 JsonParser::JsonParser() noexcept : _doc()
 {
@@ -50,11 +51,36 @@ Material JsonParser::getMaterial(const std::string& location)
 	return res;
 }
 
-std::vector<Material> JsonParser::getAllMaterial()
+Block JsonParser::getBlock(const std::string& location)
+{
+	rapidjson::Value& obj = _doc[location.c_str()];
+	assert(obj.IsObject());
+
+	bool isTransparent = obj["isTransparent"].GetBool();
+	bool isDynamic = obj["isDynamic"].GetBool();
+	unsigned int materialIndex = obj["materialIndex"].GetUint();
+
+	Block res;
+	res.isTransparent = isTransparent;
+	res.isDynamic = isDynamic;
+	res.materialIndex = materialIndex;
+	return res;
+}
+
+std::vector<Material> JsonParser::getAllMaterials()
 {
 	std::vector<Material> res;
 	for (auto& obj : _doc.GetObject()) {
 		res.push_back(getMaterial(obj.name.GetString()));
+	}
+	return res;
+}
+
+std::vector<Block> JsonParser::getAllBlocks()
+{
+	std::vector<Block> res;
+	for (auto& obj : _doc.GetObject()) {
+		res.push_back(getBlock(obj.name.GetString()));
 	}
 	return res;
 }

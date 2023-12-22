@@ -168,50 +168,8 @@ unsigned int toIndex(Texture_Names tex) {
 	return (unsigned int)tex;
 }
 
-unsigned int toIndex(Block block) {
-	return (unsigned int)block;
-}
-
-const Block toBlock(const unsigned char number) {
-	return Block(number);
-}
-
-const std::string getName(Block block) {
-	std::string name("null");
-	switch (block)
-	{
-	case Block::AIR:
-		name = "air";
-		break;
-	case Block::GRASS:
-		name = "grass";
-		break;
-	case Block::DIRT:
-		name = "dirt";
-		break;
-	case Block::STONE:
-		name = "stone";
-		break;
-	case Block::WATER:
-		name = "water";
-		break;
-	case Block::SAND:
-		name = "sand";
-		break;
-	}
-	return name;
-}
-
 glm::vec3 getTranslation(const glm::mat4& matrix) {
 	return { matrix[3][0], matrix[3][1], matrix[3][2] };
-}
-
-const BlockDetails& getDetails(Block block) {
-	int idx = (unsigned int)block;
-	if (idx >= BLOCK_DETAILS.size()) {
-		return BLOCK_DETAILS[(int) Block::STONE-2];
-	}
-	return BLOCK_DETAILS[idx];
 }
 
 std::vector<std::string> split(const std::string& str, const std::string& delim)

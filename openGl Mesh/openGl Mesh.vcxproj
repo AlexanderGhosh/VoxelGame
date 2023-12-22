@@ -243,6 +243,7 @@
     <None Include="Shaders\skybox_v.gls" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Block.h" />
     <ClInclude Include="EntityComponent\Components\Camera.h" />
     <ClInclude Include="EntityComponent\Entities\Player.h" />
     <ClInclude Include="GeomRendering\IGeomDrawable.h" />
@@ -283,7 +284,6 @@
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="GeomRendering\DrawData.h" />
     <ClInclude Include="GeomRendering\GeomData.h" />
-    <ClInclude Include="Helpers\BlockDetails.h" />
     <ClInclude Include="Helpers\BlocksEncoded.h" />
     <ClInclude Include="Helpers\Constants.h" />
     <ClInclude Include="Helpers\Functions.h" />

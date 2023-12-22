@@ -43,7 +43,7 @@ namespace reactphysics3d {
 
 struct GreedyData;
 class Shader;
-enum class Block : unsigned char;
+class Block;
 
 class VoxelMesh : public IGeomDrawable
 {

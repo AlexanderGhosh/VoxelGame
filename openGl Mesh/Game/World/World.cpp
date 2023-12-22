@@ -3,11 +3,12 @@
 #include <algorithm>
 #include <gtx/string_cast.hpp>
 #include <gtc/random.hpp>
+#include <glad/glad.h>
+#include "../../Block.h"
 #include "Chunks/ChunkColumn.h"
 #include "../../Helpers/Timers/Timer.h"
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
-#include <glad/glad.h>
 
 World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false)
 {
@@ -186,7 +187,7 @@ void World::update()
 	return;
 #endif
 	// performed in local unscaled space
-	auto index = [](int x, int y, int z) -> int {
+	/*auto index = [](int x, int y, int z) -> int {
 		return x + y * CHUNK_SIZE + z * CHUNK_SIZE * WORLD_HEIGHT;
 	};
 	struct MoveRequest {
@@ -211,7 +212,7 @@ void World::update()
 				if (block.isDynamic) {
 					idx = index(x, y - 1, z);
 					const BlockDetails& under = data[idx];
-					if (under.type == Block::AIR) {
+					if (under.type == B_AIR) {
 						MoveRequest request{};
 						request.currentBlock = block.type;
 						request.nextBlock = block.type;
@@ -226,7 +227,7 @@ void World::update()
 	for (auto& req : movementRequests) {
 		chunk.removeBlock(req.currentPos, this);
 		chunk.addBlock(req.nextPos, req.nextBlock);
-	}
+	}*/
 }
 
 void World::explode(const glm::vec3& worldPos, float radius)
@@ -251,7 +252,7 @@ void World::explode(const glm::vec3& worldPos, float radius)
 		chunkPos = floor(chunkPos);
 
 		ChunkColumn& chunk = chunks.at(chunkPos);
-		if (chunk.getBlock(pos) == Block::AIR) {
+		if (chunk.getBlock(pos) == B_AIR) {
 			continue;
 		}
 		chunk.removeBlock(pos, this);
@@ -381,7 +382,7 @@ void World::placeBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 
 	if (chunks.find(chunkPos) != chunks.end()) {
 		ChunkColumn& chunk = chunks.at(chunkPos);
-		chunk.addBlock(placePos, Block::GRAVEL);
+		chunk.addBlock(placePos, B_GRAVEL);
 	}
 	t.showDetails(1);
 }

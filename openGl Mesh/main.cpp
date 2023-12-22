@@ -12,8 +12,6 @@
 #include "Textures/Texture.h"
 #include "Shaders/Shader.h"
 
-#include "Helpers/BlockDetails.h"
-
 #include "EntityComponent/Entity.h"
 #include "EntityComponent/Entities/Player.h"
 #include "EntityComponent/Components/Transform.h"
@@ -33,6 +31,7 @@
 #include "Helpers/Timers/Timer.h"
 
 #include "Material.h"
+#include "Block.h"
 #include "JsonParser.h"
 #include <random>
 
@@ -41,7 +40,6 @@
 glm::ivec2 DIM(WIDTH, HEIGHT);
 
 GLFWwindow* createWindow();
-void createBlockDetails();
 
 // #define TESTING
 #ifdef TESTING
@@ -52,11 +50,10 @@ int main() {
 
 	return 0;
 #endif // TESTING
-	JsonParser parser(".\\Materials.json");
-	MATERIALS = std::move(parser.getAllMaterial());
-
-	JsonParser parser(".\\Blocks.json");
-	MATERIALS = std::move(parser.getAllBlocks());
+	JsonParser materialParser(".\\Materials.json");
+	MATERIALS = std::move(materialParser.getAllMaterials());
+	JsonParser blockParser(".\\Blocks.json");
+	BLOCKS = std::move(blockParser.getAllBlocks());
 
 	GLFWwindow* window = createWindow();
 	reactphysics3d::PhysicsCommon physCommon;
@@ -71,7 +68,6 @@ int main() {
 	for (auto& shader : SHADERS) {
 		shader.setUp();
 	}
-	createBlockDetails();
 	world_generation::setUp();
 
 	// ENTITY COMPONENT SYSTEMS
@@ -137,16 +133,6 @@ int main() {
 	GizmoManager::getInstance().destroy();
 	PhysicsManager::getInstance().destroy();
 	return 0;
-}
-
-void createBlockDetails() {
-	for (unsigned int i = 0; i < BLOCK_DETAILS.size(); i++) {
-		Block block = (Block)i;
-		BlockDetails& dets = BLOCK_DETAILS[i];
-		dets.type = block;
-		dets.isTransparant = block == Block::AIR || block == Block::WATER;
-		dets.isDynamic = block == Block::GRAVEL;
-	}
 }
 
 GLFWwindow* createWindow() {

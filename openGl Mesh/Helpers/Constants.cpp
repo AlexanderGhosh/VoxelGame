@@ -40,14 +40,5 @@ std::vector<Shader> SHADERS = {
 	Shader("PhysicsDebug/physicsDebug"),
 	Shader("NoiseRender/noiseRender", true)
 };
-std::vector<BlockDetails> BLOCK_DETAILS = {};
-std::vector<Material> MATERIALS = {
-	Material(glm::vec4(0), glm::vec4(.1f)), // error
-	Material(glm::vec4(0, .4, .1, 1), glm::vec4(0, .5, .2, 1)), // grass
-	Material(glm::vec4(.5, .25, .25, 1), glm::vec4(.6, .2, .2, 1)), // dirt
-	Material(glm::vec4(.4, .4, .4, 1), glm::vec4(.6, .6, .6, 1)), // stone
-	Material(glm::vec4(RRC(246), RRC(215), RRC(176), 1), glm::vec4(RRC(225), RRC(191), RRC(146), 1)), // sand
-	Material(glm::vec4(0, .6, 1, .7), glm::vec4(.1, .4, .9, .8)), // water
-	Material(glm::vec4(1), glm::vec4(.9, .9, .9, 1)), // snow
-	Material(glm::vec4(1, 0, 0, 1), glm::vec4(1, 0, 0, 1)), // gravel
-};
+std::vector<Block> BLOCKS = {};
+std::vector<Material> MATERIALS = {};

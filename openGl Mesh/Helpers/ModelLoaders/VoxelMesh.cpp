@@ -1,5 +1,6 @@
 #include "VoxelMesh.h"
 #include <glad/glad.h>
+#include "../../Block.h"
 #include "../Functions.h"
 #include "../../GeomRendering/GeomData.h"
 #include "../../Shaders/Shader.h"
@@ -45,12 +46,12 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 	relativePos_ = relativePos;
 	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE_F + z * CHUNK_AREA; };
 	int size = CHUNK_SIZE_F * CHUNK_AREA;
-	std::vector<Block> cloud(size, Block::AIR); // -1 if empty
+	std::vector<Block> cloud(size, B_AIR); // -1 if empty
 	for (unsigned int i = 0; i < points.size(); i++) {
 		PointColourIndex& point = points[i];
 
 		const int idx = index(point.x, point.y, point.z);
-		cloud[idx] = (Block) point.materialIdx;
+		cloud[idx] = B_STONE;
 	}
 
 	std::vector<GeomData> bufferData;
@@ -60,24 +61,21 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 		for (unsigned int z = 0; z < CHUNK_SIZE; z++) {
 			for (unsigned int y = 0; y < CHUNK_SIZE; y++) {
 				const Block current = cloud[index(x, y, z)];
-				const BlockDetails& currentDetails = getDetails(current);
 
-				if (current == Block::AIR) continue;
+				if (current == B_AIR) continue;
 
 				GeomData data;
 				data.setPos({ x, y, z });
-				data.textureIndex_ = getMaterialIndex(current);
+				data.textureIndex_ = current.materialIndex;
 				for (unsigned int i = 0; i < OFFSETS_3D.size(); i++) {
 					glm::vec3 currentPos(x, y, z);
 					glm::vec3 neighbourPos = currentPos + OFFSETS_3D[i];
-					Block neighbour = Block::AIR;
+					Block neighbour = B_AIR;
 					if (glm::all(glm::greaterThanEqual(neighbourPos, glm::vec3(0))) && glm::all(glm::lessThan(neighbourPos, glm::vec3(CHUNK_SIZE)))) {
 						neighbour = cloud[index(neighbourPos.x, neighbourPos.y, neighbourPos.z)];
 					}
 
-					const BlockDetails& neighboursDetails = getDetails(neighbour);
-
-					if (neighboursDetails.isTransparant && current != neighbour) {
+					if (neighbour.isTransparent && current != neighbour) {
 						markSlot(data.cubeType_, i);
 					}
 				}
@@ -147,9 +145,8 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE + z * CHUNK_AREA; };
 
 	auto show = [&](Block a, Block b) {
-		auto& d = getDetails(b);
-		return d.isTransparant && a != b;
-		};
+		return b.isTransparent && a != b;
+	};
 
 	// unscaled local space
 	auto isVisiblePY = [&cloud, index, show](Block a, int x, int y, int z) -> bool {
@@ -206,13 +203,13 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 	std::vector<GreedyData> greedyBufferData;
 	auto addPY = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) -> bool {
 		//return;
-		if (b != Block::AIR && mkPoint != x) {
+		if (b != B_AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
 			glm::vec3 faceMax(x, y, z + 1);
 
 			GreedyData data;
 			data._normal = glm::vec3(0, 1, 0);
-			data._materialIdx = (unsigned int)b;
+			data._materialIdx = b.materialIndex;
 			data._corner0 = faceMin;
 			data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
 			data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
@@ -225,7 +222,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 	};
 	auto addNY = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) {
 		//return;
-		if (b != Block::AIR && mkPoint != x) {
+		if (b != B_AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y, z);
 			glm::vec3 faceMax(x, y, z + 1);
 			faceMin.y -= 1.f;
@@ -234,7 +231,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 			GreedyData data;
 			data._normal = glm::vec3(0, -1, 0);
-			data._materialIdx = (unsigned int)b;
+			data._materialIdx = b.materialIndex;
 			data._corner0 = faceMin;
 			data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
 			data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
@@ -245,7 +242,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		};
 	auto addPZ = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) {
 		// add face
-		if (b != Block::AIR && mkPoint != x) {
+		if (b != B_AIR && mkPoint != x) {
 			glm::vec3 faceMin(mkPoint, y - 1, z);
 			glm::vec3 faceMax(x, y, z);
 			faceMin.z += 1.f;
@@ -253,7 +250,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 			GreedyData data;
 			data._normal = glm::vec3(0, 0, 1);
-			data._materialIdx = (unsigned int)b;
+			data._materialIdx = b.materialIndex;
 			data._corner0 = faceMin;
 			data._corner1 = { faceMin.x, faceMax.y, faceMax.z };
 			data._corner2 = { faceMax.x, faceMin.y, faceMin.z };
@@ -263,14 +260,14 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		}
 		};
 	auto addNZ = [&greedyBufferData](Block b, int mkPoint, int x, int y, int z) {
-		if (b != Block::AIR && mkPoint != x) {
+		if (b != B_AIR && mkPoint != x) {
 			// add face
 			glm::vec3 faceMin(mkPoint, y - 1, z);
 			glm::vec3 faceMax(x, y, z);
 
 			GreedyData data;
 			data._normal = glm::vec3(0, 0, -1);
-			data._materialIdx = (unsigned int)b;
+			data._materialIdx = b.materialIndex;
 			data._corner0 = faceMin;
 			data._corner1 = { faceMax.x, faceMin.y, faceMin.z };
 			data._corner2 = { faceMin.x, faceMax.y, faceMax.z };
@@ -287,7 +284,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 		GreedyData data;
 		data._normal = glm::vec3(1, 0, 0);
-		data._materialIdx = (unsigned int)b;
+		data._materialIdx = b.materialIndex;
 		data._corner0 = faceMin;
 		data._corner1 = { faceMin.x, faceMin.y, faceMax.z };
 		data._corner2 = { faceMin.x, faceMax.y, faceMin.z };
@@ -302,7 +299,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 
 		GreedyData data;
 		data._normal = glm::vec3(1, 0, 0);
-		data._materialIdx = (unsigned int)b;
+		data._materialIdx = b.materialIndex;
 		data._corner0 = faceMin;
 		data._corner1 = { faceMin.x, faceMax.y, faceMin.z };
 		data._corner2 = { faceMin.x, faceMin.y, faceMax.z };
@@ -316,7 +313,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 		for (int z = 0; z < CHUNK_SIZE; z++) {
 			for (int x = 0; x < CHUNK_SIZE; x++) {
 				Block prevBlock = cloud[index(x, y, z)];
-				if (prevBlock == Block::AIR) continue;
+				if (prevBlock == B_AIR) continue;
 				int mkPointPY = x; // the start point of a run
 				int mkPointNY = x;
 				int mkPointPZ = x;
@@ -490,7 +487,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 			for (int x = 0; x < CHUNK_SIZE; x++) {
 				// this is what causes the extra colliders in the ridgidbody 
 				Block currentBlock = cloud[index(x, y, z)];
-				if (isVisiblePX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
+				if (isVisiblePX(currentBlock, x, y, z) && currentBlock != B_AIR) {
 					bool added = false;
 					for (const auto& d : prevMergeDataPX) {
 						if (d.block == currentBlock && d.x == x) {
@@ -513,7 +510,7 @@ std::vector<GreedyData> VoxelMesh::greedyMesh(std::vector<Block>& cloud)
 					}
 				}
 
-				if (isVisibleNX(currentBlock, x, y, z) && currentBlock != Block::AIR) {
+				if (isVisibleNX(currentBlock, x, y, z) && currentBlock != B_AIR) {
 					bool added = false;
 					for (const auto& d : prevMergeDataNX) {
 						if (d.block == currentBlock && d.x == x) {

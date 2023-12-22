@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
-
-enum class Block : unsigned char;
+#include "../Block.h"
 
 class BlocksEncoded {
 public:

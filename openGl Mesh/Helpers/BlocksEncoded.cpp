@@ -1,5 +1,5 @@
 #include "BlocksEncoded.h"
-#include "../Helpers/Constants.h"
+#include "Constants.h"
 
 BlocksEncoded::BlocksEncoded() : blocks_(), counts_(), height_(), unalteredHeight_(0)
 {
@@ -40,7 +40,7 @@ const Block BlocksEncoded::operator[](int height) const
 			return blocks_[i];
 		}
 	}
-	return Block::AIR;
+	return B_AIR;
 }
 
 const unsigned int BlocksEncoded::getUnalteredHeight() const

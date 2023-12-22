@@ -1,6 +1,7 @@
 #include "BlockStore.h"
 #include "Helpers/Functions.h"
 #include "Game/World/world_generation.h"
+#include "Block.h"
 
 BlockStore::BlockStore() : heightMap() { }
 
@@ -34,7 +35,7 @@ const Block BlockStore::getBlock(glm::vec3 relativePos, bool check) const
 			encodes = heightMap[columnIndex(hPos.x, hPos.y)];
 			return encodes[relativePos.y];
 		}
-		return Block::ERROR;
+		return B_ERROR;
 	}
 	else {
 		const BlocksEncoded& encodes = heightMap[columnIndex(relativePos.x, relativePos.z)];
