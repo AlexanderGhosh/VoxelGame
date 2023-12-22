@@ -187,9 +187,12 @@ void Game::doLoop(const glm::mat4& projection) {
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	VoxelModel_Static& castle = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\deer.ply", false);
-	castle.setPosition(0, 38, 0);
-	castle.addToDrawable(world.geomDrawable);
+	VoxelModel_Static& deer = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\deer.ply", false);
+	deer.setPosition(0, 38, 0);
+	deer.addToDrawable(world.geomDrawable);
+	VoxelModel_Static& zelda = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\zelda_small.ply", false);
+	zelda.setPosition(0, 38, 20);
+	zelda.addToDrawable(world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	castle->addToDrawable(world.greedyDrawable);
 #endif
