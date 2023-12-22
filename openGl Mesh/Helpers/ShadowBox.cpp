@@ -8,7 +8,7 @@ std::vector<glm::vec3> getFrustumCornersWorldSpace(const glm::mat4& proj, const 
 {
 	std::vector<glm::vec3> frustrumCorners = {
 		glm::vec3(-1,  1, -1),
-		glm::vec3( 1,  1, -1), // maybe z = 0
+		glm::vec3( 1,  1, -1),
 		glm::vec3( 1, -1, -1),
 		glm::vec3(-1, -1, -1),
 
@@ -26,17 +26,19 @@ std::vector<glm::vec3> getFrustumCornersWorldSpace(const glm::mat4& proj, const 
 	return frustrumCorners;
 }
 
-glm::mat4 ShadowBox::getLSM(const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos)
+glm::mat4 ShadowBox::getLSM(const glm::mat4& view, const glm::vec3& lightPos)
 {
+	glm::mat4 proj = glm::perspective(FOV, ASPECT_RATIO, NEAR_PLANE, SHADOW_FAR_PLANE);
 	auto corners = getFrustumCornersWorldSpace(proj, view);
 	glm::vec3 frustrumCenter(0);
 	for (const glm::vec3& c : corners) {
 		frustrumCenter += c;
 	}
-	frustrumCenter /= 8.f;
+	frustrumCenter *= .125f;
 
 	float radius = glm::distance(corners[3], corners[5]) * .5f;
 	float texelsPerUnit = SHADOW_MAP_SIZE / (radius * 2.f);
+	texelsPerUnit = 1;
 
 	glm::mat4 scalar(texelsPerUnit);
 	//scalar[3][3] = 1;
@@ -52,7 +54,7 @@ glm::mat4 ShadowBox::getLSM(const glm::mat4& view, const glm::mat4& proj, const 
 	t = lookatInv * glm::vec4(frustrumCenter, 1);
 	frustrumCenter = glm::vec3(t) / t.w;
 
-	glm::vec3 eye = frustrumCenter - (lightDir * radius * 2.f);
+	glm::vec3 eye = frustrumCenter - (lightDir * radius * 1.f);
 
 	glm::mat4 lightView = glm::lookAt(eye, frustrumCenter, glm::vec3(0, 1, 0));
 

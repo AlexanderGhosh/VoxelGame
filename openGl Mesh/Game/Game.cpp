@@ -340,7 +340,7 @@ void Game::showFPS() {
 }
 
 void Game::showStuff() {
-	const glm::mat4 LSM = ShadowBox::getLSM(cameraView, cameraProjection, LIGHT_POSITION);
+	const glm::mat4 LSM = ShadowBox::getLSM(cameraView, LIGHT_POSITION);
 	// 1. render from the lights perspective for the shadow map
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
