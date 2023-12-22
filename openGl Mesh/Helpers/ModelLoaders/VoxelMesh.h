@@ -5,10 +5,11 @@
 #include "../../GeomRendering/BufferGeom.h"
 #include "../../GeomRendering/IGeomDrawable.h"
 #include "../../GreedyRendering/BufferGreedy.h"
+#include "../../Block.h"
 
 struct PointColourIndex {
 	float x, y, z;
-	int materialIdx;
+	Block block;
 	PointColourIndex() = default;
 };
 struct GreedyColliderData {

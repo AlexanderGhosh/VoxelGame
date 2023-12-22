@@ -187,9 +187,9 @@ void Game::doLoop(const glm::mat4& projection) {
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	// castle = &modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\zelda.ply", false);
+	VoxelModel_Static& castle = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\deer.ply", false);
 	// castle->setPosition(0, 38, 0);
-	// castle->addToDrawable(world.geomDrawable);
+	castle.addToDrawable(world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	castle->addToDrawable(world.greedyDrawable);
 #endif
@@ -237,8 +237,14 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	float dtAccumulator = 0;
 	float cellularAccum = 0;
+	int prevMatSize = 0;
 	Timer timer("Game Loop");
 	while (gameRunning) {
+		if (prevMatSize != MATERIALS.size()) {
+			materialsBuffer.allocate(sizeof(Material) * MATERIALS.size(), 1);
+			materialsBuffer.fill(0, sizeof(Material) * MATERIALS.size(), MATERIALS.data());
+			prevMatSize = MATERIALS.size();
+		}
 		timer.start();
 		calcTimes();
 		glfwPollEvents();

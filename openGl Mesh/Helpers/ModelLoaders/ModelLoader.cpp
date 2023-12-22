@@ -61,7 +61,7 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 {
 	std::ifstream file(fileName);
 	std::vector<PointColourIndex> points;
-	std::unordered_map<glm::vec4, int> colours;
+	std::unordered_map<glm::vec4, Block> colours;
 
 	std::string line;
 	// reads the header
@@ -88,13 +88,20 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 		point.y = stof(_split[2]);
 		point.z = stof(_split[1]);
 		if (colours.contains(colour)) {
-			point.materialIdx = colours[colour];
+			point.block = colours[colour];
 		}
 		else {
+			Block newBlock;
+			newBlock.isTransparent = colour.a < 1;
+			newBlock.isDynamic = false;
+
 			Material mat(colour, colour);
-			point.materialIdx = MATERIALS.size();
-			colours[colour] = point.materialIdx;
+			newBlock.materialIndex = MATERIALS.size();
+
+			colours[colour] = newBlock;
+
 			MATERIALS.push_back(mat);
+			BLOCKS.push_back(newBlock);
 		}
 
 		maxSize.x = std::max(maxSize.x, point.x);

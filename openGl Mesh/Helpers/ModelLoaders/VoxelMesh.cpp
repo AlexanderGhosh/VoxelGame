@@ -51,7 +51,7 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 		PointColourIndex& point = points[i];
 
 		const int idx = index(point.x, point.y, point.z);
-		cloud[idx] = B_STONE;
+		cloud[idx] = point.block;
 	}
 
 	std::vector<GeomData> bufferData;

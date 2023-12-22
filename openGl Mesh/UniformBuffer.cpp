@@ -80,9 +80,9 @@ const void UniformBuffer::init(unsigned dataSize, short bindingPoint)
 
 void UniformBuffer::cleanUp()
 {
-	bind();
+	if (UBO == 0) return;
 	glDeleteBuffers(1, &UBO);
-	unBind();
+	UBO = 0;
 	positions.clear();
 }
 
@@ -93,6 +93,7 @@ const short UniformBuffer::getBindingPoint() const
 
 void UniformBuffer::allocate(unsigned int bytes, unsigned int bindingPoint)
 {
+	cleanUp();
 	glGenBuffers(1, &UBO);
 	bind();
 	glBufferData(GL_UNIFORM_BUFFER, bytes, nullptr, GL_DYNAMIC_DRAW);

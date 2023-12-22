@@ -68,7 +68,6 @@ private:
 	void breakBlock();
 	void explode();
 
-	VoxelModel_Static* castle;
 
 	UniformBuffer camreraBuffer, materialsBuffer;
 	EntityManager* manager;
