@@ -21,7 +21,7 @@ public:
 
 	void setPosition(float x, float y, float z);
 
-	void addToDrawable(DrawableGeom& drawable) const; 
+	void addToDrawable(DrawableGeom& drawable); 
 #ifdef ALWAYS_USE_GREEDY_MESH
 	void addToDrawable(DrawableGreedy& drawable) const;
 #endif

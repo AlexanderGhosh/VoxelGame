@@ -102,6 +102,7 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 
 			MATERIALS.push_back(mat);
 			BLOCKS.push_back(newBlock);
+			point.block = newBlock;
 		}
 
 		maxSize.x = std::max(maxSize.x, point.x);

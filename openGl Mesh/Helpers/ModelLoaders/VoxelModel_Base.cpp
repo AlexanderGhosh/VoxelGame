@@ -43,9 +43,10 @@ void VoxelModel_Static::setPosition(float x, float y, float z)
 	worldPos_ = { x, y, z };
 }
 
-void VoxelModel_Static::addToDrawable(DrawableGeom& drawable) const
+void VoxelModel_Static::addToDrawable(DrawableGeom& drawable)
 {
-	for (const VoxelMesh& mesh : meshes_) {
+	for (VoxelMesh& mesh : meshes_) {
+		mesh.parent = this;
 		drawable.add(&mesh);
 	}
 }

@@ -52,6 +52,15 @@ void DrawableGeom::remove(const glm::vec2& chunkPos)
 	}
 }
 
+DrawData* DrawableGeom::get(BufferGeom* buffer)
+{
+	for (DrawData& data : this->data) {
+		const BufferGeom* buffer_ = data.buffer_;
+		if (buffer_ == buffer) return &data;
+	}
+	return nullptr;
+}
+
 void DrawableGeom::add(const IGeomDrawable* elem)
 {
 	data.push_back(elem->getDrawData());
