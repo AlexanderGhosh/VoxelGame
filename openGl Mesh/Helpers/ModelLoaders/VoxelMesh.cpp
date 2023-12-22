@@ -10,7 +10,7 @@
 #include "VoxelModel_Base.h"
 #include "../../GreedyRendering/GreedyData.h"
 
-VoxelMesh::VoxelMesh() : relativePos_(), buffer_(), rigidBody_(), parent(nullptr)
+VoxelMesh::VoxelMesh() : relativePos_(), _buffer(), rigidBody_(), parent(nullptr)
 {
 #ifdef ALWAYS_USE_GREEDY_MESH
 	greedyBuffer = BufferGreedy();
@@ -85,7 +85,7 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 		}
 	}
 	bufferData.shrink_to_fit();
-	buffer_.setUp(bufferData.data(), bufferData.size());
+	_buffer.setUp(bufferData.data(), bufferData.size());
 #ifdef ALWAYS_USE_GREEDY_MESH
 	auto greedyMeshData = std::move(greedyMesh(cloud));
 	greedyBuffer.setUp(greedyMeshData.data(), greedyMeshData.size());
@@ -119,9 +119,9 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 DrawData VoxelMesh::getDrawData() const
 {
 	DrawData res;
-	res.buffer_ = const_cast<BufferGeom*>(&buffer_);
-	res.drawOrigin_ = relativePos_ + parent->worldPos_;
-	res.type_ = DrawData::MODEL;
+	res._buffer = const_cast<BufferGeom*>(&_buffer);
+	res._drawOrigin = relativePos_ + parent->worldPos_;
+	res._type = DrawData::MODEL;
 	return res;
 }
 

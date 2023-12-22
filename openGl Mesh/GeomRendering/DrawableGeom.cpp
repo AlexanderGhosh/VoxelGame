@@ -21,7 +21,6 @@ void DrawableGeom::render(Shader* shader) const
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 #endif
 	shader->bind();
-	shader->setValue("voxelSize", VOXEL_SIZE);
 
 	draw(shader);
 
@@ -43,7 +42,7 @@ void DrawableGeom::remove(const glm::vec2& chunkPos)
 {
 	for (auto itt = data.begin(); itt != data.end();) {
 		DrawData& d = *itt;
-		if (d.type_ == DrawData::CHUNK && d.drawOrigin_ == glm::vec3(chunkPos.x, 0, chunkPos.y)) {
+		if (d._type == DrawData::CHUNK && d._drawOrigin == glm::vec3(chunkPos.x, 0, chunkPos.y)) {
 			itt = data.erase(itt);
 		}
 		else {
@@ -55,8 +54,8 @@ void DrawableGeom::remove(const glm::vec2& chunkPos)
 DrawData* DrawableGeom::get(BufferGeom* buffer)
 {
 	for (DrawData& data : this->data) {
-		const BufferGeom* buffer_ = data.buffer_;
-		if (buffer_ == buffer) return &data;
+		const BufferGeom* _buffer = data._buffer;
+		if (_buffer == buffer) return &data;
 	}
 	return nullptr;
 }
@@ -83,11 +82,12 @@ void DrawableGeom::remove(IGeomDrawable* elem)
 void DrawableGeom::draw(Shader* shader) const
 {
 	for (const DrawData& data : this->data) {
-		const BufferGeom* buffer_ = data.buffer_;
-		shader->setValue("chunkPosition", data.drawOrigin_);
+		const BufferGeom* _buffer = data._buffer;
+		shader->setValue("chunkPosition", data._drawOrigin);
+		shader->setValue("voxelSize", data._voxelSize);
 		
-		buffer_->bind();
-		glDrawArrays(GL_POINTS, 0, buffer_->size());
-		buffer_->unbind();
+		_buffer->bind();
+		glDrawArrays(GL_POINTS, 0, _buffer->size());
+		_buffer->unbind();
 	}
 }

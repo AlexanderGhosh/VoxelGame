@@ -70,12 +70,12 @@ void DrawableGreedy::add(BufferGreedy* buffer, glm::vec3 pos)
 void DrawableGreedy::draw(Shader* shader) const
 {
 	for (const GreedyDrawData& data : this->data) {
-		BufferGreedy* buffer_ = data._buffer;
+		BufferGreedy* _buffer = data._buffer;
 
 		shader->setValue("chunkPosition", data._drawOrigin * CHUNK_SIZE_F);
 
-		buffer_->bind();
-		glDrawArrays(GL_POINTS, 0, buffer_->size());
-		buffer_->unbind();
+		_buffer->bind();
+		glDrawArrays(GL_POINTS, 0, _buffer->size());
+		_buffer->unbind();
 	}
 }

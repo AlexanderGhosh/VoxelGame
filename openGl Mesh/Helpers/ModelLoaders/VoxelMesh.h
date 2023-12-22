@@ -56,7 +56,7 @@ public:
 #endif
 private:
 	glm::vec3 relativePos_;
-	BufferGeom buffer_;
+	BufferGeom _buffer;
 	reactphysics3d::RigidBody* rigidBody_;
 	VoxelModel_Static* parent;
 

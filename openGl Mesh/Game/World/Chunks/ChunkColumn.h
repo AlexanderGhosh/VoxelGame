@@ -102,7 +102,7 @@ private:
 	};
 	std::unordered_map<glm::vec3, Block> editedBlocks;
 	std::vector<GeomData> bufferData;
-	BufferGeom buffer_;
+	BufferGeom _buffer;
 	// unscaled local pos 
 	glm::vec2 position;
 

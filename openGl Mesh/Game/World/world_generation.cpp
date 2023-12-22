@@ -24,7 +24,7 @@ void world_generation::setUp()
 #ifdef FLAT_TERRAIN
 	noiseGenerator = FastNoise::NewFromEncodedNodeTree("AAAAAAA/");
 #else
-	noiseGenerator = FastNoise::NewFromEncodedNodeTree("DQAIAAAACtejvQgAAPYoXD8AAAAAAA==");
+	noiseGenerator = FastNoise::NewFromEncodedNodeTree("EQACAAAAAAAgQBAAAAAAQBkAEwDD9Sg/DQAEAAAAAAAgQAkAAGZmJj8AAAAAPwEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM3MTD4AMzMzPwAAAAA/");
 #endif
 
 	//noiseGenerator->SetSource(noiseSource);
