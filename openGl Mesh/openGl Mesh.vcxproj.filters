@@ -186,6 +186,9 @@
     <ClCompile Include="GreedyRendering\DrawableGreedy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JsonParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -298,9 +301,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\Timers\Timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Helpers\BlockDetails.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameBuffer.h">
@@ -445,6 +445,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GreedyRendering\GreedyDrawData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,10 +1,10 @@
 #include "DrawableGeom.h"
 #include <glad/glad.h>
+#include "../Helpers/Constants.h"
 #include "DrawData.h"
 #include "BufferGeom.h"
 #include "../Game/World/Chunks/ChunkColumn.h"
 #include "../Shaders/Shader.h"
-#include "../Textures/Texture.h"
 #include "IGeomDrawable.h"
 
 DrawableGeom::DrawableGeom() : data()

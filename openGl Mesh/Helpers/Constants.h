@@ -1,5 +1,6 @@
 #pragma once
-#include <glm.hpp>
+#include <ext/vector_float3.hpp>
+#include <ext/vector_float2.hpp>
 #include <gtx/hash.hpp>
 #include <vector>
 #include <array>

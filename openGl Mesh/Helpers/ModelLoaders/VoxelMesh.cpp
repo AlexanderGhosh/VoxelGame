@@ -41,7 +41,7 @@ GreedyColliderData from(const GreedyData& d) {
 	return res;
 }
 
-VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points, const std::vector<glm::vec3>& colours, bool hasCollider) : VoxelMesh()
+VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points, bool hasCollider) : VoxelMesh()
 {
 	relativePos_ = relativePos;
 	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE_F + z * CHUNK_AREA; };

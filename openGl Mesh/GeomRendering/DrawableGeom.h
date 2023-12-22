@@ -1,12 +1,9 @@
 #pragma once
-#include <glm.hpp>
 #include <list>
-#include "../Helpers/Constants.h"
 #include "DrawData.h"
+#include "../Helpers/Constants.h"
 
-class Camera;
 class Shader;
-class DrawData;
 class IGeomDrawable;
 
 class DrawableGeom

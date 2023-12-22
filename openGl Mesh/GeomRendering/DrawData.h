@@ -1,4 +1,5 @@
 #pragma once
+#include <ext/vector_float3.hpp>
 
 class BufferGeom;
 class Texture;

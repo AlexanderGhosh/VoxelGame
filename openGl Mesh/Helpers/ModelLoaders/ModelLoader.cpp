@@ -2,6 +2,7 @@
 #include <assimp/postprocess.h>
 #include <fstream>
 #include <unordered_map>
+#include <ext/vector_float4.hpp>
 #include "Mesh.h"
 #include "Model.h"
 #include "../Functions.h"
@@ -92,7 +93,7 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 		}
 		else {
 			Block newBlock;
-			newBlock.isTransparent = colour.a < 1;
+			newBlock.isTransparent = colour.w < 1;
 			newBlock.isDynamic = false;
 
 			Material mat(colour, colour);
@@ -118,8 +119,5 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, bool 
 	file.close();
 
 	std::vector<glm::vec3> cols(colours.size());
-	int i = 0;
-	for (auto& [c, _] : colours)
-		cols[i++] = glm::vec3(c);
-	return VoxelModel_Static(points, cols, maxSize, minSize, withCollider);
+	return VoxelModel_Static(points, maxSize, minSize, withCollider);
 }
