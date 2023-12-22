@@ -16,7 +16,7 @@
 #include "EntityComponent/Entities/Player.h"
 #include "EntityComponent/Components/Transform.h"
 #include "EntityComponent/Components/Camera.h"
-#include "EntityComponent/Components/FlightControls.h"
+#include "EntityComponent/Components/CreativeComponent.h"
 #include "EntityComponent/Components/RigidBody.h"
 
 #include "Mangers/EntityManager.h"
@@ -74,10 +74,10 @@ int main() {
 	ComponentManager& componentManager = ComponentManager::getInstance();
 	EntityManager& entityManager = EntityManager::getInstance();
 
-	Entities::Player player(true);
+	Entities::Player player(false);
 	Components::Transform playerTransform;
 	Components::Camera playerCamera;
-	Components::FlightControls playerControler(PLAYER_SPEED);
+	Components::CreativeComponent playerControler;
 	Components::RigidBody playerRB;
 
 	player.addComponent(playerTransform);

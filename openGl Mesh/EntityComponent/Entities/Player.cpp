@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "../Components/Transform.h"
 #include "../Components/Camera.h"
-#include "../Components/FlightControls.h"
+#include "../Components/CreativeComponent.h"
 #include "../Components/RigidBody.h"
 #include "../../Helpers/Functions.h"
 #include "../../Game/World/Chunks/ChunkColumn.h"
@@ -81,12 +81,13 @@ void Entities::Player::start()
 {
 	_transform = getComponent<Components::Transform>(); 
 	_camera = getComponent<Components::Camera>();
-	_controls = getComponent<Components::FlightControls>();
+	_controls = getComponent<Components::CreativeComponent>();
 	_rigidbody = getComponent<Components::RigidBody>();
 
 	_transform->scale = glm::vec3(1, 2, 1) * .8f;
 
 	_controls->setTransform(_transform);
+	_controls->setRigidbody(_rigidbody);
 	_rigidbody->setTransform(_transform);
 
 	Components::RigidBody_Details rbDetails;

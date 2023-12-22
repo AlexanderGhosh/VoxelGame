@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
+    <ClCompile Include="EntityComponent\Components\CreativeComponent.cpp" />
     <ClCompile Include="EntityComponent\Components\Camera.cpp" />
     <ClCompile Include="EntityComponent\Entities\Player.cpp" />
     <ClCompile Include="Gizmos\Composite\Arrow.cpp" />
@@ -246,6 +247,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
+    <ClInclude Include="EntityComponent\Components\CreativeComponent.h" />
     <ClInclude Include="EntityComponent\Components\Camera.h" />
     <ClInclude Include="EntityComponent\Entities\Player.h" />
     <ClInclude Include="GeomRendering\IGeomDrawable.h" />

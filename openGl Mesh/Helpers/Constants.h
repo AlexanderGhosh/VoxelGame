@@ -21,7 +21,7 @@ class Block;
 // insted of manuly declaring render distance this calculates it based of a desired terrain radius in real units
 // #define RENDER_DIST_FROM_DISTANCE
 
-//#define TERRAIN_HAS_COLLIDER
+#define TERRAIN_HAS_COLLIDER
 //#define PHYSICS_DEBUG_RENDERER
 
 // only works on the intal generation (all chunks when running will be async)

@@ -5,7 +5,7 @@
 namespace Components {
 	class Transform;
 	class Camera;
-	class FlightControls;
+	class CreativeComponent;
 	class RigidBody;
 }
 class ChunkColumn;
@@ -15,7 +15,7 @@ namespace Entities {
 	private:
 		Components::Transform* _transform;
 		Components::Camera* _camera;
-		Components::FlightControls* _controls;
+		Components::CreativeComponent* _controls;
 		Components::RigidBody* _rigidbody;
 		bool _noClip;
 	public:

@@ -189,6 +189,9 @@
     <ClCompile Include="JsonParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EntityComponent\Components\CreativeComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -451,6 +454,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityComponent\Components\CreativeComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

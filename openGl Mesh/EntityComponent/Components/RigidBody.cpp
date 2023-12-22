@@ -58,6 +58,18 @@ void Components::RigidBody::addVelocity(const glm::vec3& delta)
 	_reactRigidBody->setLinearVelocity(vel);
 }
 
+void Components::RigidBody::setVelocity(const glm::vec3& delta)
+{
+	reactphysics3d::Vector3 vel;
+	memcpy(&vel, &delta, sizeof(glm::vec3));
+	_reactRigidBody->setLinearVelocity(vel);
+}
+
+void Components::RigidBody::hasGravity(bool hasGravity)
+{
+	_reactRigidBody->enableGravity(hasGravity);
+}
+
 reactphysics3d::Material& Components::RigidBody::getMaterial()
 {
 	return _reactRigidBody->getCollider(0)->getMaterial();

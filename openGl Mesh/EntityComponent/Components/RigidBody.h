@@ -48,6 +48,9 @@ namespace Components {
         void postFixedUpdate() override;
 
         void addVelocity(const glm::vec3& delta);
+        void setVelocity(const glm::vec3& delta);
+
+        void hasGravity(bool hasGravity);
 
         // asumes only one collider
         reactphysics3d::Material& getMaterial();
