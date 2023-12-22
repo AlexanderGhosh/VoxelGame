@@ -307,7 +307,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		}
 		timer.mark("Cellular Automota");
 
-		glClearColor(GameConfig::backgroundCol.r, GameConfig::backgroundCol.g, GameConfig::backgroundCol.b, 1);
+		glClearColor(GameConfig::backgroundCol.x, GameConfig::backgroundCol.y, GameConfig::backgroundCol.z, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();

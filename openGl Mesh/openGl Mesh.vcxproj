@@ -91,6 +91,7 @@
       <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\RapidJSON;C:\Program Files %28x86%29\ReactPhysics3D\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win32\include;C:\Users\AGWDW\Desktop\assimp\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +109,7 @@
       <AdditionalIncludeDirectories>C:\Users\AGWDW\Desktop\Programing\SOURCE\RapidJSON;C:\Users\AGWDW\Desktop\Programing\SOURCE\FastNoise2\Win64\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\AssimpCompiled\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\Freetype\include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLM\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLFW\Include;C:\Users\AGWDW\Desktop\Programing\SOURCE\GLAD\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
