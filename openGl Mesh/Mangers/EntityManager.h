@@ -4,6 +4,12 @@
 #include "../EntityComponent/Entity.h"
 #include "reactphysics3d/engine/EventListener.h"
 
+#include "../EventsSystem/EventCallback.h"
+#include "../EventsSystem/EventDetails/CollisionEventInfo.h"
+#include "../EventsSystem/EventDetails/ClickEventInfo.h"
+#include "../EventsSystem/EventDetails/KeyDownEventInfo.h"
+#include "../EventsSystem/EventDetails/KeyUpEventInfo.h"
+
 class Entity;
 struct KeyDownEventInfo;
 struct KeyUpEventInfo;
@@ -15,6 +21,11 @@ class EntityManager : public Manager<EntityManager> {
 private:
 	std::list<Entity*> _entities;
 	unsigned int _numEntitysCreated; // used for the entity ids
+	EventCallback<EntityManager, CollisionEventInfo> onCollisionCB;
+	EventCallback<EntityManager, ClickEventInfo> onClickEventCB;
+	EventCallback<EntityManager, KeyDownEventInfo> onKeyDownEventCB;
+	EventCallback<EntityManager, KeyUpEventInfo> onKeyUpEventCB;
+
 	EntityManager();
 public:
 	void awakeEvent();

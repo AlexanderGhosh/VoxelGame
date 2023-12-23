@@ -7,6 +7,8 @@ template<typename T>
 class Event {
 public:
 	Event() = default;
+	Event(const Event&) = delete;
+	Event& operator=(const Event&) = delete;
 
 	void addListener(IEventCallback<T>* listener) {
 		listeners.push_back(listener);

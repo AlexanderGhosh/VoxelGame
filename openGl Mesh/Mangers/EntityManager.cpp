@@ -3,26 +3,21 @@
 #include "../EntityComponent/Component.h"
 #include "../EntityComponent/Components/Transform.h"
 #include "EventsManager.h"
-#include "../EventsSystem/EventCallback.h"
-#include "../EventsSystem/EventDetails/CollisionEventInfo.h"
-#include "../EventsSystem/EventDetails/ClickEventInfo.h"
-#include "../EventsSystem/EventDetails/KeyDownEventInfo.h"
-#include "../EventsSystem/EventDetails/KeyUpEventInfo.h"
 
 EntityManager::EntityManager() : Manager<EntityManager>(), _entities(), _numEntitysCreated(0)
 {
 	EventsManager& events = EventsManager::getInstance();
 
-	EventCallback onCollisionCB(this, &EntityManager::onCollideEvent);
+	onCollisionCB = EventCallback(this, &EntityManager::onCollideEvent);
 	events.onCollision += onCollisionCB;
 
-	EventCallback onClickEventCB(this, &EntityManager::onClickEvent);
+	onClickEventCB = EventCallback(this, &EntityManager::onClickEvent);
 	events.click += onClickEventCB;
 
-	EventCallback onKeyDownEventCB(this, &EntityManager::onKeyDownEvent);
+	onKeyDownEventCB = EventCallback(this, &EntityManager::onKeyDownEvent);
 	events.keyDown += onKeyDownEventCB;
 
-	EventCallback onKeyUpEventCB(this, &EntityManager::onKeyUpEvent);
+	onKeyUpEventCB = EventCallback(this, &EntityManager::onKeyUpEvent);
 	events.keyUp += onKeyUpEventCB;
 }
 
