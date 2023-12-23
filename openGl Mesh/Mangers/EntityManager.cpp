@@ -12,6 +12,7 @@
 EntityManager::EntityManager() : Manager<EntityManager>(), _entities(), _numEntitysCreated(0)
 {
 	EventsManager& events = EventsManager::getInstance();
+
 	EventCallback onCollisionCB(this, &EntityManager::onCollideEvent);
 	events.onCollision += onCollisionCB;
 

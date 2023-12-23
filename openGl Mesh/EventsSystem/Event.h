@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "IEventCallback.h"
+#include "../Mangers/EntityManager.h"
 
 template<typename T>
 class Event {

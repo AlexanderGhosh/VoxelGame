@@ -14,7 +14,7 @@ class EventsManager : public Manager<EventsManager>, public reactphysics3d::Even
 	friend class Manager;
 private:
 	EventsManager() = default;
-	void onContact(const CollisionCallback::CallbackData& e) override { onCollision.fire(CollisionEventInfo()); };
+	void onContact(const CollisionCallback::CallbackData& e) override;
 public:
 	// triggered every frame a key is down
 	Event<KeyDownEventInfo> keyDown;
