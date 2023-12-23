@@ -1,31 +1,22 @@
 #pragma once
 #include "IEventCallback.h"
 
-template<typename T>
-class EventCallback : public IEventCallback {
+template<typename T, typename U>
+class EventCallback : public IEventCallback<U> {
 public:
-	EventCallback(T* instance, void (T::* function)());
+	EventCallback(T* instance, void (T::* function)(U)) : _instance(instance), _function(function) { }
 
-	void operator()() override;
-	bool operator==(IEventCallback* b) override;
+	void operator()(U info) override {
+		(_instance->*_function)(info);
+	}
+	bool operator==(IEventCallback<U>* b) override {
+		EventCallback<T, U>* c = reinterpret_cast<EventCallback<T, U>*>(b);
+		if (!c) {
+			return false;
+		}
+		return _instance == c->_instance && _function == c->_function;
+	}
 private:
 	T* _instance;
-	void (T::* _function)();
+	void (T::* _function)(U);
 };
-
-template<typename T>
-EventCallback<T>::EventCallback<T>(T* instance, void (T::* function)()) : _instance(instance), _function(function) { }
-
-template<typename T>
-void EventCallback<T>::operator()() {
-	(_instance->*_function)();
-}
-
-template<typename T>
-bool EventCallback<T>::operator==(IEventCallback* b) {
-	EventCallback* c = reinterpret_cast<EventCallback*>(b);
-	if (!c) {
-		return false;
-	}
-	return _instance == c->_instance && _function == c->_function;
-}

@@ -465,6 +465,18 @@
     <ClInclude Include="Mangers\EventsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EventsSystem\EventDetails\KeyDownEventInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsSystem\EventDetails\KeyUpEventInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsSystem\EventDetails\ClickEventInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventsSystem\EventDetails\CollisionEventInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png">

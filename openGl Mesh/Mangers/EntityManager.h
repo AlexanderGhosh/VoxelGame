@@ -2,8 +2,13 @@
 #include <list>
 #include "Manager.h"
 #include "../EntityComponent/Entity.h"
+#include "reactphysics3d/engine/EventListener.h"
 
 class Entity;
+struct KeyDownEventInfo;
+struct KeyUpEventInfo;
+struct ClickEventInfo;
+struct CollisionEventInfo;
 
 class EntityManager : public Manager<EntityManager> {
 	friend class Manager;
@@ -19,6 +24,13 @@ public:
 	void postFixedUpdateEvent();
 	void renderEvent();
 	void destroyEvent();
+
+	// true events
+	void onCollideEvent(CollisionEventInfo info);
+	void onClickEvent(ClickEventInfo info);
+	void onKeyDownEvent(KeyDownEventInfo info);
+	void onKeyUpEvent(KeyUpEventInfo info);
+
 
 	void removeEntity(unsigned int id);
 

@@ -21,8 +21,10 @@
 #include "../EntityComponent/Components/Transform.h"
 #include "../EntityComponent/Components/RigidBody.h"
 #include "../EntityComponent/Components/RenderMesh.h"
-#include "../EventsSystem/EventCallback.h"
+// envents stuff
 #include "../Mangers/EventsManager.h"
+#include "../EventsSystem/EventCallback.h"
+#include "../EventsSystem/EventDetails/ClickEventInfo.h"
 
 
 #pragma region GameConfig
@@ -203,14 +205,15 @@ void Game::doLoop(const glm::mat4& projection) {
 	setUpSSAO();
 #endif // SSAO
 	
-	// EventCallback<Game>* callback = new EventCallback<Game>(this, &Game::placeBlock);
 	EventsManager& events = EventsManager::getInstance();
-	EventCallback<Game> leftReleaseCB(this, &Game::breakBlock);
-	events.leftClick += leftReleaseCB;
-	EventCallback<Game> rightReleaseCB(this, &Game::placeBlock);
-	events.rightClick += rightReleaseCB;
-	EventCallback<Game> middleReleaseCB(this, &Game::explode);
-	events.middleClick += middleReleaseCB;
+	// EventCallback<Game> leftReleaseCB(this, &Game::breakBlock);
+
+
+	// events.click += leftReleaseCB;
+	// EventCallback<Game> rightReleaseCB(this, &Game::placeBlock);
+	// events.click += rightReleaseCB;
+	// EventCallback<Game> middleReleaseCB(this, &Game::explode);
+	// events.click += middleReleaseCB;
 
 	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
@@ -663,15 +666,9 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	EventsManager& events = EventsManager::getInstance();
 	if (action == GLFW_RELEASE) {
-		if (button == GLFW_MOUSE_BUTTON_LEFT) {
-			events.leftClick.fire();
-		}
-		if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-			events.rightClick.fire();
-		}
-		if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
-			events.middleClick.fire();
-		}
+		ClickEventInfo info{};
+		info._mouseButton = button;
+		events.click.fire(info);
 	}
 }
 
@@ -679,7 +676,8 @@ std::string num = "0";
 
 void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
 {
-	int i = std::stoi(num);
+	EventsManager::getInstance().mouseScroll.fire();
+	/*int i = std::stoi(num);
 	i -= yoffset;
 	if (i > 8) {
 		i = 9 - i;
@@ -691,7 +689,7 @@ void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
 	uiRenderer.popWhere("slot_selected");
 	UI_Element& element = uiRenderer.getWhere("slot" + num);
 	UI_Element e = UI_Element(element.getPos(), element.getSize(), &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
-	uiRenderer.appendElement(e);
+	uiRenderer.appendElement(e);*/
 }
 
 void Game::setupEventCB(GLFWwindow* window) {

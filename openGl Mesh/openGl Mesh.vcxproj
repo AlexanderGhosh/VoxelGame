@@ -251,6 +251,10 @@
     <ClInclude Include="EntityComponent\Components\CreativeComponent.h" />
     <ClInclude Include="EntityComponent\Components\Camera.h" />
     <ClInclude Include="EntityComponent\Entities\Player.h" />
+    <ClInclude Include="EventsSystem\EventDetails\ClickEventInfo.h" />
+    <ClInclude Include="EventsSystem\EventDetails\CollisionEventInfo.h" />
+    <ClInclude Include="EventsSystem\EventDetails\KeyDownEventInfo.h" />
+    <ClInclude Include="EventsSystem\EventDetails\KeyUpEventInfo.h" />
     <ClInclude Include="Mangers\EventsManager.h" />
     <ClInclude Include="GeomRendering\IGeomDrawable.h" />
     <ClInclude Include="GreedyRendering\BufferGreedy.h" />

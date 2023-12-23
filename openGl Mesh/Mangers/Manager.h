@@ -25,6 +25,7 @@ bool Manager<T>::_initalised = false;
 template<class T>
 inline Manager<T>::Manager()
 {
+	_initalised = true;
 }
 
 template<class T>
@@ -41,6 +42,7 @@ inline T& Manager<T>::getInstance(Args ...args)
 {
 	if (!_initalised) {
 		createInstance(args...);
+		_initalised = true;
 	}
 	return _instance;
 }

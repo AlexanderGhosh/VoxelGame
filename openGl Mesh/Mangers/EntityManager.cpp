@@ -2,9 +2,27 @@
 #include "ComponentManager.h"
 #include "../EntityComponent/Component.h"
 #include "../EntityComponent/Components/Transform.h"
+#include "EventsManager.h"
+#include "../EventsSystem/EventCallback.h"
+#include "../EventsSystem/EventDetails/CollisionEventInfo.h"
+#include "../EventsSystem/EventDetails/ClickEventInfo.h"
+#include "../EventsSystem/EventDetails/KeyDownEventInfo.h"
+#include "../EventsSystem/EventDetails/KeyUpEventInfo.h"
 
 EntityManager::EntityManager() : Manager<EntityManager>(), _entities(), _numEntitysCreated(0)
 {
+	EventsManager& events = EventsManager::getInstance();
+	EventCallback onCollisionCB(this, &EntityManager::onCollideEvent);
+	events.onCollision += onCollisionCB;
+
+	EventCallback onClickEventCB(this, &EntityManager::onClickEvent);
+	events.click += onClickEventCB;
+
+	EventCallback onKeyDownEventCB(this, &EntityManager::onKeyDownEvent);
+	events.keyDown += onKeyDownEventCB;
+
+	EventCallback onKeyUpEventCB(this, &EntityManager::onKeyUpEvent);
+	events.keyUp += onKeyUpEventCB;
 }
 
 void EntityManager::awakeEvent()
@@ -54,6 +72,22 @@ void EntityManager::destroyEvent()
 	for (Entity* entity : _entities) {
 		entity->destroyEvent();
 	}
+}
+
+void EntityManager::onCollideEvent(CollisionEventInfo info)
+{
+}
+
+void EntityManager::onClickEvent(ClickEventInfo info)
+{
+}
+
+void EntityManager::onKeyDownEvent(KeyDownEventInfo info)
+{
+}
+
+void EntityManager::onKeyUpEvent(KeyUpEventInfo info)
+{
 }
 
 void EntityManager::removeEntity(unsigned int id)

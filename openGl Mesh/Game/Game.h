@@ -17,6 +17,7 @@ class Model;
 class EntityManager;
 class GizmoManager;
 class Camera;
+struct ClickEventInfo;
 
 struct Character {
 	unsigned int TextureID;  // ID handle of the glyph texture
