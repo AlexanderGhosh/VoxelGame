@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <gtx/string_cast.hpp>
 #include <gtc/random.hpp>
+#include <iostream>
 #include "../Shaders/Shader.h"
 #include "../Textures/Texture.h"
 #include "../Mangers/EntityManager.h"
@@ -20,8 +21,8 @@
 #include "../EntityComponent/Components/Transform.h"
 #include "../EntityComponent/Components/RigidBody.h"
 #include "../EntityComponent/Components/RenderMesh.h"
-#include <iostream>
 #include "../EventsSystem/EventCallback.h"
+#include "../Mangers/EventsManager.h"
 
 
 #pragma region GameConfig
@@ -36,9 +37,6 @@ glm::vec2 Game::mouseOffset;
 std::array<bool, 1024> Game::keys;
 World Game::world;
 UI_Renderer Game::uiRenderer; 
-Event Game::leftClickRelease;
-Event Game::rightClickRelease;
-Event Game::middleClickRelease;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
 SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
@@ -206,12 +204,13 @@ void Game::doLoop(const glm::mat4& projection) {
 #endif // SSAO
 	
 	// EventCallback<Game>* callback = new EventCallback<Game>(this, &Game::placeBlock);
+	EventsManager& events = EventsManager::getInstance();
 	EventCallback<Game> leftReleaseCB(this, &Game::breakBlock);
-	leftClickRelease += leftReleaseCB;
+	events.leftClick += leftReleaseCB;
 	EventCallback<Game> rightReleaseCB(this, &Game::placeBlock);
-	rightClickRelease += rightReleaseCB;
+	events.rightClick += rightReleaseCB;
 	EventCallback<Game> middleReleaseCB(this, &Game::explode);
-	middleClickRelease += middleReleaseCB;
+	events.middleClick += middleReleaseCB;
 
 	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
@@ -662,15 +661,16 @@ void Game::mouseCallBack(GLFWwindow* window, double xPos, double yPos) {
 }
 
 void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
+	EventsManager& events = EventsManager::getInstance();
 	if (action == GLFW_RELEASE) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT) {
-			leftClickRelease.fire();
+			events.leftClick.fire();
 		}
 		if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-			rightClickRelease.fire();
+			events.rightClick.fire();
 		}
 		if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
-			middleClickRelease.fire();
+			events.middleClick.fire();
 		}
 	}
 }

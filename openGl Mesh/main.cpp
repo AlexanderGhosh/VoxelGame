@@ -16,6 +16,7 @@
 #include "EntityComponent/Entities/Player.h"
 #include "EntityComponent/Components/Transform.h"
 #include "EntityComponent/Components/Camera.h"
+#include "EntityComponent/Components/FlightControls.h"
 #include "EntityComponent/Components/CreativeComponent.h"
 #include "EntityComponent/Components/RigidBody.h"
 
@@ -77,7 +78,7 @@ int main() {
 	Entities::Player player(false);
 	Components::Transform playerTransform;
 	Components::Camera playerCamera;
-	Components::CreativeComponent playerControler;
+	Components::CreativeComponent playerControler(true);
 	Components::RigidBody playerRB;
 
 	player.addComponent(playerTransform);

@@ -68,11 +68,11 @@
       "normalised": false,
       "r": 246,
       "g": 215,
-      "b": 476,
+      "b": 176,
       "a": 255
     },
     "albedo2": {
-      "normalised": true,
+      "normalised": false,
       "r": 225,
       "g": 191,
       "b": 146,

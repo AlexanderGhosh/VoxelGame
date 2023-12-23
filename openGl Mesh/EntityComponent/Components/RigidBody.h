@@ -49,6 +49,7 @@ namespace Components {
 
         void addVelocity(const glm::vec3& delta);
         void setVelocity(const glm::vec3& delta);
+        const glm::vec3  getVelocity() const;
 
         void hasGravity(bool hasGravity);
 

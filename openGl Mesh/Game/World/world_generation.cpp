@@ -17,14 +17,14 @@ void world_generation::setUp()
 {
 	// AgAAAIA/
 	options.octaves = 5;
-	options.frequency = 0.7;
+	options.frequency = 1;
 	
 	noiseSource = FastNoise::New<FastNoise::Simplex>();
 	noiseGenerator = FastNoise::New<FastNoise::FractalFBm>(); 
 #ifdef FLAT_TERRAIN
 	noiseGenerator = FastNoise::NewFromEncodedNodeTree("AAAAAAA/");
 #else
-	noiseGenerator = FastNoise::NewFromEncodedNodeTree("EQACAAAAAAAgQBAAAAAAQBkAEwDD9Sg/DQAEAAAAAAAgQAkAAGZmJj8AAAAAPwEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM3MTD4AMzMzPwAAAAA/");
+	noiseGenerator = FastNoise::NewFromEncodedNodeTree("EQACAAAAAAAgQBAAAAAAQBkAEwDD9Sg/DQAEAAAAAAAgQAkAAGZmJj8AAAAAPwEEAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM3MTD4AMzMzPwAAAAA/");
 #endif
 
 	//noiseGenerator->SetSource(noiseSource);
@@ -101,17 +101,18 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 	encoded.setUnalteredHeight(height);
 
 	if (height < WATER_LEVEL) {
+		// doesnt adds water on top of height
 		// is a body of water
 		unsigned int waterDepth = WATER_LEVEL - height;
 		encoded.push(B_STONE, height - 3);
 		encoded.push(B_SAND, 3);
 		encoded.push(B_WATER, waterDepth);
 	}
-	else {
+	else {		
 		// is a land mass
-		int h = randInt(2, 4);
+		int h = randInt(1, 4);
 		encoded.push(B_STONE, height - h);
-		if (height > SNOW_LEVEL) {
+		if (height > SNOW_LEVEL - h) {
 			// is mountain
 			encoded.push(B_SNOW, h);
 		}

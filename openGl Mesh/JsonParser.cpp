@@ -39,7 +39,7 @@ Material JsonParser::getMaterial(const std::string& location)
 
 	rapidjson::Value& a2 = obj["albedo2"];
 	assert(a2.IsObject());
-	isNormalised = a1["normalised"].GetBool();
+	isNormalised = a2["normalised"].GetBool();
 	r = a2["r"].GetFloat();
 	g = a2["g"].GetFloat();
 	b = a2["b"].GetFloat();

@@ -4,12 +4,12 @@
 class IEventCallback;
 class Event {
 public:
-	Event();
+	Event() = default;
 
 	void addListener(IEventCallback* listener);
 	void removeListener(IEventCallback* listener);
 
-	void fire();
+	void fire() const;
 
 	void operator()();
 	void operator+=(IEventCallback* listener);

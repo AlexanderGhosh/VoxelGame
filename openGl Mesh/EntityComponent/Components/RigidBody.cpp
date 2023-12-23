@@ -64,6 +64,13 @@ void Components::RigidBody::setVelocity(const glm::vec3& delta)
 	memcpy(&vel, &delta, sizeof(glm::vec3));
 	_reactRigidBody->setLinearVelocity(vel);
 }
+const glm::vec3 Components::RigidBody::getVelocity() const
+{
+	auto v = _reactRigidBody->getLinearVelocity();
+	glm::vec3 vel(0);
+	memcpy(&vel, &v, sizeof(glm::vec3));
+	return vel;
+}
 
 void Components::RigidBody::hasGravity(bool hasGravity)
 {

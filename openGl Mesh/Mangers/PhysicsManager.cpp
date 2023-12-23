@@ -2,6 +2,7 @@
 #include "../EntityComponent/Components/Transform.h"
 #include "../Game/World/Chunks/ChunkColumn.h"
 #include "../Helpers/Functions.h"
+#include "EventsManager.h"
 
 PhysicsManager::PhysicsManager() : Manager<PhysicsManager>(), _physCommon(), _physWorld(), _terrainBody(), _columnCollider()
 {
@@ -11,6 +12,8 @@ void PhysicsManager::setPhysCommon(rp3d::PhysicsCommon* common)
 {
 	_physCommon = common;
 	_physWorld = _physCommon->createPhysicsWorld();
+	_physWorld->setEventListener(&EventsManager::getInstance());
+
 	reactphysics3d::Transform bodyOffset;
 	reactphysics3d::Vector3 offsetPos(0, 0, 0);
 	bodyOffset.setPosition(offsetPos);

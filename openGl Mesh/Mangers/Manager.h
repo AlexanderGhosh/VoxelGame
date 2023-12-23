@@ -12,7 +12,7 @@ public:
 	template<typename... Args>
 	static T& getInstance(Args... args);
 
-	virtual void destroy() = 0;
+	virtual void destroy() {};
 };
 
 

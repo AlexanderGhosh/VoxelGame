@@ -11,7 +11,6 @@
 #include "World/World.h"
 #include "../FrameBuffer.h"
 #include "../UniformBuffer.h"
-#include "../EventsSystem/Event.h"
 #include "../Helpers/ModelLoaders/VoxelModel_Base.h"
 
 class Model;
@@ -60,9 +59,6 @@ private:
 	static std::array<bool, 1024> keys;
 	static World world;
 	static UI_Renderer uiRenderer;
-	static Event leftClickRelease;
-	static Event rightClickRelease;
-	static Event middleClickRelease;
 
 	void placeBlock();
 	void breakBlock();

@@ -11,23 +11,29 @@ Components::CreativeComponent::CreativeComponent(bool hasCollision) : _transform
 void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& keysPressed, const glm::vec3& fwd, const float deltaTime)
 {
 	const glm::vec3 right = glm::normalize(glm::cross(fwd, glm::vec3(0, 1, 0)));
-	float speed = _speed;
+	float speed = _speed * deltaTime;
 
 	if (keysPressed[GLFW_KEY_LEFT_CONTROL]) {
 		speed *= 1.5f;
 	}
-
+	glm::vec3 deltaV(0);
 	if (keysPressed[GLFW_KEY_W]) {
-		_transform->position += fwd * speed * deltaTime;
+		deltaV += fwd * speed;
 	}
 	if (keysPressed[GLFW_KEY_S]) {
-		_transform->position -= fwd * speed * deltaTime;
+		deltaV -= fwd * speed;
 	}
 	if (keysPressed[GLFW_KEY_A]) {
-		_transform->position -= right * speed * deltaTime;
+		deltaV -= right * speed;
 	}
 	if (keysPressed[GLFW_KEY_D]) {
-		_transform->position += right * speed * deltaTime;
+		deltaV += right * speed;
+	}
+
+	_rigidbody->addVelocity(deltaV);
+	if (deltaV.x == 0 && deltaV.z == 0) {
+		deltaV.y = _rigidbody->getVelocity().y;
+		_rigidbody->setVelocity(deltaV);
 	}
 
 	if (keysPressed[GLFW_KEY_SPACE]) {
@@ -49,7 +55,7 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 			if (_isGrounded) {
 				// jump
 				_mode = Mode::WALK;
-				_rigidbody->addVelocity({ 0, 2, 0 });
+				_rigidbody->addVelocity({ 0, speed, 0 });
 				_justJumped = true;
 				_jumpCooldown = JUMP_COOLDOWN_MAX;
 			}
@@ -59,7 +65,7 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 			}
 			else {
 				// currently flying and holding space
-				_transform->position.y += speed * deltaTime;
+				_rigidbody->addVelocity({ 0, speed, 0 });
 			}
 		}
 	}
@@ -70,7 +76,7 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 			// shift
 		}
 		else if (_mode == Mode::FLY) {
-			_transform->position.y -= speed * deltaTime;
+			_rigidbody->addVelocity({ 0, -speed, 0 });
 		}
 	}
 }
@@ -78,6 +84,7 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 void Components::CreativeComponent::update(const float dt)
 {
 	_isGrounded = _transform->position.y <= 38;
+
 	if (_jumpCooldown <= 0) {
  		_justJumped = false;
 		_jumpCooldown = 0;

@@ -16,7 +16,7 @@ class Material;
 class Block;
 
 // forces the terrain to be flat
-#define FLAT_TERRAIN
+// #define FLAT_TERRAIN
 
 // insted of manuly declaring render distance this calculates it based of a desired terrain radius in real units
 // #define RENDER_DIST_FROM_DISTANCE
@@ -100,7 +100,7 @@ constexpr unsigned int RENDER_DISTANCE = 10;
 
 constexpr unsigned int WORLD_HEIGHT = 50;
 constexpr unsigned unsigned int WATER_LEVEL = 20;
-constexpr unsigned unsigned int SNOW_LEVEL = 38;
+constexpr unsigned unsigned int SNOW_LEVEL = 50;
 
 constexpr float CHUNK_SIZE_INV = 1.f / CHUNK_SIZE_F;
 constexpr unsigned int CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE;
@@ -110,7 +110,7 @@ constexpr unsigned int CHUNK_SIZE_PADDED = CHUNK_SIZE + 2;
 constexpr unsigned int CHUNK_AREA_PADDED = CHUNK_SIZE_PADDED * CHUNK_SIZE_PADDED;
 
 
-constexpr float PLAYER_SPEED = 7;
+constexpr float PLAYER_SPEED = 1;
 
 constexpr float VOXEL_SIZE_INV = 1.f / VOXEL_SIZE;
 constexpr float HALF_VOXEL_SIZE = VOXEL_SIZE * .5f;
@@ -119,7 +119,7 @@ constexpr glm::vec3 WORLD_ORIGIN(0, 0, 0);
 constexpr float CHUNK_SIZE_SCALED = CHUNK_SIZE_F * VOXEL_SIZE;
 
 // used to convert from world space to 'noise space' (noise space is the space used in the noise generator)
-constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * VOXEL_SIZE;
+constexpr float NOISE_FACTOR = CHUNK_SIZE_INV * VOXEL_SIZE * 0.1;
 
 constexpr glm::vec3 GRAVITY(0, 0, 0);
 

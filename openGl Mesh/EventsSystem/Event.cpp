@@ -1,10 +1,6 @@
 #include "Event.h"
 #include "IEventCallback.h"
 
-Event::Event() : listeners()
-{
-}
-
 void Event::addListener(IEventCallback* listener)
 {
 	listeners.push_back(listener);
@@ -15,7 +11,7 @@ void Event::removeListener(IEventCallback* listener)
 	listeners.erase(std::find(listeners.begin(), listeners.end(), listener));
 }
 
-void Event::fire()
+void Event::fire() const
 {
 	for (auto& listener : listeners) {
 		(*listener)();

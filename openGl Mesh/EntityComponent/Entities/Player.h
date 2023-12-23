@@ -6,6 +6,7 @@ namespace Components {
 	class Transform;
 	class Camera;
 	class CreativeComponent;
+	class FlightControls;
 	class RigidBody;
 }
 class ChunkColumn;
