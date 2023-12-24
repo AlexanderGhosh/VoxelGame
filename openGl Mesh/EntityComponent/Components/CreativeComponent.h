@@ -23,12 +23,17 @@ namespace Components {
 		// in fames
 		int _jumpCooldown;
 		// in frames
-		const int JUMP_COOLDOWN_MAX = 300; 
+		const int JUMP_COOLDOWN_MAX = 30; 
+
+		void setFly();
+		void setWalk();
 	public:
 		CreativeComponent(bool hasCollision = true);
 
 		void start() override;
 		void update(const float dt) override;
+		void onKeyPress(KeyEventInfo info) override;
+		void onCollision(CollisionEventInfo info) override;
 
 		void setTransform(Transform* transform);
 		void setRigidbody(RigidBody* rigidbody);
