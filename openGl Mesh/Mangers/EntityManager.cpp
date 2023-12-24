@@ -14,11 +14,8 @@ EntityManager::EntityManager() : Manager<EntityManager>(), _entities(), _numEnti
 	onClickEventCB = EventCallback(this, &EntityManager::onClickEvent);
 	events.click += onClickEventCB;
 
-	onKeyDownEventCB = EventCallback(this, &EntityManager::onKeyDownEvent);
-	events.keyDown += onKeyDownEventCB;
-
-	onKeyUpEventCB = EventCallback(this, &EntityManager::onKeyUpEvent);
-	events.keyUp += onKeyUpEventCB;
+	onKeyEventCB = EventCallback(this, &EntityManager::onKeyEvent);
+	events.keyPress += onKeyEventCB;
 }
 
 void EntityManager::awakeEvent()
@@ -72,18 +69,23 @@ void EntityManager::destroyEvent()
 
 void EntityManager::onCollideEvent(CollisionEventInfo info)
 {
+	for (Entity* entity : _entities) {
+		entity->onCollisionEvent(info);
+	}
 }
 
 void EntityManager::onClickEvent(ClickEventInfo info)
 {
+	for (Entity* entity : _entities) {
+		entity->onClickEvent(info);
+	}
 }
 
-void EntityManager::onKeyDownEvent(KeyDownEventInfo info)
+void EntityManager::onKeyEvent(KeyEventInfo info)
 {
-}
-
-void EntityManager::onKeyUpEvent(KeyUpEventInfo info)
-{
+	for (Entity* entity : _entities) {
+		entity->onKeyPressEvent(info);
+	}
 }
 
 void EntityManager::removeEntity(unsigned int id)

@@ -7,14 +7,9 @@
 #include "../EventsSystem/EventCallback.h"
 #include "../EventsSystem/EventDetails/CollisionEventInfo.h"
 #include "../EventsSystem/EventDetails/ClickEventInfo.h"
-#include "../EventsSystem/EventDetails/KeyDownEventInfo.h"
-#include "../EventsSystem/EventDetails/KeyUpEventInfo.h"
+#include "../EventsSystem/EventDetails/KeyEventInfo.h"
 
 class Entity;
-struct KeyDownEventInfo;
-struct KeyUpEventInfo;
-struct ClickEventInfo;
-struct CollisionEventInfo;
 
 class EntityManager : public Manager<EntityManager> {
 	friend class Manager;
@@ -23,8 +18,7 @@ private:
 	unsigned int _numEntitysCreated; // used for the entity ids
 	EventCallback<EntityManager, CollisionEventInfo> onCollisionCB;
 	EventCallback<EntityManager, ClickEventInfo> onClickEventCB;
-	EventCallback<EntityManager, KeyDownEventInfo> onKeyDownEventCB;
-	EventCallback<EntityManager, KeyUpEventInfo> onKeyUpEventCB;
+	EventCallback<EntityManager, KeyEventInfo> onKeyEventCB;
 
 	EntityManager();
 public:
@@ -39,8 +33,7 @@ public:
 	// true events
 	void onCollideEvent(CollisionEventInfo info);
 	void onClickEvent(ClickEventInfo info);
-	void onKeyDownEvent(KeyDownEventInfo info);
-	void onKeyUpEvent(KeyUpEventInfo info);
+	void onKeyEvent(KeyEventInfo info);
 
 
 	void removeEntity(unsigned int id);

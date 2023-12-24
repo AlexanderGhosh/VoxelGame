@@ -25,6 +25,7 @@
 #include "Mangers/ModelManager.h"
 #include "Mangers/GizmoManager.h"
 #include "Mangers/PhysicsManager.h"
+#include "Mangers/EventsManager.h"
 
 
 #include "Gizmos/Composite/Grid2D.h"
@@ -57,6 +58,8 @@ int main() {
 	BLOCKS = std::move(blockParser.getAllBlocks());
 
 	GLFWwindow* window = createWindow();
+	EventsManager::getInstance().setWindow(window);
+
 	reactphysics3d::PhysicsCommon physCommon;
 	PhysicsManager::getInstance().setPhysCommon(&physCommon);
 

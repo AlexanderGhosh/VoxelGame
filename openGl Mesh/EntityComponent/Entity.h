@@ -26,6 +26,11 @@ protected:
 	virtual void render();
 	// called before componet functions
 	virtual void destroy();
+
+	// real events
+	virtual void onCollision(CollisionEventInfo);
+	virtual void onClick(ClickEventInfo);
+	virtual void onKeyPress(KeyEventInfo);
 public:
 	Entity();
 	Entity(unsigned int id);
@@ -50,6 +55,11 @@ public:
 	void renderEvent();
 	// called after entity functions (likly redundent as it will be cassed after the componets destructor
 	void destroyEvent();
+
+
+	virtual void onCollisionEvent(CollisionEventInfo);
+	virtual void onClickEvent(ClickEventInfo);
+	virtual void onKeyPressEvent(KeyEventInfo);
 
 	const unsigned int getId() const;
 };

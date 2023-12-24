@@ -4,22 +4,21 @@
 #include "reactphysics3d/engine/EventListener.h"
 #include "../EventsSystem/EventDetails/CollisionEventInfo.h"
 
-struct KeyDownEventInfo;
-struct KeyUpEventInfo;
+struct KeyEventInfo;
 struct ClickEventInfo;
 struct CollisionEventInfo;
 
+class GLFWwindow;
 class EventsManager : public Manager<EventsManager>, public reactphysics3d::EventListener
 {
 	friend class Manager;
 private:
 	EventsManager() = default;
 	void onContact(const CollisionCallback::CallbackData& e) override;
+	GLFWwindow* _window;
 public:
-	// triggered every frame a key is down
-	Event<KeyDownEventInfo> keyDown;
-	// triggered every time a key is released
-	Event<KeyUpEventInfo> keyUp;
+	// called on every key press release and repeat
+	Event<KeyEventInfo> keyPress;
 	Event<CollisionEventInfo> onCollision;
 	// mouse
 	// will fire once per button
@@ -29,5 +28,10 @@ public:
 
 	// MIGHT NOT USE
 	Event<void> awake, start, update, fixedUpdate, render;
+
+	// takes the GLFW key code, returns true if held down
+	bool isPressed(unsigned int keyCode) const;
+
+	inline void setWindow(GLFWwindow* window) { _window = window; };
 };
 

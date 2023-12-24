@@ -25,6 +25,7 @@
 #include "../Mangers/EventsManager.h"
 #include "../EventsSystem/EventCallback.h"
 #include "../EventsSystem/EventDetails/ClickEventInfo.h"
+#include "../EventsSystem/EventDetails/KeyEventInfo.h"
 
 
 #pragma region GameConfig
@@ -256,7 +257,6 @@ void Game::doLoop(const glm::mat4& projection) {
 		
 		std::list<ChunkColumn*> neibours = world.getNeibours(c, true);
 
-		_player->processKeys(keys, deltaTime, neibours);
 		timer.mark("Player Keys");
 
 		cameraView = _player->getViewMatrix();
@@ -614,7 +614,15 @@ void Game::setPlayer(Entities::Player* player)
 	_player = player;
 }
 
-void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode) {
+void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mod) {
+
+	EventsManager& events = EventsManager::getInstance();
+	KeyEventInfo info;
+	info._key = key;
+	info._action = action;
+	info._mod = mod;
+	events.keyPress.fire(info);
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
 		glfwSetWindowShouldClose(window, true);
 	}

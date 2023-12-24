@@ -13,11 +13,12 @@ Entity::Entity(unsigned int id) : _id(id)
 
 void Entity::addComponent(Component& component)
 {
-    _components.push_back(&component);
+    addComponent(&component);
 }
 
 void Entity::addComponent(Component* component)
 {
+    component->_parent = this;
     _components.push_back(component);
 }
 
@@ -46,6 +47,18 @@ void Entity::render()
 }
 
 void Entity::destroy()
+{
+}
+
+void Entity::onCollision(CollisionEventInfo)
+{
+}
+
+void Entity::onClick(ClickEventInfo)
+{
+}
+
+void Entity::onKeyPress(KeyEventInfo)
 {
 }
 
@@ -102,6 +115,30 @@ void Entity::destroyEvent()
     destroy();
     for (auto& component : _components) {
         component->destroy();
+    }
+}
+
+void Entity::onCollisionEvent(CollisionEventInfo info)
+{
+    onCollision(info);
+    for (auto& component : _components) {
+        component->onCollision(info);
+    }
+}
+
+void Entity::onClickEvent(ClickEventInfo info)
+{
+    onClick(info);
+    for (auto& component : _components) {
+        component->onClick(info);
+    }
+}
+
+void Entity::onKeyPressEvent(KeyEventInfo info)
+{
+    onKeyPress(info);
+    for (auto& component : _components) {
+        component->onKeyPress(info);
     }
 }
 

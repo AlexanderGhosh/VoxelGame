@@ -1,32 +1,52 @@
 #include "CreativeComponent.h"
 #include <geometric.hpp>
 #include <glfw3.h>
+#include "../Entity.h"
 #include "Transform.h"
 #include "Rigidbody.h"
+#include "Camera.h"
+#include "../../Mangers/EventsManager.h"
 
-Components::CreativeComponent::CreativeComponent(bool hasCollision) : _transform(), _speed(10), _isGrounded(false), _justJumped(false), _mode(Mode::WALK), _rigidbody(), _jumpCooldown()
+Components::CreativeComponent::CreativeComponent(bool hasCollision) : _transform(), _speed(10), _isGrounded(false), _justJumped(false), _mode(Mode::WALK), _rigidbody(), _jumpCooldown(), _camera(nullptr)
 {
 }
 
-void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& keysPressed, const glm::vec3& fwd, const float deltaTime)
+void Components::CreativeComponent::start()
 {
-	const glm::vec3 right = glm::normalize(glm::cross(fwd, glm::vec3(0, 1, 0)));
+	_camera = _parent->getComponent<Components::Camera>();
+}
+
+void Components::CreativeComponent::update(const float deltaTime)
+{
+	_isGrounded = _transform->position.y <= 38;
+
+	if (_jumpCooldown <= 0) {
+ 		_justJumped = false;
+		_jumpCooldown = 0;
+	}
+	else {
+		--_jumpCooldown;
+	}
+
+	const EventsManager& events = EventsManager::getInstance();
+	const glm::vec3 fwd = _camera->getFront();
+	const glm::vec3 right = _camera->getRight();
 	float speed = _speed * deltaTime;
 
-	if (keysPressed[GLFW_KEY_LEFT_CONTROL]) {
+	if (events.isPressed(GLFW_KEY_LEFT_CONTROL)) {
 		speed *= 1.5f;
 	}
 	glm::vec3 deltaV(0);
-	if (keysPressed[GLFW_KEY_W]) {
+	if (events.isPressed(GLFW_KEY_W)) {
 		deltaV += fwd * speed;
 	}
-	if (keysPressed[GLFW_KEY_S]) {
+	if (events.isPressed(GLFW_KEY_S)) {
 		deltaV -= fwd * speed;
 	}
-	if (keysPressed[GLFW_KEY_A]) {
+	if (events.isPressed(GLFW_KEY_A)) {
 		deltaV -= right * speed;
 	}
-	if (keysPressed[GLFW_KEY_D]) {
+	if (events.isPressed(GLFW_KEY_D)) {
 		deltaV += right * speed;
 	}
 
@@ -36,7 +56,7 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 		_rigidbody->setVelocity(deltaV);
 	}
 
-	if (keysPressed[GLFW_KEY_SPACE]) {
+	if (events.isPressed(GLFW_KEY_SPACE)) {
 		if (_mode == Mode::WALK) {
 			if (_isGrounded) {
 				// Jump
@@ -51,7 +71,7 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 				_justJumped = false;
 			}
 		}
-		else if(_mode == Mode::FLY) {
+		else if (_mode == Mode::FLY) {
 			if (_isGrounded) {
 				// jump
 				_mode = Mode::WALK;
@@ -70,7 +90,7 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 		}
 	}
 
-	if (keysPressed[GLFW_KEY_LEFT_SHIFT]) {
+	if (events.isPressed(GLFW_KEY_LEFT_SHIFT)) {
 
 		if (_isGrounded) {
 			// shift
@@ -78,19 +98,6 @@ void Components::CreativeComponent::processKeys(const std::array<bool, 1024>& ke
 		else if (_mode == Mode::FLY) {
 			_rigidbody->addVelocity({ 0, -speed, 0 });
 		}
-	}
-}
-
-void Components::CreativeComponent::update(const float dt)
-{
-	_isGrounded = _transform->position.y <= 38;
-
-	if (_jumpCooldown <= 0) {
- 		_justJumped = false;
-		_jumpCooldown = 0;
-	}
-	else {
-		--_jumpCooldown;
 	}
 }
 

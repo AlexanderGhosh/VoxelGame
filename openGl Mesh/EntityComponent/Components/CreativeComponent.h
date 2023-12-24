@@ -6,6 +6,7 @@
 namespace Components {
 	class Transform;
 	class RigidBody;
+	class Camera;
 	class CreativeComponent : public Component
 	{
 	private:
@@ -14,6 +15,8 @@ namespace Components {
 		} _mode;
 		Transform* _transform;
 		RigidBody* _rigidbody;
+		Camera* _camera;
+
 		float _speed;
 		bool _isGrounded;
 		bool _justJumped;
@@ -24,9 +27,7 @@ namespace Components {
 	public:
 		CreativeComponent(bool hasCollision = true);
 
-		// fwd is not front it is the direction that is considered forward
-		void processKeys(const std::array<bool, 1024>& keysPressed, const glm::vec3& fwd, const float deltaTime);
-
+		void start() override;
 		void update(const float dt) override;
 
 		void setTransform(Transform* transform);

@@ -465,10 +465,7 @@
     <ClInclude Include="Mangers\EventsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EventsSystem\EventDetails\KeyDownEventInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventsSystem\EventDetails\KeyUpEventInfo.h">
+    <ClInclude Include="EventsSystem\EventDetails\KeyEventInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EventsSystem\EventDetails\ClickEventInfo.h">

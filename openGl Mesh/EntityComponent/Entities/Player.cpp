@@ -58,21 +58,6 @@ const glm::vec3& Entities::Player::getFront() const
 	return _camera->getFront();
 }
 
-void Entities::Player::processKeys(const std::array<bool, 1024>& keysPressed, const float deltaTime, const std::list<ChunkColumn*>& neighbours)
-{
-	// prevents the player from moving up or down with out space or shift
-	glm::vec3 fwd = _camera->getFront();
-	fwd.y = 0;
-	fwd = glm::normalize(fwd);
-	// ^^^
-	glm::vec3 prevPos = _transform->position;
-	_controls->processKeys(keysPressed, fwd, deltaTime);
-
-	if (_noClip) {
-		return;
-	}
-}
-
 void Entities::Player::processMouse(const glm::vec2& mouseOffsets)
 {
 	_camera->processMouseMovement(mouseOffsets.x, mouseOffsets.y);
