@@ -182,7 +182,7 @@ enum class Texture_Names : unsigned char {
 };
 
 enum class Texture_Names_2D : unsigned char {
-	GUI,
+	GUI_S,
 	BOARDER_NORM,
 	BOARDER_SELECTED,
 	LIVE_HEART,
@@ -191,7 +191,7 @@ enum class Texture_Names_2D : unsigned char {
 
 enum SHADER_NAMES : unsigned char {
 	SKYBOX,
-	GUI,
+	GUI_S,
 	GLYPH,
 
 	OIT_TRANSPARENT,
