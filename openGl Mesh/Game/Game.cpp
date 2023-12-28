@@ -277,7 +277,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		glm::vec3 frustrumCenter = _player->getPosition();
 		
 
-		world.tryStartGenerateChunks(c, glm::sign(_player->getFront()));
+		world.tryStartGenerateChunks(c, _player->getFront());
 
 		timer.mark("Start Chunk Gen");
 		// std::cout << "Generated" << std::endl;

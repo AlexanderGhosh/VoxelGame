@@ -69,7 +69,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fwd
 	generated = true;
 	// local unscaled
 	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
-	// toGenerate = positionsInFront(center, fwd, RENDER_DISTANCE);
+	toGenerate = positionsInFront(center, fwd, RENDER_DISTANCE);
 
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
@@ -77,9 +77,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fwd
 		auto& [pos, _] = *itt;
 		if (!toGenerate.contains(pos) && !positionsBeingGenerated.contains(pos))
 		{
-			if (!geomDrawable.remove(pos * CHUNK_SIZE_F)) {
-				int gnfdioj = 0;
-			}
+			geomDrawable.remove(pos * CHUNK_SIZE_F);
 			itt = chunks.erase(itt);
 		}
 		else
