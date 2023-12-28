@@ -95,7 +95,7 @@ constexpr float RADIUS_DISTANCE = 16;
 
 constexpr unsigned int RENDER_DISTANCE = RADIUS_DISTANCE / (VOXEL_SIZE * CHUNK_SIZE_F);
 #else
-constexpr unsigned int RENDER_DISTANCE = 20;
+constexpr unsigned int RENDER_DISTANCE = 5;
 #endif
 
 constexpr unsigned int WORLD_HEIGHT = 50;

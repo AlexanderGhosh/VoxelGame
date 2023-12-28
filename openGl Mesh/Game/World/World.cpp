@@ -63,47 +63,47 @@ void World::generateTerrain() {
 void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& frustrumCenter, const float frustrumRadius)
 {
 	// distance calculations performed in scaled world space
-	if (generated && !GENERATE_NEW_CHUNKS) {
+	if (generated && !GENERATE_NEW_CHUNKS || positionsBeingGenerated.size() > 0) {
 		return;
 	}
 	generated = true;
 	// local unscaled
-	// auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
-	auto toGenerate = deltaCenteredPositions(center, RENDER_DISTANCE);
+	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
+	// auto toGenerate = deltaCenteredPositions(center, RENDER_DISTANCE);
 
-	// float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SIZE) + frustrumRadius;
-	// for (auto itt = chunks.cbegin(); itt != chunks.cend();)
-	// {
-	// 	// pos unscaled local chunk pos
-	// 	auto& [pos, _] = *itt;
-	// 	float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-	// 	if ((dist > maxDist || !toGenerate.contains(pos)) && !positionsBeingGenerated.contains(pos))
-	// 	{
-	// 		geomDrawable.remove(pos);
-	// 		itt = chunks.erase(itt);
-	// 	}
-	// 	else
-	// 	{
-	// 		++itt;
-	// 	}
-	// }
-	// 
-	// for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
-	// 	// local unscaled
-	// 	const glm::vec2& pos = *itt;
-	// 	float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-	// 	if (dist > maxDist || positionsBeingGenerated.contains(pos) || chunks.contains(pos)) {
-	// 		itt = toGenerate.erase(itt);
-	// 	}
-	// 	else {
-	// 		itt++;
-	// 	}
-	// }
+	float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SIZE) + frustrumRadius;
+	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
+	{
+		// pos unscaled local chunk pos
+		auto& [pos, _] = *itt;
+		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
+		if ((dist > maxDist || !toGenerate.contains(pos)) && !positionsBeingGenerated.contains(pos))
+		{
+			geomDrawable.remove(pos);
+			itt = chunks.erase(itt);
+		}
+		else
+		{
+			++itt;
+		}
+	}
+	
+	for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
+		// local unscaled
+		const glm::vec2& pos = *itt;
+		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
+		if (dist > maxDist || positionsBeingGenerated.contains(pos) || chunks.contains(pos)) {
+			itt = toGenerate.erase(itt);
+		}
+		else {
+			itt++;
+		}
+	}
 
 	positionsBeingGenerated.insert(toGenerate.begin(), toGenerate.end());
 
 	// compute set difference
-	launchAsyncs(toGenerate, 1);
+	launchAsyncs(toGenerate, toGenerate.size() / 10);
 }
 
 void World::tryFinishGenerateChunk()
@@ -292,6 +292,7 @@ glm::vec3 World::lookingAt(const glm::vec3& ro, const glm::vec3& rd)
 
 void World::launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, const unsigned int n)
 {
+	if (n == 0) return;
 	unsigned int size = allChunkPoss.size() / n;
 	std::unordered_set<glm::vec2> accumulator; // accumulates the positions to run async is then cleared
 	unsigned int i = 0;
