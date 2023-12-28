@@ -38,17 +38,19 @@ void DrawableGeom::setUp(Chunks& chunks)
 	}
 }
 
-void DrawableGeom::remove(const glm::vec2& chunkPos)
+bool DrawableGeom::remove(const glm::vec2& chunkPos)
 {
 	for (auto itt = data.begin(); itt != data.end();) {
 		DrawData& d = *itt;
 		if (d._type == DrawData::CHUNK && d._drawOrigin == glm::vec3(chunkPos.x, 0, chunkPos.y)) {
 			itt = data.erase(itt);
+			return true;
 		}
 		else {
 			itt++;
 		}
 	}
+	return false;
 }
 
 DrawData* DrawableGeom::get(BufferGeom* buffer)

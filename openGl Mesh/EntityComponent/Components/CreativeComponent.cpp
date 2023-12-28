@@ -11,12 +11,18 @@ void Components::CreativeComponent::setFly()
 {
 	_mode = Mode::FLY;
 	_rigidbody->hasGravity(false);
+	_justJumped = false;
+	_rigidbody->setVelocity({ 0, 0, 0 });
+	_jumpCooldown = 0;
 }
 
 void Components::CreativeComponent::setWalk()
 {
 	_mode = Mode::WALK;
 	_rigidbody->hasGravity(true);
+	_justJumped = false;
+	_rigidbody->setVelocity({ 0, 0, 0 });
+	_jumpCooldown = 0;
 }
 
 Components::CreativeComponent::CreativeComponent(bool hasCollision) : _transform(), _speed(10), _isGrounded(false), _justJumped(false), _mode(Mode::WALK), _rigidbody(), _jumpCooldown(), _camera(nullptr)
@@ -51,7 +57,7 @@ void Components::CreativeComponent::update(const float deltaTime)
 	float speed = _speed;
 
 	if (events.isPressed(GLFW_KEY_LEFT_CONTROL)) {
-		speed *= 1.5f;
+		speed *= 2.f;
 	}
 	glm::vec3 deltaV(0);
 	if (events.isPressed(GLFW_KEY_W)) {
@@ -101,9 +107,6 @@ void Components::CreativeComponent::onKeyPress(KeyEventInfo info)
 			else {
 				setFly();
 			}
-			_justJumped = false;
-			_rigidbody->setVelocity({ 0, 0, 0 });
-			_jumpCooldown = 0;
 			return;
 		}
 		else if(_mode == Mode::WALK) {

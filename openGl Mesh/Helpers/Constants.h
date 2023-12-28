@@ -24,6 +24,8 @@ class Block;
 // #define TERRAIN_HAS_COLLIDER
 // #define PHYSICS_DEBUG_RENDERER
 
+// if defeined chunkcs are generated in circles
+//#define CIRCULAR_CHUNKS
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
 #define GENERATE_NEW_CHUNKS true

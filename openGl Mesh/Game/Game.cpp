@@ -277,7 +277,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		glm::vec3 frustrumCenter = _player->getPosition();
 		
 
-		world.tryStartGenerateChunks(c, frustrumCenter, frustrumRadius);
+		world.tryStartGenerateChunks(c, glm::sign(_player->getFront()));
 
 		timer.mark("Start Chunk Gen");
 		// std::cout << "Generated" << std::endl;
@@ -570,7 +570,14 @@ void Game::showStuff() {
 	
 	m = "Chunk Pos: " + glm::to_string(_player->getChunkPosition());
 	showText(m, { 5, 800 }, 0.5f);
-	
+
+	m = "Num of Chunks: " + std::to_string(world.getChunkCount());
+	showText(m, { 5, 775 }, 0.5f);
+
+	m = "Num of Drawed chunks: " + std::to_string(world.getDrawCount());
+	showText(m, { 5, 750 }, 0.5f);
+
+
 	// 7. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
 	

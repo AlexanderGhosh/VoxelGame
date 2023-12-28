@@ -60,7 +60,7 @@ void World::generateTerrain() {
 	timer.showDetails(chunks.size());
 }
 
-void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& frustrumCenter, const float frustrumRadius)
+void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fwd)
 {
 	// distance calculations performed in scaled world space
 	if (generated && !GENERATE_NEW_CHUNKS || positionsBeingGenerated.size() > 0) {
@@ -69,17 +69,17 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 	generated = true;
 	// local unscaled
 	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
-	// auto toGenerate = deltaCenteredPositions(center, RENDER_DISTANCE);
+	// toGenerate = positionsInFront(center, fwd, RENDER_DISTANCE);
 
-	float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SIZE) + frustrumRadius;
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{
 		// pos unscaled local chunk pos
 		auto& [pos, _] = *itt;
-		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-		if ((dist > maxDist || !toGenerate.contains(pos)) && !positionsBeingGenerated.contains(pos))
+		if (!toGenerate.contains(pos) && !positionsBeingGenerated.contains(pos))
 		{
-			geomDrawable.remove(pos);
+			if (!geomDrawable.remove(pos * CHUNK_SIZE_F)) {
+				int gnfdioj = 0;
+			}
 			itt = chunks.erase(itt);
 		}
 		else
@@ -91,8 +91,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 	for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
 		// local unscaled
 		const glm::vec2& pos = *itt;
-		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-		if (dist > maxDist || positionsBeingGenerated.contains(pos) || chunks.contains(pos)) {
+		if (positionsBeingGenerated.contains(pos) || chunks.contains(pos)) {
 			itt = toGenerate.erase(itt);
 		}
 		else {
@@ -409,7 +408,7 @@ void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 const std::unordered_set<glm::vec2> World::centeredPositions(const glm::vec2& origin, int renderDist) const {
 
 	std::unordered_set<glm::vec2> res;
-	res.clear();
+#ifdef CIRCULAR_CHUNKS
 	for (int x = -renderDist; x < renderDist + 1; x++) {
 		int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
 		for (int y = -Y; y < Y + 1; y++) {
@@ -417,7 +416,17 @@ const std::unordered_set<glm::vec2> World::centeredPositions(const glm::vec2& or
 			pos += origin;
 			res.insert(pos);
 		}
+}
+#else
+	for (int x = -renderDist; x < renderDist + 1; x++) {
+		for (int y = -renderDist; y < renderDist + 1; y++) {
+			glm::vec2 pos(x, y);
+			pos += origin;
+			res.insert(pos);
+		}
 	}
+
+#endif
 	return res;
 }
 
@@ -459,6 +468,26 @@ std::unordered_set<glm::vec2> World::deltaCenteredPositions(const glm::vec2& ori
 	}
 	for (auto p : toRemove) {
 		chunks.erase(p);
+	}
+	return res;
+}
+
+std::unordered_set<glm::vec2> World::positionsInFront(const glm::vec2& origin, const glm::vec3& front, int renderDist) const
+{
+	std::unordered_set<glm::vec2> res;
+	glm::vec2 fwd(front.x, front.z);
+	fwd = abs(glm::normalize(fwd));
+	int xMin = fwd.x > fwd.y ? 0 : -renderDist;
+	int yMin = fwd.y > fwd.x ? 0 : -renderDist;
+	for (int x = xMin; x < renderDist; x++) {
+		for (int y = yMin; y < renderDist; y++) {
+			glm::vec2 pos(x, y);
+			pos.x *= xMin == 0 ? glm::sign(front.x) : 1;
+			pos.y *= yMin == 0 ? glm::sign(front.z) : 1;
+
+			pos += origin;
+			res.insert(pos);
+		}
 	}
 	return res;
 }

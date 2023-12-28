@@ -23,7 +23,7 @@ namespace Components {
 		// in fames
 		int _jumpCooldown;
 		// in frames
-		const int JUMP_COOLDOWN_MAX = 30; 
+		const int JUMP_COOLDOWN_MAX = 60; 
 
 		void setFly();
 		void setWalk();

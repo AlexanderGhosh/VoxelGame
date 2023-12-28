@@ -12,6 +12,13 @@ public:
 	World();
 	World(const glm::vec3 worldOrigin, unsigned int seed);
 
+	inline size_t getChunkCount() const {
+		return chunks.size();
+	}
+	inline size_t getDrawCount() const {
+		return geomDrawable.size();
+	}
+
 	void render(Shader* shader);
 	void renderGreedy(Shader* shader);
 
@@ -28,7 +35,7 @@ public:
 	// chunk pos - the currently occupiued chunk pos local unscaled
 	// frustrumCenter - world scaled pos
 	// radius - world scaled
-	void tryStartGenerateChunks(const glm::vec2& chunkPos, const glm::vec3& frustrumCenter, const float frustrumRadius); 
+	void tryStartGenerateChunks(const glm::vec2& chunkPos, const glm::vec3& fwd); 
 	void tryFinishGenerateChunk();
 
 	// if sucess is true returns a reference to the desired chunk
@@ -69,6 +76,8 @@ private:
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	// returns a set of the new chunks to generate and deletes the old chunks
 	std::unordered_set<glm::vec2> deltaCenteredPositions(const glm::vec2& origin, int renderDist);
+
+	std::unordered_set<glm::vec2> positionsInFront(const glm::vec2& origin, const glm::vec3& front, int renderDist) const;
 
 
 	void getNewChunkPositions(const glm::vec3 worldOrigin);
