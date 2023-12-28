@@ -21,12 +21,12 @@ class Block;
 // insted of manuly declaring render distance this calculates it based of a desired terrain radius in real units
 // #define RENDER_DIST_FROM_DISTANCE
 
-#define TERRAIN_HAS_COLLIDER
+// #define TERRAIN_HAS_COLLIDER
 // #define PHYSICS_DEBUG_RENDERER
 
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
-#define GENERATE_NEW_CHUNKS false
+#define GENERATE_NEW_CHUNKS true
 // #define CELLULAR_AUTOMOTA
 // #define GENERATE_INDEX_DATA_GREEDY
 #define MINIMAL_GREEDY_MESH
@@ -95,7 +95,7 @@ constexpr float RADIUS_DISTANCE = 16;
 
 constexpr unsigned int RENDER_DISTANCE = RADIUS_DISTANCE / (VOXEL_SIZE * CHUNK_SIZE_F);
 #else
-constexpr unsigned int RENDER_DISTANCE = 10;
+constexpr unsigned int RENDER_DISTANCE = 20;
 #endif
 
 constexpr unsigned int WORLD_HEIGHT = 50;

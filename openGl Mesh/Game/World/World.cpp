@@ -68,36 +68,37 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fru
 	}
 	generated = true;
 	// local unscaled
-	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
+	// auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
+	auto toGenerate = deltaCenteredPositions(center, RENDER_DISTANCE);
 
-	float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SIZE) + frustrumRadius;
-	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
-	{
-		// pos unscaled local chunk pos
-		auto& [pos, _] = *itt;
-		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-		if ((dist > maxDist || !toGenerate.contains(pos)) && !positionsBeingGenerated.contains(pos))
-		{
-			geomDrawable.remove(pos);
-			itt = chunks.erase(itt);
-		}
-		else
-		{
-			++itt;
-		}
-	}
-
-	for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
-		// local unscaled
-		const glm::vec2& pos = *itt;
-		float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
-		if (dist > maxDist || positionsBeingGenerated.contains(pos) || chunks.contains(pos)) {
-			itt = toGenerate.erase(itt);
-		}
-		else {
-			itt++;
-		}
-	}
+	// float maxDist = sqrtf(2.f * CHUNK_AREA * VOXEL_SIZE) + frustrumRadius;
+	// for (auto itt = chunks.cbegin(); itt != chunks.cend();)
+	// {
+	// 	// pos unscaled local chunk pos
+	// 	auto& [pos, _] = *itt;
+	// 	float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
+	// 	if ((dist > maxDist || !toGenerate.contains(pos)) && !positionsBeingGenerated.contains(pos))
+	// 	{
+	// 		geomDrawable.remove(pos);
+	// 		itt = chunks.erase(itt);
+	// 	}
+	// 	else
+	// 	{
+	// 		++itt;
+	// 	}
+	// }
+	// 
+	// for (auto itt = toGenerate.begin(); itt != toGenerate.end();) {
+	// 	// local unscaled
+	// 	const glm::vec2& pos = *itt;
+	// 	float dist = glm::distance((pos + .5f) * CHUNK_SIZE_SCALED, { frustrumCenter.x, frustrumCenter.z });
+	// 	if (dist > maxDist || positionsBeingGenerated.contains(pos) || chunks.contains(pos)) {
+	// 		itt = toGenerate.erase(itt);
+	// 	}
+	// 	else {
+	// 		itt++;
+	// 	}
+	// }
 
 	positionsBeingGenerated.insert(toGenerate.begin(), toGenerate.end());
 
@@ -407,6 +408,7 @@ void World::breakBlock(const glm::vec3& ro, const glm::vec3& rd, const glm::vec2
 const std::unordered_set<glm::vec2> World::centeredPositions(const glm::vec2& origin, int renderDist) const {
 
 	std::unordered_set<glm::vec2> res;
+	res.clear();
 	for (int x = -renderDist; x < renderDist + 1; x++) {
 		int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
 		for (int y = -Y; y < Y + 1; y++) {
@@ -414,6 +416,48 @@ const std::unordered_set<glm::vec2> World::centeredPositions(const glm::vec2& or
 			pos += origin;
 			res.insert(pos);
 		}
+	}
+	return res;
+}
+
+struct RetrieveKey
+{
+	template <typename T>
+	typename T::first_type operator()(T keyValuePair) const
+	{
+		return keyValuePair.first;
+	}
+};
+std::unordered_set<glm::vec2> World::deltaCenteredPositions(const glm::vec2& origin, int renderDist)
+{
+	if (chunks.size() == 0) return centeredPositions(origin, renderDist);
+	std::unordered_set<glm::vec2> res;
+	if (positionsBeingGenerated.size() > 0) return res;
+	std::vector<glm::vec2> toRemove;
+	std::transform(chunks.begin(), chunks.end(), std::back_inserter(toRemove), RetrieveKey());
+
+	for (int x = -renderDist; x < renderDist + 1; x++) {
+		int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
+		for (int y = -Y; y < Y + 1; y++) {
+			glm::vec2 pos(x, y);
+			pos += origin;
+
+			if (chunks.contains(pos)) {
+				// the chunks will persist
+				for (auto itt = toRemove.begin(); itt != toRemove.end(); itt++) {
+					if (*itt == pos) {
+						toRemove.erase(itt);
+						break;
+					}
+				}
+			}
+			else {
+				res.insert(pos);
+			}
+		}
+	}
+	for (auto p : toRemove) {
+		chunks.erase(p);
 	}
 	return res;
 }
