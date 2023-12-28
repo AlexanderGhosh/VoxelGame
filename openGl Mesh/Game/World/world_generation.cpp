@@ -24,7 +24,7 @@ void world_generation::setUp()
 #ifdef FLAT_TERRAIN
 	noiseGenerator = FastNoise::NewFromEncodedNodeTree("AAAAAAA/");
 #else
-	noiseGenerator = FastNoise::NewFromEncodedNodeTree("EQACAAAAAAAgQBAAAAAAQBkAEwDD9Sg/DQAEAAAAAAAgQAkAAGZmJj8AAAAAPwEEAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM3MTD4AMzMzPwAAAAA/");
+	noiseGenerator = FastNoise::NewFromEncodedNodeTree("EQACAAAAAAAgQBAAAAAAQBkAEwDD9Sg/DQAEAAAAAAAgQAkAAGZmJj8AAAAAPwEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM3MTD4AMzMzPwAAAAA/");
 #endif
 
 	//noiseGenerator->SetSource(noiseSource);
@@ -99,7 +99,6 @@ BlocksEncoded world_generation::createColumn(unsigned int height)
 {
 	BlocksEncoded encoded;
 	encoded.setUnalteredHeight(height);
-
 	if (height < WATER_LEVEL) {
 		// doesnt adds water on top of height
 		// is a body of water

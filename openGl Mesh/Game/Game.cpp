@@ -91,7 +91,7 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 		ColourBufferInit accumOIT;
 		accumOIT.format = GL_FLOAT;
-		accumOIT.internalFormat = GL_RGBA;
+		accumOIT.internalFormat = GL_RGBA16F;
 		accumOIT.type = GL_RGBA;
 
 		ColourBufferInit revealOIT;
@@ -188,9 +188,9 @@ void Game::doLoop(const glm::mat4& projection) {
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	// VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_STONE);
-	// woman.setPosition(0, 37, 0);
-	// woman.addToDrawable(world.geomDrawable);
+	 VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_WATER);
+	 woman.setPosition(0, 37, 0);
+	 woman.addToDrawable(world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	woman.addToDrawable(world.greedyDrawable);
 #endif

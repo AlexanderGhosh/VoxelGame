@@ -63,10 +63,11 @@ void World::generateTerrain() {
 void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fwd)
 {
 	// distance calculations performed in scaled world space
-	if (generated && !GENERATE_NEW_CHUNKS || positionsBeingGenerated.size() > 0) {
+	if (generated && !GENERATE_NEW_CHUNKS || pool.size() > 0) {
 		return;
 	}
 	generated = true;
+	positionsBeingGenerated.clear();
 	// local unscaled
 	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
 	toGenerate = positionsInFront(center, fwd, RENDER_DISTANCE);

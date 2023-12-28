@@ -7,6 +7,8 @@ class DynamicAsyncPool
 {
 public:
 	DynamicAsyncPool();
+	inline size_t size() const { return pool.size(); }
+
 	// retunrs a reference to the new future
 	std::future<Ret_Type>& add();
 	// true if the future in slot is avalible

@@ -65,10 +65,11 @@ void main()
 
     
 	// weight function
-	float weight = clamp(pow(min(1.0, colour.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3);
+	// float weight = clamp(pow(min(1.0, colour.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3);
 	
+	float weight = clamp(pow(min(1.0, colour.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3);
 	// store pixel color accumulation
-	accum = vec4(colour.rgb, weight);
+	accum = vec4(colour.rgb * colour.a, colour.a) * weight;
 
 	// store pixel revealage threshold
 	reveal = colour.a;
