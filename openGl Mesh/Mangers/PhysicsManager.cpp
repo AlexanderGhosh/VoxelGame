@@ -36,7 +36,7 @@ void PhysicsManager::setPhysCommon(rp3d::PhysicsCommon* common)
 	_physWorld->setIsDebugRenderingEnabled(true);
 	_debugRenderer = &_physWorld->getDebugRenderer();
 	_debugRenderer->setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLISION_SHAPE, true);
-	// _debugRenderer->setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, true);
+	_debugRenderer->setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_BROADPHASE_AABB, true);
 #endif // PHYSICS_DEBUG_RENDERER
 
 }

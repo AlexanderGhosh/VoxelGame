@@ -531,12 +531,14 @@ void Game::showStuff() {
 	glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)sizeof(reactphysics3d::Vector3)); // vert colour
 	
 	if (numLines > 0) {
-		// auto lines = debugger->getLinesArray();
-		// glBufferData(GL_ARRAY_BUFFER, numLines * sizeof(reactphysics3d::DebugRenderer::DebugLine), lines, GL_STATIC_DRAW);
-		// glDrawArrays(GL_LINES, 0, numLines*2); // draw all lines
+		auto lines = debugger->getLinesArray();
+		physDebug.setValue("colour", glm::vec3(1, 0, 1));
+		glBufferData(GL_ARRAY_BUFFER, numLines * sizeof(reactphysics3d::DebugRenderer::DebugLine), lines, GL_STATIC_DRAW);
+		glDrawArrays(GL_LINES, 0, numLines*2); // draw all lines
 	}
 	if (numTriangles > 0) {
 		auto triangles = debugger->getTrianglesArray();
+		physDebug.setValue("colour", glm::vec3(0, 1, 0));
 		// refill data with triangle data
 		glBufferData(GL_ARRAY_BUFFER, numTriangles * sizeof(reactphysics3d::DebugRenderer::DebugTriangle), triangles, GL_STATIC_DRAW);
 	

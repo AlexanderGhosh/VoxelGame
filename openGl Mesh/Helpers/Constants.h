@@ -22,7 +22,7 @@ class Block;
 // #define RENDER_DIST_FROM_DISTANCE
 
 #define TERRAIN_HAS_COLLIDER
-//#define PHYSICS_DEBUG_RENDERER
+// #define PHYSICS_DEBUG_RENDERER
 
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
