@@ -247,12 +247,14 @@ void Game::doLoop(const glm::mat4& projection) {
 
 
 	GUI::GUI_Window guiWindow;
+	guiWindow.windowDimentions.x = windowDim.x;
+	guiWindow.windowDimentions.y = windowDim.y;
 	GUI::BasicContainer container;
 	GUI::TextBox tb;
-	tb.setDimentions({ 0.5, 0.5 });
-	tb.setPosition({ 0.1, 0.1 });
+	tb.setDimentions({ 500 ,500 });
+	tb.setPosition({ 500, 0 });
 	tb.setBackgroundColour({ 1, 0, 0 });
-	tb.setCornerRadius(0.05);
+	tb.setCornerRadius(10);
 
 	container.push(&tb);
 	guiWindow.setRoot(&container);

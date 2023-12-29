@@ -210,6 +210,9 @@
     <ClCompile Include="GUIRendering\DrawableGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\IGUI_Element.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -489,7 +492,7 @@
     <ClInclude Include="EventsSystem\EventDetails\CollisionEventInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\IGUI_Element_.h">
+    <ClInclude Include="GUI\IGUI_Element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Utils\Float2.h">

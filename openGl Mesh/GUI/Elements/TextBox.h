@@ -1,5 +1,5 @@
 #pragma once
-#include "../IGUI_Element_.h"
+#include "../IGUI_Element.h"
 #include <string>
 
 namespace GUI {

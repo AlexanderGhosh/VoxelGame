@@ -10,6 +10,7 @@ namespace GUI {
 		Utils::DrawData getDrawData() const;
 
 		void setRoot(IGUI_Container* container);
+		static Utils::Float2 windowDimentions;
 	private:
 		IGUI_Container* _root;
 	};

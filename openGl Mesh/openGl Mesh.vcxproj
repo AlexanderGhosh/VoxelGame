@@ -177,6 +177,7 @@
     <ClCompile Include="GUI\Containers\BasicContainer.cpp" />
     <ClCompile Include="GUI\Elements\TextBox.cpp" />
     <ClCompile Include="GUI\GUI_Window.cpp" />
+    <ClCompile Include="GUI\IGUI_Element.cpp" />
     <ClCompile Include="Mangers\EventsManager.cpp" />
     <ClCompile Include="Gizmos\Composite\Arrow.cpp" />
     <ClCompile Include="BlockStore.cpp" />
@@ -266,7 +267,7 @@
     <ClInclude Include="EventsSystem\EventDetails\ClickEventInfo.h" />
     <ClInclude Include="EventsSystem\EventDetails\CollisionEventInfo.h" />
     <ClInclude Include="EventsSystem\EventDetails\KeyEventInfo.h" />
-    <ClInclude Include="GUI\IGUI_Element_.h" />
+    <ClInclude Include="GUI\IGUI_Element.h" />
     <ClInclude Include="GUI\Utils\Float2.h" />
     <ClInclude Include="GUI\Utils\Float3.h" />
     <ClInclude Include="GUI\Utils\Float4.h" />

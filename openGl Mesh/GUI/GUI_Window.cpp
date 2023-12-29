@@ -4,12 +4,14 @@
 
 using namespace GUI;
 
-Utils::DrawData GUI::GUI_Window::getDrawData() const
+Utils::Float2 GUI_Window::windowDimentions;
+
+Utils::DrawData GUI_Window::getDrawData() const
 {
 	return _root->getDrawData();
 }
 
-void GUI::GUI_Window::setRoot(IGUI_Container* container)
+void GUI_Window::setRoot(IGUI_Container* container)
 {
 	_root = container;
 }
