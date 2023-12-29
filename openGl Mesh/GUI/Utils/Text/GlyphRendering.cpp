@@ -87,7 +87,6 @@ void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Flo
 	else {
 		font = &_fonts.at(fontName);
 	}
-	glEnable(GL_BLEND);
 	glUseProgram(_shaderID);
 	glBindVertexArray(VAO);
 

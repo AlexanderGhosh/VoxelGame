@@ -255,7 +255,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	tb.setText("Hello Alex");
 	tb.setDimentions({ 150 ,50 });
 	tb.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
-	tb.setBackgroundColour({ RRC(127), RRC(143), RRC(166) });
+	tb.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0 });
 	tb.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
 	tb.setCornerRadius(5);
 	tb.setPadding({ 20, 20 });
