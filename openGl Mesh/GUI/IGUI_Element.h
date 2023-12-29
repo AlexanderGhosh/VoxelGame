@@ -3,6 +3,7 @@
 #include "Utils/Float3.h"
 #include "Utils/Float4.h"
 #include "Utils/DrawData.h"
+#include "Utils/Rendering/Buffer.h"
 
 #define GUI_PIXEL_MODE
 
@@ -20,13 +21,18 @@ namespace GUI {
 	// basic element effectivly just a rectangle
 	// position is the bottom left
 	class IGUI_Element {
+	private:
+		Utils::Buffer _drawBuffer;
 	protected:
-		IGUI_Element() : _position(), _dimentions(), _backgroundColour(), _cornerRadius(), _boarderColour(){ }
+		IGUI_Element();
+		// all stored as a fraction of the screen dimentions
 		Utils::Float2 _position, _dimentions, _cornerRadius;
 		Utils::Float4 _backgroundColour, _boarderColour;
+		mutable bool _changed;
 	public:
 
 		virtual Utils::DrawData getDrawData() const;
+		virtual void render() const;
 
 		void setPosition(Utils::Float2 pos, SIZE_MODE mode = GUI_DEFAULT_MODE);
 		void setDimentions(Utils::Float2 dims, SIZE_MODE mode = GUI_DEFAULT_MODE);

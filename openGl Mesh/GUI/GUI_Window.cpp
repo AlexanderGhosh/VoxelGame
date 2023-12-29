@@ -5,10 +5,11 @@
 using namespace GUI;
 
 Utils::Float2 GUI_Window::windowDimentions;
+unsigned int GUI_Window::elementShader;
 
-Utils::DrawData GUI_Window::getDrawData() const
+void GUI::GUI_Window::render() const
 {
-	return _root->getDrawData();
+	_root->render();
 }
 
 void GUI_Window::setRoot(IGUI_Container* container)

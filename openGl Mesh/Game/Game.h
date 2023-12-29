@@ -13,7 +13,6 @@
 #include "../UniformBuffer.h"
 #include "../Helpers/ModelLoaders/VoxelModel_Base.h"
 
-#include "../GUIRendering/DrawableGUI.h"
 #include "../GUI/GUI_Window.h"
 
 class Model;
@@ -55,8 +54,6 @@ public:
 	void cleanUp();
 
 	void setPlayer(Entities::Player* player);
-
-	DrawableGUI guiDrawable;
 
 private:
 	void setUpScreenQuad();

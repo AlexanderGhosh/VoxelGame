@@ -204,10 +204,7 @@
     <ClCompile Include="GUI\Containers\BasicContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GUIRendering\GUIBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIRendering\DrawableGUI.cpp">
+    <ClCompile Include="GUI\Utils\Rendering\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GUI\IGUI_Element.cpp">
@@ -525,10 +522,7 @@
     <ClInclude Include="GUI\Utils\Float4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GUIRendering\GUIBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIRendering\DrawableGUI.h">
+    <ClInclude Include="GUI\Utils\Rendering\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Utils\Text\Glyph.h">

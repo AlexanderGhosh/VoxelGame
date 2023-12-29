@@ -1,16 +1,13 @@
 #include "IGUI_Element.h"
+#include <glad/glad.h>
 #include "GUI_Window.h"
 
 using namespace GUI;
+static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims, const Utils::Float4& colour);
 
-static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims, const Utils::Float4& colour) {
-	data.push_back(Utils::Vertex({ offset.x, offset.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }, colour));
 
-	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y + dims.y }, colour));
+IGUI_Element::IGUI_Element() : _position(), _dimentions(), _backgroundColour(), _cornerRadius(), _boarderColour(), _drawBuffer(), _changed(false) {
+	_drawBuffer.setUp(nullptr, 0);
 }
 
 Utils::DrawData IGUI_Element::getDrawData() const {
@@ -106,24 +103,50 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 	return d;
 }
 
-void GUI::IGUI_Element::setPosition(Utils::Float2 pos, SIZE_MODE mode)
+void IGUI_Element::render() const
+{
+	if (_changed) {
+		const Utils::DrawData data = getDrawData();
+		_drawBuffer.realoc(data.data(), data.size());
+		_changed = false;
+	}
+	glUseProgram(GUI_Window::elementShader);
+	_drawBuffer.bind();
+	glDrawArrays(GL_TRIANGLES, 0, _drawBuffer.size());
+	_drawBuffer.unBind();
+}
+
+void IGUI_Element::setPosition(Utils::Float2 pos, SIZE_MODE mode)
 {
 	_position = pos;
 	if (mode == SIZE_MODE::PIXELS)
 		_position /= GUI_Window::windowDimentions;
+	_changed = true;
 }
 
-void GUI::IGUI_Element::setDimentions(Utils::Float2 dims, SIZE_MODE mode)
+void IGUI_Element::setDimentions(Utils::Float2 dims, SIZE_MODE mode)
 {
 	_dimentions = dims;
 	if (mode == SIZE_MODE::PIXELS)
 		_dimentions /= GUI_Window::windowDimentions;
+	_changed = true;
 }
 
-void GUI::IGUI_Element::setCornerRadius(float radius, SIZE_MODE mode)
+void IGUI_Element::setCornerRadius(float radius, SIZE_MODE mode)
 {
 	_cornerRadius.x = radius;
 	_cornerRadius.y = radius;
 	if (mode == SIZE_MODE::PIXELS)
 		_cornerRadius /= GUI_Window::windowDimentions;
+	_changed = true;
+}
+
+static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims, const Utils::Float4& colour) {
+	data.push_back(Utils::Vertex({ offset.x, offset.y }, colour));
+	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }, colour));
+	data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }, colour));
+
+	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }, colour));
+	data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }, colour));
+	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y + dims.y }, colour));
 }

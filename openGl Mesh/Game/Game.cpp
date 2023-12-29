@@ -27,7 +27,6 @@
 #include "../EventsSystem/EventDetails/ClickEventInfo.h"
 #include "../EventsSystem/EventDetails/KeyEventInfo.h"
 // New GUI
-#include "../GUIRendering/GUIBuffer.h"
 #include "../GUI/Containers/BasicContainer.h"
 #include "../GUI/Elements/TextBox.h"
 #include "../GUI/Utils/Text/GlyphRendering.h"
@@ -45,7 +44,7 @@ std::array<bool, 1024> Game::keys;
 World Game::world;
 UI_Renderer Game::uiRenderer; 
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(), guiDrawable(),
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
 	SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), guiWindow() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -247,24 +246,27 @@ void Game::doLoop(const glm::mat4& projection) {
 	int prevMatSize = 0;
 
 
-	GUI::GUI_Window guiWindow;
 	guiWindow.windowDimentions.x = windowDim.x;
 	guiWindow.windowDimentions.y = windowDim.y;
+	guiWindow.elementShader = SHADERS[NEW_GUI].getId();
+
 	GUI::BasicContainer container;
 	GUI::TextBox tb;
-	tb.setDimentions({ 500 ,500 });
-	tb.setPosition({ 500, 0 });
+	tb.setText("Hello Alex");
+	tb.setDimentions({ 150 ,50 });
+	tb.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
 	tb.setBackgroundColour({ RRC(127), RRC(143), RRC(166) });
 	tb.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
-	tb.setCornerRadius(10);
+	tb.setCornerRadius(5);
+	tb.setPadding({ 20, 20 });
 
 	container.push(&tb);
 	guiWindow.setRoot(&container);
 
-	GUIBuffer guiBuffer;
-	auto bufferData = guiWindow.getDrawData();
-	guiBuffer.setUp(bufferData.data(), bufferData.size());
-	guiDrawable.add(guiBuffer);
+	// GUIBuffer guiBuffer;
+	// auto bufferData = guiWindow.getDrawData();
+	// guiBuffer.setUp(bufferData.data(), bufferData.size());
+	// guiDrawable.add(guiBuffer);
 
 
 
@@ -630,7 +632,7 @@ void Game::showStuff() {
 	
 	screenQuad.unBind();
 
-	guiDrawable.render(windowDim);
+	guiWindow.render();
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// Shader* greedyShader = &SHADERS[GREEDY];
@@ -922,68 +924,68 @@ void Game::showGUI() {
 }
 
 void Game::setUpFreeType() {
-	FT_Library ft;
-	if (FT_Init_FreeType(&ft))
-		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+	//FT_Library ft;
+	//if (FT_Init_FreeType(&ft))
+	//	std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
 
-	FT_Face face;
-	if (FT_New_Face(ft, "C://Windows/Fonts/arial.ttf", 0, &face))
-		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+	//FT_Face face;
+	//if (FT_New_Face(ft, "C://Windows/Fonts/arial.ttf", 0, &face))
+	//	std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
-	FT_Set_Pixel_Sizes(face, 0, 48); // font size
+	//FT_Set_Pixel_Sizes(face, 0, 48); // font size
 
-	if (FT_Load_Char(face, 'X', FT_LOAD_RENDER)) // set active glyph
-		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+	//if (FT_Load_Char(face, 'X', FT_LOAD_RENDER)) // set active glyph
+	//	std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
+	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
 
-	for (GLubyte c = 0; c < 128; c++)
-	{
-		// Load character glyph 
-		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-		{
-			std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-			continue;
-		}
-		// Generate texture
-		unsigned int texture;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-		// Set texture options
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// Now store character for later use
-		Character character = {
-			texture,
-			glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-			face->glyph->advance.x
-		};
-		Letters.insert({ c, character });
-	}
-	glBindTexture(GL_TEXTURE_2D, 0);
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
+	//for (GLubyte c = 0; c < 128; c++)
+	//{
+	//	// Load character glyph 
+	//	if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+	//	{
+	//		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+	//		continue;
+	//	}
+	//	// Generate texture
+	//	unsigned int texture;
+	//	glGenTextures(1, &texture);
+	//	glBindTexture(GL_TEXTURE_2D, texture);
+	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+	//	// Set texture options
+	//	glGenerateMipmap(GL_TEXTURE_2D);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//	// Now store character for later use
+	//	Character character = {
+	//		texture,
+	//		glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+	//		glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+	//		face->glyph->advance.x
+	//	};
+	//	Letters.insert({ c, character });
+	//}
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//FT_Done_Face(face);
+	//FT_Done_FreeType(ft);
 
 
-	glGenVertexArrays(1, &LSVAO);
-	glGenBuffers(1, &LSVBO);
-	glBindVertexArray(LSVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, LSVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	//glGenVertexArrays(1, &LSVAO);
+	//glGenBuffers(1, &LSVBO);
+	//glBindVertexArray(LSVAO);
+	//glBindBuffer(GL_ARRAY_BUFFER, LSVBO);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
 
-	glm::mat4 projection = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
+	//glm::mat4 projection = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 	glm::mat4 projection2 = glm::ortho<float>(0.0f, windowDim.x, 0.0f, windowDim.y);
 	SHADERS[GLYPH].bind();
-	SHADERS[GLYPH].setValue("projection", projection);
+	SHADERS[GLYPH].setValue("projection", projection2);
 }
 
 void Game::showText(const std::string& text, const glm::vec2& position, float scale, const glm::vec3 colour) {

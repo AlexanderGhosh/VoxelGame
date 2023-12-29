@@ -87,6 +87,7 @@ void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Flo
 	else {
 		font = &_fonts.at(fontName);
 	}
+	glEnable(GL_BLEND);
 	glUseProgram(_shaderID);
 	glBindVertexArray(VAO);
 
@@ -110,7 +111,7 @@ void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Flo
 		float w = g.size.x * scale;
 		float h = g.size.y * scale;
 
-		float vertexData[16]= {
+		float vertexData[16] = {
 			xpos,     ypos + h,   0.0, 0.0,
 			xpos,     ypos,       0.0, 1.0,
 			xpos + w, ypos + h,   1.0, 0.0,
@@ -121,13 +122,10 @@ void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Flo
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, &vertexData);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glBindTexture(GL_TEXTURE_2D, g.textureID);
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, g.textureID);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		auto e = glGetError();
-
-
 
 		position.x += ((int)g.advance.x >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
 	}

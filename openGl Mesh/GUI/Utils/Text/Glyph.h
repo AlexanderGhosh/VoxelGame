@@ -13,11 +13,6 @@ namespace GUI::Utils::Text {
 		// how far to travel to the start of the next glyph draw (x is to the next char, y to next line)
 		Float2 advance;
 
-		// returns the offset to the bottom left fo the quad to draw
-		Float2 getOffset() const {
-			return Float2(-bearing.x, bearing.y - size.y);
-		}
-
-		Glyph() : size(), bearing(), advance() { }
+		Glyph() : textureID(), size(), bearing(), advance() { }
 	};
 }

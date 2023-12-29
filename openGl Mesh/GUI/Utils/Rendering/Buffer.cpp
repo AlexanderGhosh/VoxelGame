@@ -1,13 +1,15 @@
-#include "GUIBuffer.h"
+#include "Buffer.h"
 #include <glad/glad.h>
-#include "../GUI/Utils/Vertex.h"
+#include "../Vertex.h"
 #include <cstddef> //offsetof
 
-GUIBuffer::GUIBuffer() : VBO(), VAO(), _size(0)
+using namespace GUI::Utils;
+
+Buffer::Buffer() : VBO(), VAO(), _size(0)
 {
 }
 
-GUIBuffer::~GUIBuffer()
+Buffer::~Buffer()
 {
     if (VBO)
         glDeleteBuffers(1, &VBO);
@@ -16,22 +18,7 @@ GUIBuffer::~GUIBuffer()
     VBO = VAO = 0;
 }
 
-GUIBuffer::GUIBuffer(const GUIBuffer& other) : GUIBuffer()
-{
-    VBO = other.VBO;
-    VAO = other.VAO;
-    _size = other._size;
-}
-
-GUIBuffer& GUIBuffer::operator=(const GUIBuffer& other)
-{
-    VBO = other.VBO;
-    VAO = other.VAO;
-    _size = other._size;
-    return *this;
-}
-
-GUIBuffer::GUIBuffer(GUIBuffer&& other) noexcept : GUIBuffer()
+Buffer::Buffer(Buffer&& other) noexcept : Buffer()
 {
     VBO = other.VBO;
     VAO = other.VAO;
@@ -40,7 +27,7 @@ GUIBuffer::GUIBuffer(GUIBuffer&& other) noexcept : GUIBuffer()
     other.empty();
 }
 
-GUIBuffer& GUIBuffer::operator=(GUIBuffer&& other) noexcept
+Buffer& Buffer::operator=(Buffer&& other) noexcept
 {
     VBO = other.VBO;
     VAO = other.VAO;
@@ -50,8 +37,9 @@ GUIBuffer& GUIBuffer::operator=(GUIBuffer&& other) noexcept
     return *this;
 }
 
-void GUIBuffer::setUp(GUI::Utils::Vertex* data, unsigned int size)
+void Buffer::setUp(const GUI::Utils::Vertex* data, unsigned int size)
 {
+    if (valid()) throw "Cannot call setUp on a valid buffer (GUI)";
     _size = size;
     glGenBuffers(1, &VBO); // VBO
     glGenVertexArrays(1, &VAO); // VAO
@@ -68,12 +56,26 @@ void GUIBuffer::setUp(GUI::Utils::Vertex* data, unsigned int size)
     glBindVertexArray(0);
 }
 
-void GUIBuffer::bind()
+void GUI::Utils::Buffer::realoc(const GUI::Utils::Vertex* data, unsigned int size) const
+{
+    if (!valid()) throw "Cannot call realoc on an invalid buffer (GUI)";
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    if (_size < size) {
+        glBufferData(GL_ARRAY_BUFFER, size * sizeof(GUI::Utils::Vertex), data, GL_STATIC_DRAW);
+        const_cast<unsigned int&>(_size) = size;
+    }
+    else {
+        glBufferSubData(GL_ARRAY_BUFFER, 0, size * sizeof(GUI::Utils::Vertex), data);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Buffer::bind() const
 {
     glBindVertexArray(VAO);
 }
 
-void GUIBuffer::unBind()
+void Buffer::unBind() const
 {
     glBindVertexArray(0);
 }
