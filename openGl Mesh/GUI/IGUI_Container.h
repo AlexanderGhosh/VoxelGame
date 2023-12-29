@@ -11,9 +11,13 @@ namespace GUI {
 		inline void push(T& element) { push(&element); }
 
 		virtual void render(Utils::Float2 origin, Utils::Float2 parentDimentions) const override {
-			IGUI_Element::render(origin, parentDimentions);
+			// IGUI_Element::render(origin, parentDimentions);
+
+			Utils::Float2 drawPosition = origin + _position.getPixelValue(parentDimentions);
+			Utils::Float2 drawDimentions = _dimentions.getPixelValue(parentDimentions);
+
 			for (IGUI_Element* child : _children) {
-				child->render(_position, _dimentions);
+				child->render(drawPosition, drawDimentions);
 			}
 		}
 	protected:

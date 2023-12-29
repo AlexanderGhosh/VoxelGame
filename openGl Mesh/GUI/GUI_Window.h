@@ -10,6 +10,7 @@ namespace GUI {
 
 		void render() const;
 
+		// root will always fill up the window
 		void setRoot(IGUI_Container* container);
 		static Utils::Float2 windowDimentions;
 		static unsigned int elementShader;

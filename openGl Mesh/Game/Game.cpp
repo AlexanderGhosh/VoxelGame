@@ -251,28 +251,28 @@ void Game::doLoop(const glm::mat4& projection) {
 	guiWindow.windowDimentions.y = windowDim.y;
 	guiWindow.elementShader = SHADERS[NEW_GUI].getId();
 
-	GUI::StackContainer container;
+	GUI::BasicContainer container;
 	container.setBackgroundColour({ 1, 0, 0, .2 });
 	GUI::TextBox tb1;
 	tb1.setText("Line 1");
 	tb1.setDimentions({ 150 ,50 });
 	tb1.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
-	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0 });
+	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 1 });
 	tb1.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
 	tb1.setCornerRadius(5);
 	tb1.setPadding({ 20, 20 });
 
-	GUI::TextBox tb2;
-	tb2.setText("Line 2");
-	tb2.setDimentions({ 150 ,50 });
-	tb2.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
-	tb2.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0.5 });
-	tb2.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
-	tb2.setCornerRadius(5);
-	tb2.setPadding({ 20, 20 });
+	// GUI::TextBox tb2;
+	// tb2.setText("Line 2");
+	// tb2.setDimentions({ 150 ,50 });
+	// tb2.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
+	// tb2.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0.5 });
+	// tb2.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
+	// tb2.setCornerRadius(5);
+	// tb2.setPadding({ 20, 20 });
 
 	container.push(tb1);
-	container.push(tb2);
+	// container.push(tb2);
 	guiWindow.setRoot(&container);
 
 	// GUIBuffer guiBuffer;
@@ -998,6 +998,8 @@ void Game::setUpFreeType() {
 	glm::mat4 projection2 = glm::ortho<float>(0.0f, windowDim.x, 0.0f, windowDim.y);
 	SHADERS[GLYPH].bind();
 	SHADERS[GLYPH].setValue("projection", projection2);
+	SHADERS[NEW_GUI].bind();
+	SHADERS[NEW_GUI].setValue("projection", projection2);
 }
 
 void Game::showText(const std::string& text, const glm::vec2& position, float scale, const glm::vec3 colour) {

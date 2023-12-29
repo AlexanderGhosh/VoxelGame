@@ -14,12 +14,12 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 	Utils::DrawData d;
 	// center quad
 	
-	Utils::Float2 offset = _position + _cornerRadius;
-	Utils::Float2 dims = _dimentions - _cornerRadius * 2.;
+	Utils::Float2 offset(0, 0);
+	Utils::Float2 dims(1, 1);
 
 	if(_backgroundColour.a > 0)
 		addQuad(d, offset, dims, _backgroundColour);
-
+	/*
 	if (_cornerRadius.x > 0 && _cornerRadius.y && _boarderColour.a > 0) {
 		// top quad
 		offset = _position + Utils::Float2(_cornerRadius.x, _dimentions.y - _cornerRadius.y);
@@ -98,6 +98,7 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 			p23 = p13 + line3;
 		}
 	}
+	*/
 	return d;
 }
 
@@ -108,7 +109,17 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 		_drawBuffer.realoc(data.data(), data.size());
 		_changed = false;
 	}
+	Utils::Float2 drawPosition = origin + _position.getPixelValue(parentDimentions);
+	Utils::Float2 drawDimentions = _dimentions.getPixelValue(parentDimentions);
+
 	glUseProgram(GUI_Window::elementShader);
+
+	unsigned int loc = glGetUniformLocation(GUI_Window::elementShader, "position");
+	glUniform2f(loc, drawPosition.x, drawPosition.y);
+
+	loc = glGetUniformLocation(GUI_Window::elementShader, "dimentions");
+	glUniform2f(loc, drawDimentions.x, drawDimentions.y);
+
 	_drawBuffer.bind();
 	glDrawArrays(GL_TRIANGLES, 0, _drawBuffer.size());
 	_drawBuffer.unBind();
@@ -116,26 +127,19 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 
 void IGUI_Element::setPosition(Utils::Float2 pos, UNIT_MODE mode)
 {
-	_position = pos;
-	if (mode == UNIT_MODE::FRACTIONAL)
-		_position *= GUI_Window::windowDimentions;
+	_position.set(pos, mode);
 	_changed = true;
 }
 
 void IGUI_Element::setDimentions(Utils::Float2 dims, UNIT_MODE mode)
 {
-	_dimentions = dims;
-	if (mode == UNIT_MODE::PIXELS)
-		_dimentions /= GUI_Window::windowDimentions;
+	_dimentions.set(dims, mode);
 	_changed = true;
 }
 
 void IGUI_Element::setCornerRadius(float radius, UNIT_MODE mode)
 {
-	_cornerRadius.x = radius;
-	_cornerRadius.y = radius;
-	if (mode == UNIT_MODE::PIXELS)
-		_cornerRadius /= GUI_Window::windowDimentions;
+	_cornerRadius.set({ radius , radius }, mode);
 	_changed = true;
 }
 

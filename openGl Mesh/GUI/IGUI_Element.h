@@ -1,4 +1,5 @@
 #pragma once
+#include "Utils/Units.h"
 #include "Utils/Float2.h"
 #include "Utils/Float3.h"
 #include "Utils/Float4.h"
@@ -22,14 +23,16 @@ namespace GUI {
 	protected:
 		IGUI_Element();
 		// all stored as absolute pixel values
-		Utils::Float2 _position, _dimentions, _cornerRadius;
+		Utils::Units<Utils::Float2> _position, _dimentions, _cornerRadius;
 		Utils::Float4 _backgroundColour, _boarderColour;
+
 		// if true causes the vertex data to be regenerated
 		mutable bool _changed;
 	public:
 
+		// genreates vertex data for a unit rounded box (1 pixel by 1 pixel)
 		virtual Utils::DrawData getDrawData() const;
-		// origin is the position which this element is relative too
+		// origin is the position which this element is relative too (pixel space)
 		virtual void render(Utils::Float2 origin, Utils::Float2 parentDimentions) const;
 
 		void setPosition(Utils::Float2 pos, UNIT_MODE mode = GUI_DEFAULT_MODE);
@@ -41,7 +44,5 @@ namespace GUI {
 
 		inline void setBoarderColour(Utils::Float4 col) { _boarderColour = col; }
 		inline void setBoarderColour(Utils::Float3 col) { _boarderColour = Utils::Float4(col.r, col.g, col.b, 1); }
-
-		inline Utils::Float2 getDimentions() const { return _dimentions; }
 	};
 }

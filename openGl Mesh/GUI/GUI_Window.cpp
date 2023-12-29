@@ -17,5 +17,6 @@ void GUI::GUI_Window::render() const
 void GUI_Window::setRoot(IGUI_Container* container)
 {
 	_root = container;
-	_root->setDimentions(windowDimentions);
+	_root->setPosition({0 , 0}, PIXELS);
+	_root->setDimentions(windowDimentions, PIXELS);
 }
