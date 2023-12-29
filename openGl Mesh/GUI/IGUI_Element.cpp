@@ -13,11 +13,14 @@ IGUI_Element::IGUI_Element() : _position(), _dimentions(), _backgroundColour(), 
 Utils::DrawData IGUI_Element::getDrawData() const {
 	Utils::DrawData d;
 	// center quad
+	
 	Utils::Float2 offset = _position + _cornerRadius;
 	Utils::Float2 dims = _dimentions - _cornerRadius * 2.;
-	addQuad(d, offset, dims, _backgroundColour);
 
-	if (_cornerRadius.x > 0 && _cornerRadius.y) {
+	if(_backgroundColour.a > 0)
+		addQuad(d, offset, dims, _backgroundColour);
+
+	if (_cornerRadius.x > 0 && _cornerRadius.y && _boarderColour.a > 0) {
 		// top quad
 		offset = _position + Utils::Float2(_cornerRadius.x, _dimentions.y - _cornerRadius.y);
 		dims = Utils::Float2(_dimentions.x - 2 * _cornerRadius.x, _cornerRadius.y);
