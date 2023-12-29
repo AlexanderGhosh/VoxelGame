@@ -253,8 +253,8 @@ void Game::doLoop(const glm::mat4& projection) {
 	GUI::TextBox tb;
 	tb.setDimentions({ 500 ,500 });
 	tb.setPosition({ 500, 0 });
-	tb.setBackgroundColour({ 1, 0, 0 });
-	tb.setBoarderColour({ 0, 0, 0 });
+	tb.setBackgroundColour({ RRC(127), RRC(143), RRC(166) });
+	tb.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
 	tb.setCornerRadius(10);
 
 	container.push(&tb);
