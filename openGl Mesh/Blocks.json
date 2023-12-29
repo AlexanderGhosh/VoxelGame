@@ -43,5 +43,10 @@
     "isTransparent": false,
     "isDynamic": false,
     "materialIndex": 7
+  },
+  "glass": {
+    "isTransparent": true,
+    "isDynamic": false,
+    "materialIndex": 8
   }
 }

@@ -191,7 +191,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	 VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_WATER);
+	 VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_GLASS);
 	 woman.setPosition(0, 37, 0);
 	 woman.addToDrawable(world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
