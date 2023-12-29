@@ -21,9 +21,9 @@ namespace GUI {
 	// position is the bottom left
 	class IGUI_Element {
 	protected:
-		IGUI_Element() : _position(), _dimentions(), _backgroundColour(), _cornerRadius() { }
+		IGUI_Element() : _position(), _dimentions(), _backgroundColour(), _cornerRadius(), _boarderColour(){ }
 		Utils::Float2 _position, _dimentions, _cornerRadius;
-		Utils::Float4 _backgroundColour;
+		Utils::Float4 _backgroundColour, _boarderColour;
 	public:
 
 		virtual Utils::DrawData getDrawData() const;
@@ -34,5 +34,8 @@ namespace GUI {
 
 		inline void setBackgroundColour(Utils::Float4 col) { _backgroundColour = col; }
 		inline void setBackgroundColour(Utils::Float3 col) { _backgroundColour = Utils::Float4(col.r, col.g, col.b, 1); }
+
+		inline void setBoarderColour(Utils::Float4 col) { _boarderColour = col; }
+		inline void setBoarderColour(Utils::Float3 col) { _boarderColour = Utils::Float4(col.r, col.g, col.b, 1); }
 	};
 }

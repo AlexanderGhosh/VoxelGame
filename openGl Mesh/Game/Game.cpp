@@ -254,6 +254,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	tb.setDimentions({ 500 ,500 });
 	tb.setPosition({ 500, 0 });
 	tb.setBackgroundColour({ 1, 0, 0 });
+	tb.setBoarderColour({ 0, 0, 0 });
 	tb.setCornerRadius(10);
 
 	container.push(&tb);
