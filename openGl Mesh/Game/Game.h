@@ -12,6 +12,8 @@
 #include "../FrameBuffer.h"
 #include "../UniformBuffer.h"
 #include "../Helpers/ModelLoaders/VoxelModel_Base.h"
+#include "../GUIRendering/DrawableGUI.h"
+#include "../GUI/GUI_Window.h"
 
 class Model;
 class EntityManager;
@@ -52,6 +54,9 @@ public:
 	void cleanUp();
 
 	void setPlayer(Entities::Player* player);
+
+	DrawableGUI guiDrawable;
+
 private:
 	void setUpScreenQuad();
 
@@ -65,7 +70,7 @@ private:
 	void breakBlock();
 	void explode();
 
-
+	GUI::GUI_Window guiWindow;
 	UniformBuffer camreraBuffer, materialsBuffer;
 	EntityManager* manager;
 	GizmoManager* gizmoManager;

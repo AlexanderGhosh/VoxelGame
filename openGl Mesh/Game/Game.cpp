@@ -26,7 +26,10 @@
 #include "../EventsSystem/EventCallback.h"
 #include "../EventsSystem/EventDetails/ClickEventInfo.h"
 #include "../EventsSystem/EventDetails/KeyEventInfo.h"
-
+// New GUI
+#include "../GUIRendering/GUIBuffer.h"
+#include "../GUI/Containers/BasicContainer.h"
+#include "../GUI/Elements/TextBox.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -41,8 +44,8 @@ std::array<bool, 1024> Game::keys;
 World Game::world;
 UI_Renderer Game::uiRenderer; 
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player() {
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(), guiDrawable(),
+	SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), guiWindow() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -226,7 +229,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	// Components::RenderMesh to1RenderMesh;
 	// to1RenderMesh.setModel(&cloud);
 	// to1.addComponent(to1Transform);
-	//to1.addComponent(to1RenderMesh);
+	// to1.addComponent(to1RenderMesh);
 
 	manager->awakeEvent();
 
@@ -241,6 +244,25 @@ void Game::doLoop(const glm::mat4& projection) {
 	float dtAccumulator = 0;
 	float cellularAccum = 0;
 	int prevMatSize = 0;
+
+
+	GUI::GUI_Window guiWindow;
+	GUI::BasicContainer container;
+	GUI::TextBox tb;
+	tb.setDimentions({ 1, 1 });
+	tb.setBackgroundColour({ 1, 0, 0 });
+	tb.setCornerRadius(0);
+
+	container.push(&tb);
+	guiWindow.setRoot(&container);
+
+	GUIBuffer guiBuffer;
+	auto bufferData = guiWindow.getDrawData();
+	guiBuffer.setUp(bufferData.data(), bufferData.size());
+	guiDrawable.add(guiBuffer);
+
+
+
 	Timer timer("Game Loop");
 	while (gameRunning) {
 		if (prevMatSize != MATERIALS.size()) {
@@ -602,6 +624,8 @@ void Game::showStuff() {
 	glBindVertexArray(0);
 	
 	screenQuad.unBind();
+
+	guiDrawable.render();
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// Shader* greedyShader = &SHADERS[GREEDY];

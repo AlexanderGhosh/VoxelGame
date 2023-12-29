@@ -209,7 +209,9 @@ enum SHADER_NAMES : unsigned char {
 	CIRCLE_GIZMO,
 	PHYS_DEBUG,
 
-	GREEDY
+	GREEDY,
+
+	NEW_GUI
 };
 
 enum class Move_Dir : unsigned char {

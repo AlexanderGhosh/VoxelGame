@@ -13,5 +13,5 @@ out vec4 o_colour;
 void main()
 {
     o_colour = colour;
-    gl_Position = projection * vec4(viewPos, 0, 1);
+    gl_Position = vec4(viewPos, 0, 1);
 }  

@@ -17,8 +17,8 @@ namespace GUI {
 		static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims, const Utils::Float4& colour) {
 			data.push_back(Utils::Vertex({ offset.x, offset.y }, colour));
 			data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }, colour));
-			data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y + dims.y }, colour));
 			data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }, colour));
+			data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y + dims.y }, colour));
 		}
 	public:
 		virtual Utils::DrawData getDrawData() const {

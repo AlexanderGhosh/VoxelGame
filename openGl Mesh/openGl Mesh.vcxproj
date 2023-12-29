@@ -162,14 +162,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\SOURCE\GLAD\src\glad.c" />
+    <ClCompile Include="GUIRendering\DrawableGUI.cpp" />
     <ClCompile Include="EntityComponent\Components\CreativeComponent.cpp" />
     <ClCompile Include="EntityComponent\Components\Camera.cpp" />
     <ClCompile Include="EntityComponent\Entities\Player.cpp" />
+    <ClInclude Include="GUIRendering\DrawableGUI.h" />
+    <ClInclude Include="GUIRendering\GUIBuffer.h" />
     <ClInclude Include="GUI\Containers\BasicContainer.h" />
     <ClInclude Include="GUI\Elements\TextBox.h" />
     <ClInclude Include="GUI\GUI_Window.h" />
     <ClInclude Include="GUI\IGUI_Container.h" />
     <ClInclude Include="GUI\Utils\DrawData.h" />
+    <ClCompile Include="GUIRendering\GUIBuffer.cpp" />
     <ClCompile Include="GUI\Containers\BasicContainer.cpp" />
     <ClCompile Include="GUI\Elements\TextBox.cpp" />
     <ClCompile Include="GUI\GUI_Window.cpp" />
