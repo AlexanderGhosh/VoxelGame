@@ -44,10 +44,10 @@ glm::ivec2 DIM(WIDTH, HEIGHT);
 GLFWwindow* createWindow();
 
 // #define TESTING
+#ifdef TESTING
 #include "GUI/GUI_Window.h"
 #include "GUI/Containers/BasicContainer.h"
 #include "GUI//Elements/TextBox.h"
-#ifdef TESTING
 #endif
 
 int main() {

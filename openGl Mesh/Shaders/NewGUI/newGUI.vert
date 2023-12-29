@@ -1,5 +1,5 @@
 #version 460 core
-layout (location = 0) in vec2 viewPos;
+layout (location = 0) in vec2 screenPos;
 layout (location = 1) in vec4 colour;
 
 layout (std140, binding = 0) uniform Camera
@@ -13,5 +13,6 @@ out vec4 o_colour;
 void main()
 {
     o_colour = colour;
-    gl_Position = vec4(viewPos, 0, 1);
+    vec2 pos = screenPos * 2.0 - 1.0;
+    gl_Position = vec4(pos, 0, 1);
 }  

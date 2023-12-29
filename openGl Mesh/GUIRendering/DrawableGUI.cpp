@@ -7,10 +7,11 @@ DrawableGUI::DrawableGUI() : _buffers()
 {
 }
 
-void DrawableGUI::render()
+void DrawableGUI::render(const glm::vec2 windowDims)
 {
 	Shader& shader = SHADERS[NEW_GUI];
 	shader.bind();
+
 	for (auto& buffer : _buffers) {
 		buffer.bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, buffer.size());

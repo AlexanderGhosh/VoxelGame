@@ -249,7 +249,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	GUI::GUI_Window guiWindow;
 	GUI::BasicContainer container;
 	GUI::TextBox tb;
-	tb.setDimentions({ 1, 1 });
+	tb.setDimentions({ 0.5, 0.5 });
 	tb.setBackgroundColour({ 1, 0, 0 });
 	tb.setCornerRadius(0);
 
@@ -625,7 +625,7 @@ void Game::showStuff() {
 	
 	screenQuad.unBind();
 
-	guiDrawable.render();
+	guiDrawable.render(windowDim);
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// Shader* greedyShader = &SHADERS[GREEDY];
