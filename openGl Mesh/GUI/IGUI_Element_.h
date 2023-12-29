@@ -52,27 +52,66 @@ namespace GUI {
 				dims = Utils::Float2(_cornerRadius, _dimentions.y - 2 * _cornerRadius);
 				addQuad(d, offset, dims, _backgroundColour);
 
-				// top right
-				float num_points = 10;
+				// all corners
+				float num_points = 6;
 				float num_points_inc = (0.5f * 3.14f) / num_points;
 
-				const float r_sq = _cornerRadius * _cornerRadius;
-				const float two_r = 2.f * _cornerRadius;
+				Utils::Float2 base(1, 0);
+				const Utils::Float2 p10 = _position + _dimentions - _cornerRadius; // top right
+				const Utils::Float2 p11(_position.x + _cornerRadius, p10.y);                     // top left
+				const Utils::Float2 p12(p10.x, _position.y + _cornerRadius);                     // bottom right
+				const Utils::Float2 p13(_position.x + _cornerRadius, _position.y + _cornerRadius);             // bottom left
 
-				const Utils::Float2 base(1, 0);
-				// float y = sqrtf(2.f * r_sq - 2.f * r_sq * cosf(theta));
-				Utils::Float2 p1 = _position + _dimentions - _cornerRadius;
-				Utils::Float2 p2 = p1 + base * _cornerRadius;
+				// top right
+				Utils::Float2 p2 = p10 + base * _cornerRadius;
 				for (unsigned int i = 1; i <= num_points; i++) {
 					Utils::Float2 line = base.rotate(i * num_points_inc);
 					line.normalise();
 					line *= _cornerRadius;
-
-					d.push_back(Utils::Vertex(p1, _backgroundColour));
+					d.push_back(Utils::Vertex(p10, _backgroundColour));
 					d.push_back(Utils::Vertex(p2, _backgroundColour));
-					d.push_back(Utils::Vertex(p1 + line, _backgroundColour));
+					d.push_back(Utils::Vertex(p10 + line, _backgroundColour));
 
-					p2 = p1 + line;
+					p2 = p10 + line;
+				}
+				// top left
+				base = Utils::Float2(0, 1);
+				p2 = p11 + base * _cornerRadius;
+				for (unsigned int i = 1; i <= num_points; i++) {
+					Utils::Float2 line = base.rotate(i * num_points_inc);
+					line.normalise();
+					line *= _cornerRadius;
+					d.push_back(Utils::Vertex(p11, _backgroundColour));
+					d.push_back(Utils::Vertex(p2, _backgroundColour));
+					d.push_back(Utils::Vertex(p11 + line, _backgroundColour));
+
+					p2 = p11 + line;
+				}
+				// bottom right
+				base = Utils::Float2(0, -1);
+				p2 = p12 + base * _cornerRadius;
+				for (unsigned int i = 1; i <= num_points; i++) {
+					Utils::Float2 line = base.rotate(i * num_points_inc);
+					line.normalise();
+					line *= _cornerRadius;
+					d.push_back(Utils::Vertex(p12, _backgroundColour));
+					d.push_back(Utils::Vertex(p2, _backgroundColour));
+					d.push_back(Utils::Vertex(p12 + line, _backgroundColour));
+
+					p2 = p12 + line;
+				}
+				// bottom left
+				base = Utils::Float2(-1, 0);
+				p2 = p13 + base * _cornerRadius;
+				for (unsigned int i = 1; i <= num_points; i++) {
+					Utils::Float2 line = base.rotate(i * num_points_inc);
+					line.normalise();
+					line *= _cornerRadius;
+					d.push_back(Utils::Vertex(p13, _backgroundColour));
+					d.push_back(Utils::Vertex(p2, _backgroundColour));
+					d.push_back(Utils::Vertex(p13 + line, _backgroundColour));
+
+					p2 = p13 + line;
 				}
 			}
 			return d;
