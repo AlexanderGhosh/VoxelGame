@@ -178,6 +178,7 @@
     <ClCompile Include="GUI\Elements\TextBox.cpp" />
     <ClCompile Include="GUI\GUI_Window.cpp" />
     <ClCompile Include="GUI\IGUI_Element.cpp" />
+    <ClCompile Include="GUI\Utils\Text\GlyphRendering.cpp" />
     <ClCompile Include="Mangers\EventsManager.cpp" />
     <ClCompile Include="Gizmos\Composite\Arrow.cpp" />
     <ClCompile Include="BlockStore.cpp" />
@@ -271,6 +272,8 @@
     <ClInclude Include="GUI\Utils\Float2.h" />
     <ClInclude Include="GUI\Utils\Float3.h" />
     <ClInclude Include="GUI\Utils\Float4.h" />
+    <ClInclude Include="GUI\Utils\Text\Glyph.h" />
+    <ClInclude Include="GUI\Utils\Text\GlyphRendering.h" />
     <ClInclude Include="GUI\Utils\Vertex.h" />
     <ClInclude Include="Mangers\EventsManager.h" />
     <ClInclude Include="GeomRendering\IGeomDrawable.h" />

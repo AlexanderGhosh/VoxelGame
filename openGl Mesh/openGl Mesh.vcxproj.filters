@@ -213,6 +213,9 @@
     <ClCompile Include="GUI\IGUI_Element.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Utils\Text\GlyphRendering.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -526,6 +529,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUIRendering\DrawableGUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Utils\Text\Glyph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Utils\Text\GlyphRendering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

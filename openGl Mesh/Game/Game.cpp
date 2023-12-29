@@ -30,6 +30,7 @@
 #include "../GUIRendering/GUIBuffer.h"
 #include "../GUI/Containers/BasicContainer.h"
 #include "../GUI/Elements/TextBox.h"
+#include "../GUI/Utils/Text/GlyphRendering.h"
 
 #pragma region GameConfig
 bool GameConfig::showFPS = false;
@@ -980,11 +981,18 @@ void Game::setUpFreeType() {
 	glBindVertexArray(0);
 
 	glm::mat4 projection = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
+	glm::mat4 projection2 = glm::ortho<float>(0.0f, windowDim.x, 0.0f, windowDim.y);
 	SHADERS[GLYPH].bind();
 	SHADERS[GLYPH].setValue("projection", projection);
 }
 
 void Game::showText(const std::string& text, const glm::vec2& position, float scale, const glm::vec3 colour) {
+	using namespace GUI::Utils::Text;
+	GlyphRendering& instance = GUI::Utils::Text::GlyphRendering::getInstance();
+	instance.setShader(SHADERS[GLYPH].getId());
+	instance.loadFont("arial", "C://Windows/Fonts/arial.ttf");
+	instance.drawSentence(text, { position.x, position.y }, scale, { colour.x, colour.y, colour.z });
+	return;
 	float x = position.x;
 	const float y = position.y;
 
