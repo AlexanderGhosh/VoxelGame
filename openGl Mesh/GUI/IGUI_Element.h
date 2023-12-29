@@ -32,7 +32,8 @@ namespace GUI {
 	public:
 
 		virtual Utils::DrawData getDrawData() const;
-		virtual void render() const;
+		// origin is the position which this element is relative too
+		virtual void render(Utils::Float2 origin, Utils::Float2 parentDimentions) const;
 
 		void setPosition(Utils::Float2 pos, SIZE_MODE mode = GUI_DEFAULT_MODE);
 		void setDimentions(Utils::Float2 dims, SIZE_MODE mode = GUI_DEFAULT_MODE);
@@ -43,5 +44,7 @@ namespace GUI {
 
 		inline void setBoarderColour(Utils::Float4 col) { _boarderColour = col; }
 		inline void setBoarderColour(Utils::Float3 col) { _boarderColour = Utils::Float4(col.r, col.g, col.b, 1); }
+
+		inline Utils::Float2 getDimentions() const { return _dimentions; }
 	};
 }

@@ -213,6 +213,9 @@
     <ClCompile Include="GUI\Utils\Text\GlyphRendering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Containers\StackContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\block3_v.gls" />
@@ -529,6 +532,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Utils\Text\GlyphRendering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Containers\StackContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

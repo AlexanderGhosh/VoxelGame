@@ -23,9 +23,9 @@ void GUI::TextBox::setPadding(Utils::Float2 padding, SIZE_MODE mode)
 		_textPadding /= GUI_Window::windowDimentions;
 }
 
-void GUI::TextBox::render() const
+void GUI::TextBox::render(Utils::Float2 origin, Utils::Float2 parentDimentions) const
 {
-	IGUI_Element::render();
+	IGUI_Element::render(origin, parentDimentions);
 	Utils::Text::GlyphRendering& instance = Utils::Text::GlyphRendering::getInstance();
 	
 	instance.drawSentence(_text, (_position + _textPadding) * GUI_Window::windowDimentions, 0.5);

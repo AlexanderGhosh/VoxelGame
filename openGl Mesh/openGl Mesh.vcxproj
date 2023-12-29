@@ -225,6 +225,7 @@
     <ClCompile Include="SOIL2\SOIL2.c" />
     <ClCompile Include="Gizmos\Composite\Sphere.cpp" />
     <ClCompile Include="EntityComponent\Entities\TestObject.cpp" />
+    <ClCompile Include="GUI\Containers\StackContainer.cpp" />
     <ClCompile Include="Textures\Texture.cpp" />
     <ClCompile Include="Game\World\World.cpp" />
     <ClCompile Include="Game\World\world_generation.cpp" />
@@ -344,6 +345,7 @@
     <ClInclude Include="SOIL2\stb_image_write.h" />
     <ClInclude Include="Gizmos\Composite\Sphere.h" />
     <ClInclude Include="EntityComponent\Entities\TestObject.h" />
+    <ClInclude Include="GUI\Containers\StackContainer.h" />
     <ClInclude Include="Textures\Texture.h" />
     <ClInclude Include="Game\World\World.h" />
     <ClInclude Include="Game\World\world_generation.h" />

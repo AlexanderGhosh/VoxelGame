@@ -101,7 +101,7 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 	return d;
 }
 
-void IGUI_Element::render() const
+void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) const
 {
 	if (_changed) {
 		const Utils::DrawData data = getDrawData();

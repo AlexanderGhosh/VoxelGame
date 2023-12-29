@@ -27,6 +27,7 @@
 #include "../EventsSystem/EventDetails/ClickEventInfo.h"
 #include "../EventsSystem/EventDetails/KeyEventInfo.h"
 // New GUI
+#include "../GUI/Containers/StackContainer.h"
 #include "../GUI/Containers/BasicContainer.h"
 #include "../GUI/Elements/TextBox.h"
 #include "../GUI/Utils/Text/GlyphRendering.h"
@@ -250,17 +251,28 @@ void Game::doLoop(const glm::mat4& projection) {
 	guiWindow.windowDimentions.y = windowDim.y;
 	guiWindow.elementShader = SHADERS[NEW_GUI].getId();
 
-	GUI::BasicContainer container;
-	GUI::TextBox tb;
-	tb.setText("Hello Alex");
-	tb.setDimentions({ 150 ,50 });
-	tb.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
-	tb.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0 });
-	tb.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
-	tb.setCornerRadius(5);
-	tb.setPadding({ 20, 20 });
+	GUI::StackContainer container;
+	container.setBackgroundColour({ 1, 0, 0, .2 });
+	GUI::TextBox tb1;
+	tb1.setText("Line 1");
+	tb1.setDimentions({ 150 ,50 });
+	tb1.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
+	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0 });
+	tb1.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
+	tb1.setCornerRadius(5);
+	tb1.setPadding({ 20, 20 });
 
-	container.push(&tb);
+	GUI::TextBox tb2;
+	tb2.setText("Line 2");
+	tb2.setDimentions({ 150 ,50 });
+	tb2.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
+	tb2.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0.5 });
+	tb2.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
+	tb2.setCornerRadius(5);
+	tb2.setPadding({ 20, 20 });
+
+	container.push(tb1);
+	container.push(tb2);
 	guiWindow.setRoot(&container);
 
 	// GUIBuffer guiBuffer;

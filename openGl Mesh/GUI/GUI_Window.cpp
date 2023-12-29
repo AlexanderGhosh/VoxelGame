@@ -11,10 +11,11 @@ unsigned int GUI_Window::elementShader;
 void GUI::GUI_Window::render() const
 {
 	glEnable(GL_BLEND);
-	_root->render();
+	_root->render({}, {1, 1});
 }
 
 void GUI_Window::setRoot(IGUI_Container* container)
 {
 	_root = container;
+	_root->setDimentions(windowDimentions);
 }
