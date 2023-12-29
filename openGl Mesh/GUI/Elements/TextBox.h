@@ -9,7 +9,7 @@ namespace GUI {
 		Utils::DrawData getDrawData() const override;
 
 		void setText(const std::string& text);
-		void setPadding(Utils::Float2 padding, SIZE_MODE mode = GUI_DEFAULT_MODE);
+		void setPadding(Utils::Float2 padding, UNIT_MODE mode = GUI_DEFAULT_MODE);
 
 		void render(Utils::Float2 origin, Utils::Float2 parentDimentions) const override;
 	private:

@@ -14,10 +14,6 @@
 #endif
 
 namespace GUI {
-	// used to specify if the positoin and dimentios are given a sa % or pixels
-	enum SIZE_MODE {
-		PIXELS, FRACTIONAL
-	};
 	// basic element effectivly just a rectangle
 	// position is the bottom left
 	class IGUI_Element {
@@ -25,9 +21,10 @@ namespace GUI {
 		Utils::Buffer _drawBuffer;
 	protected:
 		IGUI_Element();
-		// all stored as a fraction of the screen dimentions
+		// all stored as absolute pixel values
 		Utils::Float2 _position, _dimentions, _cornerRadius;
 		Utils::Float4 _backgroundColour, _boarderColour;
+		// if true causes the vertex data to be regenerated
 		mutable bool _changed;
 	public:
 
@@ -35,9 +32,9 @@ namespace GUI {
 		// origin is the position which this element is relative too
 		virtual void render(Utils::Float2 origin, Utils::Float2 parentDimentions) const;
 
-		void setPosition(Utils::Float2 pos, SIZE_MODE mode = GUI_DEFAULT_MODE);
-		void setDimentions(Utils::Float2 dims, SIZE_MODE mode = GUI_DEFAULT_MODE);
-		void setCornerRadius(float radius, SIZE_MODE mode = GUI_DEFAULT_MODE);
+		void setPosition(Utils::Float2 pos, UNIT_MODE mode = GUI_DEFAULT_MODE);
+		void setDimentions(Utils::Float2 dims, UNIT_MODE mode = GUI_DEFAULT_MODE);
+		void setCornerRadius(float radius, UNIT_MODE mode = GUI_DEFAULT_MODE);
 
 		inline void setBackgroundColour(Utils::Float4 col) { _backgroundColour = col; }
 		inline void setBackgroundColour(Utils::Float3 col) { _backgroundColour = Utils::Float4(col.r, col.g, col.b, 1); }

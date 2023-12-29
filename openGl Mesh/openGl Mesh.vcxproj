@@ -273,6 +273,7 @@
     <ClInclude Include="GUI\Utils\Float4.h" />
     <ClInclude Include="GUI\Utils\Text\Glyph.h" />
     <ClInclude Include="GUI\Utils\Text\GlyphRendering.h" />
+    <ClInclude Include="GUI\Utils\Units.h" />
     <ClInclude Include="GUI\Utils\Vertex.h" />
     <ClInclude Include="Mangers\EventsManager.h" />
     <ClInclude Include="GeomRendering\IGeomDrawable.h" />

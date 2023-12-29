@@ -537,6 +537,9 @@
     <ClInclude Include="GUI\Containers\StackContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUI\Utils\Units.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\cobblestone_diff.png">

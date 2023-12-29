@@ -16,10 +16,10 @@ void GUI::TextBox::setText(const std::string& text)
 	_text = text;
 }
 
-void GUI::TextBox::setPadding(Utils::Float2 padding, SIZE_MODE mode)
+void GUI::TextBox::setPadding(Utils::Float2 padding, UNIT_MODE mode)
 {
 	_textPadding = padding;
-	if (mode == SIZE_MODE::PIXELS)
+	if (mode == UNIT_MODE::PIXELS)
 		_textPadding /= GUI_Window::windowDimentions;
 }
 

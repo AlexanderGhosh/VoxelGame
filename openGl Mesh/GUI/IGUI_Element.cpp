@@ -114,27 +114,27 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	_drawBuffer.unBind();
 }
 
-void IGUI_Element::setPosition(Utils::Float2 pos, SIZE_MODE mode)
+void IGUI_Element::setPosition(Utils::Float2 pos, UNIT_MODE mode)
 {
 	_position = pos;
-	if (mode == SIZE_MODE::PIXELS)
-		_position /= GUI_Window::windowDimentions;
+	if (mode == UNIT_MODE::FRACTIONAL)
+		_position *= GUI_Window::windowDimentions;
 	_changed = true;
 }
 
-void IGUI_Element::setDimentions(Utils::Float2 dims, SIZE_MODE mode)
+void IGUI_Element::setDimentions(Utils::Float2 dims, UNIT_MODE mode)
 {
 	_dimentions = dims;
-	if (mode == SIZE_MODE::PIXELS)
+	if (mode == UNIT_MODE::PIXELS)
 		_dimentions /= GUI_Window::windowDimentions;
 	_changed = true;
 }
 
-void IGUI_Element::setCornerRadius(float radius, SIZE_MODE mode)
+void IGUI_Element::setCornerRadius(float radius, UNIT_MODE mode)
 {
 	_cornerRadius.x = radius;
 	_cornerRadius.y = radius;
-	if (mode == SIZE_MODE::PIXELS)
+	if (mode == UNIT_MODE::PIXELS)
 		_cornerRadius /= GUI_Window::windowDimentions;
 	_changed = true;
 }
