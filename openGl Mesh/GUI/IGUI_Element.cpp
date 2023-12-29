@@ -45,62 +45,57 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 		float num_points = 6;
 		float num_points_inc = (0.5f * 3.14f) / num_points;
 
-		Utils::Float2 base(1, 0);
 		const Utils::Float2 p10 = _position + _dimentions - _cornerRadius; // top right
 		const Utils::Float2 p11(_position.x + _cornerRadius.x, p10.y);                     // top left
 		const Utils::Float2 p12(p10.x, _position.y + _cornerRadius.y);                     // bottom right
 		const Utils::Float2 p13(_position.x + _cornerRadius.x, _position.y + _cornerRadius.y);             // bottom left
 
-		// top right
-		Utils::Float2 p2 = p10 + base * _cornerRadius;
+		const Utils::Float2 base0(1, 0);
+		const Utils::Float2 base1(0, 1);
+		const Utils::Float2 base2(0, -1);
+		const Utils::Float2 base3(-1, 0);
+
+		Utils::Float2 p20 = p10 + base0 * _cornerRadius;
+		Utils::Float2 p21 = p11 + base1 * _cornerRadius;
+		Utils::Float2 p22 = p12 + base2 * _cornerRadius;
+		Utils::Float2 p23 = p13 + base3 * _cornerRadius;
+
 		for (unsigned int i = 1; i <= num_points; i++) {
-			Utils::Float2 line = base.rotate(i * num_points_inc);
-			line.normalise();
-			line *= _cornerRadius;
+			// top right
+			Utils::Float2 line0 = base0.rotate(i * num_points_inc);
+			line0.normalise();
+			line0 *= _cornerRadius;
 			d.push_back(Utils::Vertex(p10, _boarderColour));
-			d.push_back(Utils::Vertex(p2, _boarderColour));
-			d.push_back(Utils::Vertex(p10 + line, _boarderColour));
+			d.push_back(Utils::Vertex(p20, _boarderColour));
+			d.push_back(Utils::Vertex(p10 + line0, _boarderColour));
+			p20 = p10 + line0;
 
-			p2 = p10 + line;
-		}
-		// top left
-		base = Utils::Float2(0, 1);
-		p2 = p11 + base * _cornerRadius;
-		for (unsigned int i = 1; i <= num_points; i++) {
-			Utils::Float2 line = base.rotate(i * num_points_inc);
-			line.normalise();
-			line *= _cornerRadius;
+			// top left
+			Utils::Float2 line1 = base1.rotate(i * num_points_inc);
+			line1.normalise();
+			line1 *= _cornerRadius;
 			d.push_back(Utils::Vertex(p11, _boarderColour));
-			d.push_back(Utils::Vertex(p2, _boarderColour));
-			d.push_back(Utils::Vertex(p11 + line, _boarderColour));
+			d.push_back(Utils::Vertex(p21, _boarderColour));
+			d.push_back(Utils::Vertex(p11 + line1, _boarderColour));
+			p21 = p11 + line1;
 
-			p2 = p11 + line;
-		}
-		// bottom right
-		base = Utils::Float2(0, -1);
-		p2 = p12 + base * _cornerRadius;
-		for (unsigned int i = 1; i <= num_points; i++) {
-			Utils::Float2 line = base.rotate(i * num_points_inc);
-			line.normalise();
-			line *= _cornerRadius;
+			// bottom right
+			Utils::Float2 line2 = base2.rotate(i * num_points_inc);
+			line2.normalise();
+			line2 *= _cornerRadius;
 			d.push_back(Utils::Vertex(p12, _boarderColour));
-			d.push_back(Utils::Vertex(p2, _boarderColour));
-			d.push_back(Utils::Vertex(p12 + line, _boarderColour));
+			d.push_back(Utils::Vertex(p22, _boarderColour));
+			d.push_back(Utils::Vertex(p12 + line2, _boarderColour));
+			p22 = p12 + line2;
 
-			p2 = p12 + line;
-		}
-		// bottom left
-		base = Utils::Float2(-1, 0);
-		p2 = p13 + base * _cornerRadius;
-		for (unsigned int i = 1; i <= num_points; i++) {
-			Utils::Float2 line = base.rotate(i * num_points_inc);
-			line.normalise();
-			line *= _cornerRadius;
+			// bottom left
+			Utils::Float2 line3 = base3.rotate(i * num_points_inc);
+			line3.normalise();
+			line3 *= _cornerRadius;
 			d.push_back(Utils::Vertex(p13, _boarderColour));
-			d.push_back(Utils::Vertex(p2, _boarderColour));
-			d.push_back(Utils::Vertex(p13 + line, _boarderColour));
-
-			p2 = p13 + line;
+			d.push_back(Utils::Vertex(p23, _boarderColour));
+			d.push_back(Utils::Vertex(p13 + line3, _boarderColour));
+			p23 = p13 + line3;
 		}
 	}
 	return d;
