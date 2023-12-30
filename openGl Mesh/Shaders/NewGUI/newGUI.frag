@@ -16,10 +16,12 @@ void main()
     float edgeSoftness = 0.5;
 
     vec2 half_dim = dimentions * 0.5;
-
-    float d = roundedBoxSDF(gl_FragCoord.xy - position - half_dim, half_dim, cornerRadius);
-    float smoothedAlpha = 1.0 - smoothstep(0.0f, edgeSoftness * 2.0, d);
-    fragColour = vec4(o_colour.rgb, smoothedAlpha);
+    float alpha = o_colour.a;
+    if(cornerRadius > 0){
+        float d = roundedBoxSDF(gl_FragCoord.xy - position - half_dim, half_dim, cornerRadius);
+        alpha = alpha - smoothstep(0.0f, edgeSoftness * 2.0, d);
+    }
+    fragColour = vec4(o_colour.rgb, alpha);
 }
 
 float roundedBoxSDF(vec2 center, vec2 size, float radius) {

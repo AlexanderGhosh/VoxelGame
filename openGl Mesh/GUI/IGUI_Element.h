@@ -22,8 +22,11 @@ namespace GUI {
 		Utils::Buffer _drawBuffer;
 	protected:
 		IGUI_Element();
-		// all stored as absolute pixel values
-		Utils::Units<Utils::Float2> _position, _dimentions, _cornerRadius;
+		// all stored as either absolute pixel values or relative to parent
+		Utils::Units<Utils::Float2> _position, _dimentions;
+		// either absolute pixel or relative to this->_dimentions
+		Utils::Units<float> _cornerRadius;
+
 		Utils::Float4 _backgroundColour, _boarderColour;
 
 		// if true causes the vertex data to be regenerated

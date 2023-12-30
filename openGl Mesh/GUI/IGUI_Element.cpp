@@ -19,86 +19,6 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 
 	if(_backgroundColour.a > 0)
 		addQuad(d, offset, dims, _backgroundColour);
-	/*
-	if (_cornerRadius.x > 0 && _cornerRadius.y && _boarderColour.a > 0) {
-		// top quad
-		offset = _position + Utils::Float2(_cornerRadius.x, _dimentions.y - _cornerRadius.y);
-		dims = Utils::Float2(_dimentions.x - 2 * _cornerRadius.x, _cornerRadius.y);
-		addQuad(d, offset, dims, _boarderColour);
-
-		// bottom quad
-		offset = _position + Utils::Float2(_cornerRadius.x, 0);
-		dims = Utils::Float2(_dimentions.x - 2 * _cornerRadius.x, _cornerRadius.y);
-		addQuad(d, offset, dims, _boarderColour);
-
-		// left quad
-		offset = _position + Utils::Float2(0, _cornerRadius.y);
-		dims = Utils::Float2(_cornerRadius.x, _dimentions.y - 2 * _cornerRadius.y);
-		addQuad(d, offset, dims, _boarderColour);
-
-		// right quad
-		offset = _position + Utils::Float2(_dimentions.x - _cornerRadius.x, _cornerRadius.y);
-		dims = Utils::Float2(_cornerRadius.x, _dimentions.y - 2 * _cornerRadius.y);
-		addQuad(d, offset, dims, _boarderColour);
-
-		// all corners
-		float num_points = 6;
-		float num_points_inc = (0.5f * 3.14f) / num_points;
-
-		const Utils::Float2 p10 = _position + _dimentions - _cornerRadius; // top right
-		const Utils::Float2 p11(_position.x + _cornerRadius.x, p10.y);                     // top left
-		const Utils::Float2 p12(p10.x, _position.y + _cornerRadius.y);                     // bottom right
-		const Utils::Float2 p13(_position.x + _cornerRadius.x, _position.y + _cornerRadius.y);             // bottom left
-
-		const Utils::Float2 base0(1, 0);
-		const Utils::Float2 base1(0, 1);
-		const Utils::Float2 base2(0, -1);
-		const Utils::Float2 base3(-1, 0);
-
-		Utils::Float2 p20 = p10 + base0 * _cornerRadius;
-		Utils::Float2 p21 = p11 + base1 * _cornerRadius;
-		Utils::Float2 p22 = p12 + base2 * _cornerRadius;
-		Utils::Float2 p23 = p13 + base3 * _cornerRadius;
-
-		for (unsigned int i = 1; i <= num_points; i++) {
-			// top right
-			Utils::Float2 line0 = base0.rotate(i * num_points_inc);
-			line0.normalise();
-			line0 *= _cornerRadius;
-			d.push_back(Utils::Vertex(p10, _boarderColour));
-			d.push_back(Utils::Vertex(p20, _boarderColour));
-			d.push_back(Utils::Vertex(p10 + line0, _boarderColour));
-			p20 = p10 + line0;
-
-			// top left
-			Utils::Float2 line1 = base1.rotate(i * num_points_inc);
-			line1.normalise();
-			line1 *= _cornerRadius;
-			d.push_back(Utils::Vertex(p11, _boarderColour));
-			d.push_back(Utils::Vertex(p21, _boarderColour));
-			d.push_back(Utils::Vertex(p11 + line1, _boarderColour));
-			p21 = p11 + line1;
-
-			// bottom right
-			Utils::Float2 line2 = base2.rotate(i * num_points_inc);
-			line2.normalise();
-			line2 *= _cornerRadius;
-			d.push_back(Utils::Vertex(p12, _boarderColour));
-			d.push_back(Utils::Vertex(p22, _boarderColour));
-			d.push_back(Utils::Vertex(p12 + line2, _boarderColour));
-			p22 = p12 + line2;
-
-			// bottom left
-			Utils::Float2 line3 = base3.rotate(i * num_points_inc);
-			line3.normalise();
-			line3 *= _cornerRadius;
-			d.push_back(Utils::Vertex(p13, _boarderColour));
-			d.push_back(Utils::Vertex(p23, _boarderColour));
-			d.push_back(Utils::Vertex(p13 + line3, _boarderColour));
-			p23 = p13 + line3;
-		}
-	}
-	*/
 	return d;
 }
 
@@ -109,6 +29,8 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 		_drawBuffer.realoc(data.data(), data.size());
 		_changed = false;
 	}
+	if (_drawBuffer.size() == 0) return;
+
 	Utils::Float2 drawPosition = origin + _position.getPixelValue(parentDimentions);
 	Utils::Float2 drawDimentions = _dimentions.getPixelValue(parentDimentions);
 
@@ -121,7 +43,7 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	glUniform2f(loc, drawDimentions.x, drawDimentions.y);
 
 	loc = glGetUniformLocation(GUI_Window::elementShader, "cornerRadius");
-	glUniform1f(loc, _cornerRadius.getPixelValue({}).x);
+	glUniform1f(loc, _cornerRadius.getPixelValue({}));
 
 	_drawBuffer.bind();
 	glDrawArrays(GL_TRIANGLES, 0, _drawBuffer.size());
@@ -142,7 +64,7 @@ void IGUI_Element::setDimentions(Utils::Float2 dims, UNIT_MODE mode)
 
 void IGUI_Element::setCornerRadius(float radius, UNIT_MODE mode)
 {
-	_cornerRadius.set({ radius , radius }, mode);
+	_cornerRadius.set(radius, mode);
 	_changed = true;
 }
 

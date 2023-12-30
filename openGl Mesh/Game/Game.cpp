@@ -255,10 +255,10 @@ void Game::doLoop(const glm::mat4& projection) {
 	container.setBackgroundColour({ 1, 0, 0, .2 });
 	GUI::TextBox tb1;
 	tb1.setText("Line 1");
-	tb1.setDimentions({ 150 ,50 });
+	tb1.setDimentions({ 150 ,25 });
 	tb1.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
 	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 1 });
-	tb1.setCornerRadius(10);
+	tb1.setCornerRadius(5);
 	tb1.setPadding({ 20, 20 });
 
 	// GUI::TextBox tb2;
