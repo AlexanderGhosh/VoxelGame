@@ -38,9 +38,6 @@
 #include <random>
 
 
-// #include "Helpers/ModelLoaders/VoxelModel.h"
-glm::ivec2 DIM(WIDTH, HEIGHT);
-
 GLFWwindow* createWindow();
 
 // #define TESTING
@@ -65,6 +62,7 @@ int main() {
 	auto t = gui.getDrawData();
 	return 0;
 #endif // TESTING
+	glm::ivec2 DIM(WIDTH, HEIGHT);
 	JsonParser materialParser(".\\Materials.json");
 	MATERIALS = std::move(materialParser.getAllMaterials());
 	JsonParser blockParser(".\\Blocks.json");
@@ -134,12 +132,10 @@ int main() {
 
 
 	game.setWindow(window);
-	game.generateWorld();
 
 	glm::mat4 projection = glm::perspective(FOV, ASPECT_RATIO, NEAR_PLANE, FAR_PLANE);
-	game.doLoop(projection);
-
-	game.cleanUp();
+	game.setUpGame(projection);
+	game.doGameLoop();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

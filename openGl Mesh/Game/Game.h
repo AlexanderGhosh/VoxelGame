@@ -40,11 +40,19 @@ class Game
 public:
 	Game();
 	Game(glm::ivec2 windowDim);
-	void doLoop(const glm::mat4& projection);
+	~Game();
+
+	Game(const Game&) = delete;
+	Game& operator=(const Game&) = delete;
+
+	Game(Game&&) = delete;
+	Game& operator=(Game&&) = delete;
+
+	void setUpGame(const glm::mat4& projection);
+	void doGameLoop();
 	void generateWorld();
 
 	void setWindow(GLFWwindow* window);
-	void cleanUp();
 
 	void setPlayer(Entities::Player* player);
 
@@ -54,7 +62,7 @@ private:
 	static glm::vec3 mouseData;
 	static glm::vec2 mouseOffset;
 	static std::array<bool, 1024> keys;
-	static World world;
+	World _world;
 
 	void placeBlock();
 	void breakBlock();
@@ -66,6 +74,7 @@ private:
 	GizmoManager* gizmoManager;
 
 	unsigned int quadVBO, quadVAO;
+	unsigned int skyVAO, skyVBO;
 
 	Entities::Player* _player;
 	FrameBuffer oitFrameBuffer1, shadowFramebuffer, gBuffer;
@@ -76,7 +85,6 @@ private:
 	unsigned int frameRate;
 	bool gameRunning;
 	float lastFrameTime;
-	unsigned int skyVAO, skyVBO;
 	glm::ivec2 windowDim;
 
 	// is updated every frame with the current camera's view matrix
@@ -92,7 +100,7 @@ private:
 
 	void calcTimes();
 	void setupEventCB(GLFWwindow* window);
-	void showStuff();
+	void renderScene();
 	static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCallBack(GLFWwindow* window, double xPos, double yPos);
 	static void clickCallBack(GLFWwindow* window, int button, int action, int mods);

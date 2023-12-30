@@ -41,9 +41,8 @@ unsigned int GameConfig::FPSlock = 0;
 glm::vec3 Game::mouseData;
 glm::vec2 Game::mouseOffset;
 std::array<bool, 1024> Game::keys;
-World Game::world;
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), quadVAO(), quadVBO(), multiPurposeFB(), guiWindow(), 
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), quadVAO(), quadVBO(), multiPurposeFB(), guiWindow(), _world(),
 	skyVAO(0), skyVBO(0), windowDim(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), fpsCounter(), playerPosition(), viewDirection(), numChunks() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -150,31 +149,52 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	}
 }
 
+Game::~Game()
+{
+	// screen quad
+	glDeleteBuffers(1, &quadVBO);
+	glDeleteVertexArrays(1, &quadVAO);
+	quadVAO = quadVBO = 0;
+	// skybox
+	glDeleteBuffers(1, &skyVBO);
+	glDeleteVertexArrays(1, &skyVAO);
+	skyVAO = skyVBO = 0;
+
+	glDeleteTextures(1, &ssaoNoiseTex);
+}
+
+
 void Game::generateWorld() {
 	unsigned int seed = 32;
 	srand(seed);
-	world = World(WORLD_ORIGIN, seed);
+	_world = World(WORLD_ORIGIN, seed);
 #if  !defined(GENERATE_CHUNKS_ASYNC) && !GENERATE_NEW_CHUNKS
-	world.generateTerrain();
-	world.setUpDrawable();
+	_world.generateTerrain();
+	_world.setUpDrawable();
 #endif // GENERATE_CHUNKS_ASYNC
 }
 
-void Game::doLoop(const glm::mat4& projection) {
-	gameRunning = true;
-	setupEventCB(window);
-	cameraProjection = projection;
+void Game::setUpGame(const glm::mat4& projection)
+{
+	generateWorld();
 
-	camreraBuffer.fill(0, sizeof(glm::mat4), &projection);
+	cameraProjection = projection;
+	camreraBuffer.fill(0, sizeof(glm::mat4), &cameraProjection);
+	setupEventCB(window);
+}
+
+void Game::doGameLoop() {
+	gameRunning = true;
+
 	
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
 	// VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_GLASS);
 	// woman.setPosition(0, 37, 0);
-	// woman.addToDrawable(world.geomDrawable);
+	// woman.addToDrawable(_world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
-	woman.addToDrawable(world.greedyDrawable);
+	woman.addToDrawable(_world.greedyDrawable);
 #endif
 	voxelLoad.showTime(0);
 
@@ -276,7 +296,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		timer.mark("Player Mouse");
 		glm::ivec2 c = _player->getChunkPosition();
 		
-		std::list<ChunkColumn*> neibours = world.getNeibours(c, true);
+		std::list<ChunkColumn*> neibours = _world.getNeibours(c, true);
 
 		timer.mark("Player Keys");
 
@@ -298,7 +318,7 @@ void Game::doLoop(const glm::mat4& projection) {
 		glm::vec3 frustrumCenter = _player->getPosition();
 		
 
-		world.tryStartGenerateChunks(c, _player->getFront());
+		_world.tryStartGenerateChunks(c, _player->getFront());
 
 		timer.mark("Start Chunk Gen");
 		// std::cout << "Generated" << std::endl;
@@ -310,7 +330,7 @@ void Game::doLoop(const glm::mat4& projection) {
 			dtAccumulator -= FIXED_DELTA_TIME;
 
 			bool found = false;
-			const ChunkColumn& chunk = *world.getChunk(c, found);
+			const ChunkColumn& chunk = *_world.getChunk(c, found);
 			if (found) {
 				physManager.setTerrain(chunk);
 			}
@@ -325,22 +345,20 @@ void Game::doLoop(const glm::mat4& projection) {
 
 		// occures every 1 seccond
 		if (cellularAccum > 1) {
-			world.update();
+			_world.update();
 			cellularAccum = 0;
 		}
 		timer.mark("Cellular Automota");
 
 		updateGUIText();
 
-		showStuff();
+		renderScene();
 		timer.mark("Rendering");
 
-		if (glfwWindowShouldClose(window)) gameRunning = false;
 
-		glfwSwapBuffers(window);
 		numFrames++;
 		mouseOffset = glm::vec2(0);
-
+		if (glfwWindowShouldClose(window)) gameRunning = false;
 	}
 	timer.showDetails(numFrames);
 
@@ -355,7 +373,7 @@ void Game::calcTimes() {
 	frameRate = 1 / deltaTime;
 }
 
-void Game::showStuff() {
+void Game::renderScene() {
 	const glm::mat4 LSM = ShadowBox::getLSM(cameraView, LIGHT_POSITION);
 	// 1. render from the lights perspective for the shadow map
 	glEnable(GL_CULL_FACE);
@@ -369,7 +387,7 @@ void Game::showStuff() {
 	Shader& shadows = SHADERS[SHADOW];
 	shadows.bind();
 	shadows.setValue("lightMatrix", LSM);
-	world.render(&shadows);
+	_world.render(&shadows);
 	// castle->render(shadows);
 	shadows.unBind();
 	shadowFramebuffer.unBind();
@@ -386,7 +404,7 @@ void Game::showStuff() {
 	Shader& gbufferS = SHADERS[GBUFFER];
 	gbufferS.bind();
 	
-	world.render(&gbufferS);
+	_world.render(&gbufferS);
 	manager->renderEvent();
 	// castle->render(gbufferS);
 
@@ -413,7 +431,7 @@ void Game::showStuff() {
 	transparent.setValue("viewDir", _player->getViewDirection());
 	transparent.setValue("lightPos", LIGHT_POSITION);
 
-	world.render(&transparent);
+	_world.render(&transparent);
 	manager->renderEvent();
 	// castle->render(transparent);
 
@@ -540,7 +558,7 @@ void Game::showStuff() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)0); // vert world pos
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)0); // vert _world pos
 	glEnableVertexAttribArray(1);
 	glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(reactphysics3d::Vector3) + sizeof(reactphysics3d::uint32), (void*)sizeof(reactphysics3d::Vector3)); // vert colour
 	
@@ -563,6 +581,7 @@ void Game::showStuff() {
 	glDeleteVertexArrays(1, &VAO); 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
+	
 	composite.unBind();
 
 	// 6. render the screen quad
@@ -591,6 +610,8 @@ void Game::showStuff() {
 
 	// 7. GUI
 	guiWindow.render();
+
+	glfwSwapBuffers(window);
 }
 
 void Game::updateGUIText()
@@ -598,7 +619,7 @@ void Game::updateGUIText()
 	fpsCounter.setText("FPS: " + std::to_string(frameRate));
 	playerPosition.setText("Position: " + glm::to_string(_player->getPosition()));
 	viewDirection.setText("View Direction: " + glm::to_string(_player->getFront()));
-	numChunks.setText("Num Chunks: " + std::to_string(world.getChunkCount()));
+	numChunks.setText("Num Chunks: " + std::to_string(_world.getChunkCount()));
 }
 
 void Game::setWindow(GLFWwindow* window) {
@@ -637,7 +658,7 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
 		float z = (zcoord - 0.5f) * 2.0f;
 
-		world.placeBlock(z, invPV, mainCamera->GetFront());
+		_world.placeBlock(z, invPV, mainCamera->GetFront());
 	}
 	if (key == GLFW_KEY_2 && action == GLFW_RELEASE) {
 		float zcoord = 0;
@@ -645,10 +666,10 @@ void Game::keyCallBack(GLFWwindow* window, int key, int scancode, int action, in
 		glm::mat4 invPV = glm::inverse(projection * mainCamera->GetViewMatrix());
 		float z = (zcoord - 0.5f) * 2.0f;
 
-		world.placeBlock(z, invPV, mainCamera->GetFront());
+		_world.placeBlock(z, invPV, mainCamera->GetFront());
 	}*/
 	if (key == GLFW_KEY_H && action == GLFW_RELEASE) {
-		world.save();
+		// _world.save();
 		std::cout << "Saved" << std::endl;
 	}
 }
@@ -688,17 +709,6 @@ void Game::setupEventCB(GLFWwindow* window) {
 	glfwSetScrollCallback(window, Game::scrollCallBack);
 }
 
-void Game::cleanUp() {
-	// screen quad
-	glDeleteBuffers(1, &quadVBO);
-	glDeleteVertexArrays(1, &quadVAO);
-	quadVAO = quadVBO = 0;
-	// skybox
-	glDeleteBuffers(1, &skyVBO);
-	glDeleteVertexArrays(1, &skyVAO);
-	skyVAO = skyVBO = 0;
-}
-
 void Game::setUpScreenQuad()
 {
 	float vertices[] = {
@@ -722,17 +732,17 @@ void Game::setUpScreenQuad()
 
 void Game::placeBlock()
 {
-	world.placeBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
+	_world.placeBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
 }
 
 void Game::breakBlock()
 {
-	world.breakBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
+	_world.breakBlock(_player->getPosition(), _player->getFront(), _player->getChunkPosition());
 }
 
 void Game::explode() {
-	glm::vec3 lookPos = world.lookingAt(_player->getPosition(), _player->getFront());
-	world.explode(lookPos, 5);
+	glm::vec3 lookPos = _world.lookingAt(_player->getPosition(), _player->getFront());
+	_world.explode(lookPos, 5);
 }
 
 void Game::makeSkybox(const std::string& skybox) {
