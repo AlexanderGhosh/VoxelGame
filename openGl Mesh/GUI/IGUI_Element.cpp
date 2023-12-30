@@ -15,7 +15,7 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 	// center quad
 	
 	Utils::Float2 offset(0, 0);
-	Utils::Float2 dims(1, 1);
+	Utils::Float2 dims(1, -1);
 
 	if(_backgroundColour.a > 0)
 		addQuad(d, offset, dims);
@@ -37,7 +37,7 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	glUseProgram(GUI_Window::elementShader);
 
 	unsigned int loc = glGetUniformLocation(GUI_Window::elementShader, "position");
-	glUniform2f(loc, drawPosition.x, drawPosition.y);
+	glUniform2f(loc, drawPosition.x, GUI_Window::windowDimentions.y - drawPosition.y);
 
 	loc = glGetUniformLocation(GUI_Window::elementShader, "dimentions");
 	glUniform2f(loc, drawDimentions.x, drawDimentions.y);
@@ -52,7 +52,8 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	glUniform4f(loc, _backgroundColour.r, _backgroundColour.g, _backgroundColour.b, _backgroundColour.a);
 
 	loc = glGetUniformLocation(GUI_Window::elementShader, "borderColour");
-	glUniform4f(loc, _boarderColour.r, _boarderColour.g, _boarderColour.b, _boarderColour.a);
+	glUniform4f(loc, _boarderColour.r, _boarderColour.g, _boarderColour.b, _boarderColour.a); 
+
 
 	_drawBuffer.bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _drawBuffer.size());

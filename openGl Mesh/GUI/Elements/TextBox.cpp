@@ -30,5 +30,5 @@ void GUI::TextBox::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	Utils::Float2 drawDimentions = getDrawDimentions(parentDimentions);
 	Utils::Float2 drawPadding = _textPadding.getPixelValue(drawDimentions);
 	
-	instance.drawSentence(_text, (drawPosition + drawPadding), 0.5);
+	//instance.drawSentence(_text, (drawPosition + drawPadding), 0.5);
 }

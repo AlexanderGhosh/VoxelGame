@@ -134,7 +134,7 @@ std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<
 	// can throw error if the chunk is removed from chunks while its being generated
 	for (const glm::vec2& chunkPos : positions) {
 		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
-		ChunkColumn& chunk = chunks.at(chunkPos);
+		ChunkColumn& chunk = chunks.at(chunkPos); // issue can occure when quring chunks
 #ifdef ALWAYS_USE_NOISE_MESH
 		chunk.generateNoiseBuffer();
 #elif  defined(ALWAYS_USE_SLOW_MESH)

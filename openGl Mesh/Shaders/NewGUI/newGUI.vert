@@ -10,7 +10,10 @@ uniform vec2 dimentions;
 void main()
 {
     vec2 pos = screenPos * dimentions; // scale from unit to the propper pixel size
-    pos += position; // translate to pixel space positoin
+    // translate to pixel space position (with 0, 0, at bottom left)
+    pos += position;
+
     vec4 pixelPos = vec4(pos, 0, 1);
     gl_Position = projection * pixelPos;
+    // gl_Position.y *= -1;
 }  
