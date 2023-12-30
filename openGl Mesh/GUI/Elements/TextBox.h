@@ -14,7 +14,7 @@ namespace GUI {
 		void render(Utils::Float2 origin, Utils::Float2 parentDimentions) const override;
 	private:
 		std::string _text;
-		// used to position the text relative to the _position
-		Utils::Float2 _textPadding;
+		// used to position the text relative to the draw position and draw dimentions
+		Utils::Units<Utils::Float2> _textPadding;
 	};
 }

@@ -18,15 +18,17 @@ void GUI::TextBox::setText(const std::string& text)
 
 void GUI::TextBox::setPadding(Utils::Float2 padding, UNIT_MODE mode)
 {
-	_textPadding = padding;
-	if (mode == UNIT_MODE::PIXELS)
-		_textPadding /= GUI_Window::windowDimentions;
+	_textPadding.set(padding, mode);
 }
 
 void GUI::TextBox::render(Utils::Float2 origin, Utils::Float2 parentDimentions) const
 {
 	IGUI_Element::render(origin, parentDimentions);
 	Utils::Text::GlyphRendering& instance = Utils::Text::GlyphRendering::getInstance();
+
+	Utils::Float2 drawPosition = origin + _position.getPixelValue(parentDimentions);
+	Utils::Float2 drawDimentions = _dimentions.getPixelValue(parentDimentions);
+	Utils::Float2 drawPadding = _textPadding.getPixelValue(drawDimentions);
 	
-	// instance.drawSentence(_text, (_position + _textPadding) * GUI_Window::windowDimentions, 0.5);
+	instance.drawSentence(_text, (drawPosition + drawPadding), 0.5);
 }
