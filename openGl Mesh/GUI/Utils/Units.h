@@ -13,6 +13,8 @@ namespace GUI {
 
 		public:
 			Units() : _value(), _units() { }
+			template<typename ...Types>
+			Units(UNIT_MODE units, Types... args) : _value(args...), _units(units) { }
 
 			inline void set(T value, UNIT_MODE units) {
 				_value = value;

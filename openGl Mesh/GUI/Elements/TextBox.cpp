@@ -6,7 +6,7 @@
 using namespace GUI;
 using namespace Utils;
 
-GUI::TextBox::TextBox() : IGUI_Element(), _text(""), _textPadding(), _layoutType(LAYOUT_TYPE::CENTERED), _ensureMinmumSize(true), _textColour(0, 0, 0, 1)
+GUI::TextBox::TextBox() : IGUI_Element(), _text(""), _textPadding(PIXELS, 5, 5), _layoutType(LAYOUT_TYPE::CENTERED), _ensureMinmumSize(true), _textColour(0, 0, 0, 1)
 {
 }
 
