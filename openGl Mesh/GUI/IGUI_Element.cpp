@@ -120,6 +120,9 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	loc = glGetUniformLocation(GUI_Window::elementShader, "dimentions");
 	glUniform2f(loc, drawDimentions.x, drawDimentions.y);
 
+	loc = glGetUniformLocation(GUI_Window::elementShader, "cornerRadius");
+	glUniform1f(loc, _cornerRadius.getPixelValue({}).x);
+
 	_drawBuffer.bind();
 	glDrawArrays(GL_TRIANGLES, 0, _drawBuffer.size());
 	_drawBuffer.unBind();
