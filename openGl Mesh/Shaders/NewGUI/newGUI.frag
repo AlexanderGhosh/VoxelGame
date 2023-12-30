@@ -15,7 +15,7 @@ float roundedBoxSDF(vec2 center, vec2 size, float radius);
 
 void main()
 {
-    float edgeSoftness = 0.5;
+    float edgeSoftness = 0.0;
     vec4 colour = bgColour;
 
     mat4 inv_proj = inverse(projection);
