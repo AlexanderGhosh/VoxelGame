@@ -14,6 +14,7 @@
 #include "../Helpers/ModelLoaders/VoxelModel_Base.h"
 
 #include "../GUI/GUI_Window.h"
+#include "../GUI/Elements/TextBox.h"
 
 class Model;
 class EntityManager;
@@ -92,8 +93,13 @@ private:
 	glm::mat4 cameraView, cameraProjection;
 
 
+	GUI::TextBox fpsCounter;
+	GUI::TextBox playerPosition;
+	GUI::TextBox viewDirection;
+	GUI::TextBox numChunks;
 
-	void showFPS();
+	void updateGUIText();
+
 	void calcTimes();
 	void setupEventCB(GLFWwindow* window);
 	void showStuff();
@@ -104,8 +110,6 @@ private:
 
 	void makeSkybox(const std::string& skybox);
 	void showSkybox();
-	void setUpFreeType();
-	void showText(const std::string& text, const glm::vec2& position, float scale = 1.0f, const glm::vec3 colour = glm::vec3(1));
 	void createGUI();
 	void showGUI();
 

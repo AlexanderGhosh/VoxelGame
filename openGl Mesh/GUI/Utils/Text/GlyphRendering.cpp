@@ -82,7 +82,7 @@ void GUI::Utils::Text::GlyphRendering::loadFont(const std::string& fontName, con
 	FT_Done_FreeType(ft);
 }
 
-void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Float2 position, float scale, const Float3& colour, const std::string& fontName) const
+void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Float2 position, float scale, const Float4& colour, const std::string& fontName) const
 {
 	const Font* font;
 	if (fontName.empty()) {
@@ -95,7 +95,7 @@ void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Flo
 	glBindVertexArray(VAO);
 
 	unsigned int loc = glGetUniformLocation(_shaderID, "colour");
-	glUniform4f(loc, colour.r, colour.g, colour.b, 1.f);
+	glUniform4f(loc, colour.r, colour.g, colour.b, colour.a);
 
 
 	loc = glGetUniformLocation(_shaderID, "text");

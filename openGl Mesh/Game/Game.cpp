@@ -29,7 +29,6 @@
 // New GUI
 #include "../GUI/Containers/StackContainer.h"
 #include "../GUI/Containers/BasicContainer.h"
-#include "../GUI/Elements/TextBox.h"
 #include "../GUI/Utils/Text/GlyphRendering.h"
 
 #pragma region GameConfig
@@ -45,8 +44,8 @@ std::array<bool, 1024> Game::keys;
 World Game::world;
 UI_Renderer Game::uiRenderer; 
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(),
-	SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), guiWindow() {
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(), guiWindow(), 
+	SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), fpsCounter(), playerPosition(), viewDirection(), numChunks() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -69,7 +68,6 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 	makeSkybox("skybox");
 	createGUI();
-	setUpFreeType();
 
 
 	{
@@ -246,48 +244,46 @@ void Game::doLoop(const glm::mat4& projection) {
 	float cellularAccum = 0;
 	int prevMatSize = 0;
 
+	glm::mat4 guiOrtho = glm::ortho<float>(0.0f, windowDim.x, 0.0f, windowDim.y);
+	SHADERS[GLYPH].bind();
+	SHADERS[GLYPH].setValue("projection", guiOrtho);
+	SHADERS[NEW_GUI].bind();
+	SHADERS[NEW_GUI].setValue("projection", guiOrtho);
+
+	GUI::Utils::Text::GlyphRendering& instance = GUI::Utils::Text::GlyphRendering::getInstance();
+	instance.setShader(SHADERS[GLYPH].getId());
+	instance.loadFont("arial", "C://Windows/Fonts/arial.ttf");
 
 	guiWindow.windowDimentions.x = windowDim.x;
 	guiWindow.windowDimentions.y = windowDim.y;
 	guiWindow.elementShader = SHADERS[NEW_GUI].getId();
 
+
 	GUI::StackContainer container;
-	container.setBackgroundColour({ 1, 0, 0, .1 });
-	container.setSpacing(10);
+	container.setSpacing(5);
 
-	GUI::TextBox tb1;
-	tb1.setText("Line 1");
-	tb1.setDimentions({ 150 ,30 });
-	tb1.setPosition({ 0, 0 }, GUI::FRACTIONAL);
-	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 1 });
-	
-	tb1.setBorderColour({ RRC(53), RRC(59), RRC(75) });
-	tb1.setBorderSize(2);
-	tb1.setCornerRadius(5);
-	tb1.setPadding({ 0, 0 });
-	tb1.setLayoutType(GUI::TextBox::CENTERED);
+	fpsCounter.setText("FPS: N/A");
+	fpsCounter.setLayoutType(GUI::TextBox::VERTICAL);
+	fpsCounter.setTextColour({ 1, 1, 1, 1 });
 
-	GUI::TextBox tb2;
-	tb2.setText("Line 2");
-	tb2.setDimentions({ 150 ,50 });
-	tb2.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
-	tb2.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0.5 });
-	tb2.setBorderColour({ RRC(53), RRC(59), RRC(75) });
-	tb2.setCornerRadius(5);
-	tb2.setPadding({ 0, 0 });
-	tb2.setLayoutType(GUI::TextBox::CENTERED);
+	playerPosition.setText("Position: N/A");
+	playerPosition.setLayoutType(GUI::TextBox::VERTICAL);
+	playerPosition.setTextColour({ 1, 1, 1, 1 });
 
-	container.push(&tb1);
-	container.push(&tb2);
+	viewDirection.setText("View Direction: N/A");
+	viewDirection.setLayoutType(GUI::TextBox::VERTICAL);
+	viewDirection.setTextColour({ 1, 1, 1, 1 });
+
+	numChunks.setText("Num Chunks: N/A");
+	numChunks.setLayoutType(GUI::TextBox::VERTICAL);
+	numChunks.setTextColour({ 1, 1, 1, 1 });
+
+	container.push(&fpsCounter);
+	container.push(&playerPosition);
+	container.push(&viewDirection);
+	container.push(&numChunks);
+
 	guiWindow.setRoot(&container);
-
-	// GUIBuffer guiBuffer;
-	// auto bufferData = guiWindow.getDrawData();
-	// guiBuffer.setUp(bufferData.data(), bufferData.size());
-	// guiDrawable.add(guiBuffer);
-
-
-
 	Timer timer("Game Loop");
 	while (gameRunning) {
 		if (prevMatSize != MATERIALS.size()) {
@@ -356,6 +352,8 @@ void Game::doLoop(const glm::mat4& projection) {
 		}
 		timer.mark("Cellular Automota");
 
+		updateGUIText();
+
 		glClearColor(GameConfig::backgroundCol.x, GameConfig::backgroundCol.y, GameConfig::backgroundCol.z, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -380,12 +378,6 @@ void Game::calcTimes() {
 	if (lastFrameTime == -1) deltaTime = 1.0f / 60.0f;
 	lastFrameTime = frame;
 	frameRate = 1 / deltaTime;
-}
-
-void Game::showFPS() {
-	if (GameConfig::showFPS) {
-		showText("FPS: " + std::to_string(frameRate), { 5, 875 }, 0.5f);
-	}
 }
 
 void Game::showStuff() {
@@ -605,25 +597,6 @@ void Game::showStuff() {
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	showGUI();
-	showFPS();
-	
-	std::string m;
-	m = "Position: " + glm::to_string(_player->getPosition());
-	showText(m, { 5, 850 }, 0.5f);
-	
-	m = "View Direction: " + glm::to_string(_player->getViewDirection());
-	showText(m, { 5, 825 }, 0.5f);
-	
-	m = "Chunk Pos: " + glm::to_string(_player->getChunkPosition());
-	showText(m, { 5, 800 }, 0.5f);
-
-	m = "Num of Chunks: " + std::to_string(world.getChunkCount());
-	showText(m, { 5, 775 }, 0.5f);
-
-	m = "Num of Drawed chunks: " + std::to_string(world.getDrawCount());
-	showText(m, { 5, 750 }, 0.5f);
-
 
 	// 7. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
@@ -661,6 +634,14 @@ void Game::showStuff() {
 	// glDisable(GL_CULL_FACE);
 	// world.renderGreedy(greedyShader);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Game::updateGUIText()
+{
+	fpsCounter.setText("FPS: " + std::to_string(frameRate));
+	playerPosition.setText("Position: " + glm::to_string(_player->getPosition()));
+	viewDirection.setText("View Direction: " + glm::to_string(_player->getFront()));
+	numChunks.setText("Num Chunks: " + std::to_string(world.getChunkCount()));
 }
 
 void Game::setWindow(GLFWwindow* window) {
@@ -939,123 +920,6 @@ int prevPlayerHealth = 100;
 
 void Game::showGUI() {
 	uiRenderer.render();
-}
-
-void Game::setUpFreeType() {
-	//FT_Library ft;
-	//if (FT_Init_FreeType(&ft))
-	//	std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-
-	//FT_Face face;
-	//if (FT_New_Face(ft, "C://Windows/Fonts/arial.ttf", 0, &face))
-	//	std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-
-	//FT_Set_Pixel_Sizes(face, 0, 48); // font size
-
-	//if (FT_Load_Char(face, 'X', FT_LOAD_RENDER)) // set active glyph
-	//	std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-
-	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
-
-	//for (GLubyte c = 0; c < 128; c++)
-	//{
-	//	// Load character glyph 
-	//	if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-	//	{
-	//		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-	//		continue;
-	//	}
-	//	// Generate texture
-	//	unsigned int texture;
-	//	glGenTextures(1, &texture);
-	//	glBindTexture(GL_TEXTURE_2D, texture);
-	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-	//	// Set texture options
-	//	glGenerateMipmap(GL_TEXTURE_2D);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//	// Now store character for later use
-	//	Character character = {
-	//		texture,
-	//		glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-	//		glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-	//		face->glyph->advance.x
-	//	};
-	//	Letters.insert({ c, character });
-	//}
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	//FT_Done_Face(face);
-	//FT_Done_FreeType(ft);
-
-
-	//glGenVertexArrays(1, &LSVAO);
-	//glGenBuffers(1, &LSVBO);
-	//glBindVertexArray(LSVAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, LSVBO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindVertexArray(0);
-
-	//glm::mat4 projection = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
-	glm::mat4 projection2 = glm::ortho<float>(0.0f, windowDim.x, 0.0f, windowDim.y);
-	SHADERS[GLYPH].bind();
-	SHADERS[GLYPH].setValue("projection", projection2);
-	SHADERS[NEW_GUI].bind();
-	SHADERS[NEW_GUI].setValue("projection", projection2);
-}
-
-void Game::showText(const std::string& text, const glm::vec2& position, float scale, const glm::vec3 colour) {
-	using namespace GUI::Utils::Text;
-	GlyphRendering& instance = GUI::Utils::Text::GlyphRendering::getInstance();
-	instance.setShader(SHADERS[GLYPH].getId());
-	instance.loadFont("arial", "C://Windows/Fonts/arial.ttf");
-	instance.drawSentence(text, { position.x, position.y }, scale, { colour.x, colour.y, colour.z });
-	return;
-	float x = position.x;
-	const float y = position.y;
-
-	auto s = &SHADERS[GLYPH];
-	s->bind();
-	s->setValue("textColor", colour);
-	glActiveTexture(GL_TEXTURE0);
-	glBindVertexArray(LSVAO);
-	std::string::const_iterator c;
-	for (c = text.begin(); c != text.end(); c++)
-	{
-		Character& ch = Letters[*c];
-
-		float xpos = x + ch.Bearing.x * scale;
-		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-
-		float w = ch.Size.x * scale;
-		float h = ch.Size.y * scale;
-		// Update VBO for each character
-		float vertices[6][4] = {
-			{ xpos,     ypos + h,   0.0, 0.0 },
-			{ xpos,     ypos,       0.0, 1.0 },
-			{ xpos + w, ypos,       1.0, 1.0 },
-
-			{ xpos,     ypos + h,   0.0, 0.0 },
-			{ xpos + w, ypos,       1.0, 1.0 },
-			{ xpos + w, ypos + h,   1.0, 0.0 }
-		};
-		// Render glyph texture over quad
-		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-		// Update content of VBO memory
-		glBindBuffer(GL_ARRAY_BUFFER, LSVBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		// Render quad
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
-	}
-	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 #ifdef SSAO

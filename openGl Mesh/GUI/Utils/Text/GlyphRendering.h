@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include "Glyph.h"
-#include "../Float3.h"
+#include "../Float4.h"
 
 namespace GUI::Utils::Text {
 	class GlyphRendering {
@@ -17,7 +17,7 @@ namespace GUI::Utils::Text {
 		void loadFont(const std::string& fontName, const std::string& fileLocation);
 		// renders all the text in text as one line
 		// position = bottom left of the line (as if you were writing it) (in pixel coords)
-		void drawSentence(const std::string& text, Float2 position, float scale, const Float3& colour = {}, const std::string& font = "") const;
+		void drawSentence(const std::string& text, Float2 position, float scale, const Float4& colour = {}, const std::string& font = "") const;
 		Float2 getSentenceLength(const std::string& text, float scale, const std::string& font = "") const;
 
 
