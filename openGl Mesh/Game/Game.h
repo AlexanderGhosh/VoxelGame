@@ -7,7 +7,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "../Renders/UI Stuff/UI_Renderer.h"
 #include "World/World.h"
 #include "../FrameBuffer.h"
 #include "../UniformBuffer.h"
@@ -63,7 +62,6 @@ private:
 	static glm::vec2 mouseOffset;
 	static std::array<bool, 1024> keys;
 	static World world;
-	static UI_Renderer uiRenderer;
 
 	void placeBlock();
 	void breakBlock();
@@ -77,7 +75,7 @@ private:
 	unsigned int quadVBO, quadVAO;
 
 	Entities::Player* _player;
-	FrameBuffer oitFrameBuffer1, guiFrameBuffer, shadowFramebuffer, gBuffer;
+	FrameBuffer oitFrameBuffer1, shadowFramebuffer, gBuffer;
 	// Colour slot 0 is writen too
 	FrameBuffer multiPurposeFB;
 	GLFWwindow* window;
@@ -110,8 +108,6 @@ private:
 
 	void makeSkybox(const std::string& skybox);
 	void showSkybox();
-	void createGUI();
-	void showGUI();
 
 
 	// SSAO

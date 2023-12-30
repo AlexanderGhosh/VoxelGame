@@ -229,8 +229,6 @@
     <ClCompile Include="Textures\Texture.cpp" />
     <ClCompile Include="Game\World\World.cpp" />
     <ClCompile Include="Game\World\world_generation.cpp" />
-    <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp" />
-    <ClCompile Include="Renders\UI Stuff\UI_Element.cpp" />
     <ClCompile Include="Gizmos\Composite\Triangle.cpp" />
     <ClCompile Include="Helpers\Timers\TimerGroup.cpp" />
     <ClCompile Include="UniformBuffer.cpp" />
@@ -350,8 +348,6 @@
     <ClInclude Include="Textures\Texture.h" />
     <ClInclude Include="Game\World\World.h" />
     <ClInclude Include="Game\World\world_generation.h" />
-    <ClInclude Include="Renders\UI Stuff\UI_Renderer.h" />
-    <ClInclude Include="Renders\UI Stuff\UI_Element.h" />
     <ClInclude Include="Gizmos\Composite\Triangle.h" />
     <ClInclude Include="Helpers\Timers\TimerGroup.h" />
     <ClInclude Include="UniformBuffer.h" />

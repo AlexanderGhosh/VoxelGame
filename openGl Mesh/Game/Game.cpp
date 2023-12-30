@@ -42,9 +42,8 @@ glm::vec3 Game::mouseData;
 glm::vec2 Game::mouseOffset;
 std::array<bool, 1024> Game::keys;
 World Game::world;
-UI_Renderer Game::uiRenderer; 
 
-Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), guiFrameBuffer(), quadVAO(), quadVBO(), multiPurposeFB(), guiWindow(), 
+Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), quadVAO(), quadVBO(), multiPurposeFB(), guiWindow(), 
 	SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), fpsCounter(), playerPosition(), viewDirection(), numChunks() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
@@ -67,7 +66,6 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 	this->windowDim = windowDim;
 
 	makeSkybox("skybox");
-	createGUI();
 
 
 	{
@@ -121,24 +119,6 @@ Game::Game(glm::ivec2 windowDim) : Game() {
 
 		oitFrameBuffer1 = FrameBuffer(windowDim);
 		oitFrameBuffer1.setUp(detailsOIT);
-
-		// TRANSPARENT BUFFER
-
-		// GUI BUFFER
-		FrameBufferInit detailsGUI;
-
-		ColourBufferInit colourGUI;
-		colourGUI.format = GL_FLOAT;
-		colourGUI.internalFormat = GL_RGBA32F;
-		colourGUI.type = GL_RGBA;
-
-		detailsGUI.hasDepth = false;
-		detailsGUI.depthTexture = false;
-
-
-		detailsGUI.colourBuffers = { colourGUI };
-		guiFrameBuffer = FrameBuffer(windowDim);
-		guiFrameBuffer.setUp(detailsGUI);
 
 		// SHADOW MAP BUFFER
 		FrameBufferInit detailsShadows;
@@ -353,9 +333,6 @@ void Game::doLoop(const glm::mat4& projection) {
 		timer.mark("Cellular Automota");
 
 		updateGUIText();
-
-		glClearColor(GameConfig::backgroundCol.x, GameConfig::backgroundCol.y, GameConfig::backgroundCol.z, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		showStuff();
 		timer.mark("Rendering");
@@ -589,51 +566,33 @@ void Game::showStuff() {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
 	composite.unBind();
-	
-	
-	// 6. render the GUI
-	guiFrameBuffer.bind(); // use the GUI framebuffer
 
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-
-	// 7. render the screen quad
+	// 6. render the screen quad
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // use the default frambuffer
+	glViewport(0, 0, windowDim.x, windowDim.y);
+
+	glClearColor(GameConfig::backgroundCol.x, GameConfig::backgroundCol.y, GameConfig::backgroundCol.z, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE); // enable depth writes so glClear won't ignore clearing the depth buffer
 	glDisable(GL_BLEND);
 	
-	glViewport(0, 0, windowDim.x, windowDim.y);
 	
 	const Shader& screenQuad = SHADERS[SCREEN_QUAD];
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, oitFrameBuffer1.getColourTex(0));
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, guiFrameBuffer.getColourTex(0));
 	
 	screenQuad.bind();
 	
 	screenQuad.setValue("screen", 0);
-	screenQuad.setValue("gui", 1);
+
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
-	
-	screenQuad.unBind();
 
+	// 7. GUI
 	guiWindow.render();
-
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	// Shader* greedyShader = &SHADERS[GREEDY];
-	// greedyShader->bind();
-	// glEnable(GL_DEPTH_TEST);
-	// glDepthFunc(GL_LESS);
-	// glDepthMask(true); // enable depth writes so glClear won't ignore clearing the depth buffer
-	// glDisable(GL_CULL_FACE);
-	// world.renderGreedy(greedyShader);
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Game::updateGUIText()
@@ -863,64 +822,8 @@ void Game::showSkybox() {
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-void Game::createGUI() {
-	uiRenderer = UI_Renderer(&SHADERS[SHADER_NAMES::GUI_S]);
-	UI_Element crosshair = UI_Element({ 0, 0 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::GUI_S], "crosshair");
-
-	UI_Element slot0 = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot0");
-	UI_Element slot1 = UI_Element({ -0.18, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot1");
-	UI_Element slot2 = UI_Element({ -0.12, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot2");
-	UI_Element slot3 = UI_Element({ -0.06, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot3");
-	UI_Element slot4 = UI_Element({ 0, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot4"); // mid
-	UI_Element slot5 = UI_Element({ 0.06, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot5");
-	UI_Element slot6 = UI_Element({ 0.12, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot6");
-	UI_Element slot7 = UI_Element({ 0.18, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot7");
-	UI_Element slot8 = UI_Element({ 0.24, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_NORM], "slot8");
-
-	UI_Element slotSelected = UI_Element({ -0.24, -0.945 }, { 0.5, 0.5 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
-
-	UI_Element heart0 = UI_Element({ -0.26, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart0");
-	UI_Element heart1 = UI_Element({ -0.22, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart1");
-	UI_Element heart2 = UI_Element({ -0.18, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart2");
-	UI_Element heart3 = UI_Element({ -0.14, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart3");
-	UI_Element heart4 = UI_Element({ -0.10, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart4");
-	UI_Element heart5 = UI_Element({ -0.06, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart5");
-	UI_Element heart6 = UI_Element({ -0.02, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart6");
-	UI_Element heart7 = UI_Element({ 0.02, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart7");
-	UI_Element heart8 = UI_Element({ 0.06, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart8");
-	UI_Element heart9 = UI_Element({ 0.10, -0.83 }, { 0.3, 0.3 }, &TEXTURES2D[(unsigned int)Texture_Names_2D::LIVE_HEART], "heart9");
-
-	uiRenderer.appendElement(slot0);
-	uiRenderer.appendElement(slot1);
-	uiRenderer.appendElement(slot2);
-	uiRenderer.appendElement(slot3);
-	uiRenderer.appendElement(slot4);
-	uiRenderer.appendElement(slot5);
-	uiRenderer.appendElement(slot6);
-	uiRenderer.appendElement(slot7);
-	uiRenderer.appendElement(slot8);
-	uiRenderer.appendElement(slotSelected);
-
-	uiRenderer.appendElement(heart0);
-	uiRenderer.appendElement(heart1);
-	uiRenderer.appendElement(heart2);
-	uiRenderer.appendElement(heart3);
-	uiRenderer.appendElement(heart4);
-	uiRenderer.appendElement(heart5);
-	uiRenderer.appendElement(heart6);
-	uiRenderer.appendElement(heart7);
-	uiRenderer.appendElement(heart8);
-	uiRenderer.appendElement(heart9);
-
-	uiRenderer.appendElement(crosshair);
-}
-
 std::vector<Texture*> prevHotBar;
 int prevPlayerHealth = 100;
-
-void Game::showGUI() {
-	uiRenderer.render();
-}
 
 #ifdef SSAO
 void Game::setUpSSAO()
