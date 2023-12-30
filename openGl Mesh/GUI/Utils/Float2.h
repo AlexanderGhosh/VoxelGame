@@ -53,6 +53,11 @@ namespace GUI {
 				return Float2(a.x * b, a.y * b);
 			}
 
+			Float2& operator+=(const Float2& other) {
+				x += other.x;
+				y += other.y;
+				return *this;
+			}
 			Float2& operator*=(const Float2& other) {
 				x *= other.x;
 				y *= other.y;

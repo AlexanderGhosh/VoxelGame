@@ -28,7 +28,7 @@ class Block;
 //#define CIRCULAR_CHUNKS
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
-#define GENERATE_NEW_CHUNKS true
+#define GENERATE_NEW_CHUNKS false
 // #define CELLULAR_AUTOMOTA
 // #define GENERATE_INDEX_DATA_GREEDY
 #define MINIMAL_GREEDY_MESH

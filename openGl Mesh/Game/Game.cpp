@@ -258,13 +258,14 @@ void Game::doLoop(const glm::mat4& projection) {
 	GUI::TextBox tb1;
 	tb1.setText("Line 1");
 	tb1.setDimentions({ 150 ,30 });
-	tb1.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
+	tb1.setPosition({ 0, 0 }, GUI::FRACTIONAL);
 	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 1 });
 	
 	tb1.setBorderColour({ RRC(53), RRC(59), RRC(75) });
 	tb1.setBorderSize(2);
 	tb1.setCornerRadius(5);
-	tb1.setPadding({ 7, 6 });
+	tb1.setPadding({ 0, 0 });
+	tb1.setLayoutType(GUI::TextBox::CENTERED);
 
 	GUI::TextBox tb2;
 	tb2.setText("Line 2");
@@ -273,7 +274,8 @@ void Game::doLoop(const glm::mat4& projection) {
 	tb2.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0.5 });
 	tb2.setBorderColour({ RRC(53), RRC(59), RRC(75) });
 	tb2.setCornerRadius(5);
-	tb2.setPadding({ 20, 20 });
+	tb2.setPadding({ 0, 0 });
+	tb2.setLayoutType(GUI::TextBox::CENTERED);
 
 	container.push(&tb1);
 	container.push(&tb2);

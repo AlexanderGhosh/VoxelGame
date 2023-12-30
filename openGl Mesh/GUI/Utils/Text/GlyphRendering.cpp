@@ -1,6 +1,7 @@
 #include "GlyphRendering.h"
 #include <freetype/freetype.h>
 #include <glad/glad.h>
+#include "../Float2.h"
 
 using namespace GUI::Utils::Text;
 
@@ -56,8 +57,11 @@ void GUI::Utils::Text::GlyphRendering::loadFont(const std::string& fontName, con
 		glyph.bearing.x = face->glyph->bitmap_left;
 		glyph.bearing.y = face->glyph->bitmap_top;
 
-		glyph.advance.x = face->glyph->advance.x;
-		glyph.advance.y = face->glyph->advance.y;
+		glyph.advance.x = face->glyph->advance.x >> 6;
+		glyph.advance.y = face->glyph->advance.y >> 6;
+		// if there is no vertical advance then
+		// set it as the size of the glyph + 10%
+		if (glyph.advance.y == 0) glyph.advance.y = glyph.size.y * 1.1f;
 
 		// Generate texture
 		glGenTextures(1, &glyph.textureID);
@@ -78,9 +82,9 @@ void GUI::Utils::Text::GlyphRendering::loadFont(const std::string& fontName, con
 	FT_Done_FreeType(ft);
 }
 
-void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Float2 position, float scale, const Float3& colour, const std::string& fontName)
+void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Float2 position, float scale, const Float3& colour, const std::string& fontName) const
 {
-	Font* font;
+	const Font* font;
 	if (fontName.empty()) {
 		font = &_fonts.at(_defaultFont);
 	}
@@ -126,11 +130,29 @@ void GUI::Utils::Text::GlyphRendering::drawSentence(const std::string& text, Flo
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		position.x += ((int)g.advance.x >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+		position.x += g.advance.x * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUseProgram(0);
+}
+
+GUI::Utils::Float2 GUI::Utils::Text::GlyphRendering::getSentenceLength(const std::string& text, float scale, const std::string& fontName) const
+{
+	const Font* font;
+	if (fontName.empty()) {
+		font = &_fonts.at(_defaultFont);
+	}
+	else {
+		font = &_fonts.at(fontName);
+	}
+	Utils::Float2 res;
+	for (char c : text) {
+		const Glyph& g = font->at(c);
+		res.x += g.advance.x * scale;
+		res.y = fmaxf(res.y, g.advance.y * scale);
+	}
+	return res;
 }
 
 void GUI::Utils::Text::GlyphRendering::setShader(unsigned int id)

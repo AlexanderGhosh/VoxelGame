@@ -17,7 +17,8 @@ namespace GUI::Utils::Text {
 		void loadFont(const std::string& fontName, const std::string& fileLocation);
 		// renders all the text in text as one line
 		// position = bottom left of the line (as if you were writing it) (in pixel coords)
-		void drawSentence(const std::string& text, Float2 position, float scale, const Float3& colour = {}, const std::string& font = "");
+		void drawSentence(const std::string& text, Float2 position, float scale, const Float3& colour = {}, const std::string& font = "") const;
+		Float2 getSentenceLength(const std::string& text, float scale, const std::string& font = "") const;
 
 
 		// vertex data is 4 float4 drawn with triangle strips (pixel coords, texture coords)
