@@ -31,7 +31,10 @@ namespace GUI {
 
 		// if true causes the vertex data to be regenerated
 		mutable bool _changed;
+
+		inline Utils::Float2 getDrawPosition(Utils::Float2 origin, Utils::Float2 parentDimentions) const { return origin + _position.getPixelValue(parentDimentions); }
 	public:
+		inline Utils::Float2 getDrawDimentions(Utils::Float2 parentDimentions) const { return _dimentions.getPixelValue(parentDimentions); }
 
 		// genreates vertex data for a unit rounded box (1 pixel by 1 pixel)
 		virtual Utils::DrawData getDrawData() const;

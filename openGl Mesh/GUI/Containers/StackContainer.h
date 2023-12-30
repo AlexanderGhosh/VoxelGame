@@ -6,5 +6,6 @@ namespace GUI {
 	public:
 		StackContainer() = default;
 		void render(Utils::Float2 origin, Utils::Float2 parentDimentions) const override;
+		inline void push(IGUI_Element* element) override { _children.push_front(element); }
 	};
 }

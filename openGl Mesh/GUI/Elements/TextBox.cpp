@@ -26,8 +26,8 @@ void GUI::TextBox::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	IGUI_Element::render(origin, parentDimentions);
 	Utils::Text::GlyphRendering& instance = Utils::Text::GlyphRendering::getInstance();
 
-	Utils::Float2 drawPosition = origin + _position.getPixelValue(parentDimentions);
-	Utils::Float2 drawDimentions = _dimentions.getPixelValue(parentDimentions);
+	Utils::Float2 drawPosition = getDrawPosition(origin, parentDimentions);
+	Utils::Float2 drawDimentions = getDrawDimentions(parentDimentions);
 	Utils::Float2 drawPadding = _textPadding.getPixelValue(drawDimentions);
 	
 	instance.drawSentence(_text, (drawPosition + drawPadding), 0.5);

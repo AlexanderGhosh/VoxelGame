@@ -251,7 +251,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	guiWindow.windowDimentions.y = windowDim.y;
 	guiWindow.elementShader = SHADERS[NEW_GUI].getId();
 
-	GUI::BasicContainer container;
+	GUI::StackContainer container;
 	container.setBackgroundColour({ 1, 0, 0, .1 });
 	GUI::TextBox tb1;
 	tb1.setText("Line 1");
@@ -264,17 +264,17 @@ void Game::doLoop(const glm::mat4& projection) {
 	tb1.setCornerRadius(5);
 	tb1.setPadding({ 7, 6 });
 
-	// GUI::TextBox tb2;
-	// tb2.setText("Line 2");
-	// tb2.setDimentions({ 150 ,50 });
-	// tb2.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
-	// tb2.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0.5 });
-	// tb2.setBoarderColour({ RRC(53), RRC(59), RRC(75) });
-	// tb2.setCornerRadius(5);
-	// tb2.setPadding({ 20, 20 });
+	GUI::TextBox tb2;
+	tb2.setText("Line 2");
+	tb2.setDimentions({ 150 ,50 });
+	tb2.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
+	tb2.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 0.5 });
+	tb2.setBorderColour({ RRC(53), RRC(59), RRC(75) });
+	tb2.setCornerRadius(5);
+	tb2.setPadding({ 20, 20 });
 
-	container.push(tb1);
-	// container.push(tb2);
+	container.push(&tb1);
+	container.push(&tb2);
 	guiWindow.setRoot(&container);
 
 	// GUIBuffer guiBuffer;

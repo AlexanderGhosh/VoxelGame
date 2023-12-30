@@ -31,8 +31,8 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	}
 	if (_drawBuffer.size() == 0) return;
 
-	Utils::Float2 drawPosition = origin + _position.getPixelValue(parentDimentions);
-	Utils::Float2 drawDimentions = _dimentions.getPixelValue(parentDimentions);
+	Utils::Float2 drawPosition = getDrawPosition(origin, parentDimentions);
+	Utils::Float2 drawDimentions = getDrawDimentions(parentDimentions);
 
 	glUseProgram(GUI_Window::elementShader);
 
