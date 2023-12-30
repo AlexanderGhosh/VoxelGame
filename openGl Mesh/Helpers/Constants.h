@@ -66,13 +66,10 @@ class Block;
 // #define DEBUG_GRID_LINES
 
 
-#define SSAO
-#ifdef SSAO
 constexpr unsigned int SSAO_NUM_SAMPLES = 64;
 constexpr float SSAO_SCALE = 4;
 constexpr float SSAO_RADIUS = 0.5;
 constexpr float SSAO_BIAS = 0.025;
-#endif // SSAO
 
 constexpr float FIXED_DELTA_TIME = 1.f / 60.f;
 constexpr bool VSYNC = true;

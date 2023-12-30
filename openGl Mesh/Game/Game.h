@@ -21,13 +21,6 @@ class GizmoManager;
 class Camera;
 struct ClickEventInfo;
 
-struct Character {
-	unsigned int TextureID;  // ID handle of the glyph texture
-	glm::ivec2 Size;       // Size of glyph
-	glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
-	unsigned int Advance;    // Offset to advance to next glyph
-};
-
 struct GameConfig {
 	static bool showFPS;
 	static glm::vec3 backgroundCol;
@@ -83,8 +76,7 @@ private:
 	unsigned int frameRate;
 	bool gameRunning;
 	float lastFrameTime;
-	unsigned int SBVAO,LSVAO, LSVBO;
-	std::map<char, Character> Letters;
+	unsigned int skyVAO, skyVBO;
 	glm::ivec2 windowDim;
 
 	// is updated every frame with the current camera's view matrix
@@ -107,14 +99,11 @@ private:
 	static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset);
 
 	void makeSkybox(const std::string& skybox);
-	void showSkybox();
+	void drawSkybox();
 
 
-	// SSAO
-#ifdef SSAO
 	std::array<glm::vec3, SSAO_NUM_SAMPLES> ssaoSamples;
 	unsigned int ssaoNoiseTex;
 	void setUpSSAO();
-#endif // SSAO
 
 };

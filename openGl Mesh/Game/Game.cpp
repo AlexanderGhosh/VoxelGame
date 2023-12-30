@@ -44,7 +44,7 @@ std::array<bool, 1024> Game::keys;
 World Game::world;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), quadVAO(), quadVBO(), multiPurposeFB(), guiWindow(), 
-	SBVAO(0), LSVAO(), Letters(), windowDim(), LSVBO(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), fpsCounter(), playerPosition(), viewDirection(), numChunks() {
+	skyVAO(0), skyVBO(0), windowDim(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), fpsCounter(), playerPosition(), viewDirection(), numChunks() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -184,9 +184,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	// std::cout << "Models Loaded" << std::endl;
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
-#ifdef SSAO
 	setUpSSAO();
-#endif // SSAO
 	
 	EventsManager& events = EventsManager::getInstance();
 	// EventCallback<Game> leftReleaseCB(this, &Game::breakBlock);
@@ -496,7 +494,7 @@ void Game::showStuff() {
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	// renderModels();
-	showSkybox();
+	drawSkybox();
 
 	// 5. Composite
 	glDisable(GL_CULL_FACE);
@@ -678,24 +676,9 @@ void Game::clickCallBack(GLFWwindow* window, int button, int action, int mods) {
 	}
 }
 
-std::string num = "0";
-
 void Game::scrollCallBack(GLFWwindow* window, double xoffset, double yoffset)
 {
 	EventsManager::getInstance().mouseScroll.fire();
-	/*int i = std::stoi(num);
-	i -= yoffset;
-	if (i > 8) {
-		i = 9 - i;
-	}
-	else if (i < 0) {
-		i = 9 + i;
-	}
-	num = std::to_string(i);
-	uiRenderer.popWhere("slot_selected");
-	UI_Element& element = uiRenderer.getWhere("slot" + num);
-	UI_Element e = UI_Element(element.getPos(), element.getSize(), &TEXTURES2D[(unsigned int)Texture_Names_2D::BOARDER_SELECTED], "slot_selected");
-	uiRenderer.appendElement(e);*/
 }
 
 void Game::setupEventCB(GLFWwindow* window) {
@@ -706,9 +689,14 @@ void Game::setupEventCB(GLFWwindow* window) {
 }
 
 void Game::cleanUp() {
-	glDeleteVertexArrays(1, &quadVAO);
+	// screen quad
 	glDeleteBuffers(1, &quadVBO);
+	glDeleteVertexArrays(1, &quadVAO);
 	quadVAO = quadVBO = 0;
+	// skybox
+	glDeleteBuffers(1, &skyVBO);
+	glDeleteVertexArrays(1, &skyVAO);
+	skyVAO = skyVBO = 0;
 }
 
 void Game::setUpScreenQuad()
@@ -793,11 +781,10 @@ void Game::makeSkybox(const std::string& skybox) {
 		 1.0f, -1.0f,  1.0f
 	};
 	// skybox VAO
-	unsigned int skyboxVBO;
-	glGenVertexArrays(1, &SBVAO);
-	glGenBuffers(1, &skyboxVBO);
-	glBindVertexArray(SBVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glGenVertexArrays(1, &skyVAO);
+	glGenBuffers(1, &skyVBO);
+	glBindVertexArray(skyVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -807,13 +794,13 @@ void Game::makeSkybox(const std::string& skybox) {
 	shader->setValue("skybox", 0);
 }
 
-void Game::showSkybox() {
+void Game::drawSkybox() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer'transparent content
 	SHADERS[SKYBOX].bind();
 	// Camera& camera = player->getCamera();
 
-	glBindVertexArray(SBVAO);
+	glBindVertexArray(skyVAO);
 	TEXTURES3D[(int)Texture_Names::SKYBOX].bind();
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
@@ -822,10 +809,6 @@ void Game::showSkybox() {
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-std::vector<Texture*> prevHotBar;
-int prevPlayerHealth = 100;
-
-#ifdef SSAO
 void Game::setUpSSAO()
 {
 	auto lerp = [](float a, float b, float c) {
@@ -864,4 +847,3 @@ void Game::setUpSSAO()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
-#endif // SSAO
