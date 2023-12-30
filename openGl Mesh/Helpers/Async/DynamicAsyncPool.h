@@ -95,6 +95,7 @@ inline std::list<Ret_Type> DynamicAsyncPool<Ret_Type>::getAllDone(bool remove)
 	std::list<Ret_Type> res;
 
 	for (auto itt = pool.begin(); itt != pool.end();) {
+		// error occurs because (*itt) is empty (valid() is supost to stop this but it doenst)
 		if ((*itt).valid() && (*itt)._Is_ready()) {
 			res.push_back((*itt).get());
 			if (remove) {
