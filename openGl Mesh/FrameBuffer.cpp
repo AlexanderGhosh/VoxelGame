@@ -66,7 +66,7 @@ void FrameBuffer::setUp(const FrameBufferInit& init)
 		if (init.depthBuffer == 0) {
 			glGenTextures(1, &depthBuffer);
 			glBindTexture(GL_TEXTURE_2D, depthBuffer);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, dimentions.x, dimentions.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, dimentions.x, dimentions.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 			
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -81,11 +81,7 @@ void FrameBuffer::setUp(const FrameBufferInit& init)
 		}
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}	
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: framebuffer is not complete!" << std::endl;
-
+	}
 	if (colourAttachments.size()) {
 		glDrawBuffers(colourAttachments.size(), colourAttachments.data());
 	}
@@ -93,6 +89,11 @@ void FrameBuffer::setUp(const FrameBufferInit& init)
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 	}
+	// 8CD6 36054
+	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER); 
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: framebuffer is not complete!" << std::endl;
+
 	unBind();
 }
 

@@ -26,3 +26,4 @@ public:
 #define B_WATER (BLOCKS[6])
 #define B_SNOW (BLOCKS[7])
 #define B_GRAVEL (BLOCKS[8])
+#define B_GLASS (BLOCKS[9])

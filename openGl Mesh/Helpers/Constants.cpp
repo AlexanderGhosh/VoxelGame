@@ -38,7 +38,8 @@ std::vector<Shader> SHADERS = {
 	Shader("Gizmos/LineShader/lineShader", true),
 	Shader("Gizmos/CircleShader/circleShader", true),
 	Shader("PhysicsDebug/physicsDebug"),
-	Shader("NoiseRender/noiseRender", true)
+	Shader("NoiseRender/noiseRender", true),
+	Shader("NewGUI/newGUI")
 };
 std::vector<Block> BLOCKS = {};
 std::vector<Material> MATERIALS = {};

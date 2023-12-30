@@ -126,5 +126,21 @@
       "b": 0,
       "a": 1
     }
+  },
+  "glass": {
+    "albedo1": {
+      "normalised": true,
+      "r": 0.6,
+      "g": 0.6,
+      "b": 0.6,
+      "a": 0.6
+    },
+    "albedo2": {
+      "normalised": true,
+      "r": 0.6,
+      "g": 0.6,
+      "b": 0.6,
+      "a": 0.6
+    }
   }
 }

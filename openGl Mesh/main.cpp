@@ -45,11 +45,24 @@ GLFWwindow* createWindow();
 
 // #define TESTING
 #ifdef TESTING
+#include "GUI/GUI_Window.h"
+#include "GUI/Containers/BasicContainer.h"
+#include "GUI//Elements/TextBox.h"
 #endif
 
 int main() {
 #ifdef TESTING
+	GUI::GUI_Window gui;
+	GUI::BasicContainer container;
+	GUI::TextBox tb;
+	tb.setDimentions({ 1, 1 });
+	tb.setBackgroundColour({ 1, 0, 0 });
+	tb.setCornerRadius(0);
 
+	container.push(&tb);
+	gui.setRoot(&container);
+
+	auto t = gui.getDrawData();
 	return 0;
 #endif // TESTING
 	JsonParser materialParser(".\\Materials.json");

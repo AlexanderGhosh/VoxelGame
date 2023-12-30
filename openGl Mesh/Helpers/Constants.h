@@ -28,7 +28,7 @@ class Block;
 //#define CIRCULAR_CHUNKS
 // only works on the intal generation (all chunks when running will be async)
 //#define GENERATE_CHUNKS_ASYNC 
-#define GENERATE_NEW_CHUNKS true
+#define GENERATE_NEW_CHUNKS false
 // #define CELLULAR_AUTOMOTA
 // #define GENERATE_INDEX_DATA_GREEDY
 #define MINIMAL_GREEDY_MESH
@@ -182,7 +182,7 @@ enum class Texture_Names : unsigned char {
 };
 
 enum class Texture_Names_2D : unsigned char {
-	GUI,
+	GUI_S,
 	BOARDER_NORM,
 	BOARDER_SELECTED,
 	LIVE_HEART,
@@ -191,7 +191,7 @@ enum class Texture_Names_2D : unsigned char {
 
 enum SHADER_NAMES : unsigned char {
 	SKYBOX,
-	GUI,
+	GUI_S,
 	GLYPH,
 
 	OIT_TRANSPARENT,
@@ -209,7 +209,9 @@ enum SHADER_NAMES : unsigned char {
 	CIRCLE_GIZMO,
 	PHYS_DEBUG,
 
-	GREEDY
+	GREEDY,
+
+	NEW_GUI
 };
 
 enum class Move_Dir : unsigned char {
