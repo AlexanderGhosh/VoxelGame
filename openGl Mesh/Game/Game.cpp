@@ -260,7 +260,7 @@ void Game::doLoop(const glm::mat4& projection) {
 	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 1 });
 	
 	tb1.setBorderColour({ RRC(53), RRC(59), RRC(75) });
-	tb1.setBorderSize(0.001);
+	tb1.setBorderSize(2);
 	tb1.setCornerRadius(5);
 	tb1.setPadding({ 20, 20 });
 

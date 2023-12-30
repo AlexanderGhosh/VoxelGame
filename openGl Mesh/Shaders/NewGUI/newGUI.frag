@@ -28,7 +28,7 @@ void main()
     }
     if (borderSize > 0) {
         float d1 = roundedBoxSDF(gl_FragCoord.xy - position - half_dim, half_dim - borderSize * 2.0, cornerRadius);
-        if(d < d1) {
+        if(d1 >= 0 && d <= 0) {
             colour = borderColour;
         }
     }
