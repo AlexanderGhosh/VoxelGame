@@ -253,6 +253,8 @@ void Game::doLoop(const glm::mat4& projection) {
 
 	GUI::StackContainer container;
 	container.setBackgroundColour({ 1, 0, 0, .1 });
+	container.setSpacing(10);
+
 	GUI::TextBox tb1;
 	tb1.setText("Line 1");
 	tb1.setDimentions({ 150 ,30 });
