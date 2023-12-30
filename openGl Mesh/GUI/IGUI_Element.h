@@ -25,7 +25,7 @@ namespace GUI {
 		// all stored as either absolute pixel values or relative to parent
 		Utils::Units<Utils::Float2> _position, _dimentions;
 		// either absolute pixel or relative to this->_dimentions
-		Utils::Units<float> _cornerRadius;
+		Utils::Units<float> _cornerRadius, _boarderSize;
 
 		Utils::Float4 _backgroundColour, _boarderColour;
 
@@ -40,12 +40,13 @@ namespace GUI {
 
 		void setPosition(Utils::Float2 pos, UNIT_MODE mode = GUI_DEFAULT_MODE);
 		void setDimentions(Utils::Float2 dims, UNIT_MODE mode = GUI_DEFAULT_MODE);
+		void setBorderSize(float size, UNIT_MODE mode = GUI_DEFAULT_MODE);
 		void setCornerRadius(float radius, UNIT_MODE mode = GUI_DEFAULT_MODE);
 
 		inline void setBackgroundColour(Utils::Float4 col) { _backgroundColour = col; }
 		inline void setBackgroundColour(Utils::Float3 col) { _backgroundColour = Utils::Float4(col.r, col.g, col.b, 1); }
 
-		inline void setBoarderColour(Utils::Float4 col) { _boarderColour = col; }
-		inline void setBoarderColour(Utils::Float3 col) { _boarderColour = Utils::Float4(col.r, col.g, col.b, 1); }
+		inline void setBorderColour(Utils::Float4 col) { _boarderColour = col; }
+		inline void setBorderColour(Utils::Float3 col) { _boarderColour = Utils::Float4(col.r, col.g, col.b, 1); }
 	};
 }

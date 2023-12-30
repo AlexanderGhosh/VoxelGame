@@ -3,10 +3,10 @@
 #include "GUI_Window.h"
 
 using namespace GUI;
-static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims, const Utils::Float4& colour);
+static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims);
 
 
-IGUI_Element::IGUI_Element() : _position(), _dimentions(), _backgroundColour(), _cornerRadius(), _boarderColour(), _drawBuffer(), _changed(false) {
+IGUI_Element::IGUI_Element() : _position(), _dimentions(), _backgroundColour(), _cornerRadius(), _boarderColour(), _drawBuffer(), _changed(false), _boarderSize() {
 	_drawBuffer.setUp(nullptr, 0);
 }
 
@@ -18,7 +18,7 @@ Utils::DrawData IGUI_Element::getDrawData() const {
 	Utils::Float2 dims(1, 1);
 
 	if(_backgroundColour.a > 0)
-		addQuad(d, offset, dims, _backgroundColour);
+		addQuad(d, offset, dims);
 	return d;
 }
 
@@ -43,10 +43,19 @@ void IGUI_Element::render(Utils::Float2 origin, Utils::Float2 parentDimentions) 
 	glUniform2f(loc, drawDimentions.x, drawDimentions.y);
 
 	loc = glGetUniformLocation(GUI_Window::elementShader, "cornerRadius");
-	glUniform1f(loc, _cornerRadius.getPixelValue({}));
+	glUniform1f(loc, _cornerRadius.getPixelValue(drawDimentions.magnitude()));
+
+	loc = glGetUniformLocation(GUI_Window::elementShader, "borderSize");
+	glUniform1f(loc, _boarderSize.getPixelValue(drawDimentions.magnitude()));
+
+	loc = glGetUniformLocation(GUI_Window::elementShader, "bgColour");
+	glUniform4f(loc, _backgroundColour.r, _backgroundColour.g, _backgroundColour.b, _backgroundColour.a);
+
+	loc = glGetUniformLocation(GUI_Window::elementShader, "borderColour");
+	glUniform4f(loc, _boarderColour.r, _boarderColour.g, _boarderColour.b, _boarderColour.a);
 
 	_drawBuffer.bind();
-	glDrawArrays(GL_TRIANGLES, 0, _drawBuffer.size());
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, _drawBuffer.size());
 	_drawBuffer.unBind();
 }
 
@@ -62,18 +71,20 @@ void IGUI_Element::setDimentions(Utils::Float2 dims, UNIT_MODE mode)
 	_changed = true;
 }
 
+void IGUI_Element::setBorderSize(float size, UNIT_MODE mode) {
+	_boarderSize.set(size, mode);
+	_changed = true;
+}
+
 void IGUI_Element::setCornerRadius(float radius, UNIT_MODE mode)
 {
 	_cornerRadius.set(radius, mode);
 	_changed = true;
 }
 
-static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims, const Utils::Float4& colour) {
-	data.push_back(Utils::Vertex({ offset.x, offset.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }, colour));
-
-	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }, colour));
-	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y + dims.y }, colour));
+static void addQuad(Utils::DrawData& data, const Utils::Float2& offset, const Utils::Float2& dims) {
+	data.push_back(Utils::Vertex({ offset.x, offset.y }));
+	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y }));
+	data.push_back(Utils::Vertex({ offset.x, offset.y + dims.y }));
+	data.push_back(Utils::Vertex({ offset.x + dims.x, offset.y + dims.y }));
 }

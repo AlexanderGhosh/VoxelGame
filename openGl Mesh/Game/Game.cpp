@@ -192,9 +192,9 @@ void Game::doLoop(const glm::mat4& projection) {
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	 VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_GLASS);
-	 woman.setPosition(0, 37, 0);
-	 woman.addToDrawable(world.geomDrawable);
+	// VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_GLASS);
+	// woman.setPosition(0, 37, 0);
+	// woman.addToDrawable(world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	woman.addToDrawable(world.greedyDrawable);
 #endif
@@ -252,12 +252,15 @@ void Game::doLoop(const glm::mat4& projection) {
 	guiWindow.elementShader = SHADERS[NEW_GUI].getId();
 
 	GUI::BasicContainer container;
-	container.setBackgroundColour({ 1, 0, 0, .2 });
+	container.setBackgroundColour({ 1, 1, 1, .1 });
 	GUI::TextBox tb1;
 	tb1.setText("Line 1");
 	tb1.setDimentions({ 150 ,25 });
 	tb1.setPosition({ 0.5, 0.5 }, GUI::FRACTIONAL);
 	tb1.setBackgroundColour({ RRC(127), RRC(143), RRC(166), 1 });
+	
+	tb1.setBorderColour({ RRC(53), RRC(59), RRC(75) });
+	tb1.setBorderSize(0.001);
 	tb1.setCornerRadius(5);
 	tb1.setPadding({ 20, 20 });
 

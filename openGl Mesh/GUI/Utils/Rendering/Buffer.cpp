@@ -48,10 +48,8 @@ void Buffer::setUp(const GUI::Utils::Vertex* data, unsigned int size)
     glBufferData(GL_ARRAY_BUFFER, size * sizeof(GUI::Utils::Vertex), data, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GUI::Utils::Vertex), (void*)offsetof(GUI::Utils::Vertex, position));
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(GUI::Utils::Vertex), (void*)offsetof(GUI::Utils::Vertex, colour));
 
     glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
 }

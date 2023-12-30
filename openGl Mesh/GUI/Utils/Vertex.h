@@ -7,9 +7,8 @@ namespace GUI {
 		class Vertex {
 		public:
 			Vertex() = default;
-			Vertex(Float2 pos, Float4 col) : position(pos), colour(col) { }
+			Vertex(Float2 pos) : position(pos) { }
 			Float2 position;
-			Float4 colour;
 		};
 	}
 }
