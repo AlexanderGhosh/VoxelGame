@@ -10,10 +10,11 @@
 #include "World/World.h"
 #include "../FrameBuffer.h"
 #include "../UniformBuffer.h"
-#include "../Helpers/ModelLoaders/VoxelModel_Base.h"
+#include "../Helpers/ModelLoaders/VoxelModel.h"
 
 #include "../GUI/GUI_Window.h"
 #include "../GUI/Elements/TextBox.h"
+#include "../GUI/Containers/StackContainer.h"
 
 class Model;
 class EntityManager;
@@ -91,6 +92,7 @@ private:
 	glm::mat4 cameraView, cameraProjection;
 
 
+	GUI::StackContainer _container;
 	GUI::TextBox _fpsCounter;
 	GUI::TextBox _playerPosition;
 	GUI::TextBox _viewDirection;

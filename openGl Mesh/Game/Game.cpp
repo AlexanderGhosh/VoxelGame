@@ -27,8 +27,6 @@
 #include "../EventsSystem/EventDetails/ClickEventInfo.h"
 #include "../EventsSystem/EventDetails/KeyEventInfo.h"
 // New GUI
-#include "../GUI/Containers/StackContainer.h"
-#include "../GUI/Containers/BasicContainer.h"
 #include "../GUI/Utils/Text/GlyphRendering.h"
 
 #pragma region GameConfig
@@ -181,18 +179,14 @@ void Game::setUpGame(const glm::mat4& projection)
 	cameraProjection = projection;
 	camreraBuffer.fill(0, sizeof(glm::mat4), &cameraProjection);
 	setupEventCB(window);
-}
 
-void Game::doGameLoop() {
-	gameRunning = true;
 
-	
 	// VOXEL MODELS
 	ModelManager& modelManager = ModelManager::getInstance();
 	Timer voxelLoad("Load Voxel Model");
-	// VoxelModel_Static& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_GLASS);
-	// woman.setPosition(0, 37, 0);
-	// woman.addToDrawable(_world.geomDrawable);
+	VoxelModel& woman = modelManager.loadVoxel("C:\\Users\\AGWDW\\Desktop\\woman.ply", B_GLASS);
+	woman.setPosition(0, 37, 0);
+	woman.addToDrawable(_world.geomDrawable);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	woman.addToDrawable(_world.greedyDrawable);
 #endif
@@ -205,7 +199,7 @@ void Game::doGameLoop() {
 	// auto mesh = ModelLoader::Load("C:\\Users\\AGWDW\\Desktop\\cube.obj");
 
 	setUpSSAO();
-	
+
 	EventsManager& events = EventsManager::getInstance();
 	// EventCallback<Game> leftReleaseCB(this, &Game::breakBlock);
 
@@ -216,10 +210,7 @@ void Game::doGameLoop() {
 	// EventCallback<Game> middleReleaseCB(this, &Game::explode);
 	// events.click += middleReleaseCB;
 
-	unsigned int numFrames = 0;
 	GizmoManager& gizmoManager = GizmoManager::getInstance();
-
-	PhysicsManager& physManager = PhysicsManager::getInstance();
 
 	// Entities::TestObject to1;
 	// Components::Transform to1Transform;
@@ -238,9 +229,6 @@ void Game::doGameLoop() {
 	mat.setBounciness(0);
 	mat.setFrictionCoefficient(1);*/
 
-	float dtAccumulator = 0;
-	float cellularAccum = 0;
-	int prevMatSize = 0;
 
 	glm::mat4 guiOrtho = glm::ortho<float>(0.0f, windowDim.x, 0.0f, windowDim.y);
 	SHADERS[GLYPH].bind();
@@ -257,8 +245,7 @@ void Game::doGameLoop() {
 	guiWindow.elementShader = SHADERS[NEW_GUI].getId();
 
 
-	GUI::StackContainer container;
-	container.setSpacing(5);
+	_container.setSpacing(5);
 
 	_fpsCounter.setText("FPS: N/A");
 	_fpsCounter.setLayoutType(GUI::TextBox::VERTICAL);
@@ -276,12 +263,22 @@ void Game::doGameLoop() {
 	_numChunks.setLayoutType(GUI::TextBox::VERTICAL);
 	_numChunks.setTextColour({ 1, 1, 1, 1 });
 
-	container.push(&_fpsCounter);
-	container.push(&_playerPosition);
-	container.push(&_viewDirection);
-	container.push(&_numChunks);
+	_container.push(&_fpsCounter);
+	_container.push(&_playerPosition);
+	_container.push(&_viewDirection);
+	_container.push(&_numChunks);
 
-	guiWindow.setRoot(&container);
+	guiWindow.setRoot(&_container);
+}
+
+void Game::doGameLoop() {
+	gameRunning = true;
+	PhysicsManager& physManager = PhysicsManager::getInstance();
+
+	unsigned int numFrames = 0;
+	int prevMatSize = 0;
+	float dtAccumulator = 0;
+	float cellularAccum = 0;
 	Timer timer("Game Loop");
 	while (gameRunning) {
 		if (prevMatSize != MATERIALS.size()) {

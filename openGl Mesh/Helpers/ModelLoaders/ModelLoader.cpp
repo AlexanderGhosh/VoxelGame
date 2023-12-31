@@ -7,7 +7,7 @@
 #include "Model.h"
 #include "../Functions.h"
 #include "../Constants.h"
-#include "VoxelModel_Base.h"
+#include "VoxelModel.h"
 #include "../../Material.h"
 
 Assimp::Importer ModelLoader::importer;
@@ -58,7 +58,7 @@ Model ModelLoader::LoadAssimp(const std::string& file)
 	return model;
 }
 
-VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName)
+VoxelModel ModelLoader::LoadPointCloud(const std::string& fileName)
 {
 	std::ifstream file(fileName);
 	std::vector<PointColourIndex> points;
@@ -119,10 +119,10 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName)
 	file.close();
 
 	std::vector<glm::vec3> cols(colours.size());
-	return VoxelModel_Static(points, maxSize, minSize);
+	return VoxelModel(points, maxSize, minSize);
 }
 
-VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, Block block)
+VoxelModel ModelLoader::LoadPointCloud(const std::string& fileName, Block block)
 {
 	std::ifstream file(fileName);
 	std::vector<PointColourIndex> points;
@@ -161,5 +161,5 @@ VoxelModel_Static ModelLoader::LoadPointCloud(const std::string& fileName, Block
 	}
 	file.close();
 
-	return VoxelModel_Static(points, maxSize, minSize);
+	return VoxelModel(points, maxSize, minSize);
 }

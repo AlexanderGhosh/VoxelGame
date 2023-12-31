@@ -48,9 +48,9 @@ class Block;
 
 class VoxelMesh : public IGeomDrawable
 {
-	friend class VoxelModel_Static;
+	friend class VoxelModel;
 public:
-	VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points);
+	VoxelMesh(const glm::vec3& relativePos, const std::vector<Block>& blocks, const std::unordered_map<glm::ivec3, std::vector<Block>>& neighbours);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	BufferGreedy greedyBuffer;
 #endif
@@ -58,7 +58,7 @@ private:
 	glm::vec3 relativePos_;
 	BufferGeom _buffer;
 	reactphysics3d::RigidBody* rigidBody_;
-	VoxelModel_Static* parent;
+	VoxelModel* parent;
 
 	VoxelMesh();
 

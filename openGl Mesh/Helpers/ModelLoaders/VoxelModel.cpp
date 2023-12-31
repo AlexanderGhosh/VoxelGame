@@ -1,4 +1,4 @@
-#include "VoxelModel_Base.h"
+#include "VoxelModel.h"
 #include "../../GeomRendering/GeomData.h"
 #include "../Constants.h"
 #include "../../GeomRendering/DrawableGeom.h"
@@ -7,14 +7,16 @@
 #include "../../GreedyRendering/DrawableGreedy.h"
 #endif
 
-VoxelModel_Static::VoxelModel_Static() : meshes_(), worldPos_()
+VoxelModel::VoxelModel() : meshes_(), worldPos_()
 {
 }
 
-VoxelModel_Static::VoxelModel_Static(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize) : VoxelModel_Static()
+VoxelModel::VoxelModel(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize) : VoxelModel()
 {
-	typedef std::vector<PointColourIndex> points_t;
-	std::unordered_map<glm::ivec3, points_t> splitPoints;
+	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE_F + z * CHUNK_AREA; };
+	typedef std::vector<Block> points_t;
+	// contains an ordered array of all blocks in this chunk
+	std::unordered_map<glm::ivec3, points_t> splitBlocks;
 	for (PointColourIndex& point : points) {
 		point.x += abs(minSize).x;
 		point.y += abs(minSize).y;
@@ -27,22 +29,25 @@ VoxelModel_Static::VoxelModel_Static(std::vector<PointColourIndex>& points, cons
 		point.y -= p.y * CHUNK_SIZE;
 		point.z -= p.z * CHUNK_SIZE;
 
-		splitPoints[p].push_back(point);
+		if (p == glm::ivec3(2, 6, 7)) {
+			int gbfijd = 0;
+		}
+
+		splitBlocks[p].resize(CHUNK_AREA * CHUNK_SIZE, B_AIR);
+		splitBlocks[p][index(point.x, point.y, point.z)] = point.block;
 	}
-	for (auto& [p, points] : splitPoints) {
-		glm::vec3 relativePos(p);
-		relativePos *= CHUNK_SIZE_F;
-		meshes_.emplace_back(relativePos, points);
+	for (auto& [p, cloud] : splitBlocks) {
+		meshes_.emplace_back(p, cloud, splitBlocks);
 		meshes_.back().parent = this;
 	}
 }
 
-void VoxelModel_Static::setPosition(float x, float y, float z)
+void VoxelModel::setPosition(float x, float y, float z)
 {
 	worldPos_ = { x, y, z };
 }
 
-void VoxelModel_Static::addToDrawable(DrawableGeom& drawable)
+void VoxelModel::addToDrawable(DrawableGeom& drawable)
 {
 	for (VoxelMesh& mesh : meshes_) {
 		mesh.parent = this;
@@ -50,7 +55,7 @@ void VoxelModel_Static::addToDrawable(DrawableGeom& drawable)
 	}
 }
 #ifdef ALWAYS_USE_GREEDY_MESH
-void VoxelModel_Static::addToDrawable(DrawableGreedy& drawable) const
+void VoxelModel::addToDrawable(DrawableGreedy& drawable) const
 {
 	for (const VoxelMesh& mesh : meshes_) {
 		drawable.add(const_cast<BufferGreedy*>(&mesh.greedyBuffer), (mesh.relativePos_ + worldPos_) * CHUNK_SIZE_INV);

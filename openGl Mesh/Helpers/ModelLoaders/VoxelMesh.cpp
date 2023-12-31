@@ -7,7 +7,7 @@
 #include "../../Mangers/PhysicsManager.h"
 #include "../../EntityComponent/Components/Transform.h"
 #include "../../GeomRendering/DrawData.h"
-#include "VoxelModel_Base.h"
+#include "VoxelModel.h"
 #include "../../GreedyRendering/GreedyData.h"
 
 VoxelMesh::VoxelMesh() : relativePos_(), _buffer(), rigidBody_(), parent(nullptr)
@@ -41,18 +41,18 @@ GreedyColliderData from(const GreedyData& d) {
 	return res;
 }
 
-VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>& points) : VoxelMesh()
+VoxelMesh::VoxelMesh(const glm::vec3& relativePos, const std::vector<Block>& cloud, const std::unordered_map<glm::ivec3, std::vector<Block>>& neighbours) : VoxelMesh()
 {
-	relativePos_ = relativePos;
+	relativePos_ = relativePos * CHUNK_SIZE_F;
 	auto index = [](unsigned int x, unsigned int y, unsigned int z) -> unsigned int { return x + y * CHUNK_SIZE_F + z * CHUNK_AREA; };
 	int size = CHUNK_SIZE_F * CHUNK_AREA;
-	std::vector<Block> cloud(size, B_AIR); // -1 if empty
-	for (unsigned int i = 0; i < points.size(); i++) {
-		PointColourIndex& point = points[i];
+	//std::vector<Block> cloud(size, B_AIR); // -1 if empty
+	//for (unsigned int i = 0; i < points.size(); i++) {
+	//	PointColourIndex& point = points[i];
 
-		const int idx = index(point.x, point.y, point.z);
-		cloud[idx] = point.block;
-	}
+	//	const int idx = index(point.x, point.y, point.z);
+	//	cloud[idx] = point.block;
+	//}
 
 	std::vector<GeomData> bufferData;
 	bufferData.reserve(size);
@@ -73,6 +73,15 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, std::vector<PointColourIndex>
 					Block neighbour = B_AIR;
 					if (glm::all(glm::greaterThanEqual(neighbourPos, glm::vec3(0))) && glm::all(glm::lessThan(neighbourPos, glm::vec3(CHUNK_SIZE)))) {
 						neighbour = cloud[index(neighbourPos.x, neighbourPos.y, neighbourPos.z)];
+					}
+					else {
+						// is outside this mesh
+						const glm::ivec3 key(OFFSETS_3D[i] + relativePos);
+						if (neighbours.contains(key)) {
+							const glm::vec3 neihbourPosLocal = neighbourPos - OFFSETS_3D[i] * CHUNK_SIZE_F;
+							unsigned int neihboutIdx = index(neihbourPosLocal.x, neihbourPosLocal.y, neihbourPosLocal.z);
+							neighbour = neighbours.at(key).at(neihboutIdx);
+						}
 					}
 
 					if (neighbour.isTransparent && current != neighbour) {

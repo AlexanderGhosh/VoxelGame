@@ -190,7 +190,7 @@
     <ClCompile Include="GreedyRendering\BufferGreedy.cpp" />
     <ClCompile Include="GreedyRendering\DrawableGreedy.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\VoxelMesh.cpp" />
-    <ClCompile Include="Helpers\ModelLoaders\VoxelModel_Base.cpp" />
+    <ClCompile Include="Helpers\ModelLoaders\VoxelModel.cpp" />
     <ClCompile Include="JsonParser.cpp" />
     <ClCompile Include="Mangers\GizmoManager.cpp" />
     <ClCompile Include="Helpers\ModelLoaders\Model.cpp" />
@@ -289,7 +289,7 @@
     <ClInclude Include="EntityComponent\ComponentTypes.h" />
     <ClInclude Include="Gizmos\Composite\Grid2D.h" />
     <ClInclude Include="EntityComponent\Components\FlightControls.h" />
-    <ClInclude Include="Helpers\ModelLoaders\VoxelModel_Base.h" />
+    <ClInclude Include="Helpers\ModelLoaders\VoxelModel.h" />
     <ClInclude Include="JsonParser.h" />
     <ClInclude Include="Mangers\GizmoManager.h" />
     <ClInclude Include="Helpers\ModelLoaders\Mesh.h" />

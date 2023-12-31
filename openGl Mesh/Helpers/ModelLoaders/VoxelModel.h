@@ -9,13 +9,13 @@ class PointColourIndex;
 class DrawableGeom;
 class DrawableGreedy;
 
-class VoxelModel_Static {
+class VoxelModel {
 	friend class VoxelMesh;
 public:
-	VoxelModel_Static();
+	VoxelModel();
 	inline bool isEditable() const { return false; }
 
-	VoxelModel_Static(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize);
+	VoxelModel(std::vector<PointColourIndex>& points, const glm::ivec3& maxSize, const glm::ivec3& minSize);
 
 	void setPosition(float x, float y, float z);
 

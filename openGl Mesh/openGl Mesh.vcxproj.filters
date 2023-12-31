@@ -51,12 +51,6 @@
     <ClCompile Include="BlockStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Renders\UI Stuff\UI_Element.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renders\UI Stuff\UI_Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeomRendering\BufferGeom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -174,7 +168,7 @@
     <ClCompile Include="EntityComponent\Components\RenderMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\ModelLoaders\VoxelModel_Base.cpp">
+    <ClCompile Include="Helpers\ModelLoaders\VoxelModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Helpers\ModelLoaders\VoxelMesh.cpp">
@@ -304,12 +298,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BlockStore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renders\UI Stuff\UI_Element.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renders\UI Stuff\UI_Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeomRendering\BufferGeom.h">
@@ -453,7 +441,7 @@
     <ClInclude Include="EntityComponent\Components\RenderMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\ModelLoaders\VoxelModel_Base.h">
+    <ClInclude Include="Helpers\ModelLoaders\VoxelModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\ModelLoaders\VoxelMesh.h">
