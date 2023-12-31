@@ -66,7 +66,7 @@ void World::tryStartGenerateChunks(const glm::vec2& center, const glm::vec3& fwd
 	positionsBeingGenerated.clear();
 	// local unscaled
 	auto toGenerate = centeredPositions(center, RENDER_DISTANCE);
-	toGenerate = positionsInFront(center, fwd, RENDER_DISTANCE);
+	//toGenerate = positionsInFront(center, fwd, RENDER_DISTANCE);
 
 	for (auto itt = chunks.cbegin(); itt != chunks.cend();)
 	{

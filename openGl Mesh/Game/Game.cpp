@@ -43,7 +43,7 @@ glm::vec2 Game::mouseOffset;
 std::array<bool, 1024> Game::keys;
 
 Game::Game() : window(), deltaTime(), frameRate(), gameRunning(false), lastFrameTime(-1), quadVAO(), quadVBO(), multiPurposeFB(), guiWindow(), _world(),
-	skyVAO(0), skyVBO(0), windowDim(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), fpsCounter(), playerPosition(), viewDirection(), numChunks() {
+	skyVAO(0), skyVBO(0), windowDim(), oitFrameBuffer1(), gBuffer(), camreraBuffer(), materialsBuffer(), _player(), _fpsCounter(), _playerPosition(), _viewDirection(), _numChunks() {
 	mouseData = { 0, 0, -90 };
 	GameConfig::setup();
 
@@ -160,7 +160,7 @@ Game::~Game()
 	glDeleteVertexArrays(1, &skyVAO);
 	skyVAO = skyVBO = 0;
 
-	glDeleteTextures(1, &ssaoNoiseTex);
+	glDeleteTextures(1, &_ssaoNoiseTex);
 }
 
 
@@ -260,26 +260,26 @@ void Game::doGameLoop() {
 	GUI::StackContainer container;
 	container.setSpacing(5);
 
-	fpsCounter.setText("FPS: N/A");
-	fpsCounter.setLayoutType(GUI::TextBox::VERTICAL);
-	fpsCounter.setTextColour({ 1, 1, 1, 1 });
+	_fpsCounter.setText("FPS: N/A");
+	_fpsCounter.setLayoutType(GUI::TextBox::VERTICAL);
+	_fpsCounter.setTextColour({ 1, 1, 1, 1 });
 
-	playerPosition.setText("Position: N/A");
-	playerPosition.setLayoutType(GUI::TextBox::VERTICAL);
-	playerPosition.setTextColour({ 1, 1, 1, 1 });
+	_playerPosition.setText("Position: N/A");
+	_playerPosition.setLayoutType(GUI::TextBox::VERTICAL);
+	_playerPosition.setTextColour({ 1, 1, 1, 1 });
 
-	viewDirection.setText("View Direction: N/A");
-	viewDirection.setLayoutType(GUI::TextBox::VERTICAL);
-	viewDirection.setTextColour({ 1, 1, 1, 1 });
+	_viewDirection.setText("View Direction: N/A");
+	_viewDirection.setLayoutType(GUI::TextBox::VERTICAL);
+	_viewDirection.setTextColour({ 1, 1, 1, 1 });
 
-	numChunks.setText("Num Chunks: N/A");
-	numChunks.setLayoutType(GUI::TextBox::VERTICAL);
-	numChunks.setTextColour({ 1, 1, 1, 1 });
+	_numChunks.setText("Num Chunks: N/A");
+	_numChunks.setLayoutType(GUI::TextBox::VERTICAL);
+	_numChunks.setTextColour({ 1, 1, 1, 1 });
 
-	container.push(&fpsCounter);
-	container.push(&playerPosition);
-	container.push(&viewDirection);
-	container.push(&numChunks);
+	container.push(&_fpsCounter);
+	container.push(&_playerPosition);
+	container.push(&_viewDirection);
+	container.push(&_numChunks);
 
 	guiWindow.setRoot(&container);
 	Timer timer("Game Loop");
@@ -453,7 +453,7 @@ void Game::renderScene() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.getColourTex(2)); // normal
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex); // random-ness
+	glBindTexture(GL_TEXTURE_2D, _ssaoNoiseTex); // random-ness
 	
 	glUniform3fv(glGetUniformLocation(ssao.getId(), "ssaoSamples"), ssaoSamples.size(), &ssaoSamples[0][0]);
 	glm::vec2 noiseScale = ((glm::vec2)windowDim) / SSAO_SCALE;
@@ -616,10 +616,10 @@ void Game::renderScene() {
 
 void Game::updateGUIText()
 {
-	fpsCounter.setText("FPS: " + std::to_string(frameRate));
-	playerPosition.setText("Position: " + glm::to_string(_player->getPosition()));
-	viewDirection.setText("View Direction: " + glm::to_string(_player->getFront()));
-	numChunks.setText("Num Chunks: " + std::to_string(_world.getChunkCount()));
+	_fpsCounter.setText("FPS: " + std::to_string(frameRate));
+	_playerPosition.setText("Position: " + glm::to_string(_player->getPosition()));
+	_viewDirection.setText("View Direction: " + glm::to_string(_player->getFront()));
+	_numChunks.setText("Num Chunks: " + std::to_string(_world.getChunkCount()));
 }
 
 void Game::setWindow(GLFWwindow* window) {
@@ -849,8 +849,8 @@ void Game::setUpSSAO()
 		noiseData[i] = r;
 	}
 
-	glGenTextures(1, &ssaoNoiseTex);
-	glBindTexture(GL_TEXTURE_2D, ssaoNoiseTex);
+	glGenTextures(1, &_ssaoNoiseTex);
+	glBindTexture(GL_TEXTURE_2D, _ssaoNoiseTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SSAO_SCALE, SSAO_SCALE, 0, GL_RGB, GL_FLOAT, &noiseData[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

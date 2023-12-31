@@ -91,10 +91,10 @@ private:
 	glm::mat4 cameraView, cameraProjection;
 
 
-	GUI::TextBox fpsCounter;
-	GUI::TextBox playerPosition;
-	GUI::TextBox viewDirection;
-	GUI::TextBox numChunks;
+	GUI::TextBox _fpsCounter;
+	GUI::TextBox _playerPosition;
+	GUI::TextBox _viewDirection;
+	GUI::TextBox _numChunks;
 
 	void updateGUIText();
 
@@ -111,7 +111,7 @@ private:
 
 
 	std::array<glm::vec3, SSAO_NUM_SAMPLES> ssaoSamples;
-	unsigned int ssaoNoiseTex;
+	unsigned int _ssaoNoiseTex;
 	void setUpSSAO();
 
 };
