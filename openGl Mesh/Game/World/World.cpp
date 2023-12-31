@@ -420,48 +420,6 @@ const std::unordered_set<glm::vec2> World::centeredPositions(const glm::vec2& or
 	return res;
 }
 
-struct RetrieveKey
-{
-	template <typename T>
-	typename T::first_type operator()(T keyValuePair) const
-	{
-		return keyValuePair.first;
-	}
-};
-std::unordered_set<glm::vec2> World::deltaCenteredPositions(const glm::vec2& origin, int renderDist)
-{
-	if (chunks.size() == 0) return centeredPositions(origin, renderDist);
-	std::unordered_set<glm::vec2> res;
-	if (positionsBeingGenerated.size() > 0) return res;
-	//std::vector<glm::vec2> toRemove;
-	//std::transform(chunks.begin(), chunks.end(), std::back_inserter(toRemove), RetrieveKey());
-
-	//for (int x = -renderDist; x < renderDist + 1; x++) {
-	//	int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
-	//	for (int y = -Y; y < Y + 1; y++) {
-	//		glm::vec2 pos(x, y);
-	//		pos += origin;
-
-	//		if (chunks.contains(pos)) {
-	//			// the chunks will persist
-	//			for (auto itt = toRemove.begin(); itt != toRemove.end(); itt++) {
-	//				if (*itt == pos) {
-	//					toRemove.erase(itt);
-	//					break;
-	//				}
-	//			}
-	//		}
-	//		else {
-	//			res.insert(pos);
-	//		}
-	//	}
-	//}
-	//for (auto p : toRemove) {
-	//	chunks.erase(p);
-	//}
-	return res;
-}
-
 std::unordered_set<glm::vec2> World::positionsInFront(const glm::vec2& origin, const glm::vec3& front, int renderDist) const
 {
 	std::unordered_set<glm::vec2> res;

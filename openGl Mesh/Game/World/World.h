@@ -84,8 +84,6 @@ private:
 	std::list<ChunkColumn> generateNewChunks(const std::unordered_set < glm::vec2>& positions) const;
 	// reutns a set of positions centered on the origin with a scale of 1
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
-	// returns a set of the new chunks to generate and deletes the old chunks
-	std::unordered_set<glm::vec2> deltaCenteredPositions(const glm::vec2& origin, int renderDist);
 
 	std::unordered_set<glm::vec2> positionsInFront(const glm::vec2& origin, const glm::vec3& front, int renderDist) const;
 };
