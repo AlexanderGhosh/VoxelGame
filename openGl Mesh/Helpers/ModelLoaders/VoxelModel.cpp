@@ -29,10 +29,6 @@ VoxelModel::VoxelModel(std::vector<PointColourIndex>& points, const glm::ivec3& 
 		point.y -= p.y * CHUNK_SIZE;
 		point.z -= p.z * CHUNK_SIZE;
 
-		if (p == glm::ivec3(2, 6, 7)) {
-			int gbfijd = 0;
-		}
-
 		splitBlocks[p].resize(CHUNK_AREA * CHUNK_SIZE, B_AIR);
 		splitBlocks[p][index(point.x, point.y, point.z)] = point.block;
 	}

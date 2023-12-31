@@ -21,8 +21,4 @@ void Model::setUp(const std::list<Mesh>& meshes)
 
 void Model::cleanUp()
 {
-	for (IndexedBuffer& _buffer : _meshBuffers) {
-		_buffer.cleanUp();
-	}
-	_meshBuffers.clear();
 }

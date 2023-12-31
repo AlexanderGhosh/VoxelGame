@@ -10,13 +10,18 @@ public:
 	IndexedBuffer();
 	IndexedBuffer(const Mesh& mesh);
 	~IndexedBuffer();
+
+	IndexedBuffer(const IndexedBuffer&) = delete;
+	IndexedBuffer& operator=(const IndexedBuffer&) = delete;
+
+	IndexedBuffer(IndexedBuffer&& other) noexcept;
+	IndexedBuffer& operator=(IndexedBuffer&& other) noexcept;
+
 	void setUp(const Mesh& mesh);
 
-	size_t size() const;
+	inline size_t size() const { return _size; }
 
 	void bind() const;
 	void unbind() const;
-
-	void cleanUp();
 };
 

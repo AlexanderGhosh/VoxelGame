@@ -29,11 +29,9 @@
 // New GUI
 #include "../GUI/Utils/Text/GlyphRendering.h"
 
-#pragma region GameConfig
 bool GameConfig::showFPS = false;
 glm::vec3 GameConfig::backgroundCol = { 0.5, 0.5, 0.5 };
 unsigned int GameConfig::FPSlock = 0;
-#pragma endregion
 
 
 glm::vec3 Game::mouseData;

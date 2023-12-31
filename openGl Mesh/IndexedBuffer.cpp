@@ -12,12 +12,33 @@ IndexedBuffer::IndexedBuffer(const Mesh& mesh) {
 
 IndexedBuffer::~IndexedBuffer()
 {
-	cleanUp();
+	if (VAO != 0) {
+		glDeleteVertexArrays(1, &VAO);
+		unsigned int buffers[2] = { VBO, EBO };
+		glDeleteBuffers(2, buffers);
+		VBO = VAO = EBO = 0;
+	}
+}
+
+IndexedBuffer::IndexedBuffer(IndexedBuffer&& other) noexcept
+{
+	VAO = other.VAO;
+	VBO = other.VBO;
+	EBO = other.EBO;
+	_size = other._size;
+}
+
+IndexedBuffer& IndexedBuffer::operator=(IndexedBuffer&& other) noexcept
+{
+	VAO = other.VAO;
+	VBO = other.VBO;
+	EBO = other.EBO;
+	_size = other._size;
+	return *this;
 }
 
 void IndexedBuffer::setUp(const Mesh& mesh)
 {
-	cleanUp();
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -50,11 +71,6 @@ void IndexedBuffer::setUp(const Mesh& mesh)
 	_size = mesh.indices.size();
 }
 
-size_t IndexedBuffer::size() const
-{
-	return _size;
-}
-
 void IndexedBuffer::bind() const
 {
 	glBindVertexArray(VAO);
@@ -63,14 +79,4 @@ void IndexedBuffer::bind() const
 void IndexedBuffer::unbind() const
 {
 	glBindVertexArray(0);
-}
-
-void IndexedBuffer::cleanUp()
-{
-	if (VAO != 0) {
-		glDeleteVertexArrays(1, &VAO);
-		unsigned int buffers[2] = { VBO, EBO };
-		glDeleteBuffers(2, buffers);
-		VBO = VAO = EBO = 0;
-	}
 }

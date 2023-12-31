@@ -4,14 +4,15 @@
 #include "../Material.h"
 
 std::vector<Texture> TEXTURES3D = {
-	Texture("skybox", ""),
+	std::move(Texture("skybox", "")),
 };
+
 std::vector<Texture> TEXTURES2D = {
-	Texture("crosshair", ""),
-	Texture("boarders/normal", ""),
-	Texture("boarders/selected", ""),
-	Texture("hearts/live_heart", ""),
-	Texture("hearts/dead_heart", "")
+	std::move(Texture("crosshair", "")),
+	std::move(Texture("boarders/normal", "")),
+	std::move(Texture("boarders/selected", "")),
+	std::move(Texture("hearts/live_heart", "")),
+	std::move(Texture("hearts/dead_heart", ""))
 };
 std::vector<Shader> SHADERS = {
 	Shader("skybox"),

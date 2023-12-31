@@ -5,27 +5,26 @@
 class UniformBuffer {
 private:
 	unsigned UBO;
-	int bindingPoint;
-	std::vector<std::pair<unsigned, unsigned>> positions;
+	int _bindingPoint;
 	// statics
 	static int maxBingingPoints;
 
 	const void init(unsigned dataSize, short bindingPoint = -1);
 public:
 	UniformBuffer();
-	UniformBuffer(const std::string& types, char bindingPoint = -1);
-	UniformBuffer(const std::vector<std::string>& types, char bindingPoint);
-	~UniformBuffer() = default;
+	~UniformBuffer();
 
-	const short getBindingPoint() const;
+	UniformBuffer(const UniformBuffer&) = delete;
+	UniformBuffer& operator=(const UniformBuffer&) = delete;
+
+	UniformBuffer(UniformBuffer&& other) noexcept;
+	UniformBuffer& operator=(UniformBuffer&& other) noexcept;
+
 
 	void allocate(unsigned int bytes, unsigned int bindingPoint);
 
-	void fill(unsigned offset, unsigned size, const void* data) const;
-	void fill(unsigned position, const void* data) const;
+	void fill(unsigned int offset, unsigned int size, const void* data) const;
 
 	void bind() const;
 	void unBind() const;
-
-	void cleanUp();
 };

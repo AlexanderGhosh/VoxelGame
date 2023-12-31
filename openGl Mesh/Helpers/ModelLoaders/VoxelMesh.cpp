@@ -88,7 +88,6 @@ VoxelMesh::VoxelMesh(const glm::vec3& relativePos, const std::vector<Block>& clo
 						markSlot(data.cubeType_, i);
 					}
 				}
-				// data.cubeType_ = 63;
 				bufferData.push_back(data);
 			}
 		}

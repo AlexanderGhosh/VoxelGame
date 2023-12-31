@@ -4,8 +4,8 @@ template<class T>
 class Manager {
 protected:
 	Manager() {}
-	~Manager() {}
 public:
+	virtual ~Manager() {}
 	Manager(const Manager&) = delete;
 	Manager& operator=(const Manager&) = delete;
 

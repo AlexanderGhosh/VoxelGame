@@ -10,6 +10,13 @@ public:
 	Texture(std::string name, std::string overload);
 	Texture(bool loadTex);
 	Texture(std::string name);
+	~Texture();
+
+	/*Texture(const Texture&) = delete;
+	Texture& operator=(const Texture&) = delete;
+
+	Texture(Texture&& other) noexcept;
+	Texture& operator=(Texture&& other) noexcept;*/
 
 	void bind() const;
 	const unsigned int& getTexMap() const;
@@ -20,10 +27,10 @@ public:
 	bool load3D(const std::string& name);
 	bool load2D(const std::string& name);
 private:
-	bool created;
-	glm::ivec2 dimentions;
-	unsigned int texMap;
-	bool is2D;
-	std::string name;
+	bool _created;
+	glm::ivec2 _dimentions;
+	unsigned int _texMap;
+	bool _is2D;
+	std::string _name;
 };
 

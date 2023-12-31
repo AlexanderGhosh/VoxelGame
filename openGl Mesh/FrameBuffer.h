@@ -38,8 +38,6 @@ public:
 	
 	void setUp(const FrameBufferInit& init);
 
-	void cleanUp();
-
 	void bind() const;
 	void unBind() const;
 

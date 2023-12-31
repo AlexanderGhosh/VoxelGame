@@ -1,14 +1,7 @@
-#include <iostream>
-#include <gtx/string_cast.hpp>
-
-#include <glad/glad.h>
-#include <glfw3.h>
-#include <gtc/type_ptr.hpp>
-
+#include <random>
 #include "Game/Game.h"
 
 #include "Helpers/Constants.h"
-#include "Helpers/Functions.h"
 #include "Textures/Texture.h"
 #include "Shaders/Shader.h"
 
@@ -28,14 +21,11 @@
 #include "Mangers/EventsManager.h"
 
 
-#include "Gizmos/Composite/Grid2D.h"
 #include "Game/World/world_generation.h"
-#include "Helpers/Timers/Timer.h"
 
 #include "Material.h"
 #include "Block.h"
 #include "JsonParser.h"
-#include <random>
 
 
 GLFWwindow* createWindow(glm::ivec2& dimentions);

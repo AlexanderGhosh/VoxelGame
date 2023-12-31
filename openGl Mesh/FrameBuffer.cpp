@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <iostream>
 
-FrameBuffer::FrameBuffer() : FBO(), dimentions(), depthBuffer(), colourBuffers()
+FrameBuffer::FrameBuffer() : FBO(0), dimentions(), depthBuffer(), colourBuffers()
 {
 }
 
@@ -13,7 +13,12 @@ FrameBuffer::FrameBuffer(const glm::ivec2& dim) : FrameBuffer()
 
 FrameBuffer::~FrameBuffer()
 {
-	cleanUp();
+	if (FBO != 0)
+		glDeleteFramebuffers(1, &FBO);
+	if (depthBuffer != 0)
+		glDeleteTextures(1, &depthBuffer);
+	if (colourBuffers.size() > 0)
+		glDeleteTextures(colourBuffers.size(), &colourBuffers[0]);
 }
 
 FrameBuffer::FrameBuffer(FrameBuffer&& other) noexcept : FrameBuffer()
@@ -95,20 +100,6 @@ void FrameBuffer::setUp(const FrameBufferInit& init)
 		std::cout << "ERROR::FRAMEBUFFER:: framebuffer is not complete!" << std::endl;
 
 	unBind();
-}
-
-void FrameBuffer::cleanUp()
-{
-	if (FBO != 0) 
-		glDeleteFramebuffers(1, &FBO);
-	if (depthBuffer != 0)
-		glDeleteTextures(1, &depthBuffer);
-	if(colourBuffers.size() > 0)
-		glDeleteTextures(colourBuffers.size(), &colourBuffers[0]);
-
-	FBO = 0;
-	depthBuffer = 0;
-	colourBuffers.clear();
 }
 
 void FrameBuffer::bind() const
