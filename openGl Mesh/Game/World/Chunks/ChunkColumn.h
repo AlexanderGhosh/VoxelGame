@@ -15,12 +15,14 @@ class ChunkColumn : public IGeomDrawable
 {
 public:
 	ChunkColumn();
-	ChunkColumn(glm::vec2 pos, unsigned int seed);
-	ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map);
+	ChunkColumn(glm::vec2 pos, unsigned int _seed);
+	ChunkColumn(glm::vec2 pos, unsigned int _seed, WorldMap& map);
 
-	ChunkColumn(const ChunkColumn& other);
-	ChunkColumn operator=(const ChunkColumn& other);
+	ChunkColumn(const ChunkColumn& other) = delete;
+	ChunkColumn& operator=(const ChunkColumn& other) = delete;
+
 	ChunkColumn(ChunkColumn&& other) noexcept;
+	ChunkColumn& operator=(ChunkColumn&& other) noexcept;
 
 #ifdef ALWAYS_USE_SLOW_MESH
 	// runtime chunk generation
@@ -106,7 +108,7 @@ private:
 	// unscaled local pos 
 	glm::vec2 position;
 
-	unsigned int seed;
+	unsigned int _seed;
 
 	// returns the block found at the position will check the neibour chunks (sourced from world map) if out of bounds
 	const Block getBlock_WorldMap(glm::vec3 pos, bool worldPos, bool safe, WorldMap& worldMap) const;

@@ -10,7 +10,13 @@ class World
 {
 public:
 	World();
-	World(const glm::vec3 worldOrigin, unsigned int seed);
+	~World();
+
+	World(const World&) = delete;
+	World& operator=(const World&) = delete;
+
+	World(World&&) = delete;
+	World& operator=(World&&) = delete;
 
 	inline size_t getChunkCount() const {
 		return chunks.size();
@@ -19,8 +25,9 @@ public:
 		return geomDrawable.size();
 	}
 
+	inline void setSeed(unsigned int _seed) { _seed = _seed; }
+
 	void render(Shader* shader);
-	void renderGreedy(Shader* shader);
 
 	void generateTerrain();
 	void setUpDrawable();
@@ -31,11 +38,12 @@ public:
 	// chunkPos - local unscaled
 	const std::list<ChunkColumn*> getNeibours(const glm::vec2& chunkPos, bool includeSelf = false);
 
-	void save() const;
 	// chunk pos - the currently occupiued chunk pos local unscaled
 	// frustrumCenter - world scaled pos
 	// radius - world scaled
+	// performed on the main thread
 	void tryStartGenerateChunks(const glm::vec2& chunkPos, const glm::vec3& fwd); 
+	// performed on the main thread
 	void tryFinishGenerateChunk();
 
 	// if sucess is true returns a reference to the desired chunk
@@ -60,25 +68,24 @@ public:
 	DrawableGreedy greedyDrawable;
 private:
 	bool generated; // used to genrated the world async first
-	DynamicAsyncPool<std::unordered_set<glm::vec2>> pool;
+	DynamicAsyncPool<std::list<ChunkColumn>> pool;
 	// set of all the chunk positions that are currently being created in the dyamic pool
 	// local unscaled positions
 	std::unordered_set<glm::vec2> positionsBeingGenerated;
 	// spilts the set into n parts and calls 'generateNewChunks'
 	void launchAsyncs(const std::unordered_set<glm::vec2>& allChunkPoss, const unsigned int n);
 
-	unsigned int seed;
+	unsigned int _seed;
 	Chunks chunks;
 	// only genertes chunk buffer data can be called async
-	// returns a list of chunk positions that it will generate
-	std::unordered_set<glm::vec2> generateNewChunks(const std::unordered_set < glm::vec2>& positions);
+	// returns a list of new chunk that have generated
+	// performed on the any thread
+	// the chunks returned are copyable because the buffer hasnt beign created yet
+	std::list<ChunkColumn> generateNewChunks(const std::unordered_set < glm::vec2>& positions) const;
 	// reutns a set of positions centered on the origin with a scale of 1
 	const std::unordered_set<glm::vec2> centeredPositions(const glm::vec2& origin, int renderDist) const;
 	// returns a set of the new chunks to generate and deletes the old chunks
 	std::unordered_set<glm::vec2> deltaCenteredPositions(const glm::vec2& origin, int renderDist);
 
 	std::unordered_set<glm::vec2> positionsInFront(const glm::vec2& origin, const glm::vec3& front, int renderDist) const;
-
-
-	void getNewChunkPositions(const glm::vec3 worldOrigin);
 };

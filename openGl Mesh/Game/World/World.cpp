@@ -10,16 +10,12 @@
 #include "../../Helpers/Functions.h"
 #include "../../Shaders/Shader.h"
 
-World::World() : chunks(), geomDrawable(), seed(), positionsBeingGenerated(), pool(), generated(false)
+World::World() : chunks(), geomDrawable(), _seed(), positionsBeingGenerated(), pool(), generated(false)
 {
 }
 
-World::World(const glm::vec3 worldOrigin, unsigned int seed) : World() {
-	this->seed = seed;
-}
-
-void World::getNewChunkPositions(const glm::vec3 worldOrigin) {
-	generateTerrain();
+World::~World()
+{
 }
 
 void World::generateTerrain() {
@@ -33,10 +29,10 @@ void World::generateTerrain() {
 
 	std::unordered_map<glm::vec2, BlockStore> blockData;
 	for (const glm::vec2& pos : chunkPositions) {
-		ChunkColumn chunk(pos, seed);
+		ChunkColumn chunk(pos, _seed);
 #ifdef ALWAYS_USE_SLOW_MESH
 		auto neighbours = getNeibours(pos, true);
-		chunk.generateChunkData(pos, seed, neighbours);
+		chunk.generateChunkData(pos, _seed, neighbours);
 		chunk.setUpBuffer();
 #elif defined(ALWAYS_USE_NOISE_MESH)
 		chunk.generateNoiseBuffer();
@@ -110,10 +106,11 @@ void World::tryFinishGenerateChunk()
 	auto allDone = pool.getAllDone(true);
 	for (auto& generated : allDone) {
 		for (auto itt = generated.begin(); itt != generated.end(); itt++) {
-			ChunkColumn* chunk = getValue(chunks, *itt);
-			if (!chunk) continue;
+			glm::vec2 pos = (*itt).getPosition2D();
+			chunks.emplace(pos, std::move(*itt));
+			ChunkColumn* chunk = &chunks.at(pos);
 			
-			positionsBeingGenerated.erase(*itt);
+			positionsBeingGenerated.erase(pos);
 			// ChunkColumn& chunk = chunks.at(chunkPos);
 #ifndef ALWAYS_USE_GREEDY_MESH
 			chunk->setUpBuffer();
@@ -128,18 +125,18 @@ void World::tryFinishGenerateChunk()
 	// timer.showDetails(allDone.front().size());
 }
 
-std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions)
+std::list<ChunkColumn> World::generateNewChunks(const std::unordered_set<glm::vec2>& positions) const
 {
+	std::list<ChunkColumn> res;
 	Timer t("Chunk Generate");
 	// can throw error if the chunk is removed from chunks while its being generated
 	for (const glm::vec2& chunkPos : positions) {
-		chunks[chunkPos] = ChunkColumn(chunkPos, seed);
-		ChunkColumn& chunk = chunks.at(chunkPos); // issue can occure when quring chunks
+		ChunkColumn chunk(chunkPos, _seed);
 #ifdef ALWAYS_USE_NOISE_MESH
 		chunk.generateNoiseBuffer();
 #elif  defined(ALWAYS_USE_SLOW_MESH)
 		auto neighbours = getNeibours(chunkPos, true);
-		chunk.generateChunkData(chunkPos, seed, neighbours);
+		chunk.generateChunkData(chunkPos, _seed, neighbours);
 #elif defined(ALWAYS_USE_GREEDY_MESH)
 		auto neighbours = getNeibours(chunkPos, true);
 
@@ -155,9 +152,10 @@ std::unordered_set<glm::vec2> World::generateNewChunks(const std::unordered_set<
 		chunk.createMesh(blockData, blockData[chunkPos]);
 		greedyDrawable.add(chunk);
 #endif
+		res.push_back(std::move(chunk));
 	}
 	// t.showDetails(positions.size());
-	return positions;
+	return res;
 }
 
 const ChunkColumn& World::getChunk(const glm::vec2& chunkPos, bool& success) const
@@ -344,13 +342,6 @@ const std::list<ChunkColumn*> World::getNeibours(const glm::vec2& chunkPos, bool
 	return res;
 }
 
-void World::save() const
-{
-	for (const auto& [pos, c] : chunks) {
-		c.save();
-	}
-}
-
 void World::render(Shader* shader) {
 	tryFinishGenerateChunk();
 #ifdef ALWAYS_USE_GREEDY_MESH
@@ -442,32 +433,32 @@ std::unordered_set<glm::vec2> World::deltaCenteredPositions(const glm::vec2& ori
 	if (chunks.size() == 0) return centeredPositions(origin, renderDist);
 	std::unordered_set<glm::vec2> res;
 	if (positionsBeingGenerated.size() > 0) return res;
-	std::vector<glm::vec2> toRemove;
-	std::transform(chunks.begin(), chunks.end(), std::back_inserter(toRemove), RetrieveKey());
+	//std::vector<glm::vec2> toRemove;
+	//std::transform(chunks.begin(), chunks.end(), std::back_inserter(toRemove), RetrieveKey());
 
-	for (int x = -renderDist; x < renderDist + 1; x++) {
-		int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
-		for (int y = -Y; y < Y + 1; y++) {
-			glm::vec2 pos(x, y);
-			pos += origin;
+	//for (int x = -renderDist; x < renderDist + 1; x++) {
+	//	int Y = pow(renderDist * renderDist - x * x, 0.5); // bound for y given x
+	//	for (int y = -Y; y < Y + 1; y++) {
+	//		glm::vec2 pos(x, y);
+	//		pos += origin;
 
-			if (chunks.contains(pos)) {
-				// the chunks will persist
-				for (auto itt = toRemove.begin(); itt != toRemove.end(); itt++) {
-					if (*itt == pos) {
-						toRemove.erase(itt);
-						break;
-					}
-				}
-			}
-			else {
-				res.insert(pos);
-			}
-		}
-	}
-	for (auto p : toRemove) {
-		chunks.erase(p);
-	}
+	//		if (chunks.contains(pos)) {
+	//			// the chunks will persist
+	//			for (auto itt = toRemove.begin(); itt != toRemove.end(); itt++) {
+	//				if (*itt == pos) {
+	//					toRemove.erase(itt);
+	//					break;
+	//				}
+	//			}
+	//		}
+	//		else {
+	//			res.insert(pos);
+	//		}
+	//	}
+	//}
+	//for (auto p : toRemove) {
+	//	chunks.erase(p);
+	//}
 	return res;
 }
 

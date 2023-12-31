@@ -38,7 +38,7 @@
 #include <random>
 
 
-GLFWwindow* createWindow();
+GLFWwindow* createWindow(glm::ivec2& dimentions);
 
 // #define TESTING
 #ifdef TESTING
@@ -68,7 +68,7 @@ int main() {
 	JsonParser blockParser(".\\Blocks.json");
 	BLOCKS = std::move(blockParser.getAllBlocks());
 
-	GLFWwindow* window = createWindow();
+	GLFWwindow* window = createWindow(DIM);
 	EventsManager::getInstance().setWindow(window);
 
 	reactphysics3d::PhysicsCommon physCommon;
@@ -148,7 +148,7 @@ int main() {
 	return 0;
 }
 
-GLFWwindow* createWindow() {
+GLFWwindow* createWindow(glm::ivec2& dimentions) {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
@@ -157,12 +157,10 @@ GLFWwindow* createWindow() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	GLFWwindow* window = glfwCreateWindow(DIM.x, DIM.y, "Voxel Game", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(dimentions.x, dimentions.y, "Voxel Game", nullptr, nullptr);
 
-	int w, h;
-	glfwGetFramebufferSize(window, &w, &h);
-	DIM = glm::ivec2(w, h);
-	if (nullptr == window) {
+	glfwGetFramebufferSize(window, &dimentions.x, &dimentions.y);
+	if (!window) {
 		std::cout << "Failed to create window" << std::endl;
 		glfwTerminate();
 		exit(EXIT_FAILURE); // stops program
@@ -179,10 +177,8 @@ GLFWwindow* createWindow() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disabel cursor visabilaty
 	if (!VSYNC) glfwSwapInterval(0);
 
-	glViewport(0, 0, DIM.x, DIM.y);
+	glViewport(0, 0, dimentions.x, dimentions.y);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// aplpha suport
-
-	// glEnable(GL_MULTISAMPLE); // MSAA
 
 	return window;
 }

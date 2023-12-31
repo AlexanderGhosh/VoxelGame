@@ -167,7 +167,7 @@ Game::~Game()
 void Game::generateWorld() {
 	unsigned int seed = 32;
 	srand(seed);
-	_world = World(WORLD_ORIGIN, seed);
+	_world.setSeed(seed);
 #if  !defined(GENERATE_CHUNKS_ASYNC) && !GENERATE_NEW_CHUNKS
 	_world.generateTerrain();
 	_world.setUpDrawable();

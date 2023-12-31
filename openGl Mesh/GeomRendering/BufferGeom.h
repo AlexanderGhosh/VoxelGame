@@ -7,6 +7,9 @@ public:
 	BufferGeom();
 	~BufferGeom();
 
+	BufferGeom(const BufferGeom&) = delete;
+	BufferGeom& operator=(const BufferGeom&) = delete;
+
 	BufferGeom(BufferGeom&& other) noexcept;
 	BufferGeom& operator=(BufferGeom&& other) noexcept;
 

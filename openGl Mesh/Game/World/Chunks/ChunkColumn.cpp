@@ -12,55 +12,69 @@
 #include "../../../Block.h"
 
 
-ChunkColumn::ChunkColumn() : position(0), _buffer(), seed(), bufferData(), editedBlocks()
+ChunkColumn::ChunkColumn() : position(0), _buffer(), _seed(), bufferData(), editedBlocks()
 {
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed) : ChunkColumn()
+ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int _seed) : ChunkColumn()
 {
-	this->seed = seed;
+	this->_seed = _seed;
 	position = pos;
 }
 
-ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int seed, WorldMap& map) : ChunkColumn(pos, seed)
+ChunkColumn::ChunkColumn(glm::vec2 pos, unsigned int _seed, WorldMap& map) : ChunkColumn(pos, _seed)
 {
-	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, seed);
+	map[pos] = BlockStore(pos * (float) CHUNK_SIZE, _seed);
 }
 
-ChunkColumn::ChunkColumn(const ChunkColumn& other)
-{
-	position = other.position;
-	seed = other.seed;
-	bufferData = other.bufferData;
-	editedBlocks = other.editedBlocks;
-#ifdef ALWAYS_USE_GREEDY_MESH
-	greedyBufferData = other.greedyBufferData;
-#endif
-}
+//ChunkColumn::ChunkColumn(const ChunkColumn& other)
+//{
+//	position = other.position;
+//	_seed = other._seed;
+//	bufferData = other.bufferData;
+//	editedBlocks = other.editedBlocks;
+//#ifdef ALWAYS_USE_GREEDY_MESH
+//	greedyBufferData = other.greedyBufferData;
+//#endif
+//}
 
-ChunkColumn ChunkColumn::operator=(const ChunkColumn& other)
-{
-	position = other.position;
-	seed = other.seed;
-	bufferData = other.bufferData;
-	editedBlocks = other.editedBlocks;
-#ifdef ALWAYS_USE_GREEDY_MESH
-	greedyBufferData = other.greedyBufferData;
-#endif
-	return *this;
-}
+//ChunkColumn& ChunkColumn::operator=(const ChunkColumn& other)
+//{
+//	position = other.position;
+//	_seed = other._seed;
+//	bufferData = other.bufferData;
+//	editedBlocks = other.editedBlocks;
+//#ifdef ALWAYS_USE_GREEDY_MESH
+//	greedyBufferData = other.greedyBufferData;
+//#endif
+//	return *this;
+//}
 
 ChunkColumn::ChunkColumn(ChunkColumn&& other) noexcept
 {
 	position = other.position;
 	_buffer = std::move(other._buffer);
-	seed = other.seed;
+	_seed = other._seed;
 	bufferData = std::move(other.bufferData);
 	editedBlocks = std::move(other.editedBlocks);
 #ifdef ALWAYS_USE_GREEDY_MESH
 	greedyBufferData = std::move(other.greedyBufferData);
 	greedyBuffer = std::move(other.greedyBuffer);
 #endif
+}
+
+ChunkColumn& ChunkColumn::operator=(ChunkColumn&& other) noexcept
+{
+	position = other.position;
+	_buffer = std::move(other._buffer);
+	_seed = other._seed;
+	bufferData = std::move(other.bufferData);
+	editedBlocks = std::move(other.editedBlocks);
+#ifdef ALWAYS_USE_GREEDY_MESH
+	greedyBufferData = std::move(other.greedyBufferData);
+	greedyBuffer = std::move(other.greedyBuffer);
+#endif
+	return *this;
 }
 
 #ifdef ALWAYS_USE_SLOW_MESH
@@ -576,7 +590,7 @@ void ChunkColumn::generateNoiseBuffer()
 {
 	Timer timer("Generate from noise");
 	timer.start();
-	std::vector<float> heightsPadded = std::move(world_generation::getRawHeightsPadded(getWorldPosition2D(), seed));
+	std::vector<float> heightsPadded = std::move(world_generation::getRawHeightsPadded(getWorldPosition2D(), _seed));
 
 	auto index = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE; };
 	auto indexPadded = [](unsigned int x, unsigned int z) { return x + z * CHUNK_SIZE_PADDED; };
@@ -875,7 +889,7 @@ void ChunkColumn::save() const
 	std::string name = std::format("Chunks/c.{}.{}.chunk", (int)position.x, (int)position.y);
 	std::ofstream fs(name, std::ios::out | std::ios::binary);
 
-	char* data = &(uint_to_char(seed).b)[0];
+	char* data = &(uint_to_char(_seed).b)[0];
 	fs.write(data, 4);
 
 	data = &(uint_to_char(bufferData.size()).b)[0];
@@ -895,7 +909,7 @@ void ChunkColumn::load(const glm::vec2& chunkPos)
 	std::ifstream fs(name, std::ios::in | std::ios::binary);
 	std::vector<unsigned char> _buffer(std::istreambuf_iterator<char>(fs), {});
 	unsigned int index = 0;
-	seed = *(reinterpret_cast<unsigned int*>(&_buffer[index]));
+	_seed = *(reinterpret_cast<unsigned int*>(&_buffer[index]));
 	index += 4;
 	unsigned int bufferDataSize = *(reinterpret_cast<unsigned int*>(&_buffer[index]));
 	index += 4;
@@ -914,7 +928,7 @@ unsigned int ChunkColumn::getHeight(const float x, const float z) const
 {
 	glm::vec2 worldPos(x, z);
 	worldPos += getWorldPosition2D();
-	return world_generation::heightOfColumn(worldPos, seed);
+	return world_generation::heightOfColumn(worldPos, _seed);
 }
 
 const std::vector<GeomData>& ChunkColumn::getMeshData() const
@@ -960,7 +974,7 @@ const Block ChunkColumn::getBlock(const glm::vec3& worldPos) {
 		return editedBlocks.at(worldPos);
 	}
 	//return B_ERROR;
-	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, seed);
+	const BlocksEncoded column = world_generation::getColumn({ worldPos.x, worldPos.z }, _seed);
 	return column[worldPos.y];
 }
 
