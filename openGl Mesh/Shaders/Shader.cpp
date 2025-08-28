@@ -6,75 +6,74 @@
 #include <glad/glad.h>
 #include <gtc/type_ptr.hpp>
 
-Shader::Shader() : program_(), vert_(), geom_(), frag_() { }
+Shader::Shader() : _program(), _vert(), _geom(), _frag() { }
 
 Shader::Shader(std::string shaderName, bool hasGeom) : Shader() {
-	vert_ = shaderName;
-	frag_ = shaderName;
-	if (hasGeom) geom_ = shaderName;
+	_vert = shaderName;
+	_frag = shaderName;
+	if (hasGeom) _geom = shaderName;
 }
 
 Shader::Shader(const std::string& vert, const std::string& frag) : Shader()
 {
-	vert_ = vert;
-	frag_ = frag;
+	_vert = vert;
+	_frag = frag;
 }
 
 Shader::Shader(const std::string& vert, const std::string& geom, const std::string& frag) : Shader()
 {
-	vert_ = vert;
-	geom_ = geom;
-	frag_ = frag;
+	_vert = vert;
+	_geom = geom;
+	_frag = frag;
 }
 
 Shader::~Shader()
 {
-	if (program_ == 0) return;
-	glDeleteProgram(program_);
-	program_ = 0;
+	if (_program == 0) return;
+	glDeleteProgram(_program);
 }
 
 Shader::Shader(const Shader& other) : Shader()
 {
-	vert_ = other.vert_;
-	geom_ = other.geom_;
-	frag_ = other.frag_;
+	_vert = other._vert;
+	_geom = other._geom;
+	_frag = other._frag;
 }
 
 Shader& Shader::operator=(const Shader& other)
 {
-	vert_ = other.vert_;
-	geom_ = other.geom_;
-	frag_ = other.frag_;
+	_vert = other._vert;
+	_geom = other._geom;
+	_frag = other._frag;
 	return *this;
 }
 
 Shader::Shader(Shader&& other) noexcept : Shader()
 {
-	program_ = other.program_;
-	vert_ = other.vert_;
-	geom_ = other.geom_;
-	frag_ = other.frag_;
-	other.program_ = 0;
+	_program = other._program;
+	_vert = other._vert;
+	_geom = other._geom;
+	_frag = other._frag;
+	other._program = 0;
 }
 
 Shader& Shader::operator=(Shader&& other) noexcept
 {
-	program_ = other.program_;
-	vert_ = other.vert_;
-	geom_ = other.geom_;
-	frag_ = other.frag_;
-	other.program_ = 0;
+	_program = other._program;
+	_vert = other._vert;
+	_geom = other._geom;
+	_frag = other._frag;
+	other._program = 0;
 	return *this;
 }
 
 unsigned int Shader::getId() const
 {
-	return program_;
+	return _program;
 }
 
 void Shader::bind() const {
-	glUseProgram(program_);
+	glUseProgram(_program);
 }
 
 void Shader::unBind() const {
@@ -82,7 +81,7 @@ void Shader::unBind() const {
 }
 
 const int Shader::getLocation(const std::string& name) const {
-	return glGetUniformLocation(program_, name.c_str());
+	return glGetUniformLocation(_program, name.c_str());
 }
 
 void Shader::setLocation(const int& location, const glm::mat4& value) const {
@@ -112,9 +111,9 @@ bool Shader::setValue(const std::string& name, const int& value) const {
 }
 bool Shader::setValueUBO(const std::string& name, const int& location) const
 {
-	unsigned int loc = glGetUniformBlockIndex(program_, name.c_str());
+	unsigned int loc = glGetUniformBlockIndex(_program, name.c_str());
 	if (loc == -1) return false;
-	glUniformBlockBinding(program_, loc, 0);
+	glUniformBlockBinding(_program, loc, 0);
 	return true;
 }
 bool Shader::setValue(const std::string& name, const glm::vec4& value) const {
@@ -155,8 +154,8 @@ void Shader::setUp() {
 	gShaderFile.exceptions(std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::badbit);
 	try {
-		vShaderFile.open(("Shaders/" + vert_ + ".vert").c_str());
-		fShaderFile.open(("Shaders/" + frag_ + ".frag").c_str());
+		vShaderFile.open(("Shaders/" + _vert + ".vert").c_str());
+		fShaderFile.open(("Shaders/" + _frag + ".frag").c_str());
 		std::stringstream vShaderStream, gShaderStream, fShaderStream;
 
 		vShaderStream << vShaderFile.rdbuf();
@@ -168,15 +167,15 @@ void Shader::setUp() {
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
 
-		if (geom_ != "") {
-			gShaderFile.open(("Shaders/" + geom_ + ".geom").c_str());
+		if (_geom != "") {
+			gShaderFile.open(("Shaders/" + _geom + ".geom").c_str());
 			gShaderStream << gShaderFile.rdbuf();
 			gShaderFile.close();
 			geometryCode = gShaderStream.str();
 		}
 	}
 	catch (std::ifstream::failure e) {
-		std::cout << "Shader file faild to be read" << vert_ << " | " << geom_ << " | " << frag_ << std::endl;
+		std::cout << "Shader file faild to be read" << _vert << " | " << _geom << " | " << _frag << std::endl;
 	}
 	const char* vShaderCode = vertexCode.c_str();
 	const char* gShaderCode = geometryCode.c_str();
@@ -193,18 +192,18 @@ void Shader::setUp() {
 	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		std::cout << "Vertex compilation failed: " << std::string(infoLog) << vert_ << std::endl;
+		std::cout << "Vertex compilation failed: " << std::string(infoLog) << _vert << std::endl;
 	}
 
 	//geometry
-	if (geom_ != "") {
+	if (_geom != "") {
 		geometry = glCreateShader(GL_GEOMETRY_SHADER);
 		glShaderSource(geometry, 1, &gShaderCode, nullptr);
 		glCompileShader(geometry);
 		glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(geometry, 512, NULL, infoLog);
-			std::cout << "Geometry compilation failed: " << std::string(infoLog) << geom_ << std::endl;
+			std::cout << "Geometry compilation failed: " << std::string(infoLog) << _geom << std::endl;
 		}
 	}
 
@@ -215,30 +214,30 @@ void Shader::setUp() {
 	glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-		std::cout << "Fragment compilation failed: " << std::string(infoLog) << frag_ << std::endl;
+		std::cout << "Fragment compilation failed: " << std::string(infoLog) << _frag << std::endl;
 	}
 
 	// the program
-	program_ = glCreateProgram();
-	glAttachShader(program_, vertex);
+	_program = glCreateProgram();
+	glAttachShader(_program, vertex);
 
-	if(geom_ != "") glAttachShader(program_, geometry);
+	if(_geom != "") glAttachShader(_program, geometry);
 
-	glAttachShader(program_, fragment);
-	glLinkProgram(program_);
+	glAttachShader(_program, fragment);
+	glLinkProgram(_program);
 
-	glGetProgramiv(program_, GL_LINK_STATUS, &success);
+	glGetProgramiv(_program, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(program_, 512, NULL, infoLog);
-		std::cout << "Unable to link a shader: " << std::string(infoLog) << vert_ << " | " << geom_ << " | " << frag_ << std::endl;
+		glGetProgramInfoLog(_program, 512, NULL, infoLog);
+		std::cout << "Unable to link a shader: " << std::string(infoLog) << _vert << " | " << _geom << " | " << _frag << std::endl;
 	}
 
-	glDetachShader(program_, vertex);
-	if (geom_ != "") glDetachShader(program_, geometry);
-	glDetachShader(program_, fragment);
+	glDetachShader(_program, vertex);
+	if (_geom != "") glDetachShader(_program, geometry);
+	glDetachShader(_program, fragment);
 
 	glDeleteShader(vertex);
-	if (geom_ != "") glDeleteShader(geometry);
+	if (_geom != "") glDeleteShader(geometry);
 	glDeleteShader(fragment);
 
 	glUseProgram(0);

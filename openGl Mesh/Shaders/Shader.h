@@ -36,8 +36,8 @@ public:
 	bool setValue(const std::string& name, const int& value) const;
 	bool setValueUBO(const std::string& name, const int& location) const;
 private:
-	unsigned int program_;
-	std::string vert_, geom_, frag_;
+	unsigned int _program;
+	std::string _vert, _geom, _frag;
 
 	const int getLocation(const std::string& name) const;
 	void setLocation(const int& location, const glm::mat4& value) const;
